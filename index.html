@@ -517,7 +517,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,420
+                  3,707
                 </span>
               
 
@@ -533,7 +533,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  13
+                  15
                 </span>
               
             </div>
@@ -630,9 +630,24 @@ X&#39;_{ij}=\frac{X_{ij}-\bar{X_{j}}}{S_{J}}(j=1,2,3,\dots,m)
 <p>然后代入各主成分的表达式，即 <span class="math">\[
 Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dots,m
 \]</span> 求出该样本各主成分值，这样求得的主成分值称为该样本的主成分得分，利用样品的主成分得分，可以对样品的特征进行推断和评价。</p>
-<p>案例一： 例22-1 某研究者测得84名10岁男孩的身高、坐高、体重、胸围、肩宽、肺活量等6项生长发育指标，数据见表22-2。试作主成分分析。 <img src="http://ortxpw68f.bkt.clouddn.com/pca001.png"></p>
-<p>用的包是psych，运算过程如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">raw_pca &lt;- read.csv(&quot;https://raw.githubusercontent.com/20170505a/raw_data/master/data_szq_2201.csv&quot;)</div><div class="line">library(psych)</div><div class="line">fa.parallel(raw_pca[-1],fa=&apos;pc&apos;,n.iter=100,show.legend = FALSE,main=&apos;Scree plot with parallel analysis&apos;)</div></pre></td></tr></table></figure>
+<h2 id="案例分析">案例分析</h2>
+<h3 id="案例一">案例一</h3>
+<p>例22-1 某研究者测得84名10岁男孩的身高、坐高、体重、胸围、肩宽、肺活量等6项生长发育指标，数据见表22-2。试作主成分分析。 <img src="http://ortxpw68f.bkt.clouddn.com/pca001.png"> #### 第1步：导入数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_pca &lt;- read.csv(&quot;https://raw.githubusercontent.com/20170505a/raw_data/master/data_szq_2201.csv&quot;)</div><div class="line"># 这是原始数据，放在了github上</div><div class="line">head(raw_pca)</div><div class="line">str(raw_pca)</div><div class="line">raw_pca &lt;- raw_pca[-1]</div><div class="line">#第1列是序号，没用，剔除掉</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/pca001a.png"> 剔除掉第1列后的数据： <img src="http://ortxpw68f.bkt.clouddn.com/pca002a.png"></p>
+<h4 id="第2步-数据的简单统计量">第2步： 数据的简单统计量</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apply(raw_pca,2,sd) # 求各列的标准差</div><div class="line">apply(raw_pca,2,mean) # 求各列的均数</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/pca003a.png">
+</div>
+<h4 id="第3步相关矩阵的特征值">第3步：相关矩阵的特征值</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">raw.pr&lt;- prcomp(raw_pca, scale = TRUE) # 标准误、方差贡献率和累积贡献率</div><div class="line">summary(raw.pr,loadings=TRUE) # 标准误、方差贡献率和累积贡献率</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/pca005a.png"> 在上图中，其中第二行，即Proportion of Variance表示的是贡献率；而第3行，即Cumulative Proportion表示的是累积贡献率；由这个表可以看出，主成分取3个比较合适，此时的累积贡献率为88.92%，接近于90.00%。</p>
+<h4 id="第4步相关矩阵的特征向量">第4步：相关矩阵的特征向量</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">prcomp(raw_pca, scale = TRUE)</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/pca004a.png"> 这张表的结果可以得出各个主成分的与相应变量的系数，如果取3个主成分，则可以得出前三个主成分为： <img src="http://ortxpw68f.bkt.clouddn.com/pca006a.png"></p>
+<h4 id="第5步因子载荷矩阵">第5步：因子载荷矩阵</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如下所示：</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">library(psych)</div><div class="line">fa.parallel(raw_pca[-1],fa=&apos;pc&apos;,n.iter=100,show.legend = FALSE,main=&apos;Scree plot with parallel analysis&apos;)</div></pre></td></tr></table></figure>
 <p>图中展示了基于观测特征值的碎石检验（蓝色）、根据100个随机数据矩阵推导出来的特征值均值（红色），从图中可以看出：碎石检验图形最大变化处上面只有一个成分；特征值大于随机模拟数据的也只有一个主成分；特征值大于1的也只有一个主成分。所以这一组数据使用一个主成分即可保留数据集的大部分信息。</p>
 <p>R基础安装包中的主成分分析函数：princomp()</p>
 <p>探索性因子分析（EFA）是一系列用来发现一组变量的潜在结构的方法，通过寻找一组更小的、潜在的或隐藏的结构来解释已观测到的、显式的变量间的关系。因子被当做是观测变量的结构基础或“原因”，而不是它们的线性组合。因子间可能会有相关性。因子分析需要5~10倍于变量数的样本数。R基础安装包中的EFA函数：factanal()。</p>
@@ -642,6 +657,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
 <li><a href="https://www.zhihu.com/question/20852004" target="_blank" rel="external">如何通俗易懂地解释「协方差」与「相关系数」的概念？</a></li>
 <li><a href="http://pinkyjie.com/2010/08/31/covariance/" target="_blank" rel="external">浅谈协方差矩阵</a></li>
 <li><a href="https://mp.weixin.qq.com/s/-FuNX0LiKHNRysSdgenK_g" target="_blank" rel="external">如何理解矩阵特征值和特征向量？</a></li>
+<li><a href="https://ask.hellobi.com/blog/dataman/3073" target="_blank" rel="external">数据挖掘系列篇(15):R语言VS主成分分析的案例</a></li>
 </ol>
 
           
@@ -2798,7 +2814,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共48.3k字</span>
+  <span class="post-count">博客全站共48.6k字</span>
 </div>
 
         
