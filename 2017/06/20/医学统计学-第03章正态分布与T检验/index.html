@@ -96,7 +96,7 @@
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution2.png">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution3.png">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/t%20density%20distribution.png">
-<meta property="og:updated_time" content="2017-08-11T01:34:24.411Z">
+<meta property="og:updated_time" content="2018-04-26T02:41:26.456Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="正态分布与t检验">
 <meta name="twitter:description" content="标准误与标准差的区别 这一内容前文已经提到。 正态分布介绍 正态分布定义 若随机变量X服从一个数学期望为\(\mu\)、方差为\((\sigma)^2\)的正态分布，记为N(\(\mu\)，\((\sigma)^2\))。其概率密度函数为正态分布的期望值\(\mu\)决定了其位置，其标准差\(\sigma\)决定了分布的幅度。因其曲线呈钟形，因此人们又经常称之为钟形曲线。我们通常所说的标准">
@@ -348,7 +348,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,887
+                  4,182
                 </span>
               
 
@@ -364,7 +364,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  16
+                  17
                 </span>
               
             </div>
@@ -484,10 +484,20 @@
 <p>sfTest() 进行Shapiro-Francia正态性检验。</p>
 <p>jbTest() Finite sample adjusted JB LM and ALM test。</p>
 <p>normalTest() 进行Kolmogorov-Smirnov正态性检验。</p>
+<h3 id="jarque-bera-test检验正态分布">Jarque-Bera Test检验正态分布</h3>
+<p>Jarque-Bera检验是用于总体分布的正态性检验的一种方式。该检验基于数据样本的偏度和峰度，评价给定数据服从未知均值和方差正态分布的假设是否成立，正态分布的偏度（三阶矩）S=0，峰度（四阶矩）K=3，若样本来自正态总体，则他们分别在0，3附近。基于此构造一个包含x2(卡方)统计量：n为样本容量,k为自由度。代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"tseries"</span>)</div><div class="line"><span class="keyword">library</span>(tseries)</div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">x &lt;- rnorm(<span class="number">150</span>)</div><div class="line">res &lt;- jarque.bera.test(x)</div><div class="line">names(res)</div><div class="line">res$p.value</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; set.seed(<span class="number">1</span>)</div><div class="line">&gt; x &lt;- rnorm(<span class="number">150</span>)</div><div class="line">&gt; res &lt;- jarque.bera.test(x)</div><div class="line">&gt; names(res)</div><div class="line">[<span class="number">1</span>] <span class="string">"statistic"</span> <span class="string">"parameter"</span> <span class="string">"p.value"</span>   <span class="string">"method"</span>    <span class="string">"data.name"</span></div><div class="line">&gt; res$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">0.8601533</span></div></pre></td></tr></table></figure>
+<p>p值大于0.05，可以视为符合正态分布。</p>
+<h2 id="案例第二用jarque-bera-test检验正态分布">案例第二：用Jarque-Bera Test检验正态分布</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"Ecdat"</span>)</div><div class="line"><span class="keyword">library</span>(Ecdat)</div><div class="line">data(SP500)</div><div class="line">class(SP500)</div><div class="line">SPreturn &lt;- SP500$r500</div><div class="line">res &lt;- jarque.bera.test(SPreturn)</div><div class="line">names(res)</div><div class="line">res$p.value</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; class(SP500)</div><div class="line">[<span class="number">1</span>] <span class="string">"data.frame"</span></div><div class="line">&gt; <span class="keyword">library</span>(Ecdat)</div><div class="line">&gt; data(SP500)</div><div class="line">&gt; class(SP500)</div><div class="line">[<span class="number">1</span>] <span class="string">"data.frame"</span></div><div class="line">&gt; SPreturn &lt;- SP500$r500</div><div class="line">&gt; res &lt;- jarque.bera.test(SPreturn)</div><div class="line">&gt; names(res)</div><div class="line">[<span class="number">1</span>] <span class="string">"statistic"</span> <span class="string">"parameter"</span> <span class="string">"p.value"</span>   <span class="string">"method"</span>    <span class="string">"data.name"</span></div><div class="line">&gt; res$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">0</span></div></pre></td></tr></table></figure>
 <h2 id="t分布">t分布</h2>
 <p>学生t-分布（Student’s t-distribution），可简称为t分布。应用在估计呈正态分布的总体之平均数。</p>
 <h3 id="t分布的密度分布图">t分布的密度分布图</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">set.seed(1000)</div><div class="line">x &lt;- seq(-5,5,length.out=1000)</div><div class="line">y &lt;- dt(x,1,0)</div><div class="line">plot(x,y,col=&quot;red&quot;,xlim=c(-5,5),ylim=c(0,0.5),type=&quot;l&quot;,</div><div class="line">xaxs=&quot;i&quot;,yaxs=&quot;i&quot;,ylab=&quot;density&quot;,xlab=&quot;&quot;,</div><div class="line">main=&quot;The T density distribution&quot;)</div><div class="line">lines(x,dt(x,5,0),col=&quot;green&quot;)</div><div class="line">lines(x,dt(x,5,2),col=&quot;blue&quot;)</div><div class="line">lines(x,dt(x,50,4),col=&quot;orange&quot;)</div><div class="line">legend(&quot;topleft&quot;,legend=paste(&quot;df=&quot;,c(1,5,5,50),&quot;ncp=&quot;,c(0,0,2,4)),lwd=1,col=c(&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;,&quot;orange&quot;))</div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1000</span>)</div><div class="line">x &lt;- seq(-<span class="number">5</span>,<span class="number">5</span>,length.out=<span class="number">1000</span>)</div><div class="line">y &lt;- dt(x,<span class="number">1</span>,<span class="number">0</span>)</div><div class="line">plot(x,y,col=<span class="string">"red"</span>,xlim=c(-<span class="number">5</span>,<span class="number">5</span>),ylim=c(<span class="number">0</span>,<span class="number">0.5</span>),type=<span class="string">"l"</span>,</div><div class="line">xaxs=<span class="string">"i"</span>,yaxs=<span class="string">"i"</span>,ylab=<span class="string">"density"</span>,xlab=<span class="string">""</span>,</div><div class="line">main=<span class="string">"The T density distribution"</span>)</div><div class="line">lines(x,dt(x,<span class="number">5</span>,<span class="number">0</span>),col=<span class="string">"green"</span>)</div><div class="line">lines(x,dt(x,<span class="number">5</span>,<span class="number">2</span>),col=<span class="string">"blue"</span>)</div><div class="line">lines(x,dt(x,<span class="number">50</span>,<span class="number">4</span>),col=<span class="string">"orange"</span>)</div><div class="line">legend(<span class="string">"topleft"</span>,legend=paste(<span class="string">"df="</span>,c(<span class="number">1</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">50</span>),<span class="string">"ncp="</span>,c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">2</span>,<span class="number">4</span>)),lwd=<span class="number">1</span>,col=c(<span class="string">"red"</span>,<span class="string">"green"</span>,<span class="string">"blue"</span>,<span class="string">"orange"</span>))</div></pre></td></tr></table></figure>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/t%20density%20distribution.png">
 
@@ -515,6 +525,7 @@
 <p>例3-7 为研究国产四类新药阿卡波糖胶囊的降血糖效果，某医院用40名II型糖尿病病人进行同期随机对照试验。研究者将这些病人随机等分到试验组(用阿卡波糖胶囊)和对照组(用拜唐苹胶囊)，分别测得试验开始前和8周时的空腹血糖，算得空腹血糖下降值见表3-6，能否认为该国产四类新药阿卡波糖胶囊与拜唐苹胶囊对空腹血糖的降糖效果不同？</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">raw_data &lt;- read.csv(&quot;https://raw.githubusercontent.com/20170505a/raw_data/master/data_szq_307.csv&quot;,,header=T,sep=&quot;,&quot;)</div><div class="line"></div><div class="line">a &lt;- as.numeric(raw_data[,1])</div><div class="line">b &lt;- as.numeric(raw_data[,2])</div><div class="line">t.test(a,b)</div></pre></td></tr></table></figure>
 <p>结果p值为0.525。因此尚不能认为阿卡波糖胶囊与拜唐苹胶囊对空腹血糖的降糖效果不同。</p>
+<p>​</p>
 
       
     </div>
@@ -547,8 +558,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/06/19/医学统计学-第02章数据描述/" rel="next" title="数据的描述">
-                <i class="fa fa-chevron-left"></i> 数据的描述
+              <a href="/2017/06/19/医学统计学-03统计学术语2/" rel="next" title="医学统计学术语笔记（2）">
+                <i class="fa fa-chevron-left"></i> 医学统计学术语笔记（2）
               </a>
             
           </div>
@@ -557,8 +568,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/06/21/医学统计学-第04假设检验/" rel="prev" title="假设检验">
-                假设检验 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/06/20/医学统计学-04正态分布与T检验/" rel="prev" title="正态分布与t检验">
+                正态分布与t检验 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -636,7 +647,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -658,7 +669,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">40</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -693,7 +704,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#标准误与标准差的区别"><span class="nav-number">1.</span> <span class="nav-text">标准误与标准差的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布介绍"><span class="nav-number">2.</span> <span class="nav-text">正态分布介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#正态分布定义"><span class="nav-number">2.1.</span> <span class="nav-text">正态分布定义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#r语言正态分布函数"><span class="nav-number">3.</span> <span class="nav-text">R语言正态分布函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#正态分布相应的概率计算"><span class="nav-number">3.1.</span> <span class="nav-text">正态分布相应的概率计算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布密度曲线"><span class="nav-number">4.</span> <span class="nav-text">正态分布密度曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布累积曲线"><span class="nav-number">5.</span> <span class="nav-text">正态分布累积曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布的检验"><span class="nav-number">6.</span> <span class="nav-text">正态分布的检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#shapiro.test函数"><span class="nav-number">6.1.</span> <span class="nav-text">shapiro.test()函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kolmogorov-smirnov连续分布检验"><span class="nav-number">6.2.</span> <span class="nav-text">Kolmogorov-Smirnov连续分布检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ks的第二案例应用"><span class="nav-number">6.3.</span> <span class="nav-text">KS的第二案例应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#比较两组数据的分布是否相同"><span class="nav-number">6.3.1.</span> <span class="nav-text">比较两组数据的分布是否相同</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ks比较某一数据符合某一分布"><span class="nav-number">6.3.2.</span> <span class="nav-text">KS比较某一数据符合某一分布</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pearson-拟合优度chi-square检验"><span class="nav-number">6.4.</span> <span class="nav-text">Pearson 拟合优度chi-square检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#qq图"><span class="nav-number">6.5.</span> <span class="nav-text">QQ图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#峰度与偏度"><span class="nav-number">6.6.</span> <span class="nav-text">峰度与偏度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#峰度kurtosis"><span class="nav-number">6.6.1.</span> <span class="nav-text">峰度（Kurtosis）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#偏度skewness"><span class="nav-number">6.6.2.</span> <span class="nav-text">偏度（Skewness）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正态分布检验补充案例"><span class="nav-number">6.7.</span> <span class="nav-text">正态分布检验补充案例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#r语言中进行正态分布检验的其它包"><span class="nav-number">7.</span> <span class="nav-text">R语言中进行正态分布检验的其它包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nortest包"><span class="nav-number">7.1.</span> <span class="nav-text">nortest包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fbasics包"><span class="nav-number">7.2.</span> <span class="nav-text">fBasics包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t分布"><span class="nav-number">8.</span> <span class="nav-text">t分布</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#t分布的密度分布图"><span class="nav-number">8.1.</span> <span class="nav-text">t分布的密度分布图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t分布的累积分布图"><span class="nav-number">9.</span> <span class="nav-text">t分布的累积分布图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#某一数据是否符合t分布"><span class="nav-number">10.</span> <span class="nav-text">某一数据是否符合t分布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方差齐性检验"><span class="nav-number">11.</span> <span class="nav-text">方差齐性检验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t检验"><span class="nav-number">12.</span> <span class="nav-text">t检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#案例运用"><span class="nav-number">12.1.</span> <span class="nav-text">案例运用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配对t检验"><span class="nav-number">12.1.1.</span> <span class="nav-text">配对t检验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#双样本t检验"><span class="nav-number">12.1.2.</span> <span class="nav-text">双样本t检验</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#标准误与标准差的区别"><span class="nav-number">1.</span> <span class="nav-text">标准误与标准差的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布介绍"><span class="nav-number">2.</span> <span class="nav-text">正态分布介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#正态分布定义"><span class="nav-number">2.1.</span> <span class="nav-text">正态分布定义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#r语言正态分布函数"><span class="nav-number">3.</span> <span class="nav-text">R语言正态分布函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#正态分布相应的概率计算"><span class="nav-number">3.1.</span> <span class="nav-text">正态分布相应的概率计算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布密度曲线"><span class="nav-number">4.</span> <span class="nav-text">正态分布密度曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布累积曲线"><span class="nav-number">5.</span> <span class="nav-text">正态分布累积曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正态分布的检验"><span class="nav-number">6.</span> <span class="nav-text">正态分布的检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#shapiro.test函数"><span class="nav-number">6.1.</span> <span class="nav-text">shapiro.test()函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kolmogorov-smirnov连续分布检验"><span class="nav-number">6.2.</span> <span class="nav-text">Kolmogorov-Smirnov连续分布检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ks的第二案例应用"><span class="nav-number">6.3.</span> <span class="nav-text">KS的第二案例应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#比较两组数据的分布是否相同"><span class="nav-number">6.3.1.</span> <span class="nav-text">比较两组数据的分布是否相同</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ks比较某一数据符合某一分布"><span class="nav-number">6.3.2.</span> <span class="nav-text">KS比较某一数据符合某一分布</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pearson-拟合优度chi-square检验"><span class="nav-number">6.4.</span> <span class="nav-text">Pearson 拟合优度chi-square检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#qq图"><span class="nav-number">6.5.</span> <span class="nav-text">QQ图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#峰度与偏度"><span class="nav-number">6.6.</span> <span class="nav-text">峰度与偏度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#峰度kurtosis"><span class="nav-number">6.6.1.</span> <span class="nav-text">峰度（Kurtosis）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#偏度skewness"><span class="nav-number">6.6.2.</span> <span class="nav-text">偏度（Skewness）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正态分布检验补充案例"><span class="nav-number">6.7.</span> <span class="nav-text">正态分布检验补充案例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#r语言中进行正态分布检验的其它包"><span class="nav-number">7.</span> <span class="nav-text">R语言中进行正态分布检验的其它包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nortest包"><span class="nav-number">7.1.</span> <span class="nav-text">nortest包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fbasics包"><span class="nav-number">7.2.</span> <span class="nav-text">fBasics包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jarque-bera-test检验正态分布"><span class="nav-number">7.3.</span> <span class="nav-text">Jarque-Bera Test检验正态分布</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例第二用jarque-bera-test检验正态分布"><span class="nav-number">8.</span> <span class="nav-text">案例第二：用Jarque-Bera Test检验正态分布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t分布"><span class="nav-number">9.</span> <span class="nav-text">t分布</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#t分布的密度分布图"><span class="nav-number">9.1.</span> <span class="nav-text">t分布的密度分布图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t分布的累积分布图"><span class="nav-number">10.</span> <span class="nav-text">t分布的累积分布图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#某一数据是否符合t分布"><span class="nav-number">11.</span> <span class="nav-text">某一数据是否符合t分布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方差齐性检验"><span class="nav-number">12.</span> <span class="nav-text">方差齐性检验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t检验"><span class="nav-number">13.</span> <span class="nav-text">t检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#案例运用"><span class="nav-number">13.1.</span> <span class="nav-text">案例运用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配对t检验"><span class="nav-number">13.1.1.</span> <span class="nav-text">配对t检验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#双样本t检验"><span class="nav-number">13.1.2.</span> <span class="nav-text">双样本t检验</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -748,7 +759,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共93.3k字</span>
+  <span class="post-count">博客全站共101.9k字</span>
 </div>
 
         
