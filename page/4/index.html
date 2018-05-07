@@ -249,6 +249,297 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/20/生信-RNA-seq入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/20/生信-RNA-seq入门/" itemprop="url">生信笔记-RNA-Seq分析简介</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-20T12:00:00+08:00">
+                2017-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
+                    <span itemprop="name">生物信息学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,366
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这是对<a href="http://mp.weixin.qq.com/s/KQ7wfCTCT1UIEeMfJBC78Q" target="_blank" rel="external">沈梦圆PPT</a>的整理。是一篇非常好的关于RNA-seq数据分析的文章。</p>
+<h3 id="rna-seq到底测的是什么">RNA-seq到底测的是什么？</h3>
+<p>mRNA在生物个体内RNA的组分中只占很小的一部分，rRNA占绝大多数。一般我们说RNA-seq指的都是mRNA-seq，后面的流程也都是主要针对mRNA-seq数据分析的。在科学家们的努力下，可以把那些非编码RNA提取出来建库，进行测序。 一个成功的RNA-seq研究，起决定性因素的是一个好的实验设计。还依赖于建库的类型、测序深度和设置适于的生物重复。并且尽量减少测序本身以外带来的数据误差。</p>
+<h4 id="真核生物与原核生物的mrna结构差异">真核生物与原核生物的mRNA结构差异</h4>
+<ol style="list-style-type: decimal">
+<li>真核生物mRNA由5’端帽子结构、5’端非翻译区、翻译区、3’端聚腺苷酸尾巴构成。</li>
+<li>原核生物mRNA无5’端帽子结构和3’端聚腺苷酸尾巴。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq3.png"></li>
+</ol>
+<h3 id="数据分析前工作">数据分析前工作</h3>
+<p>如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq4.png"></p>
+<h4 id="实验设计">实验设计</h4>
+<p>需要注意的问题：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq5.png">
+
+</div>
+<ol style="list-style-type: decimal">
+<li>单端测序还是双端测序？</li>
+<li>测序读长是多少？</li>
+<li>是否建链特异性文库？</li>
+<li>需要多少数据量？（测序深度）</li>
+<li>设置多少个生物学重复比较合适？</li>
+<li>如果我们做了生物重复还要做技术重复么？</li>
+</ol>
+<h3 id="文库构建">文库构建</h3>
+<p>1.一般生物体中的的RNA中，rRNA占绝大多数，含量超过90%，而mRNA的含量在1-2%左右。对于真核生物，一般使用加poly(A)选择性富集mRNA或者而原核生物则是通过去除rRNA； 2.是否建stand-preserving库； 3.对于Illumina，测序插入片段一般小于500bp。确定合适长度的插入片段是后续测序和分析的关键； 4.单端还是双端测序毫无疑问的是，单端测序更便宜一些，如果你研究的某个物种的基因表达水平，并且它的转录组已经被注释很好了，单端测序产生的数据量一般是足够的了。双端测序呢，它的读长更长，更适合于那些没有被注释的转录组物种的研究，便于其转录本的从头拼接。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq6.png"></p>
+<h3 id="测序深度和重复数">测序深度和重复数</h3>
+<ol style="list-style-type: decimal">
+<li>测序深度和数据量不能一味加大。测序深度虽然可以提高基因定量和检测的敏感性（低丰度的基因），但是同时也会增加一些噪音和一些无用的转录本。</li>
+<li>重复数，很重要。（举例子：比较两个班的语文成绩，抽取一个人代表一个班来比较，显然是不科学的。）增加重复数可以减少实验误差，对提高结果的可靠性，是非常有意义的。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq7.png"></li>
+</ol>
+<p>误差分为技术误差和生物学差异。技术误差-可以通过选择最优化的实验测序程序；生物误差-三个生物学重复。 然后设定生物学重复对差异基因的检出率（真阳性率，TPR）的提高具有明显效果。上面说增加测序深度可以检测到低丰度基因，但是对任何样品来说的当测序深度增加再增加，它就会到达平台期。由于科研经费有限，无法无限制地增加样本数或数据量。 所以在生物学重复数和单个样本测序量上必须找到平衡点。在总数据量不变的情况下，将总数据量分配到更多的生物学重复样本中，差异分析结果的可靠性在不断提升。对于RNA-seq，生物学重复数的价值要大于单个样本测序量。但增加生物学重复的样本数，意味着要增加建库费用。因此，即使总数据不变，设置过多的生物学重复也是不合理的。 我们最终确定设置多少生物学重复还是需要看样本个体之间的差异大不大，这点我们一般都很清楚，在测序之前，如果你所研究的现象在两个实验样本之间差异很稳定的话，就可以少设置一些重复，差异不稳定的话有时候设置10个/20个都不够。具体问题具体分析.</p>
+<p><strong>测序深度（Sequencing depth），也叫乘数</strong>，指每个碱基被测序的平均次数，是用来衡量测序量的首要参数。研究表明，增加测序深度，测序量从1.6M条reads增加到20M条reads,（75bp）但到10M条reads时就已经达到平衡了，80%的基因转录本被检测到。在此基础上增加测序量，它们会比对到已经存在的转录本上。因此即使提高测序深度，低表达水平的基因的检测是比较困难的。并且提高测序深度确实能够增加基因差异表达的敏感度，但是并不能保证检测到的差异具有生物学意义。</p>
+<p>直观一些说，如果某个基因在RNA-seq结果显示差异表达，但QPCR结果表明这个基因表达差异不显著，可以认为这个基因RNA-seq结果为假阳性；反之，这个结果就是真阳性。</p>
+<p><strong>生物学重复对差异表达分析的影响</strong></p>
+<p>在单样本测序量保持不变的情况下，随着生物学重复(n)的提高，差异分析的假阳性率（FP R）基本稳定，但真阳性率（TPR）在不断提高。也就是说提高生物学重复数，实验对差异基因的检测更加敏感，那些差异倍数较小或差异量较低的差异表达基因（此类基因的差异检测难度较大）能够更加容易被检测到。</p>
+<p><strong>判定差异分析结果可靠性的指标</strong></p>
+<p>假阳性与真阳性 假阳性率（FPR）：真实非差异表达的基因中，被错误判定为差异表达的比例，FPR越低越好。 真阳性率（TRP）：真实差异表达的基因中，能够正确判定为差异表达的比例，TRP越高越好。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq1.png">
+
+</div>
+<p>提高生物学重复数，实验对差异基因的检验更加敏感。那些差异倍数较小或差异量较低的差异表达基因（此类基因的差异检测难度较大）能够更加容易被检测到。</p>
+<p>在一定的生物学重复数（n）的情况下，随着单样本测序量（Depth）的提高（25% → 100%），真阳性率（TPR）都只有有限的提高（图1）。例如在n=3的情况下，单个样本的测序量从25%提高到100%，TPR仅仅从6.24%提高到8.95%。在表3中，如果Depth等于25%不变，当n从2提高到12，TPR的提高则是非常明显的。因此测序深度对结果改善效果不如增加生物学重复。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq8.png"></p>
+<p>总数据量不变，生物学重复数与单样品测序量最佳组合 如果保持总测序量不变（即如果生物量重复数为n,则单个样品的测序量降低为1/n,总数据量为n*1/n=1,保持不变）。如图A,灰色实线代表不同的生物学重复数（n）和单样本数据量（1/n）组合的情况下，真阳性率（TPR）的变化。结果表明，随着n的提高，TPR率不断提高。例如n=2,TPR约为3%，如果n=6,TPR则提高到24.3%。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq9.png"></p>
+<p>同时我们也可以对“单样本测序量对差异表达分析的影响”再进行深入观察。如果n保持不变，但单个样本的数据量不断降低，TPR的降低十分缓慢。例如，n=3,单个样本的数据量从100%降低到15%，TPR的值一直处于平台期，仅仅从9%降低到5%。 但是不同的生物学重复数和单样本测序量的组合，对假阳性率（ FPR）的影响却较小。如图B，灰色实线代表不同生物学重复数（n）和单样本数据量（1/n）组合的情况下，真阳性率（FPR）的变化。虽然 n 从2 变化到 96，FPR 基本没有太大变化。</p>
+<p>从图中我们很容易发现，基于负二项分布的差异分析检验（P value），FPR 对生物学重复数和单个样本数据量均不敏感，始终保持低于 0.1%水平。或者说，这个算法对 FPR 的控制还是非常理想的。</p>
+<h3 id="讨论">讨论</h3>
+<p>随着测序单价的下降，目前市场上 RNA-seq 类项目的单样本测序量正在不断提高。以 2G，PE100 测序的表达谱项目为例，其对应的测序量为 20M 条 reads。如果一条长度为 1kbp 的低表达基因的表达量为 RPKM=0.5，其理论上可以检测到的 reads 数为 20×0.5=10。所以低丰度基因的检测，对 RNA-seq 这个技术来说并非最大问题。</p>
+<p>第二个问题“转录本表达量的高低变化”比“转录本的有无”更具有普遍的生物学意义。虽然个别基因的表达量变化程度，可以使用 Qpcr 来验证。但我们往往也使用所有差异基因来统计某些规律。例如使用差异基因的 pathway 富集分析来寻找与性状相关的 pathway。如果在全局水平的差异基因集并不可靠，那么 pathway富集分析得出的结论的可靠性自然也受到影响。而全局水平的差异基因数量巨大，是难以使用 Qpcr 验证的。因此，定量以及差异分析的准确性是在 RNA-seq 中更值得关心的问题。</p>
+<h4 id="测序设计">测序设计</h4>
+<p>RNA-seq文库的制备和测序过程：RNA碎裂，cDNA合成，接头连接，PCR扩增，加标签（多样品混合测序），上泳池测序; <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq10.png"></p>
+<h5 id="如何减少误差">如何减少误差：</h5>
+<ol style="list-style-type: decimal">
+<li>使用末端带随机核酸的接头或者使用化学碎裂法代替Rnase III碎裂法；</li>
+<li>不同批次实验或者不同runs。</li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li>如果样品太多在一个批次或者一个run跑不完，为了避免技术误差造成太大的实验误差，要把样品随机分配到每个批次或runs中;(到底怎么设计，我们要讨论一下！！)</li>
+<li>如果你的样品是多样品混合测序，每个样品要单独加上标签，每个lanes要保证足够的测序深度，为了保证所有的样品在每个lane中都有。如果送给公司去做的话，我们要选择建库水平好些的，并且要求他们这么去做，应该会更好。</li>
+</ol>
+<h4 id="质量控制">质量控制</h4>
+<h5 id="重复数">重复数：</h5>
+<ol style="list-style-type: decimal">
+<li>技术重复（spearman秩相关系数R²&gt;0.9）;</li>
+<li>生物重复（主成分分析PCA）</li>
+</ol>
+<h5 id="原始数据的质量控制">原始数据的质量控制：</h5>
+<p>原始数据回来后，你做完备份以后，做的第一件事情就是看看数据质量如何，一般来自llumina测序平台用软件FastQC看；其他平台的数据用软件NGSQC。一般会有原始数据的序列质量，GC含量，存在的接头以及K-mers子串图并且重复序列太多的reads。并且reads 3‘末端的质量低于前段，原因是随着测序读长的增加，酶活性下降，荧光强度也在下降，因此测序数据质量逐渐降低乃是自然趋势。常用的数据过滤的软件有FASTX-Toolkit and Trimmomatic，其他还有许多，你也可以自己写代码处理数据。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq11.png"></p>
+<h5 id="reads比对后的质量控制评估比对质量的指标">Reads比对后的质量控制(评估比对质量的指标)：</h5>
+<p>比对上的reads占总reads的百分比； Reads比对到外显子和参考链上的覆盖度是否一致；比对到基因组序列：多重比对reads？比对到转录组序列：来自未被注释的转录本的reads会丢失； 产生更多的多重比对reads; 转录本被定量以后，应该看一下GC含量和基因长度偏差，确定定量的方法是否适用。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq12.png"></p>
+<h5 id="数据分析">数据分析</h5>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq13.png">
+
+</div>
+<h5 id="转录本分析">转录本分析</h5>
+<p>需要注意的问题： 1. 比对到基因组序列、比对到转录组序列？ 2. 一条reads比对到多个地方？ 3. 用什么来表示表达量的高低？</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq14.png">
+
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq15.png">
+
+</div>
+<p>把所有样本的reads混合用于转录本的拼接。二代测序的转录组reads用于拼接还是存在一些问题的，最终拼接结果不太理想。一个转录本的拼接结果会是10~100contigs。三代测序的读长直接可以把一个转录本读完了，完全不需要拼接。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq16.png"></p>
+<h5 id="表达定量">表达定量</h5>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq17.png">
+
+</div>
+<p>RPKM/FPKM/TPM用来表示RNA-seq基因表达水平的值；对于单端测序RPKM和FPKM值是一样的，FPKM可以转换成TPM。Cufflinks(支持双端测序数据，并且需要GTF格式的注释文件)。</p>
+<h5 id="表达差异分析">表达差异分析</h5>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq18.png">
+
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq19.png">
+
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq20.png">
+
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq21.png">
+
+</div>
+<h4 id="功能分析">功能分析</h4>
+<p>功能分析是标准转录组分析流程的最后一步，分析差异表达基因的分子功能和代谢通路。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq22.png"></p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq23.png">
+
+</div>
+<p>参考资料： 1. http://www.biotrainee.com/thread-166-1-1.html</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/08/18/医学统计学-07卡方分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2358,236 +2649,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/07/01/病毒包装笔记(1)-慢病毒/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/01/病毒包装笔记(1)-慢病毒/" itemprop="url">病毒包装笔记(1)-慢病毒</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-01T12:00:00+08:00">
-                2017-07-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,689
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  16
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="慢病毒背景">慢病毒背景</h2>
-<p>慢病毒包括<strong>灵长类慢病毒</strong>，如人类免疫缺陷病毒(HIV)和猴免疫缺陷病毒(SIV)，以及<strong>非灵长类慢病毒</strong>如猫免疫缺陷病毒(FIV)、马传染性贫血病毒(EIAV)、牛免疫缺陷病毒(BIV)和<strong>维斯纳-梅迪病毒(VMV)</strong>等。目前，HIV-1、HIV-2、SIV、FIV及EIAV被广泛研究用作基因治疗的载体，而其中又以HIV-1最为热门。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">注：慢病毒的英文是lentivirus，它是反转录病毒科下的一个属，此属病毒的特征是需要较长的时间才能培养出来，例如人类免疫缺陷病毒(HIV)、猴免疫缺陷病毒(SIV)、猫免疫缺陷病毒(FIV)都是慢病毒属，慢病毒属的原文是Lentivirus，其中Lenti-在拉丁文中有慢的意思，因此称为慢病毒。慢病毒属可以由宿主细胞直接感染周围的细胞，不必经由形成病毒颗粒此一步骤。它一般的逆转录病毒载体不同，慢病毒对分裂细胞和非分裂细胞均具有感染能力。由于这一特点目前慢病毒也被广泛地应用于表达RNA干预的研究中。慢病毒属是反转录病毒科下的一个属，此属病毒的特征是需要较长的时间才能培养出来，例如人类免疫缺陷病毒(HIV)、猴免疫缺陷病毒(SIV)、猫免疫缺陷病毒(FIV)都是慢病毒属，慢病毒属的原文是Lentivirus，其中Lenti-在拉丁文中有慢的意思。</div></pre></td></tr></table></figure>
-<h2 id="hiv-1病毒形态与结构">HIV-1病毒形态与结构</h2>
-<p>现在的慢病毒包装系统通常是由HIV-1病毒改造而来的，因此有必要了解一下HIV-1的结构与功能。HIV-1的基因组由两条相同的正股RNA链在5′端通过部分碱基互补配对而成二聚体。病毒基因组全长约9200bp，含有gag、pol、env 3个结构基因以及tat、rev、nef、vif、vpr、vpu6个调节基因。在病毒基因组的5′端和3′端各有相同的一段核苷酸序列，称为长末端重复序列(longterminalrepeat，LTR)。</p>
-<h3 id="hiv-1的病毒结构如下所示">HIV-1的病毒结构如下所示<img src="http://ortxpw68f.bkt.clouddn.com/HIV-1.png"></h3>
-<h4 id="各个元件的作用">各个元件的作用：</h4>
-<h5 id="编码病毒的基本结构">编码病毒的基本结构：</h5>
-<ol style="list-style-type: decimal">
-<li>gag基因编码病毒的核心蛋白，即p55的蛋白前体，经蛋白酶裂解而形成病毒的核衣壳蛋白(p7)、内膜蛋白(p17)和衣壳蛋白(p24)。</li>
-<li>pol基因编码病毒复制所需的酶类。</li>
-<li>env基因编码病毒的包膜糖蛋白，决定病毒感染宿主的靶向性。编码p55的蛋白前体，经蛋白酶裂解而形成病毒的核衣壳蛋白(p7)、内膜蛋白(p17)和衣壳蛋白(p24)。</li>
-</ol>
-<h5 id="调节基因">调节基因</h5>
-<ol style="list-style-type: decimal">
-<li>tat基因编码的gp14是一种反式激活的转录因子，与LTR结合后能促进病毒所有基因的转录。</li>
-<li>rev基因编码的产物gp19能促进未经拼接的大mRNA分子从细胞核向胞浆转运，并相对减少拼接后小mRNA分子的数量。</li>
-<li>nef基因编码负调节蛋白，对病毒的结构蛋白和调节蛋白的表达均有下调作用。</li>
-<li>vif编码产物与病毒体的感染性有关，vpu产物与病毒的装配、成熟和释放有关，而vpr编码产物的功能尚不清楚。</li>
-</ol>
-<h2 id="hiv-1生活史">HIV-1生活史</h2>
-<p>　　HIV-1病毒通过gp120与宿主细胞的CD4分子和趋化因子受体结合，然后将病毒的基因(RNA)、蛋白及酶等释放到宿主细胞内;随后，逆转录酶将病毒RNA转录成DNA，病毒DNA在整合酶的作用下插入宿主细胞核的基因组中，此时的病毒DNA也称为原病毒;紧接着，原病毒转录成mRNA，mRNA从细胞核进入细胞质，并利用宿主细胞的原料合成病毒的各种成分(蛋白质)，新合成的各种蛋白、酶及RNA等聚集在宿主细胞的膜下，病毒的包膜蛋白(gp120，gp41)插入宿主细胞的细胞膜并形成一种未成熟的病毒(<strong>此时病毒无传染性，这也是包病毒中病毒包膜质粒的作用</strong>);最后蛋白酶将病毒核心中的许多过长的蛋白及酶切短，便形成成熟的病毒。病毒利用宿主细胞的细胞膜将自己包被起来，离开该细胞去寻找新的宿主。</p>
-<h2 id="慢病素是操作基因的工具">慢病素是操作基因的工具</h2>
-<h3 id="引入外源基因">引入外源基因</h3>
-<p>慢病毒和逆转录病毒基因递送系统利用了逆转录病毒复制方面的性质以获得目标核酸序列稳定的整合。核酸转染只能获得瞬时的转基因表达（这种转染能在宿主细胞中引入外源基因，但无法稳定遗传），而基于逆转录病毒和慢病毒的系统却可以获得外源基因稳定的整合，外源基因于是被遗传下去随重复的细胞分裂持续表达。慢病毒和逆转录病毒载体的一个重要特征是他们产生的是复制有缺陷的，即自身无活性的病毒颗粒。这使得目标序列得以转运，而在目标细胞中不存在连续的病毒复制。</p>
-<h3 id="用于rnai的研究">用于RNAi的研究</h3>
-<p>慢病毒也被广泛地应用于表达RNAi的研究中。由于有些类型细胞脂质体转染效果差，转移到细胞内的siRNA半衰期短，体外合成siRNA对基因表达的抑制作用通常是短暂的，因而使其应用受到较大的限制。采用事先在体外构建能够表达siRNA的载体, 然后转移到细胞内转录siRNA的策略，不但使脂质体有效转染的细胞种类增加，而且对基因表达抑制效果也不逊色于体外合成siRNA，在长期稳定表达载体的细胞中，甚至可以发挥长期阻断基因表达的作用。在所构建的siRNA表达载体中，是由rna聚合酶Ⅲ启动子来指导RNA合成的，这是因为RNA聚合酶Ⅲ有明确的起始和终止序列，而且合成的RNA不会带poly A尾。当RNA聚合酶Ⅲ遇到连续4个或5个T时，它指导的转录就会停止，在转录产物3’端形成1~4个U。U6和H1 RNA启动子是两种RNA聚合酶Ⅲ依赖的启动子，其特点是启动子自身元素均位于转录区的上游，适合于表达～21ntRNA和～50ntRNA茎环结构(stem loop)。在siRNA表达载体中，构成siRNA的正义与反义链，可由各自的启动子分别转录,然后两条链互补结合形成siRNA;也可由载体直接表达小发卡状RNA(small hairpin RNA, shRNA), 载体包含位于RNA聚合酶Ⅲ启动子和4～5T转录终止位点之间的茎环结构序列，转录后即可折叠成具有1~4 个U 3 ’突出端的茎环结构，在细胞内进一步加工成siRNA。构建载体前通常要通过合成siRNA的方法，寻找高效的siRNA，然后从中挑选符合载体要求的序列，将其引入siRNA表达载体。</p>
-<h2 id="慢病毒载体的构建">慢病毒载体的构建</h2>
-<p>慢病毒载体（Lentiviral vector,LVs）是在HIV-1病毒基础上改造而成的病毒载体系统，它能高效的将目的基因（或RNAi）导入动物和人的原代细胞或细胞系。慢病毒载体基因组是正链RNA，其基因组进入细胞后，在细胞浆中被其自身携带的反转录酶反转为DNA，形成DNA整合前复合体，进入细胞核后，DNA整合到细胞基因组中。整合后的DNA转录mRNA，回到细胞浆中，表达目的蛋白；或产生RNAi干扰。</p>
-<h3 id="慢病毒包装系统的组成">慢病毒包装系统的组成</h3>
-<p>该系统由<strong>[1]包装质粒、[2]载体质粒、[3]包膜质粒及</strong>3种质粒组成。</p>
-<p><strong>包装质粒</strong>：这一部分能够表达出各种病毒酶蛋白。包装质粒由HIV基因组去除了包装、逆转录和整合所需的顺式作用序列而构建，能够反式提供产生病毒颗粒所必需的蛋白表达HIV复制所需的全部反式激活蛋白，但不产生病毒包膜蛋白及辅助蛋白vpu。它由HIV前病毒基因组作简单修改得到，其5′端LTR由（LTR本身也有启动子活性）异源病毒启动子/增强子元件取代。为了防止来自辅助质粒的RNA衣壳化，特意将5′端主要剪接供体位点(splice donor site)和gag编码序列起始端之间的包装信号区(E/Ψ region)删除，而下游的启动子由外源多聚腺苷酸信号(polyA)取代。另外利用点突变将env编码序列打断，但仍然保留rev反应元件。这样的辅助结构能表达所有的病毒蛋白，包括tat及rev(env除外)。</p>
-<p><strong>载体质粒</strong>：该质粒用于将目标基因递送至靶细胞。载体成分与包装成分互补，即含有包装、逆转录和整合所需的HIV顺式作用序列，同时具有异源启动子控制下的多克隆位点及在此位点插入的目的基因。为降低载体质粒与包装质粒这两种成分同源重组恢复成野生型病毒的可能，因此需尽量减少两者的同源性，例如将包装成分上5′LTR换成巨细胞病毒(CMV)早期启动子、3′LTR换成SV40 polyA等。它携带了5′端LTR和全部5′端非翻译区域(包括gag编码序列的350个核苷酸)，另外还带有rev应答元件(Revresponsiveelement，RRE)及3′端LTR，其瞬时表达盒采用巨细胞病毒(CMV)启动子及增强子元件，在某些研究领域，可以携带绿色荧光蛋白基因、荧光素酶基因或半乳糖苷酶基因作为生物标记。</p>
-<p><strong>包膜质粒</strong>:病毒载体可以借助其他病原体的外壳蛋白包装成假病毒，以改变其嗜性。最常用的是疱疹性口腔炎病毒膜融合包膜G糖蛋白（VSV-G）。,env由单独的包膜质粒携带并在病毒生产过程中共转染后表达。本系统包膜质粒的改进之处在于，引入了VSV-G基因表达包膜结构，这样做的结果至少具有3个方面的积极意义:</p>
-<p>①包膜的更换进一步降低了HIV-1载体恢复成野生型病毒的可能; ②使HIV载体感染宿主的范围不再仅限于CD4+细胞，而扩大到几乎能感染所有组织来源的细胞; ③VSV的包膜赋予HIV载体颗粒高度的稳定性，使其能够通过超速离心而浓缩，达到高滴度。使HIV-1载体滴度由105转录单位(TU)/ml达到108TU/ml。这样的改进无疑是HIV载体系统走向应用而迈出的一大步。</p>
-<h4 id="第二代hiv-1来源的慢病毒载体">第二代HIV-1来源的慢病毒载体</h4>
-<p>　　尽管第一代载体产生RCR的几率极小，仍然不能忽略产生的可能性。毕竟包装质粒可以表达除env外所有HIV-1病毒蛋白，其中部分蛋白与HIV-1的毒力密切相关，且已发现部分蛋白对细胞存在潜在的毒害作用，比如:vpr可引起细胞周期停滞，vif能抑制某些细胞的生长而Nef能引起凋亡。1997年，Zufferey等将包装质粒上的vif、vpr、vpu和nef基因敲除，从而得到第二代慢病毒载体，而其他方面与上述第一代载体系统一致。研究发现即使全部4个调节基因都被敲除。病毒颗粒的产量也不会受到影响。这种载体仍然具有体外感染非分裂期细胞、在体感染分化成熟大鼠神经元的能力，但是目前尚不能确定这种载体是否能转染全部种类细胞。由于敲除的调节基因与野生型HIV-1病毒的生活周期以及毒力密切相关，所以这些载体即使发生多位点重组形成RCR，亲代病毒仍不具有致病性。</p>
-<h4 id="第三代hiv-1来源的慢病毒载体">第三代HIV-1来源的慢病毒载体</h4>
-<p>　　利用慢病毒来源的包装系统的最大问题在于生产过程中可能产生复制型病毒。当质粒DNA转染进入包装细胞，以及辅助质粒及载体质粒的RNA包装入同一病毒颗粒时，将有可能发生重组。减少这种可能性的方法之一就是减少辅助质粒与载体质粒的同源性。另一个方法便是将gag/pol和rev编码序列隔离，分散在不同的质粒。这样的包装系统需要四质粒来代替原有的三质粒包装系统。质粒一携带了gag/pol编码序列及RRE;质粒二包含了编码rev的序列;质粒三是载体质粒;质粒四表达env。采用四质粒代替三质粒系统、除去tat均减少了产生复制型病毒的可能性，从而增加了载体系统的安全性。</p>
-<h4 id="自身失活型sin慢病毒载体">自身失活型(SIN)慢病毒载体</h4>
-<p>　　由于具有逆转录方式的特点，在逆转录过程中存在于病毒基因组3′端U3区的启动子/增强子元件将被复制，并置于前病毒两端的LTR。因此，3′LTR的U3区启动子发生失活突变后，将在逆转录过程中转移至5′LTR。如果这样的载体整合入靶细胞，将不会产生完整长度的载体RNA，因此命名为“自身失活型载体”。这种技术最先应用于莫洛尼氏小鼠白血病病毒(MoMLV)载体和鸟类的脾坏死病毒(SNV)载体。进一步研究表明，U3区的频繁突变将导致病毒滴度下降，原因是该区域的某些序列是载体有效多聚腺苷酸化所必需的。在HIV-1基因组内，核心多聚腺苷酸化信号存在R区。现已证实，U3区序列能影响多聚腺苷的酸化效率。与MoMLV相比，将HIV-1的3′LTRU3区(除上述多聚腺苷酸化增强相关序列，以及病毒整合酶识别的U3区5′末端外)删除后并不会影响滴度。这种删除能确保病毒RNA逆转录并整合入靶细胞染色体后，从5′LTR端启动子起始的复制被有效抑制。这种设计的另一个优势是能增强瞬时表达效率，这可能与减少了病毒LTR和细胞启动子之间的启动子竞争有关。</p>
-<h3 id="慢病毒载体的包装">慢病毒载体的包装</h3>
-<p>　　大部分研发人员目前都使用瞬时转染293T细胞的方式生产病毒载体。这种方法的缺点在于生产获得的病毒载体可能会出现有缺陷的基因组。为了生产高质量的载体，必须筛选合适的包装细胞系，而建立包装细胞系的最大难点在于某些病毒蛋白具有细胞毒性。比如，vpr能诱导细胞停滞在G2期，不利于建立vpr蛋白高表达的细胞系，病毒蛋白水解酶同样能水解细胞内的蛋白，不利于建立稳定表达病毒gag-pol蛋白的细胞系;VSV-G蛋白的表达同样对细胞具有毒性。目前，为了建立合适的慢病毒载体包装细胞系，许多科学家都在尝试使用诱导型或可调节的启动子来克服病毒蛋白的细胞毒作用。</p>
-<h2 id="慢病毒的包装过程">慢病毒的包装过程</h2>
-<h3 id="所用质粒">所用质粒</h3>
-<p>本实验室现在使用的慢病毒包装系统为三质粒系统，三个质粒分别为①psPAX2（包装质粒），②pMD2G（包膜质粒），③目的质粒（载体质粒）。从网上的信息来看，这是第二代慢病毒包装系统。</p>
-<h3 id="慢病毒载体滴度的测定">慢病毒载体滴度的测定</h3>
-<p>　　慢病毒载体滴度可以参考腺病毒载体滴度的检测方法，将病毒与293细胞共培养后，通过流式细胞仪检测GFP蛋白表达水平来分析病毒滴度，病毒滴度为表达GFP的细胞数乘以相应稀释倍数。另外，还可以通过TaqManPCR检测细胞中病毒拷贝数的方法检测滴度。</p>
-<h3 id="病毒包装的简单流程">病毒包装的简单流程</h3>
-<p>本文只是背景资料搜集，因此不涉及具体的实验操作。大致操作如下：</p>
-<ol style="list-style-type: decimal">
-<li><strong>转化</strong>：目的在于将质粒进行扩增，质粒的本质就是DNA，在一定条件下可以进行大量扩增，因此在拿到质粒的第一件事情就是先扩增出大量的质粒进行备份（前提是这个质粒的序列是对的）；常用的宿主细胞是DHalpha大肠杆菌。</li>
-<li>孵育293FT细胞。细胞株293T，慢病毒的包装细胞，为贴壁依赖型成上皮样细胞，生长培养基为DMEM(含10%FBS)。贴壁细胞经培养生长增殖形成单层细胞。菌株大肠杆菌菌株DH5α。用于扩增慢病毒载体和辅助包装载体质粒。这种细胞是已经被筛选出来专门用来合成病毒的。将1中的质粒转染到293FT细胞中，进入病毒包装，提取病毒，进入下一步的转染操作。</li>
-<li>目的细胞：就是自己最终实验所用到的细胞，例如DC2.4细胞。将包装好的病毒对目的细胞进行感染。</li>
-<li>分离目的细胞：质粒上通常带有报告基因，例如GFP，成功被病毒感染的细胞通常会表达这些绿色荧光蛋白，通过FACS就可以将细胞进行筛选出来，然后继续养细胞，长到一定密度后，再通常一定手段（例如WB或qPCR来鉴定目的基因是否导入或者是目的基因是否被敲除，这取决于具体的实验设计）。</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2638,7 +2699,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">52</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2660,7 +2721,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2734,7 +2795,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共144.4k字</span>
+  <span class="post-count">博客全站共149.8k字</span>
 </div>
 
         

@@ -249,7 +249,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/05/生信-Linux-shell06-控制脚本/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/05/生信-Linux-shell07-构建函数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -268,7 +268,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/05/生信-Linux-shell06-控制脚本/" itemprop="url">shell编程-控制脚本</a></h1>
+                <a class="post-title-link" href="/2018/05/05/生信-Linux-shell07-构建函数/" itemprop="url">shell编程-构建函数</a></h1>
         
 
         <div class="post-meta">
@@ -282,6 +282,417 @@
               
               <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-05T12:12:54+08:00">
                 2018-05-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
+                    <span itemprop="name">生物信息学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5,347
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  22
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="基本的脚本函数">基本的脚本函数</h2>
+<p>函数是一个脚本代码块，用户可以为其命名并在代码中任何位置重用。要在脚本中使用该代码块时，只要使用所起的函数名就行了（这个过程称为调用函数）。</p>
+<h3 id="创建函数">创建函数</h3>
+<p>创建函数有2种方式：第一种，使用关键字<code>function</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">function name&#123;</div><div class="line">    commands</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>name属性定义了赋予函数的唯一名称。脚本中定义的每个函数都必须有一个唯一的名称。commands是构成函数的一条或多条bash shell命令。在调用该函数时，bash shell会按命令在函数中出现的顺序依次执行，就像在普通脚本中一样。</p>
+<p>第二种构建函数的格式如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">name() &#123; </div><div class="line">    commands </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>函数名后的空括号表明正在定义的是一个函数。这种格式的命名规则和之前定义shell脚本函数的格式一样。</p>
+<h3 id="使用函数">使用函数</h3>
+<p>要在脚本中使用函数，只需要像其他shell命令一样，在行中指定函数名就行了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using a function in a script</div><div class="line"></div><div class="line">function func1 &#123;</div><div class="line">     echo "This is an example of a function"</div><div class="line">&#125;</div><div class="line"></div><div class="line">count=1</div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">    func1</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line"></div><div class="line">echo "This is the end of the loop"</div><div class="line">func1</div><div class="line">echo "Now this is the end of the script"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test1.sh</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is the end of the loop</div><div class="line">This is an example of a function</div><div class="line">Now this is the end of the script</div></pre></td></tr></table></figure>
+<p>每次引用函数名func1时，bash shell会找到func1函数的定义并执行你在那里定义的命令。如果在函数被定义前使用函数，会收到一条错误消息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using a function located in the middle of a script</div><div class="line"></div><div class="line">count=1</div><div class="line">echo "This line comes before the function definition"</div><div class="line"></div><div class="line">function func1 &#123;</div><div class="line">    echo "This is an example of a function"</div><div class="line">&#125;</div><div class="line"></div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">    func1</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line">echo "This is the end of the loop"</div><div class="line">func2</div><div class="line">echo "Now this is the end of the scripts"</div><div class="line"></div><div class="line">function func2 &#123;</div><div class="line">   echo "This is an example of a function"</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test2.sh</div><div class="line">This line comes before the function definition</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is an example of a function</div><div class="line">This is the end of the loop</div><div class="line">test2.sh: line 17: func2: command not found</div><div class="line">Now this is the end of the scripts</div></pre></td></tr></table></figure>
+<p>第一个函数func1的定义出现在脚本中的几条语句之后，运行起来没问题。当func1函数 在脚本中被使用时，shell知道去哪里找它。 脚本试图在func2函数被定义之前使用它。由于func2函数还没有定义，脚本运行函数调用处时，产生了一条错误消息。 此外，还需要注意函数名，函数名必须是唯一的，否则也会有问题。如果你重定义了函数，新定义会覆盖原来函数的定义，这一切不会产生任何错误消息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing using a duplicate function name</div><div class="line"></div><div class="line">function func1 &#123;</div><div class="line">    echo "This is the first definition of the function name"</div><div class="line">&#125;</div><div class="line"></div><div class="line">func1</div><div class="line"></div><div class="line">function func1 &#123;</div><div class="line">    echo "This is a repeat of the same function name"</div><div class="line">&#125;</div><div class="line">func1</div><div class="line">echo "This is end of the script"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test3.sh</div><div class="line">This is the first definition of the function name</div><div class="line">This is a repeat of the same function name</div><div class="line">This is end of the script</div></pre></td></tr></table></figure>
+<p>func1函数最初的定义工作正常，但重新定义该函数后，后续的函数调用都会使用第二个定义。</p>
+<h2 id="返回值">返回值</h2>
+<p>bash shell会把函数当作一个小型脚本，运行结束时会返回一个退出状态码。有3种不同的方法来为函数生成退出状态码。</p>
+<h3 id="默认退出状态码">默认退出状态码</h3>
+<p>默认情况下，函数的退出状态码是函数中最后一条命令返回的退出状态码。在函数执行结束后，可以用标准变量$?来确定函数的退出状态码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the exit status of a function</div><div class="line"></div><div class="line">func1() &#123;</div><div class="line">   echo "Trying to display a non-existent file"</div><div class="line">   ls -l badfile</div><div class="line">&#125;</div><div class="line"></div><div class="line">echo "testing the function:  "</div><div class="line">func1</div><div class="line">echo "The exit status is : $?"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test4.sh</div><div class="line">testing the function:  </div><div class="line">Trying to display a non-existent file</div><div class="line">ls: cannot access &apos;badfile&apos;: No such file or directory</div><div class="line">The exit status is : 2</div></pre></td></tr></table></figure>
+<p>函数的退出状态码是2，这是因为函数中的最后一条命令没有成功运行。但你无法知道函数中其他命令中是否成功运行。看下面的例子。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the exit status of a fucntion </div><div class="line"></div><div class="line">func1() &#123;</div><div class="line">    ls -l badfile</div><div class="line">    echo "This was a test of a bad command"</div><div class="line">&#125;</div><div class="line"></div><div class="line">echo "Testing the function: "</div><div class="line">func1</div><div class="line">echo "The exit status is:  $?"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test4b.sh</div><div class="line">Testing the function: </div><div class="line">ls: cannot access &apos;badfile&apos;: No such file or directory</div><div class="line">This was a test of a bad command</div><div class="line">The exit status is:  0</div></pre></td></tr></table></figure>
+<p>在这个案例中，由于函数最后一条语句echo运行成功，该函数的退出状态码就是0，尽管其中有一条 命令并没有正常运行。使用函数的默认退出状态码是很危险的。在bash shell中，有几种办法可以解决这个问题。</p>
+<h3 id="使用return命令">使用return命令</h3>
+<p>bash shell使用return命令来退出函数并返回特定的退出状态码。return命令允许指定一个 整数值来定义函数的退出状态码，从而提供了一种简单的途径来编程设定函数退出状态码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using the return command in a function</div><div class="line"></div><div class="line">function dbl &#123;</div><div class="line">    read -p "Enter a value:" value</div><div class="line">    echo "doubling the value"</div><div class="line">    return $[ $value*2 ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">dbl</div><div class="line">echo "The new value is $?"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test5.sh</div><div class="line">Enter a value:5</div><div class="line">doubling the value</div><div class="line">The new value is 10</div></pre></td></tr></table></figure>
+<p>dbl函数会将<code>$value</code>变量中用户输入的值翻倍，然后用return命令返回结果。脚本用<code>$?</code>变量显示了该值。但当用这种方法从函数中返回值时，需要注意两点：第一，函数一结束就取返回值；第二，退出状态码必须是0~255。如果在用<code>$?</code>变量提取函数返回值之前执行了其他命令，函数的返回值就会丢失。<code>$?</code>变量会返回执行的最后一条命令的退出状态码。第二个问题界定了返回值的取值范围。由于退出状态码必须小于256，函数的结果必须生成一个小于256的整数值。任何大于256的值都会产生一个错误值，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test5.sh</div><div class="line">Enter a value:200</div><div class="line">doubling the value</div><div class="line">The new value is 144</div></pre></td></tr></table></figure>
+<h3 id="使用函数的输出">使用函数的输出</h3>
+<p>将函数的份输出保存到shell变量中，就能获取任何类型的函数输出，例如<code>result='dbl</code>就是将dbl函数的输出赋值给<code>$result</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using the return command in a function</div><div class="line"></div><div class="line">function dbl &#123;</div><div class="line">    read -p "Enter a value:" value</div><div class="line">    echo $[ $value*2 ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">result=$(dbl)</div><div class="line"></div><div class="line">echo "The new value is $result"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test5b.sh</div><div class="line">Enter a value:200</div><div class="line">The new value is 400</div></pre></td></tr></table></figure>
+<p>新函数会用echo语句来显示计算的结果。该脚本会获取dbl函数的输出，而不是查看退出状态码。在这个例子中，dbl函数实际上输出了两条消息。read命令输出了一条简短的消息来向用户询问输入值。bash shell脚本并不将其作为STDOUT输出的一部分，并且忽略掉它。如果你用echo语句生成这条消息来向用户查询，那么它会与输出值一起被读进shell变量中。通过这种技术，还可以返回浮点值和字符串值。</p>
+<h2 id="在函数中使用变量">在函数中使用变量</h2>
+<p>在test5例子的脚本里，在函数里用了一个叫作$value的变量来保存处理后的值。在函数中使用变量时，用户需要注意它们的定义方式以及处理方式。这是shell脚本中常见错误的根源。</p>
+<h3 id="向函数传递参数">向函数传递参数</h3>
+<p>函数使用两种类型的变量，分别为全局变量和局部变量。</p>
+<h4 id="全局变量">全局变量</h4>
+<p>全局变量是在shell脚本中任何地方都有效的变量。如果在脚本的主体部分定义了一个全局 变量，那么可以在函数内读取它的值。同样的，如果你在函数内定义了一个全局变量，可以在脚本的主体部分读取它的值。 默认情况下，在脚本中定义的任何变量都是全局变量。在函数外定义的变量可在函数内正常访问，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using a global variable to pass a value</div><div class="line"></div><div class="line">function dbl &#123;</div><div class="line">    value=$[ $value*2 ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">read -p "Enter a vluae: " value</div><div class="line">dbl</div><div class="line">echo "The new value is :  $value"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test8.sh</div><div class="line">Enter a vluae: 300</div><div class="line">The new value is :  600</div></pre></td></tr></table></figure>
+<p><code>$value</code>变量在函数外定义并被赋值。当dbl函数被调用时，该变量及其值在函数中都依然有效。如果变量在函数内被赋予了新值，那么在脚本中引用该变量时，新值也依然有效。但这操作其实很危险，因为如果是不同的脚本都使用该函数，有可能造成冲突，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> demonstrating a bad use of variable</div><div class="line"></div><div class="line">function func1 &#123;</div><div class="line">    temp=$[ $value+5 ]</div><div class="line">    result=$[ $temp*2 ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">temp=4</div><div class="line">value=6</div><div class="line"></div><div class="line">func1</div><div class="line">echo "The result is $result"</div><div class="line">if [ $temp -gt $value ]</div><div class="line">then</div><div class="line">    echo "temp is larger"</div><div class="line">else</div><div class="line">    echo "temp is smaller"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash badtest2.sh </div><div class="line">The result is 22</div><div class="line">temp is larger</div></pre></td></tr></table></figure>
+<p>由于函数中用到了<code>$temp</code>变量，它的值在脚本中使用时受到了影响，产生了意想不到的后果。</p>
+<h4 id="局部变量">局部变量</h4>
+<p>在函数内部，通常无需使用全局变量，使用局部变量即可，要实现这一点，只要在变量声明的前面加上 local 关键字就可以了，例如<code>local temp</code>，local关键字保证了变量只局限在该函数中。如果脚本中在该函数之外有同样名字的变量， 那么shell将会保持这两个变量的值是分离的。现在你就能很轻松地将函数变量和脚本变量隔离开了，只共享需要共享的变量。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test9.sh</div><div class="line">The result is 22</div><div class="line">temp is smaller</div></pre></td></tr></table></figure>
+<p>在 func1 函数中使用<code>$temp</code>变量时，并不会影响在脚本主体中赋给 <code>$temp</code>变量的值。</p>
+<h2 id="数组变量和函数">数组变量和函数</h2>
+<h3 id="向函数传数组参数">向函数传数组参数</h3>
+<p>如果你试图将该数组变量作为函数参数，函数只会取数组变量的第一个值，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Trying to pass an arraya variable</div><div class="line"></div><div class="line">function testit &#123;</div><div class="line">    echo "The parameters are: $@"</div><div class="line">    thisarray=$1</div><div class="line">    echo "The received array is $&#123;thisarray[*]&#125;"</div><div class="line">&#125;</div><div class="line"></div><div class="line">myarray=(1 2 3 4 5)</div><div class="line">echo "The original array is: $&#123;myarray[*]&#125;"</div><div class="line">testit $myarray</div></pre></td></tr></table></figure>
+<p>结果运行如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash badtest3b.sh</div><div class="line">The original array is: 1 2 3 4 5</div><div class="line">The parameters are: 1</div><div class="line">The received array is 1</div></pre></td></tr></table></figure>
+<p>要解决上述问题，用户必须将该数组变量的值分解成单个的值，然后将这些值作为函数参数使用。在函数内部，可以将所有的参数重新组合成一个新的变量，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ cat test10.sh</div><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> array variable to function test</div><div class="line">function testit &#123; </div><div class="line">   local newarray </div><div class="line">   newarray=($(echo "$@")) </div><div class="line">   echo "The new array value is: $&#123;newarray[*]&#125;" </div><div class="line">&#125; </div><div class="line"> </div><div class="line">myarray=(1 2 3 4 5) </div><div class="line">echo "The original array is $&#123;myarray[*]&#125;" </div><div class="line">testit $&#123;myarray[*]&#125;</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test10.sh</div><div class="line">The original array is 1 2 3 4 5</div><div class="line">The new array value is: 1 2 3 4 5</div></pre></td></tr></table></figure>
+<p>该脚本用<code>$myarray</code>变量来保存所有的数组元素，然后将它们都放在函数的命令行上。该函数随后从命令行参数中重建数组变量。在函数内部，数组仍然可以像其他数组一样使用，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> adding values in an array</div><div class="line"></div><div class="line">function addarray &#123;</div><div class="line">    local sum=0</div><div class="line">    local newarray</div><div class="line">    newarray=($(echo "$@"))</div><div class="line">    for value in $&#123;newarray[*]&#125;</div><div class="line">    do</div><div class="line">        sum=$[ $sum+$value ]</div><div class="line">    done</div><div class="line">    echo $sum</div><div class="line">&#125;</div><div class="line"></div><div class="line">myarray=(1 2 3 4 5)</div><div class="line">echo "The original array is : $&#123;myarray[*]&#125;"</div><div class="line">arg1=$(echo $&#123;myarray[*]&#125;)</div><div class="line">result=$(addarray $arg1)</div><div class="line">echo "The result is $result"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test11.sh</div><div class="line">The original array is : 1 2 3 4 5</div><div class="line">The result is 15</div></pre></td></tr></table></figure>
+<p>addarray函数会遍历所有的数组元素，将它们累加在一起。你可以在myarray数组变量中放置任意多的值，addarry函数会将它们都加起来。</p>
+<h3 id="从函数返回数组">从函数返回数组</h3>
+<p>从函数里向shell脚本传回数组变量也用类似的方法。函数用echo语句来按正确顺序输出单个数组值，然后脚本再将它们重新放进一个新的数组变量中。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span>returning an array value</div><div class="line"></div><div class="line">function arraydblr &#123;</div><div class="line">    local origarray</div><div class="line">    local newarray</div><div class="line">    local elements</div><div class="line">    local i</div><div class="line">    origarray=($(echo "$@"))</div><div class="line">    newarray=($(echo "$@"))</div><div class="line">    elements=$[ $# -1 ]</div><div class="line">    for (( i=0;i&lt;=$elements;i++))</div><div class="line">    &#123;</div><div class="line">        newarray[$i]=$[ $&#123;origarray[$i]&#125;*2 ]</div><div class="line">    &#125;</div><div class="line">    echo $&#123;newarray[*]&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">myarray=(1 2 3 4 5 )</div><div class="line">echo "The original array is: $&#123;myarray[*]&#125;"</div><div class="line">arg1=$(echo $&#123;myarray[*]&#125;)</div><div class="line">result=($(arraydblr $arg1))</div><div class="line">echo "The new array is: $&#123;result[*]&#125;"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test12.sh</div><div class="line">The original array is: 1 2 3 4 5</div><div class="line">The new array is: 2 4 6 8 10</div></pre></td></tr></table></figure>
+<p>该脚本用<code>$arg1</code>变量将数组值传给arraydblr函数。arraydblr函数将该数组重组到新的数 组变量中，生成该输出数组变量的一个副本。然后对数据元素进行遍历，将每个元素值翻倍，并 将结果存入函数中该数组变量的副本。 arraydblr函数使用echo语句来输出每个数组元素的值。脚本用arraydblr函数的输出来 重新生成一个新的数组变量。</p>
+<h2 id="函数递归">函数递归</h2>
+<p>函数可以调用函数自身，这个过程就称为函数的递归。下面看一个函数，这个函数就是通过递归来计算阶乘，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using recursion</div><div class="line"></div><div class="line">function factorial &#123;</div><div class="line">    if [ $1 -eq 1 ]</div><div class="line">    then</div><div class="line">        echo 1</div><div class="line">    else</div><div class="line">        local temp=$[ $1 -1 ]</div><div class="line">        local result=$(factorial $temp)</div><div class="line">        echo $[ $result*$1 ]</div><div class="line">    fi</div><div class="line">&#125;</div><div class="line"></div><div class="line">read -p "Enter value: " value</div><div class="line">result=$(factorial $value)</div><div class="line">echo "The factorial of $value is: $result"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test13.sh</div><div class="line">Enter value: 5</div><div class="line">The factorial of 5 is: 120</div></pre></td></tr></table></figure>
+<p>在创建了函数后，可以在其他的脚本中调用。</p>
+<h2 id="创建库">创建库</h2>
+<p>如果用户要在多个脚本中使用同一段代码的话，这就需要创建函数库文件，然后在多个脚本中引用该库文件。这个过程的第一步是创建一个包含脚本中所需函数的公用库文件，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> my script functions </div><div class="line"></div><div class="line">function addem &#123;</div><div class="line">    echo $[ $1+$2 ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">function multem &#123;</div><div class="line">    echo $[ $1*$2 ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">function divem &#123;</div><div class="line">    if [ $2 -ne 0 ]</div><div class="line">    then</div><div class="line">        echo $[ $1/$2 ]</div><div class="line">    else</div><div class="line">        echo -1</div><div class="line">    fi</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下一步是在用到这些函数的脚本文件中包含myfuncs库文件。从这里开始，事情就变复杂了。问题出在shell函数的作用域上。和环境变量一样，shell函数仅在定义它的shell会话内有效。如果你在shell命令行界面的提示符下运行myfuncs shell脚本，shell会创建一个新的shell并在其中运行这个脚本。它会为那个新shell定义这三个函数，但当你运行另外一个要用到这些函数的脚本时，它们是无法使用的。这同样适用于脚本。如果你尝试像普通脚本文件那样运行库文件，函数并不会出现在脚本中，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using a library file the wrong way</div><div class="line">bash myfuncs.sh</div><div class="line"></div><div class="line">result=$(addem 10 15)</div><div class="line">echo "The result is $result"</div></pre></td></tr></table></figure>
+<p>运行后如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash badtest4.sh </div><div class="line">badtest4.sh: line 5: addem: command not found</div><div class="line">The result is</div></pre></td></tr></table></figure>
+<p>使用函数库的需要用到<code>source</code>命令。source命令会在当前shell上下文中执行命令，而不是创建一个新shell。可以用source命令来在shell脚本中运行库文件脚本。这样脚本就可以使用库中的函数了。source命令有个快捷的别名，称作<code>点操作符（dotoperator）</code>。要在shell脚本中运行myfuncs库文件，只需添加这一行，即<code>. ./myfuncs</code>(两个点之间有空格），这个例子是假定myfuncs库文件与shell脚本位于同一目录，如果不是，则需要输入全路径。使用source命令的脚本如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using a library file the wrong way</div><div class="line">. ./myfuncs.sh</div><div class="line"></div><div class="line">value1=10</div><div class="line">value2=5</div><div class="line">result1=$(addem $value1 $value2)</div><div class="line">result2=$(multem $value1 $value2)</div><div class="line">result3=$(divem $value1 $value2)</div><div class="line">echo "The result of adding them is: $result1"</div><div class="line">echo "The result of multiplying them is: $result2"</div><div class="line">echo "The result of dividing them is: $result3"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test14.sh</div><div class="line">The result of adding them is: 15</div><div class="line">The result of multiplying them is: 50</div><div class="line">The result of dividing them is: 2</div></pre></td></tr></table></figure>
+<h2 id="在命令行上使用函数">在命令行上使用函数</h2>
+<p>在命令行界面中也可以使用函数，一旦在shell中定义了函数，用户就可以在整个系统中使用它了，无需担心脚本是不是在PATH环境变量里。</p>
+<p>### 在命令行上创建函数</p>
+<h4 id="第1种方法直接定义函数">第1种方法：直接定义函数</h4>
+<p>这一种方法使用的是单行试，需要函数主体部分的每个命令后面加上分号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ function divem &#123; echo $[ $1/$2 ]; &#125;</div><div class="line">biotest@ubuntu:~/funciton$ divem 100 5</div><div class="line">20</div></pre></td></tr></table></figure>
+<p>再看一个案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ function doubleit &#123; read -p "Enter value: " value; echo $[ $value*2 ]; &#125;</div><div class="line">biotest@ubuntu:~/funciton$ doubleit</div><div class="line">Enter value: 12</div><div class="line">24</div></pre></td></tr></table></figure>
+<h4 id="第2种方法多行形式">第2种方法：多行形式</h4>
+<p>还可以采用多行方式定义函数，此种情况下，bash shell会用提示符提示输入更多的命令，此种方法不需要在命令后面加分号，直接回车就行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ function multem &#123;</div><div class="line"><span class="meta">&gt;</span> echo $[ $1*$2 ]</div><div class="line"><span class="meta">&gt;</span> &#125;</div><div class="line">biotest@ubuntu:~/funciton$ multem 2 5</div><div class="line">10</div></pre></td></tr></table></figure>
+<h3 id="在.bashrc文件中定义函数">在<code>.bashrc</code>文件中定义函数</h3>
+<p>在命令行上直接定义shell函数的明显缺点是退出shell时，函数就消失了。对于复杂的函数来说，这种形式并不常用。解决这个问题的方式就是将函数定义在一个特定的位置，这个位置在每次启动一个新shell的时候，都会由shell重新载入。最佳地点就是.bashrc文件。bash shell在每次启动时都会在主目录下查找这个文件，不管是交互式shell还是从现有shell中启动的新shell。</p>
+<h4 id="直接定义函数">直接定义函数</h4>
+<p>打开<code>.bashrc</code>文件，下拉在文件的末尾处写入函数即可，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">if [ -r /etc/bashrc ];then</div><div class="line">        . /etc/bashrc</div><div class="line">fi</div><div class="line"></div><div class="line">function addem &#123;</div><div class="line">    echo $[ $1 + $2 ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ addem 10 2</div><div class="line">12</div></pre></td></tr></table></figure>
+<p>也可以将库文件写入到<code>.bashrc</code>文件中，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if [ -r /etc/bashrc ];then</div><div class="line">        . /etc/bashrc</div><div class="line">fi</div><div class="line"></div><div class="line">. /home/biotest/funciton/myfuncs.sh</div></pre></td></tr></table></figure>
+<p>然后<code>source ~/.bashrc，</code>这样在shell中就可以使用myfuncs.sh中的函数了，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ addem 10 5</div><div class="line">15</div><div class="line">biotest@ubuntu:~/funciton$ multem 10 5</div><div class="line">50</div><div class="line">biotest@ubuntu:~/funciton$ divem 10 5</div><div class="line">2</div></pre></td></tr></table></figure>
+<h2 id="案例">案例</h2>
+<p>shtool库提供了一些简单的shell脚本函数，可以用来完成日常的shell功能，例如处理临时文件和目录或者格式化输出显示。</p>
+<h3 id="下载及安装">下载及安装</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget ftp://ftp.gnu.org/gnu/shtool/shtool-2.0.8.tar.gz</div><div class="line">tar -zxvf shtool-2.0.8.tar.gz</div></pre></td></tr></table></figure>
+<h3 id="构建库">构建库</h3>
+<p>shtool文件必须针对特定的Linux环境进行配置。配置工作必须使用标准的configure和make命令，这两个命令常用于C编程环境。要构建库文件，输入以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/Downloads/shtool-2.0.8$ ./configure</div><div class="line">biotest@ubuntu:~/Downloads/shtool-2.0.8$ make</div></pre></td></tr></table></figure>
+<p>configure命令会检查构建shtool库文件所必需的软件。一旦发现了所需的工具，它会使用工具路径修改配置文件。make命令负责构建shtool库文件。最终的结果（shtool）是一个完整的库软件包。也可以使用make命令测试这个库文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">make test</div></pre></td></tr></table></figure>
+<p>测试模式会测试shtool库中所有的函数。如果全部通过测试，就可以将库安装到Linux系统中的公用位置，这样所有的脚本就都能够使用这个库了。要完成安装，需要使用make命令的install选项。不过需要以root用户的身份运行该命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/Downloads/shtool-2.0.8$ sudo make install</div></pre></td></tr></table></figure>
+<p>现在就能在自己的shell脚本中使用这些函数了。</p>
+<h3 id="shtool-库函数">shtool 库函数</h3>
+<p>shtool库提供了大量方便的、可用于shell脚本的函数。如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Arx</td>
+<td>创建归档文件（包含一些扩展功能）</td>
+</tr>
+<tr class="even">
+<td>Echo</td>
+<td>显示字符串，并提供了一些扩展构件</td>
+</tr>
+<tr class="odd">
+<td>fixperm</td>
+<td>改变目录树中的文件权限</td>
+</tr>
+<tr class="even">
+<td>install</td>
+<td>安装脚本或文件</td>
+</tr>
+<tr class="odd">
+<td>mdate</td>
+<td>显示文件或目录的修改时间</td>
+</tr>
+<tr class="even">
+<td>mkdir</td>
+<td>创建一个或更多目录</td>
+</tr>
+<tr class="odd">
+<td>Mkln</td>
+<td>使用相对路径创建链接</td>
+</tr>
+<tr class="even">
+<td>mkshadow</td>
+<td>创建一棵阴影树</td>
+</tr>
+<tr class="odd">
+<td>move</td>
+<td>带有替换功能的文件移动</td>
+</tr>
+<tr class="even">
+<td>Path</td>
+<td>处理程序路径</td>
+</tr>
+<tr class="odd">
+<td>platform</td>
+<td>显示平台标识</td>
+</tr>
+<tr class="even">
+<td>Prop</td>
+<td>显示一个带有动画效果的进度条</td>
+</tr>
+<tr class="odd">
+<td>rotate</td>
+<td>转置日志文件</td>
+</tr>
+<tr class="even">
+<td>Scpp</td>
+<td>共享的C预处理器</td>
+</tr>
+<tr class="odd">
+<td>Slo</td>
+<td>根据库的类别，分离链接器选项</td>
+</tr>
+<tr class="even">
+<td>Subst</td>
+<td>使用sed的替换操作</td>
+</tr>
+<tr class="odd">
+<td>Table</td>
+<td>以表格的形式显示由字段分隔（field</td>
+</tr>
+<tr class="even">
+<td>tarball</td>
+<td>从文件和目录中创建tar文件</td>
+</tr>
+<tr class="odd">
+<td>version</td>
+<td>创建版本信息文件</td>
+</tr>
+</tbody>
+</table>
+<p>shtool函数的使用格式为<code>shtool [options] [function [options] [args]]</code>。</p>
+<h3 id="使用库">使用库</h3>
+<p>下面是一个在shell脚本中使用platform函数的例子，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line">shtool platform</div></pre></td></tr></table></figure>
+<p>运行后如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ bash test16.sh</div><div class="line">Ubuntu 16.04 (AMD64)</div></pre></td></tr></table></figure>
+<p>platform函数会返回Linux发行版以及系统所使用的CPU硬件的相关信息。还有一个函数是prop函数。它可以使用、|、/和-字符创建一个旋转的进度条。可以告诉shell脚本用户目前正在进行一些后台处理工作。要使用prop函数，只需要将希望监看的输出管接到shtool脚本就行了，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/funciton$ ls -al /usr/bin | shtool prop -p "waiting..."</div><div class="line">waiting...</div></pre></td></tr></table></figure>
+<p>prop函数会在处理过程中不停地变换进度条字符。在本例中，输出信息来自于ls命令。你能看到多少进度条取决于CPU能以多快的速度列出/usr/bin中的文件，-p选项允许你定制输出文本，这段文本会出现在进度条字符之前。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/04/生信-Linux-shell06-控制脚本/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/04/生信-Linux-shell06-控制脚本/" itemprop="url">shell编程-控制脚本</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-04T12:12:54+08:00">
+                2018-05-04
               </time>
             
 
@@ -663,7 +1074,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/04/生信-Linux-shell05-理解shell的重定向/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/03/生信-Linux-shell05-理解shell的重定向/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -682,7 +1093,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/04/生信-Linux-shell05-理解shell的重定向/" itemprop="url">shell编程-理解Shell的重定向</a></h1>
+                <a class="post-title-link" href="/2018/05/03/生信-Linux-shell05-理解shell的重定向/" itemprop="url">shell编程-理解Shell的重定向</a></h1>
         
 
         <div class="post-meta">
@@ -694,8 +1105,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-04T00:00:01+08:00">
-                2018-05-04
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-03T00:00:01+08:00">
+                2018-05-03
               </time>
             
 
@@ -1053,7 +1464,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/03/生信-Linux-shell04-处理用户输入/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/02/生信-Linux-shell04-处理用户输入/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -1072,7 +1483,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/03/生信-Linux-shell04-处理用户输入/" itemprop="url">shell编程-处理用户输入</a></h1>
+                <a class="post-title-link" href="/2018/05/02/生信-Linux-shell04-处理用户输入/" itemprop="url">shell编程-处理用户输入</a></h1>
         
 
         <div class="post-meta">
@@ -1084,8 +1495,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-03T12:12:54+08:00">
-                2018-05-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-02T12:12:54+08:00">
+                2018-05-02
               </time>
             
 
@@ -3861,379 +4272,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/20/生信-拟南芥转录组项目的实战/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/20/生信-拟南芥转录组项目的实战/" itemprop="url">拟南芥转录组项目的实战</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-20T12:00:00+08:00">
-                2018-04-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
-                    <span itemprop="name">生信实战项目</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,004
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  13
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这是曾健明生物信息教程的第二部分，原始数据位于<code>/public/study/mRNAseq/tair/</code>中，为方便起见，可以添加到系统变量，`alias rnaseq=“cd /public/study/mRNAseq/tair/”``这是一个拟南芥转录组数据，整个流程的操作可看博客：<a href="http://www.bio-info-trainee.com/2809.html" class="uri" target="_blank" rel="external">http://www.bio-info-trainee.com/2809.html</a>。</p>
-<h2 id="练习所用数据介绍">练习所用数据介绍</h2>
-<p>数据来自于发表在Nature commmunication 上的一篇文章 “<a href="https://www.nature.com/articles/ncomms15120" target="_blank" rel="external">Temporal dynamics of gene expression and histone marks at the Arabidopsis shoot meristem during flowerin</a>”。原文用RNA-Seq的方式研究在开花阶段,芽分生组织在不同时期的基因表达变化。</p>
-<p>原文的流程是： TopHat -&gt; SummarizeOverlaps -&gt; Deseq2 -&gt; AmiGO 其中比对的参考基因组为TAIR10 ver.24 ，并且屏蔽了ribosomal RNA regions。 Deseq2只计算至少在一个时间段的FPKM的count &gt; 1 的基因。 数据存放在<a href="http://www.ebi.ac.uk/arrayexpress" class="uri" target="_blank" rel="external">http://www.ebi.ac.uk/arrayexpress</a>/, ID为E-MTAB-5130。</p>
-<p>实验设计： 4个时间段（0,1,2,3），分别有4个生物学重复，一共有16个样品。</p>
-<h2 id="相关概念">相关概念</h2>
-<blockquote>
-<p>转录组测序的研究对象为特定细胞在某一功能状态下所能转录出来的所有 RNA 的总和，包括 mRNA 和非编码 RNA 。通过转录组测序，能够全面获得物种特定组织或器官的转录本信息，从而进行转录本结构研究、变异研究、基因表达水平研究以及全新转录本发现等研究。</p>
-</blockquote>
-<blockquote>
-<p>其中，基因表达水平的探究是转录组领域最热门的方向，利用转录组数据来识别转录本和表达定量，是转录组数据的核心作用。由于这个作用，他可以不依赖其他组学信息，单独成为一个产品项目RNA-seq测序。所以很多时候转录组测序会与RNA-seq混为一谈。</p>
-</blockquote>
-<blockquote>
-<p>现在RNA-seq数据使用广泛，但是没有一套流程可以解决所有的问题。比较值得关注的RNA-seq分析中的重要的步骤包括：实验设计，质控，read比对，表达定量，可视化，差异表达，识别可变剪切，功能注释，融合基因检测，eQTL定位等。</p>
-</blockquote>
-<h3 id="流程如下图所示">流程如下图所示：</h3>
-<div class="figure">
-<img src="http://www.bio-info-trainee.com/wp-content/uploads/2017/10/overview-of-RNA-seq-technology.png">
-
-</div>
-<h2 id="分析流程">分析流程</h2>
-<h3 id="第1步下载数据">第1步：下载数据</h3>
-<p>由于数据已经放在了服务器，如下所示，不用下载，直接在服务器里面分析，这一步略过。 <img src="http://ortxpw68f.bkt.clouddn.com/01.png"> 这几个数据是： 1. 转录本：Arabidopsis_thaliana.TAIR10.28.cdna.all.fa.gz 2. 基因组：Arabidopsis_thaliana.TAIR10.28.dna.genome.fa.gz 3. 注释文件：Arabidopsis_thaliana.TAIR10.28.dna.genome.fa.gz 4. 注释文件：Arabidopsis_thaliana.TAIR10.28.gtf.gz 5. sample_fastq：测序的原始数据 6. sample_sra：呈交给SRA数据库的数据（解压后就是sample_fastq）</p>
-<h3 id="第2步基因定量">第2步：基因定量</h3>
-<h4 id="第1种方法salmon方法">第1种方法：salmon方法</h4>
-<p><a href="https://combine-lab.github.io/salmon/" target="_blank" rel="external">Salmon软件</a>：对RNA-seq数据进行转录本定量的工具，Salmon使用了一种新的算法（主要是specifically, coupling the concept of quasi-mapping with a two-phase inference procedure），该工具能够快速地进行转录本的定量，并且所耗内存极小。此工具进行运算的过程使用了一种可靠的模型，此模式考虑了实验特性以及RNA-seq中常见的偏倚。</p>
-<h5 id="安装并添加环境变量">安装并添加环境变量</h5>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget https://github.com/COMBINE-lab/salmon/releases/download/v0.9.1/Salmon-0.9.1_linux_x86_64.tar.gz</div><div class="line"></div><div class="line">export PATH=$PATH:/trainee/home/jlzhang/download/Salmon-latest_linux_x86_64/bin</div></pre></td></tr></table></figure>
-<h5 id="第1步建立索引如下所示">第1步：建立索引，如下所示：</h5>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">salmon index -t Arabidopsis_thaliana.TAIR10.28.cdna.all.fa.gz -i /trainee/home/jlzhang/arab/</div></pre></td></tr></table></figure>
-<p>建立索引的过程如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180401/0F6d3ae0Ab.png?imageslim" alt="mark"></p>
-<p>切换到生成索引的目录<code>/trainee/home/jlzhang/arab/</code>，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180401/4i9FDihi44.png?imageslim" alt="mark"></p>
-<p>注：输出目录要写要自己名下，如果是公共目录，则无权限写入，会出错</p>
-<h5 id="第2步数据定量">第2步：数据定量</h5>
-<p>salmon不进行比对，直接进行定量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">index = /trainee/home/jlzhang/arab</div><div class="line"># 索引文件夹</div><div class="line">for fn in ERR1698&#123;194..209&#125;;</div><div class="line">do</div><div class="line">    sample=`basename $&#123;fn&#125;`</div><div class="line">    echo &quot;Proicessin sample $&#123;sample&#125;&quot;</div><div class="line">salmon quant -i $index -l A -1 /public/study/mRNAseq/tair/sample_fastq/$&#123;sample&#125;_1.fastq.gz -2 /public/study/mRNAseq/tair/sample_fastq/$&#123;sample&#125;_2.fastq.gz  -p 5 -o quants/$&#123;sample&#125;_quant</div><div class="line">done</div></pre></td></tr></table></figure>
-<p>注：上述命名-l A 后面没有“”符号。</p>
-<p>运行上述命令，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180401/4AaHhB7D73.png?imageslim" alt="mark"> 整个过程大概有7分钟，计算结束后，会在quants目录（<code>/trainee/home/jlzhang/quants/ERR1698194_quant</code>）下生成各个样本的目录，以及相应的数据，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180401/j215KeB9bD.png?imageslim" alt="mark"> 其中<code>quant.sf</code>文件是基因的定量数据，打开，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180401/7gb25H9cfe.png?imageslim" alt="mark"></p>
-<p>为方便查看，用表格表示，如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Length</th>
-<th>EffectiveLength</th>
-<th>TPM</th>
-<th>NumReads</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>ATMG00010.1</td>
-<td>462</td>
-<td>299.317</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td>ATMG00030.1</td>
-<td>324</td>
-<td>165.898</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="odd">
-<td>ATMG00040.1</td>
-<td>948</td>
-<td>784.352</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td>ATMG00050.1</td>
-<td>396</td>
-<td>234.567</td>
-<td>10.33454</td>
-<td>13</td>
-</tr>
-<tr class="odd">
-<td>ATMG00060.1</td>
-<td>542</td>
-<td>378.761</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td>ATMG00070.1</td>
-<td>573</td>
-<td>409.668</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="odd">
-<td>ATMG00080.1</td>
-<td>540</td>
-<td>376.77</td>
-<td>68.35285</td>
-<td>138.1076</td>
-</tr>
-<tr class="even">
-<td>ATMG00090.1</td>
-<td>1671</td>
-<td>1507.288</td>
-<td>0.785473</td>
-<td>6.349101</td>
-</tr>
-<tr class="odd">
-<td>ATMG00100.1</td>
-<td>73</td>
-<td>15.492</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</tbody>
-</table>
-<p>这于<code>quant.sf</code>文件的说明，在salmon的官网上已经有详细介绍，如下所示：</p>
-<ul>
-<li>Name — This is the name of the target transcript provided in the input transcript database (FASTA file).</li>
-<li>Length — This is the length of the target transcript in nucleotides.</li>
-<li>EffectiveLength — This is the computed effective length of the target transcript. It takes into account all factors being modeled that will effect the probability of sampling fragments from this transcript, including the fragment length distribution and sequence-specific and gc-fragment bias (if they are being modeled).</li>
-<li>TPM — This is salmon’s estimate of the relative abundance of this transcript in units of Transcripts Per Million (TPM). TPM is the recommended relative abundance measure to use for downstream analysis.</li>
-<li>NumReads — This is salmon’s estimate of the number of reads mapping to each transcript that was quantified. It is an “estimate” insofar as it is the expected number of reads that have originated from each transcript given the structure of the uniquely mapping and multi-mapping reads and the relative abundance estimates for each transcript.S</li>
-</ul>
-<p>翻译成中文就是：</p>
-<ul>
-<li>Name：这个目标转录组的名称（源于转录组数据库的fasta文件）；</li>
-<li>Length：目标转录组的碱基长度；</li>
-<li>EffectiveLenght：这是目标转录组的有效长度。它考虑了所有会影响该转录本采样片段概率的因素，其中包括长度分页，序列特异性和GC片段偏好。</li>
-<li>TPM：这是salmon对转录本相对丰度的估计，其单位是百分率（TPM，Transcripts Per Million）。TPM可以用于下游的定量分析。</li>
-<li>NumReads：salmon对回贴（mapping）到每个转录本的reads数的估计。</li>
-</ul>
-<p>到这里，用salmon进行定量的过程已经结束，此处并没有进行不同的样本间的差异基因分析。接着看第2种方法进行定量，即用subread进行定量。</p>
-<h4 id="第2种方法subread方法">第2种方法：subread方法</h4>
-<p>subread是一个reads比对工具。官网是：<a href="http://subread.sourceforge.net/" class="uri" target="_blank" rel="external">http://subread.sourceforge.net/</a></p>
-<h5 id="第1步建立索引">第1步：建立索引</h5>
-<p>subread构建索引时需要解压fa文件，因此先将服务器中的参考基因组复制到自己的目录下，然后建立索引，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mkdir index_file</div><div class="line">cp /public/study/mRNAseq/tair/Arabidopsis_thaliana.TAIR10.28.dna.genome.fa.gz  ~/index_file/</div><div class="line">cd index_file</div><div class="line">gunzip Arabidopsis_thaliana.TAIR10.28.dna.genome.fa.gz</div><div class="line">/public/biosoft/subread/subread-1.5.3-Linux-x86_64/bin/subread-buildindex  -o athal_index Arabidopsis_thaliana.TAIR10.28.dna.genome.fa</div></pre></td></tr></table></figure></p>
-<p>建立后的文件如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180401/DC3BJcA0II.png?imageslim" alt="mark"></p>
-<h5 id="第2步比对">第2步：比对</h5>
-<p>建立一个脚本<code>subjunc.sh</code>，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">#! /bin/bash</div><div class="line">subjunc=&quot;/public/biosoft/subread/subread-1.5.3-Linux-x86_64/bin/subjunc&quot;; </div><div class="line">index=&apos;/trainee/home/jlzhang/index_file&apos;;</div><div class="line">for fn in ERR1698&#123;194..209&#125;;</div><div class="line">do</div><div class="line">    sample=`basename $&#123;fn&#125;`</div><div class="line">    echo &quot;Processin sample $&#123;sampe&#125;&quot; </div><div class="line">    $subjunc -i $index -r  /public/study/mRNAseq/tair/sample_fastq/$&#123;sample&#125;_1.fastq.gz -R /public/study/mRNAseq/tair/sample_fastq/$&#123;sample&#125;_2.fastq.gz -T 5 -o /trainee/home/jlzhang/quant2/$&#123;sample&#125;_subjunc.bam</div><div class="line">done</div></pre></td></tr></table></figure>
-<p>运行，即<code>bash subjunc.sh</code>，这个过程大概需要一段时间，运行结果如下所示：</p>
-<h5 id="第3步定量与表达矩阵">第3步：定量与表达矩阵</h5>
-<p>用featureCount进行定量：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/public/biosoft/subread/subread-1.5.3-Linux-x86_64/bin/featureCounts -T 5 -p -t exon -g gene_name -a /trainee/home/jlzhang/download/Arabidopsis_thaliana.TAIR10.28.gtf -o  counts.txt   *.bam</div></pre></td></tr></table></figure>
-<p>注：服务器中的Arabidopsis_thaliana.TAIR10.28.gtf.gz是压缩文件，需要解压后才能使用。</p>
-<p>featureCounts的参数：</p>
-<ul>
-<li>T 多线程，5表示5个线程</li>
-<li>p 双端测序</li>
-<li>t 默认将Exon作为一个feature</li>
-<li>g 从注释文件中提取Meta-features信息用于read coutn，默认是gene_id</li>
-<li>a 输入GTF/GFF基因组注释文件</li>
-<li>o 输出文件</li>
-</ul>
-<p>比对后的结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180402/I8cg2DHA9c.png?imageslim" alt="mark"></p>
-<h5 id="第4步分组矩阵">第4步：分组矩阵</h5>
-<p>构建分组矩阵：</p>
-<p><code>/trainee/home/huanggy/RNAseq/data/fastq/E-MTAB-5130.sdrf.txt</code>这个文件如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180403/3Ab775ecI6.png?imageslim" alt="mark"> 其中第1列和第32列都是样本名称，第32列是测序的样本名称，这个有用，第36列则是分组的信息，因此提取分组信息，代码如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tail -n +2 /trainee/home/huanggy/RNAseq/data/fastq/E-MTAB-5130.sdrf.txt | cut -f 32,36 |sort -u</div></pre></td></tr></table></figure>
-<p><code>sort -u</code>则是表示排序，并去重（这个是双端测序，因此在提取分组信息方面，需要去重），运行完上述代码后，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180403/gI545KkDa7.png?imageslim" alt="mark"></p>
-<p>tail -n +2表示是从文件的第2行开始显示文件的内容</p>
-<h3 id="第4步其他比对方法">第4步：其他比对方法</h3>
-<h1 id="第5步表达矩阵的normalization方法">第5步：表达矩阵的normalization方法</h1>
-<blockquote>
-<p>总reads数矫正(TC)：基因计数除以与其land相关的回贴的reads数（mapped reads或文库大小），再乘以数据集所有样本的平均总计数。</p>
-</blockquote>
-<blockquote>
-<p>上四分位数(UQ)：与TC在原理上非常相似，在计算归一化因子时，总reads数被不同于0的计数的上四分位数所取代。</p>
-</blockquote>
-<blockquote>
-<p>中位数(MED)：类似于TC，在计算标准化因子时，总reads数由与0不同的中位数计数代替。也就是说，中位数被计算为所有运行的基因计数的中值。</p>
-</blockquote>
-<blockquote>
-<p>DESeq：这种标准化方法包含在DESeq Bioconducter包中，并基于大多数基因不是DE的假设。该方法基于一个负二项分布模型，通过局部回归将方差和均值联系起来，并给出了一个给出标度因子的实现方法。在DESeq包中，使用EstimatateSizeFactorsForMatrixfunction，可以为每次运行计算标度因子。将基因计数除以每个比例因子后，计算DESeq值作为所有运行的重标度基因计数的总和。</p>
-</blockquote>
-<blockquote>
-<p>加权截断均值：TMM（edgeR）：与Deseq类似，在去除高表达基因和差异最大的基因后，TMM也是要找到一个加权系数，使剩余的基因在被矫正后差异倍数可能小。TMM的加权系数是基于两两样本比较后推算获得的（也就是两组样本的比较，将产生与这次比较相关的加权系数）。然后将所有基因除以这个加权系数，从而保证大部分表达量居中的基因表达量最相似。</p>
-</blockquote>
-<blockquote>
-<p>分位数（Q）：首先在微阵列数据的背景下提出，这种标准化方法包括匹配泳道间基因计数的分布。</p>
-</blockquote>
-<blockquote>
-<p>每千碱基每百万映射读取(RPKM)：这种方法最初是为了促进样本中基因之间的比较，并结合样本之间和样本内的标准化。该方法通过归一化总转录物长度和测序读数的数量来量化来自RNA-Seq数据的基因表达。</p>
-</blockquote>
-<h3 id="第6步差异分析">第6步：差异分析</h3>
-<p>在这一步中，作者原博客中直接给出了差异分析的脚本，直接下载即可，脚本文件一共有3个，分别为<code>run_DEG.R</code>,<code>exprSet.txt</code>,<code>group_info.txt</code>，其中<code>run_DEG.R</code>是最主要的脚本文件，它是用R语言写成的,<code>exprSet.txt</code>是所有样本的表达矩阵，这是原始的数据，并没有经过Normalization，<code>group_info.txt</code>是分组信息，直接输入下面的命令即可：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Rscript ../run_DEG.R -e exprSet.txt -g group_info.txt -c <span class="string">'Day1-Day0'</span> -s counts  -m DESeq2</div></pre></td></tr></table></figure>
-<p>如果是转录组的raw counts数据，就选择 -s counts（这个案例中就是这个选项），如果是芯片等normalization好的表达矩阵数据，用默认参数即可，对于转录组的raw counts数据，有DEseq2包和edgeR包可供选择。对于芯片等normalization好的表达矩阵数据，有limma和t.test供选择，下面是举例说明：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># Rscript run_DEG.R -e airway.expression.txt -g airway.group.txt -c &apos;trt-untrt&apos; -s counts -m DESeq2</div><div class="line"># Rscript run_DEG.R -e airway.expression.txt -g airway.group.txt -c &apos;trt-untrt&apos; -s counts -m edgeR</div><div class="line"># Rscript run_DEG.R -e sCLLex.expression.txt -g sCLLex.group.txt -c &apos;progres.-stable&apos;</div><div class="line"># Rscript run_DEG.R -e sCLLex.expression.txt -g sCLLex.group.txt -c &apos;progres.-stable&apos; -m t.test</div></pre></td></tr></table></figure>
-<h3 id="第7步富集分析">第7步：富集分析</h3>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://github.com/twbattaglia/RNAseq-workflow" target="_blank" rel="external">Differential Gene Expression using RNA-Seq (Workflow)</a></li>
-<li><a href="http://www.bio-info-trainee.com/2809.html" target="_blank" rel="external">一个植物转录组项目的实战</a></li>
-<li><a href="http://biocluster.ucr.edu/~rkaundal/workshops/R_mar2016/RNAseq.html" target="_blank" rel="external">NGS sequence analysis with R / Bioconductor: RNA-Seq workflow</a></li>
-<li><a href="https://www.jianshu.com/p/7564eca62354" target="_blank" rel="external">基因表达分析（前传）-准备count矩阵</a></li>
-<li>http://www.360doc.com/content/17/0921/09/2856980_688849117.shtml</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4284,7 +4322,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">52</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4306,7 +4344,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -4380,7 +4418,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共144.4k字</span>
+  <span class="post-count">博客全站共149.8k字</span>
 </div>
 
         
