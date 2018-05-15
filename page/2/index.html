@@ -249,7 +249,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/30/生信-Linux-shell02-结构化命令笔记（一）/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/01/生信-Linux-shell03-for、while和until语句/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -268,7 +268,389 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/04/30/生信-Linux-shell02-结构化命令笔记（一）/" itemprop="url">shell脚本结构化命令笔记（一）</a></h1>
+                <a class="post-title-link" href="/2018/05/01/生信-Linux-shell03-for、while和until语句/" itemprop="url">Shell学习笔记（3）——for、while和until语句</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-01T12:10:54+08:00">
+                2018-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  7,838
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  34
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>本篇笔记的参考资料是（<a href="https://item.jd.com/12010266.html" target="_blank" rel="external">《Linux命令行与shell脚本编程大全》</a>（第3版），外加百度辅助，本篇笔记的主要内容是循环语句，即for、while和until语句。</p>
+<h2 id="for命令">for命令</h2>
+<p>如果遇到这样的场景：重复一组命令直到某个特定条件，例如处理某个目录下的所有文件、系统上所有用户或是某个文本文件中的所有行。此时就会用到<code>for</code>命令，for命令可以创建一个遍历一系列值的的循环，每次迭代就会使用其中一个值来执行已定义好的一组命令，for命令的格式如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">for var in list</div><div class="line">do </div><div class="line">    commands</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>格式解释：</p>
+<p>第一，在list参数中，用户需要提供推荐中要用到的一系列值；</p>
+<p>第二，在每次迭代时，变量var会包含列表中的当前值，第一次迭代使用列表中的第1个值，第2次使用第2个值，以此类推；</p>
+<p>第三，在<code>do</code>和<code>done</code>语句之间输入的命令可以是一条或多条标准的bash sehll命令，在这些命令中，<code>$var</code>变量包含着这次迭代对应的当前列表项的中值。</p>
+<h3 id="第1案例读取列表中的值">第1案例：读取列表中的值</h3>
+<p>for命令最基本的用法就是遍历for命令自身所定义的一系列值，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> basic for command</div><div class="line">for test in Apple Pear Banana Orange Onion</div><div class="line">do</div><div class="line">    echo The next fruit is $test</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">The next fruit is Apple</div><div class="line">The next fruit is Pear</div><div class="line">The next fruit is Banana</div><div class="line">The next fruit is Orange</div><div class="line">The next fruit is Onion</div></pre></td></tr></table></figure>
+<p>每次for命令遍历值列表，它都会将列表中的下个值赋给<code>$test</code>变量，<code>$test</code>变量可以像for命令语句中的其他脚本变量一样使用，在最后一次迭代后，<code>$test</code>变量的值会在shell脚本的剩余部分一直保持有效，它会一直保持最后一次迭代的值，除非再次为变量赋值，看下面的案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the for variable after the looping</div><div class="line"></div><div class="line">for test in Apple Pear Banana Orange Onion</div><div class="line">do</div><div class="line">    echo The next fruit is $test</div><div class="line">done</div><div class="line"></div><div class="line">echo "The last fruit we visited was $test"</div><div class="line">test=Watermelon</div><div class="line">echo "Wait, now we're visiting $test"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test1b.sh</div><div class="line">The next fruit is Apple</div><div class="line">The next fruit is Pear</div><div class="line">The next fruit is Banana</div><div class="line">The next fruit is Orange</div><div class="line">The next fruit is Onion</div><div class="line">The last fruit we visited was Onion</div><div class="line">Wait, now we&apos;re visiting Watermelon</div></pre></td></tr></table></figure>
+<h3 id="转义字符的使用">转义字符的使用</h3>
+<p>for中有可能会遇到比较复杂的值，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> another example of how not to use the for command</div><div class="line"></div><div class="line">for test in I don't know if this'll work</div><div class="line">do</div><div class="line">    echo "word:$test"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果运行如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test1c.sh</div><div class="line">word:I</div><div class="line">word:dont know if thisll</div><div class="line">word:work</div></pre></td></tr></table></figure>
+<p>从结果中可以看出，如果for的列表中存在单引号，则在迭代中会出错误，它会把单引号去掉，并把单引号中间的字符串当作是一个值，如果要解决这个问题，可以使用两种方法：第一，使用转义字符来将单引号转义；第二，使用双引号来定义用到的单引号的值。</p>
+<p>现在用这两种方法来解决这个问题，第一个引用用第一种方法，第二个引号用第二种方法，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line"># another example of how not to use the for command</div><div class="line"></div><div class="line">for test in I don\&apos;t know if this\&apos;ll work</div><div class="line">do</div><div class="line">    echo &quot;word:$test&quot;</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test1c1.sh</div><div class="line">word:I</div><div class="line">word:don&apos;t</div><div class="line">word:know</div><div class="line">word:if</div><div class="line">word:this&apos;ll</div><div class="line">word:work</div></pre></td></tr></table></figure>
+<p>从结果可以看出两个单引号都能正常工作了。</p>
+<h3 id="多个词的分割">多个词的分割</h3>
+<p>在for循环中，每个值都是用空格进行分割的，如果某个值包含空格，就会比较麻烦，如下面的案例所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> another example of how not to user the for command</div><div class="line">for test in Nevada New Hampshire New Mexico New York North Carolina</div><div class="line">do</div><div class="line">    echo "Now going to $test"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash bedtest2 </div><div class="line">Now going to Nevada</div><div class="line">Now going to New</div><div class="line">Now going to Hampshire</div><div class="line">Now going to New</div><div class="line">Now going to Mexico</div><div class="line">Now going to New</div><div class="line">Now going to York</div><div class="line">Now going to North</div><div class="line">Now going to Carolina</div></pre></td></tr></table></figure>
+<p>从结果来看有问题，如果想要把含有空格的数值正确地迭代出来，必须使用双引号将这些值给圈起来，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> another example of how not to user the for command</div><div class="line">for test in Nevada "New Hampshire" " New Mexico" "New York" "North Carolina"</div><div class="line">do</div><div class="line">    echo "Now going to $test"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash bedtest2 </div><div class="line">Now going to Nevada</div><div class="line">Now going to New Hampshire</div><div class="line">Now going to  New Mexico</div><div class="line">Now going to New York</div><div class="line">Now going to North Carolina</div></pre></td></tr></table></figure>
+<h3 id="从变量读取列表">从变量读取列表</h3>
+<p>在shell脚本中会遇到这样的情况：将一系列的值都储存在了一个变量中，然后需要遍历变量中的整个列表。这种情况下，可以使用for命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using a variable to hold the list</div><div class="line"><span class="meta">#</span></div><div class="line">list="Henan Chongqing Hebei Jiangsu"</div><div class="line">list=$list" Heilongjiang"</div><div class="line">for province in $list</div><div class="line">do</div><div class="line">    echo "Have you ever visited $province?"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test4.sh</div><div class="line">Have you ever visited Henan?</div><div class="line">Have you ever visited Chongqing?</div><div class="line">Have you ever visited Hebei?</div><div class="line">Have you ever visited Jiangsu?</div><div class="line">Have you ever visited Heilongjiang?</div></pre></td></tr></table></figure>
+<p>代码解释，在代码中有一行这样的代码，即<code>list=$list&quot; Heilongjiang&quot;</code>，它表示在原来的列表中添加一个元素。</p>
+<h3 id="从命令读取值">从命令读取值</h3>
+<p>生成列表中所需要值的另外一个途径就是使用命令的输出，可以用命令替换来执行任何能产生输出的 命令，然后在for命令中使用该命令的输出，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> reading values from a file</div><div class="line"></div><div class="line">file="province"</div><div class="line"></div><div class="line">for province in $(cat $file)</div><div class="line">do</div><div class="line">    echo "Visit beautifull $province"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ cat province</div><div class="line">Henan</div><div class="line">Chongqing</div><div class="line">Hubei</div><div class="line">Jiansu</div><div class="line">Guangdong</div><div class="line">Guangxi</div><div class="line">biotest@ubuntu:~/loop$ bash test5.sh</div><div class="line">Visit beautifull Henan</div><div class="line">Visit beautifull Chongqing</div><div class="line">Visit beautifull Hubei</div><div class="line">Visit beautifull Jiansu</div><div class="line">Visit beautifull Guangdong</div><div class="line">Visit beautifull Guangxi</div></pre></td></tr></table></figure>
+<p>在这个案例中，使用了cat命令来输出文件province的内容，在province文件中，每一行有一个省，其中最后一行是China HongKong，中间有一个空格。然后在输出时，for命令把China HongKong分开了。这是因为，在bash shell中，空格，换行符，制表符都是分割符，因此会被分开。</p>
+<h3 id="更改字段分割符">更改字段分割符</h3>
+<p>for在迭代变量时，使用空格作为分割符，这是因为存在一个特殊的环境就是IFS，它的全称是internal field separator，中文名是内部字段分割符。IFS环境变量定义了bash shell用作字段分割符的一系列字符。默认情况下，bash shell会将以下字符当作是字段分割符，其中包括①空格；②制表符；③换行符。bash shell会将数据中的这些字符都当成分割符，因此在处理含有空格的数据（例如某些文件名）时非常麻烦。如果要解决这个问题，需要修改IFS的值，例如，想让bash shell只识别换行符，就当IFS更改为<code>IFS=$'/n'</code>。将这个语句加入到脚本中，就会告诉bash shell在数据中忽略空格和制表符，还以上面的案例为基础，看一下这段代码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> reading values from a file</div><div class="line"></div><div class="line">file="province"</div><div class="line"></div><div class="line">IFS=$'\n'</div><div class="line">for province in $(cat $file)</div><div class="line">do</div><div class="line">    echo "Visit beautifull $province"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行后，结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test5a.sh </div><div class="line">Visit beautifull Henan</div><div class="line">Visit beautifull Chongqing</div><div class="line">Visit beautifull Hubei</div><div class="line">Visit beautifull Jiansu</div><div class="line">Visit beautifull Guangdong</div><div class="line">Visit beautifull Guangxi</div><div class="line">Visit beautifull China HongKong</div></pre></td></tr></table></figure>
+<p>现在结果一切正常。如果处理的代码量比较大时，可能在一个地方需要修改IFS的值，然后忽略这次悠，在脚本的其他地方继续没用IFS的默认值，这个时候需要在改变IFS之前保存原来的IFS值，之后再恢复它，这种做法习惯是这样的：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">IFS.OLD=$IFS</div><div class="line">IFS=$'\n'</div><div class="line">&lt;在代码中使用新的IFS值&gt;</div><div class="line">IFS=$IFS.OLD</div></pre></td></tr></table></figure>
+<p>此外，还有一种情况，如果某个文件中的分割隔都是冒号（:），例如<code>etc/passwd</code>文件中就是这样，此时也可以将IFS的值更改炒冒号，就像这样<code>IFS=:</code>，如果需要指定多个IFS字符，只要将它们在赋值行中一并输入就行，例如<code>IFS=$'\n':;&quot;</code>，这个赋值就是将换行符、冒号、分号和双引号作为字段分隔符。</p>
+<h3 id="使用通配符读取目录">使用通配符读取目录</h3>
+<p>使用for命令可以自动遍历目录中的文件，进行操作时，必须要在文件名或路径名中使用通配符，它会强制shell使用文件扩展匹配，文件扩展匹配是生成匹配指定通配符的文件名或路径名的过程，如果不清楚所有的文件名，这个特性在处理上当中的文件时很好用，如下所示。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span> iterate throught all the files in a directory</div><div class="line"></div><div class="line">for file in /home/biotest/test/*</div><div class="line">do</div><div class="line"></div><div class="line">    if [ -d "$file" ]</div><div class="line">    then</div><div class="line">        echo "$file is a directory"</div><div class="line">    elif [ -f "$file" ]</div><div class="line">    then</div><div class="line">        echo "$file is a file"</div><div class="line">    fi</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行后结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test6.sh|head</div><div class="line">/home/biotest/test/badtest2.sh is a file</div><div class="line">/home/biotest/test/badtest.sh is a file</div><div class="line">/home/biotest/test/cheat is a directory</div><div class="line">/home/biotest/test/contrast_file.sh is a file</div><div class="line">/home/biotest/test/directest.sh is a file</div><div class="line">/home/biotest/test/group.sh is a file</div><div class="line">/home/biotest/test/hockey is a file</div><div class="line">/home/biotest/test/object_exist.sh is a file</div><div class="line">/home/biotest/test/owner.sh is a file</div><div class="line">/home/biotest/test/sentinel is a file</div></pre></td></tr></table></figure>
+<p>代码及结果解释：for命令遍历<code>/home/biotest/test/*</code>输出的结果，此代码使用了test命令测试了每个目录，以查看它是目录（-d参数）还是文件（-f参数）。在上面的代码中，<code>if [ -d &quot;$file&quot; ]</code>这里比较特殊，因此它加了引号，因为目录名和文件中包含空格非常常见，因此为了适应这种情况，需要将<code>$file</code>变量用双引号圈起来，如果不圈起来，就会输出错误，如下所示：</p>
+<p>现在在<code>/home/biotest/test</code>目录中添加一个目录，命令为<code>a b</code>（中间有空格），再把上面的代码中的<code>if [ -d &quot;$file&quot; ]</code>的引号去掉，运行，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test6a.sh</div><div class="line">test6a.sh: line 7: [: /home/biotest/test/a: binary operator expected</div></pre></td></tr></table></figure>
+<p>这里就显示出错。因为在test命令方面，bash shell会将额外的单词当作参数，从而造成错误。</p>
+<p>在for命令中可以列出多个目录通配符，将目录查找和列表合并到同一个for语句中，看下面的案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> iterating through multiple directories</div><div class="line"></div><div class="line">for file in /home/biotest/.b*  /home/biotest/testing</div><div class="line">do</div><div class="line">    if [ -d "$file" ]</div><div class="line">    then</div><div class="line">        echo "$file is a directory"</div><div class="line">    elif [ -f "$file" ]</div><div class="line">    then</div><div class="line">        echo "$file is a file"</div><div class="line">    else</div><div class="line">        echo "$file doesn't exist"</div><div class="line">    fi</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test7.sh</div><div class="line">/home/biotest/.bash_history is a file</div><div class="line">/home/biotest/.bash_logout is a file</div><div class="line">/home/biotest/.bashrc is a file</div><div class="line">/home/biotest/testing is a directory</div></pre></td></tr></table></figure>
+<p>for语句使用了文件扩展匹配来遍历通配符生成的文件列表，然后它会遍历列表中的下一个文件。</p>
+<h2 id="c语言风格的for命令">C语言风格的for命令</h2>
+<h3 id="简单的c风格for命令">简单的C风格for命令</h3>
+<p>在C语言中，它的for命令有一个用来指明变量的特定方法，一个必须保持成立才能继续迭代的条件。以及另一个在每个迭代中改变变量的方法，当指定的条件不成立时，for循环就会停止，条件等式通过标准的数学符号定义，例如下面的C语言代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"The next number is %d\n"</span>,i);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码会产生一个简单的迭代循环，其中变量<code>i</code>作为计数器，第一部分将一个默认值赋给该变量，中间的部分定义了循环重复的条件。当定义的条件不成立时，for循环就停止迭代。最后一部分定义了迭代的过程，在每次迭代之后，最后一部分占定义的表达式会被执行，在此案例中，每迭代一次，<code>i</code>变量就会增加1。</p>
+<p>bash shell也支持一种for循环，与C语言的for循环类似，它的格式如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">for (( variable assignment ; condition ; iteration process ))</div></pre></td></tr></table></figure>
+<p>在bash shell的C语言风格的for命令中，它有一些特殊的地方：第一，变量赋值可以有空格；第二，条件中的变量不以美元符号开头；第三，迭代过程中的算式并使用expr命令格式。看下面的案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the C-sytle for loop</div><div class="line"></div><div class="line">for (( i=1; i&lt;=10;i++))</div><div class="line">do</div><div class="line">    echo "The next number is $i"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test8.sh</div><div class="line">The next number is 1</div><div class="line">The next number is 2</div><div class="line">The next number is 3</div><div class="line">The next number is 4</div><div class="line">The next number is 5</div><div class="line">The next number is 6</div><div class="line">The next number is 7</div><div class="line">The next number is 8</div><div class="line">The next number is 9</div><div class="line">The next number is 10</div></pre></td></tr></table></figure>
+<h3 id="使用多个变量">　使用多个变量</h3>
+<p>C风格的for命令也可以迭代多个变量，循环会单独处理每个变量，用户可以为每个变量定义不同的迭代过程，虽然可以使用多个变量，但在for循环中只能定义一种条件，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test9.sh</div><div class="line">1-10</div><div class="line">2-9</div><div class="line">3-8</div><div class="line">4-7</div><div class="line">5-6</div><div class="line">6-5</div><div class="line">7-4</div><div class="line">8-3</div><div class="line">9-2</div><div class="line">10-1</div></pre></td></tr></table></figure>
+<p>代码及结果解释：变量a和b分别用不同的值来初始化并定义了不同的迭代过程，循环的每次迭代在增加变量a的同时，减小了变量b。</p>
+<h2 id="while命令">while命令</h2>
+<p>while命令在某种程度上是<code>if-then</code>和<code>for</code>循环的混合体。while命令允许定义一个要测试的命令，然后循环执行一组命令，只要定义的测试命令返回的是退出状态码0。它会在每次迭代的一开始测试test命令。在test命令返回非零退出状态码时，while命令会停止执行那组命令。</p>
+<h3 id="while命令的基本使用">while命令的基本使用</h3>
+<p>while命令的基本格式如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">while test command</div><div class="line">do</div><div class="line">    other commands</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>while命令中定义的test command和if-then语句中的格式一样。可以使用任何普通bash shell命令，或者用test命令进行条件测试，比如测试变量值。while命令的关键在于所指定的test command的退出状态码必须随着循环中运行的命令而改变，如果退出状态码不发生变化，while循环就将一直不停地进行下去。常用的test command的用法是用方括号来检查循环命令中用到的shell变量的值，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> while command test</div><div class="line"></div><div class="line">var1=10</div><div class="line">while [ $var1 -gt 0 ]</div><div class="line">do</div><div class="line">    echo $var1</div><div class="line">    var1=$[ $var1 -1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test10.sh</div><div class="line">10</div><div class="line">9</div><div class="line">8</div><div class="line">7</div><div class="line">6</div><div class="line">5</div><div class="line">4</div><div class="line">3</div><div class="line">2</div><div class="line">1</div></pre></td></tr></table></figure>
+<p>在这个例子中，while命令定义了每次迭代时检查的测试条件，即<code>whle [ $var1 -gt 0 ]</code>，只要测试条件成立，<code>while</code>命令就会不停地循环执行定义好的命令，在这些命令中，测试条件中用到的变量必须修改，否则就会降入无限循环，在这个案例中，每次循环，变量值就会减一，即<code>var1=[ $var1 -1 ]</code>。while循环会在测试条件不再成立时停止。</p>
+<h3 id="使用多个测试命令">使用多个测试命令</h3>
+<p>while命令允许用户在while语句行定义多个测试命令。只有最后一个测试命令的退出状态码会被用来决定什么时候结束循环。如果在输入命令时不小心，会导致一些意外，如下面的案例所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing a multicommand while loop</div><div class="line"></div><div class="line">var1=10</div><div class="line"></div><div class="line">while echo $var1</div><div class="line">    [ $var1 -ge 0 ]</div><div class="line">do</div><div class="line">    echo "This is inside the loop"</div><div class="line">    var1=$[ $var1 - 1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test11.sh</div><div class="line">10</div><div class="line">This is inside the loop</div><div class="line">9</div><div class="line">This is inside the loop</div><div class="line">8</div><div class="line">This is inside the loop</div><div class="line">7</div><div class="line">This is inside the loop</div><div class="line">6</div><div class="line">This is inside the loop</div><div class="line">5</div><div class="line">This is inside the loop</div><div class="line">4</div><div class="line">This is inside the loop</div><div class="line">3</div><div class="line">This is inside the loop</div><div class="line">2</div><div class="line">This is inside the loop</div><div class="line">1</div><div class="line">This is inside the loop</div><div class="line">0</div><div class="line">This is inside the loop</div><div class="line">-1</div></pre></td></tr></table></figure>
+<p>代码及结果解释：第一个测试显示了var1变量的当前值，即<code>while echo $var1</code>，第二个测试用方括号来判断var1变量的值，即<code>[ $var1 -ge 0 ]</code>，在循环内部，echo语句会显示一条信息，说明循环被执行了，在最后，变量成为-1，这是因为while循环会在var1变量等于0时执行echo语句，然后将var1送去1，接下来再执行测试命令，用于下一次迭代，echo不测试命令被执行并显示了var变量的值，直到shell执行test测试命令，while循环才停止。这就说明在含有多个命令的while语句中，在每次迭代中所有的测试命令都会被执行，包括测试命令失败的最后一交迭代，需要注意这种用法。</p>
+<h2 id="until命令">until命令</h2>
+<p>until命令和while命令的工作方式完全相反，until命令要求你指定一个通常返回非零退出状态码的测试命令。只有油门工命令的退出状态码不为0，bash shell才会执行循环中列出的命令。一旦测试命令返回了退出状态码0，循环就结果了，until命令的基本格式如下所示：</p>
+<h3 id="until命令的基本格式">until命令的基本格式</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">until test commands</div><div class="line">do</div><div class="line">    other commands</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>与while命令类似，在until命令中也可以放入多个测试命令，只有最后个命令的退出状态码决定了bash shell是否执行已经定义的other commands，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using the until command</div><div class="line"></div><div class="line">var1=100</div><div class="line"></div><div class="line">until [ $var1 -eq 0 ]</div><div class="line">do</div><div class="line">    echo $var1</div><div class="line">    var1=$[ $var1 - 25 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test12.sh</div><div class="line">100</div><div class="line">75</div><div class="line">50</div><div class="line">25</div></pre></td></tr></table></figure>
+<p>代码及结果解释：由于变量var1来决定until循环什么时候停止，只要该变量的的值等于0，until命令就会停止循环。until与while类似，在使用多个测试命令时要注意，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using the until command</div><div class="line"></div><div class="line">var1=100</div><div class="line"></div><div class="line">until echo $var1</div><div class="line">    [ $var1 -eq 0 ]</div><div class="line">do</div><div class="line">    echo Inside the loop: $var1</div><div class="line">    var1=$[ var1 - 25 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test13.sh</div><div class="line">100</div><div class="line">Inside the loop: 100</div><div class="line">75</div><div class="line">Inside the loop: 75</div><div class="line">50</div><div class="line">Inside the loop: 50</div><div class="line">25</div><div class="line">Inside the loop: 25</div><div class="line">0</div></pre></td></tr></table></figure>
+<p>直到var1=0，程序运行结束。</p>
+<h2 id="嵌套循环">嵌套循环</h2>
+<p>循环语句可以在循环内使用任意类型的命令，包括其他循环命令。这种循环叫嵌套循环（nested loop）。需要注意的是，在使用嵌套循环时，是在迭代中使用迭代，与命令运行次数的关系是乘积的关系，在写代码时尤其要注意这一点，看下面的一个案例。</p>
+<h3 id="for循环与for循环的嵌套">for循环与for循环的嵌套</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> nesting for loops</div><div class="line"></div><div class="line">for (( a=1;a&lt;=3;a++))</div><div class="line">do</div><div class="line">    echo "Starting loop $a: "</div><div class="line">    for ((b=1;b&lt;=3;b++))</div><div class="line">    do</div><div class="line">        echo "   Inside loop: $b"</div><div class="line">    done</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test14.sh</div><div class="line">Starting loop 1: </div><div class="line">   Inside loop: 1</div><div class="line">   Inside loop: 2</div><div class="line">   Inside loop: 3</div><div class="line">Starting loop 2: </div><div class="line">   Inside loop: 1</div><div class="line">   Inside loop: 2</div><div class="line">   Inside loop: 3</div><div class="line">Starting loop 3: </div><div class="line">   Inside loop: 1</div><div class="line">   Inside loop: 2</div><div class="line">   Inside loop: 3</div></pre></td></tr></table></figure>
+<p>代码及结果解释：在嵌套循环中，在外部循环的每次迭代中遍历一次它所有的值，两个循环的do和done命令没有任何差别，bash shell知道当第一个node命令执行的是内部循环，而非外部循环。</p>
+<h3 id="while循环与for循环的嵌套">while循环与for循环的嵌套</h3>
+<p>在while循环内也可以放置一个for循环，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> palcing a for loop inside a while loop</div><div class="line"></div><div class="line">var1=5</div><div class="line"></div><div class="line">while [ $var1 -ge 0 ]</div><div class="line">do</div><div class="line">    echo "Outer loop: $var1"</div><div class="line">    for ((var2=1;$var2&lt;3;var2++))</div><div class="line">    do</div><div class="line">        var3=$[ $var1*$var2 ]</div><div class="line">        echo " Inner loop: $var1*$var2=$var3"</div><div class="line">    done</div><div class="line">    var1=$[ $var1 - 1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">Outer loop: 5</div><div class="line"> Inner loop: 5*1=5</div><div class="line"> Inner loop: 5*2=10</div><div class="line">Outer loop: 4</div><div class="line"> Inner loop: 4*1=4</div><div class="line"> Inner loop: 4*2=8</div><div class="line">Outer loop: 3</div><div class="line"> Inner loop: 3*1=3</div><div class="line"> Inner loop: 3*2=6</div><div class="line">Outer loop: 2</div><div class="line"> Inner loop: 2*1=2</div><div class="line"> Inner loop: 2*2=4</div><div class="line">Outer loop: 1</div><div class="line"> Inner loop: 1*1=1</div><div class="line"> Inner loop: 1*2=2</div><div class="line">Outer loop: 0</div><div class="line"> Inner loop: 0*1=0</div><div class="line"> Inner loop: 0*2=0</div></pre></td></tr></table></figure>
+<h3 id="until循环与for循环的嵌套">until循环与for循环的嵌套</h3>
+<p>案例如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using until and while loops</div><div class="line"></div><div class="line">var1=3</div><div class="line"><span class="meta">#</span> 变量以3开始</div><div class="line">until [ $var1 -eq 0 ] # 除非var1等于0，否则继续运行do...done之间的语句</div><div class="line">do</div><div class="line">    echo "Outer loop: $vaar1"</div><div class="line">    var2=1</div><div class="line">    while [ $var2 -lt 5 ] # 当var2小于5时，一直运行</div><div class="line">    do</div><div class="line">        var3=$(echo "scale=4;$var1/$var2" |bc)</div><div class="line">        echo "   Inner loop: $var1/$var2=$var3"</div><div class="line">        var2=$[ $var2+1 ]</div><div class="line">    done</div><div class="line">    var1=$[ $var1-1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test16.sh</div><div class="line">Outer loop: </div><div class="line">   Inner loop: 3/1=3.0000</div><div class="line">   Inner loop: 3/2=1.5000</div><div class="line">   Inner loop: 3/3=1.0000</div><div class="line">   Inner loop: 3/4=.7500</div><div class="line">Outer loop: </div><div class="line">   Inner loop: 2/1=2.0000</div><div class="line">   Inner loop: 2/2=1.0000</div><div class="line">   Inner loop: 2/3=.6666</div><div class="line">   Inner loop: 2/4=.5000</div><div class="line">Outer loop: </div><div class="line">   Inner loop: 1/1=1.0000</div><div class="line">   Inner loop: 1/2=.5000</div><div class="line">   Inner loop: 1/3=.3333</div><div class="line">   Inner loop: 1/4=.2500</div></pre></td></tr></table></figure>
+<h2 id="循环处理文件数据">循环处理文件数据</h2>
+<p>当我们遇到一种情况，即必须要遍历储存在文件中的数据时，需要两种技术。第一，使用嵌套循环；第二，修改IFS环境变量。通过修改IFS环境变量，就能强制for命令将文件中的每行都当成单独的一个条目来处理，即使数据中有空格也是如此，一旦从文件中提取出了单独的行，可能需要再次利用循环来提取行中的数据，典型的案例就是处理<code>/etc/passwd</code>文件中的数据，这要求你逐行遍历<code>/etc/passwd</code>文件，并将IFS变量的值改为冒号，这样就能分隔开每行中的各个数据段了，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> changing the IFS value</div><div class="line"></div><div class="line">IFS=$'\n'</div><div class="line">for entry in $(cat /etc/passwd)</div><div class="line">do</div><div class="line">    echo "Values in $entry -"</div><div class="line">    IFS=:</div><div class="line">    for value in $entry</div><div class="line">    do</div><div class="line">        echo "    $value"</div><div class="line">    done</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test17.sh|head</div><div class="line">Values in root:x:0:0:root:/root:/bin/bash -</div><div class="line">    root</div><div class="line">    x</div><div class="line">    0</div><div class="line">    0</div><div class="line">    root</div><div class="line">    /root</div><div class="line">    /bin/bash</div><div class="line">Values in daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin -</div><div class="line">    daemon</div></pre></td></tr></table></figure>
+<p>这个脚本使用了两个不同的FIS值来解析数据，第一个IFS值解析出<code>/etc/passwd</code>文件中的单独的行，内部for循环接着将FIS的值修改为冒号，然后从单独的行中解析出单独的值，因此在第一次运行时，会提取出一行数据，例如<code>root​:x:​0:0:root:/root:/bin/bash</code> ，接头使用for循环，提取出这一行中以冒号为分割符的元素，即<code>root x  0 0 root /root /bin/bash</code>信息。</p>
+<h2 id="控制循环">控制循环</h2>
+<p>如果遇到这样的情况：一旦开启了循环，必须要等到所有的循环完成迭代时才结束，如果我想提前想结束循环的话，此时就要用到<code>break</code>命令和<code>continue</code>命令。</p>
+<h3 id="break命令">break命令</h3>
+<p><code>break</code>命令可以退出任意类型的循环，包括<code>until</code>和<code>while</code>循环。</p>
+<h4 id="break跳出单个循环">break跳出单个循环</h4>
+<p>在shell中执行break命令，它会深度跳出当前正在执行的循环，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test18.sh</div><div class="line">Iteration number: 1</div><div class="line">Iteration number: 2</div><div class="line">Iteration number: 3</div><div class="line">Iteration number: 4</div><div class="line">The for loop is completed</div></pre></td></tr></table></figure>
+<p>for循环通常都会遍历列表中指定的所有值。但当满足if-then的条件时，shell会执行break命令，停止for循环。同样的方法也适用于while和until循环，如下所示：：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> breaking oiut of a while loop</div><div class="line"></div><div class="line">var1=1</div><div class="line"></div><div class="line">while [ $var1 -lt 10 ]</div><div class="line">do</div><div class="line">    if [ $var1 -eq 5 ]</div><div class="line">    then</div><div class="line">        break</div><div class="line">    fi</div><div class="line">    echo "Iteration: $var1"</div><div class="line">    var1=$[ $var1+1 ]</div><div class="line">done</div><div class="line">echo "The while is loop is completed"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test19.sh</div><div class="line">Iteration: 1</div><div class="line">Iteration: 2</div><div class="line">Iteration: 3</div><div class="line">Iteration: 4</div><div class="line">The while is loop is completed</div></pre></td></tr></table></figure>
+<h3 id="section"></h3>
+<h4 id="跳出内部循环">跳出内部循环</h4>
+<p>在处理多个循环时，break命令会自动终止你所在的最内层的循环。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> breaking out of an inner loop</div><div class="line"></div><div class="line">for ((a=1;a&lt;4;a++))</div><div class="line">do</div><div class="line">    echo "Outer loop: $a"</div><div class="line">    for ((b=1;b&lt;100;b++)) # 内部循环指定当变量b等于100时停止迭代；</div><div class="line">    do</div><div class="line">        if [ $b -eq 5 ] # 但是当内部循环的if-then语句指明当变量b的值等于5时就执行break命令，跳出循环</div><div class="line">        then</div><div class="line">            break</div><div class="line">        fi</div><div class="line">        echo "   Inner loop:  $b" # 但是外部的循环仍然继续执行</div><div class="line">    done</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test20.sh</div><div class="line">Outer loop: 1</div><div class="line">   Inner loop:  1</div><div class="line">   Inner loop:  2</div><div class="line">   Inner loop:  3</div><div class="line">   Inner loop:  4</div><div class="line">Outer loop: 2</div><div class="line">   Inner loop:  1</div><div class="line">   Inner loop:  2</div><div class="line">   Inner loop:  3</div><div class="line">   Inner loop:  4</div><div class="line">Outer loop: 3</div><div class="line">   Inner loop:  1</div><div class="line">   Inner loop:  2</div><div class="line">   Inner loop:  3</div><div class="line">   Inner loop:  4</div></pre></td></tr></table></figure>
+<h4 id="跳出外部循环">跳出外部循环</h4>
+<p>有时候需要在内部循环，但外部循环停止，break命令可以接受单个命令行参数值，<code>break -n</code>，其中n指定了要跳出的循环层级，默认情况下，n为1，表明跳出的是当前的循环，即最内层的是第1层循环，如果设为2，break命令就会停止下一级的外部循环，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> breaking out of an outer loop</div><div class="line"></div><div class="line">for ((a=1;a&lt;4;a++))</div><div class="line">do</div><div class="line">    echo "Outer loop: $a"</div><div class="line">    for ((b=1;b&lt;100;b++))</div><div class="line">    do</div><div class="line">        if [ $b -gt 4 ]</div><div class="line">        then</div><div class="line">            break 2</div><div class="line">        fi</div><div class="line">        echo "   Inner loop: $b"</div><div class="line">    done</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test21.sh</div><div class="line">Outer loop: 1</div><div class="line">   Inner loop: 1</div><div class="line">   Inner loop: 2</div><div class="line">   Inner loop: 3</div><div class="line">   Inner loop: 4</div></pre></td></tr></table></figure>
+<p>当shell执行了break命令后，外部循环就停止了。</p>
+<h3 id="continue命令">continue命令</h3>
+<p>continue命令可以提前中止某次循环中的命令，但并不会完全终止整个循环，可以在循环内部设置shell不执行命令的条件，这里有个for循环中使用continue命令的简单例子，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing continue command</div><div class="line"></div><div class="line">for ((var1=1;var1&lt;15;var1++))</div><div class="line">do</div><div class="line">    if [ $var1 -gt 5 ] &amp;&amp; [ $var1 -lt 10 ] </div><div class="line">    then</div><div class="line">         continue</div><div class="line">    fi</div><div class="line">    echo "Iteration number: $var1"</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ vim continue_test.sh</div><div class="line">biotest@ubuntu:~/loop$ bash continue_test.sh </div><div class="line">Iteration number: 1</div><div class="line">Iteration number: 2</div><div class="line">Iteration number: 3</div><div class="line">Iteration number: 4</div><div class="line">Iteration number: 5</div><div class="line">Iteration number: 10</div><div class="line">Iteration number: 11</div><div class="line">Iteration number: 12</div><div class="line">Iteration number: 13</div><div class="line">Iteration number: 14</div></pre></td></tr></table></figure>
+<p>代码解释:当if-then语句的条件满足时，即值大于5小于10，shell会 执行continue命令，跳过此次循环中的剩余命令，但整个循环还会继续，当if-then的条件不再满足后，又继续循环。在while和until循环中也可以使用continue命令，但要谨慎，因为当shell执行continue命令时，它会跳过剩余的部分，如果在其中的条件具条件里对测试条件变量进行增值，问题就会出现，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> improperly using the continue command in a while loop</div><div class="line"></div><div class="line">var1=0</div><div class="line"></div><div class="line">while echo "while iteration; $var1"</div><div class="line">    [ $var1 -lt 15 ]</div><div class="line">do</div><div class="line">    if [ $var1 -gt 5 ] &amp;&amp; [ $var1 -lt 10 ]</div><div class="line">    then</div><div class="line">        continue</div><div class="line">    fi</div><div class="line">    echo "   Inside iteration number: $var1"</div><div class="line">    var1=$[ $var1+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash badtest3.sh|head -20</div><div class="line">while iteration; 0</div><div class="line">   Inside iteration number: 0</div><div class="line">while iteration; 1</div><div class="line">   Inside iteration number: 1</div><div class="line">while iteration; 2</div><div class="line">   Inside iteration number: 2</div><div class="line">while iteration; 3</div><div class="line">   Inside iteration number: 3</div><div class="line">while iteration; 4</div><div class="line">   Inside iteration number: 4</div><div class="line">while iteration; 5</div><div class="line">   Inside iteration number: 5</div><div class="line">while iteration; 6</div><div class="line">while iteration; 6</div><div class="line">while iteration; 6</div><div class="line">while iteration; 6</div><div class="line">while iteration; 6</div><div class="line">while iteration; 6</div><div class="line">while iteration; 6</div><div class="line">while iteration; 6</div></pre></td></tr></table></figure>
+<p>从结果可以看了同，在if-then的条件成立之后，一切都正常，但是当执行了continue命令后，它就跳过了while循环中的剩余部分，则跳过的部分正好是$var1计数变量增值的部分，而这个变量又被用于个渭测试命令中，因此这个值就不再变化，从而连续输出。</p>
+<p>continue也可以与break一样，使用n来指定要继续执行哪一级循环，格式为<code>continue n</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> continuing an outer loop</div><div class="line"></div><div class="line">for ((a=1;a&lt;=5;a++))</div><div class="line">do</div><div class="line">    echo "Iteration $a: "</div><div class="line">    for((b=1;b&lt;3;b++))</div><div class="line">    do</div><div class="line">        if [ $a -gt 2 ] &amp;&amp; [ $a -lt 4 ]</div><div class="line">        then</div><div class="line">            continue 2</div><div class="line">        fi</div><div class="line">        var3=$[ $a*$b ]</div><div class="line">        echo "   The result of $a*$b is $var3"</div><div class="line">    done</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test22.sh</div><div class="line">Iteration 1: </div><div class="line">   The result of 1*1 is 1</div><div class="line">   The result of 1*2 is 2</div><div class="line">Iteration 2: </div><div class="line">   The result of 2*1 is 2</div><div class="line">   The result of 2*2 is 4</div><div class="line">Iteration 3: </div><div class="line">Iteration 4: </div><div class="line">   The result of 4*1 is 4</div><div class="line">   The result of 4*2 is 8</div><div class="line">Iteration 5: </div><div class="line">   The result of 5*1 is 5</div><div class="line">   The result of 5*2 is 10</div></pre></td></tr></table></figure></p>
+<p>代码解释，其中的if-then部分为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if [ $a -gt 2 ] &amp;&amp; [ $a -lt 4 ]</div><div class="line">        then</div><div class="line">            continue 2</div><div class="line">        fi</div></pre></td></tr></table></figure>
+<p>在此处用continue命令来停止处理循环内的命令，但会继续处理外部循环，值为3的那次迭代并没有处理任何内部循环语句，因为尽管continue命令命令会停止了处理过程，但外部循环会继续。（有关<code>break n</code>与<code>continue n</code>的这个原理，再写一篇笔记，我是没弄清楚原理）。</p>
+<h2 id="处理循环输出">处理循环输出</h2>
+<p>在shell脚本中，可以对循环的输出使用管道或重定向，这可以通过在done命令之后添加一个处理命令来实现。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line">for file in /home/biotest/*</div><div class="line"></div><div class="line">do   </div><div class="line">   if [ -d "$file" ]</div><div class="line">   then</div><div class="line">       echo "$file is a directory"</div><div class="line">   elif [ -f "$file" ]</div><div class="line">   then</div><div class="line">       echo "$file is a file"</div><div class="line">   fi</div><div class="line">done &gt; output.tx</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ cat output.txt|head</div><div class="line">/home/biotest/Desktop is a directory</div><div class="line">/home/biotest/Documents is a directory</div><div class="line">/home/biotest/Downloads is a directory</div><div class="line">/home/biotest/examples.desktop is a file</div><div class="line">/home/biotest/filename is a file</div><div class="line">/home/biotest/log. is a file</div><div class="line">/home/biotest/log.180427 is a file</div><div class="line">/home/biotest/loop is a directory</div><div class="line">/home/biotest/miniconda2 is a directory</div><div class="line">/home/biotest/Miniconda2-latest-Linux-x86_64.sh is a file</div></pre></td></tr></table></figure>
+<p>第2个案例，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> redirecting the for output to a file</div><div class="line"></div><div class="line">for ((a=1;a&lt;10;a++))</div><div class="line">do</div><div class="line">    echo "The number is $a"</div><div class="line">done &gt; test23.txt</div><div class="line">echo "The commmand is finished."</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ cat test23.txt</div><div class="line">The number is 1</div><div class="line">The number is 2</div><div class="line">The number is 3</div><div class="line">The number is 4</div><div class="line">The number is 5</div><div class="line">The number is 6</div><div class="line">The number is 7</div><div class="line">The number is 8</div><div class="line">The number is 9</div></pre></td></tr></table></figure>
+<p>代码及结果解释：shell创建了文件test23.txt并将for命令的输出重定向到这个文件，shell在for命令之后正常显示了echo语句。这种方法也同样适用于将循环的结果用通道导入另一个命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> piping a loop to another command</div><div class="line"></div><div class="line">for province in "Chine HK" Henan Guangdong </div><div class="line">do</div><div class="line">    echo "$province is the next place to go"</div><div class="line">done | sort</div><div class="line">echo "This completes out travels"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test24.sh</div><div class="line">Chine HK is the next place to go</div><div class="line">Guangdong is the next place to go</div><div class="line">Henan is the next place to go</div><div class="line">This completes out travels</div></pre></td></tr></table></figure>
+<p>代码及结果解释：province的值并没有在for命令列表中以特定次序列出，for命令的输出结果导入到了sort命令中，该命令会改变for命令输出结果的顺序。运行这个脚本实际上说明了结果已经在脚本内部排好序了。</p>
+<h2 id="最终案例">最终案例</h2>
+<h3 id="第1案例查找可执行文件">第1案例：查找可执行文件</h3>
+<p>如果要找出系统中有哪些可执行文件，只需要扫描PATH环境变量中的所有目录即可，下面是这样的一个脚本，如下所示</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> finding files in the PATH</div><div class="line"></div><div class="line">IFS=:</div><div class="line">for folder in $PATH</div><div class="line">do </div><div class="line">    echo "$folder:"</div><div class="line">    for file in $folder/*</div><div class="line">    do</div><div class="line">        if [ -x $file ]</div><div class="line">        then</div><div class="line">            echo "   $file"</div><div class="line">        fi</div><div class="line">    done</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行，结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ bash test25.sh|head -5</div><div class="line">/home/biotest/miniconda2/bin:</div><div class="line">   /home/biotest/miniconda2/bin/2to3</div><div class="line">   /home/biotest/miniconda2/bin/activate</div><div class="line">   /home/biotest/miniconda2/bin/appletviewer</div><div class="line">   /home/biotest/miniconda2/bin/c2ph</div><div class="line">biotest@ubuntu:~/loop$ cat test25.sh</div></pre></td></tr></table></figure>
+<h3 id="第2案例创建多个用户账户">第2案例：创建多个用户账户</h3>
+<p>如果要创建大量的用户，可以使用while循环来实现，将需要添加的新用户账户放在一个文本文件中，然后创建一个简单的脚本处理，文件文件的格式是这样的<code>userid, user name</code>，第一个条目是新用户的ID，第二个条目是用户的全名。两个值之间使用逗号分隔，这样就形成卫 种名为逗号分隔值的文本文件（或是csv格式文件）。如果要读取这里面的数据，需要将<code>IFS</code>分隔符设置为逗号，并将其放入while语句的条件测试部分。然后使用read命令读取文件中的各行，这一部分 的代码就是<code>while IFS=',',read -r userid name</code>，read命令会自动读取<code>.csv</code>文件的下一行内容，因此不需要创建一个循环，当read命令返回FALSE时（也就是读取完整个文件时），while命令就会退出，完整的脚本如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> process new user accounts</div><div class="line"></div><div class="line">input="user.csv"</div><div class="line">while IFS=',' read -r userid name # -r这个参数表示允许输入的值中包含反斜杠“\”,反斜杠也作为值输出</div><div class="line">do</div><div class="line">    echo "adding $userid"</div><div class="line">    useradd -c "$name" -m $userid #-c表示：加上备注文字。备注文字会保存在passwd的备注栏位中；</div><div class="line">                                  # -m表示自动建立用户的登入目录</div><div class="line">done &lt; "$input" #将input变量中的csv文件输导入到while循环中</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/loop$ cat user.csv </div><div class="line">userid,user name</div><div class="line">501,test01</div><div class="line">502,test02</div><div class="line">503,test03</div><div class="line"></div><div class="line">biotest@ubuntu:~/loop$ sudo bash test26.sh</div><div class="line">[sudo] password for biotest: </div><div class="line">adding userid</div><div class="line">adding 501</div><div class="line">adding 502</div><div class="line">adding 503</div><div class="line"></div><div class="line">biotest@ubuntu:~/loop$ tail /etc/passwd</div><div class="line">kernoops:x:116:65534:Kernel Oops Tracking Daemon,,,:/:/bin/false</div><div class="line">pulse:x:117:124:PulseAudio daemon,,,:/var/run/pulse:/bin/false</div><div class="line">rtkit:x:118:126:RealtimeKit,,,:/proc:/bin/false</div><div class="line">saned:x:119:127::/var/lib/saned:/bin/false</div><div class="line">usbmux:x:120:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/bash</div><div class="line">:/home/userid:1002:user name</div><div class="line">:/home/501:1003:test01</div><div class="line">:/home/502:1004:test02</div><div class="line">:/home/503:1005:test03</div></pre></td></tr></table></figure>
+<p>从结果可以看出，这3个账户已经生成。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/30/生信-Linux-shell02-if-then和case语句/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/30/生信-Linux-shell02-if-then和case语句/" itemprop="url">Shell学习笔记（2）——if-then和case语句</a></h1>
         
 
         <div class="post-meta">
@@ -868,7 +1250,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/04/29/生信-Linux-shell01-基础笔记/" itemprop="url">shell脚本基础笔记</a></h1>
+                <a class="post-title-link" href="/2018/04/29/生信-Linux-shell01-基础笔记/" itemprop="url">Shell学习笔记（1）——shell脚本基础笔记</a></h1>
         
 
         <div class="post-meta">
@@ -936,7 +1318,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,039
+                  3,088
                 </span>
               
 
@@ -976,6 +1358,7 @@
         
           
             <h2 id="前言">前言</h2>
+<p>本篇笔记的参考资料是（<a href="https://item.jd.com/12010266.html" target="_blank" rel="external">《Linux命令行与shell脚本编程大全》</a>（第3版），外加百度辅助，本篇笔记主要内容是Shell脚本的一些基本知识。</p>
 <p>使用命令行的一大特点就是能够写脚本，可以将一些命令写到一个脚本中，自动运行。而在Linux的命令行中，一次基本上只能运行一个或几个命令，就像下面的这样，它可以运行两个命令，只是要用分号隔开。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test/testfile$ date;who</div><div class="line">Fri Apr 27 15:56:32 CST 2018</div><div class="line">biotest  tty7         2018-04-27 11:24 (:0)</div></pre></td></tr></table></figure>
 <p>这两个命令其实也可以视为一个非常简单的脚本，虽然它只有两个命令，作用就是显示今天的日期以及当前登录到系统中的用户。</p>
@@ -3425,294 +3808,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/03/28/生信-Linux学习笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/28/生信-Linux学习笔记/" itemprop="url">Linux学习笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T12:00:00+08:00">
-                2018-03-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,647
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  11
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这个教程源于曾健明，<a href="http://www.bio-info-trainee.com/2900.html" target="_blank" rel="external">题库地址为其博客</a>。所使用的Linux系统是曾健明的服务器，服务器信息如下： 1. <code>/usr/local/bin/miniconda3/bin</code>路径下面安装了生物信息学软件，可以使用全路径调用它们，或者添加该目录到环境变量。 2. 两个练手数据： 2.1 转录组数据：<code>/public/study/mRNAseq/tair/</code>的转录组的测试数据，具体教程可以看其博客：<a href="http://www.bio-info-trainee.com/2809.html" class="uri" target="_blank" rel="external">http://www.bio-info-trainee.com/2809.html</a>，可以用<code>ls -lh  --color=auto /public/study/mRNAseq/tair/</code> 命令查看，然后所有的处理，在自己的目录处理，不需要拷贝那些数据. 2.2 找变异：<code>/public/study/variant-calling/tair</code>。 可以参见教程：<a href="http://www.biotrainee.com/thread-696-1-1.html" class="uri" target="_blank" rel="external">http://www.biotrainee.com/thread-696-1-1.html</a></p>
-<p>其他的NGS流程，参见Github：<a href="https://github.com/jmzeng1314/NGS-pipeline" class="uri" target="_blank" rel="external">https://github.com/jmzeng1314/NGS-pipeline</a>。</p>
-<h2 id="基础知识">基础知识</h2>
-<h3 id="基础知识-1">基础知识</h3>
-<h3 id="文件目录操作">文件目录操作</h3>
-<ol style="list-style-type: decimal">
-<li>查看当前目录<code>pwd</code> <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/AKEdmBFIIH.png?imageslim" alt="mark"></li>
-</ol>
-<h3 id="系统管理">系统管理</h3>
-<p>1.查看当前登录用户<code>w</code> <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/7fA66bCmEk.png?imageslim" alt="mark"></p>
-<p>2.查看命令历史<code>l~/.bash_history</code> Bash shell在“~/.bash_history”（“~/”表示用户目录）文件中保存了500条使用过的命令，这样可以使你输入使用过的长命令变得容易。每个在系统中拥有账号的用户在他的目录下都有一个“.bash_history”文件。</p>
-<h3 id="用户权限">用户权限</h3>
-<h3 id="文本操作">文本操作</h3>
-<h2 id="题库测试">题库测试</h2>
-<p><strong>1. 在任意文件夹下面创建形如 1/2/3/4/5/6/7/8/9 格式的文件夹系列。</strong></p>
-<p><code>mkdir -p 1/2/3/4/5/6/7/8/9</code> mkdir是建立文件夹命名，添加<code>-p</code>参数可以直接创建多级文件夹，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/8ki0H89cfC.png?imageslim" alt="mark"></p>
-<p><strong>2.在创建好的文件夹下面，比如我的是 /Users/jimmy/</strong>tmp/1/2/3/4/5/6/7/8/9 ，里面创建文本文件 me.txt</p>
-<p>先切换到/1/2/3/4/5/6/7/8/9，直接输入<code>cd</code>，然后不停地按<code>Tab</code>键，就会进入下一层文件夹。 <code>touch me.txt</code>创建txt文件。 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/AAeBcaD17A.png?imageslim" alt="mark"></p>
-<p><strong>3.在文本文件 me.txt 里面输入内容:</strong> Go to: http://www.biotrainee.com/ I love bioinfomatics. And you ?</p>
-<p>输入<code>vim me.txt</code>，输入上述文字，然后按<code>Esc</code>键，输入<code>wp</code>退出。</p>
-<p><strong>4. 删除上面创建的文件夹 1/2/3/4/5/6/7/8/9 及文本文件 me.txt</strong></p>
-<p><code>rm -rf *</code></p>
-<p><strong>5. 在任意文件夹下面创建 folder1~5这5个文件夹，然后每个文件夹下面继续创建 folder1~5这5个文件夹，效果如下：</strong></p>
-<p><code>mkdir -p folder_{1..5}/folder_{1..5}</code> 如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/b9EHafGmmE.png?imageslim" alt="mark"></p>
-<p><strong>6. 在第五题创建的每一个文件夹下面都 创建第二题文本文件 me.txt ，内容也要一样。</strong></p>
-<p>先创建一个tmp3目录，其目录下有5个文件夹，5个文件夹下面又有5个文件夹，然后将me.txt拷贝到这25个文件夹中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir -p tmp3/folder_&#123;1..5&#125;/folder_&#123;1..5&#125;</div><div class="line">echo tmp3/folder_&#123;1..5&#125;/folder_&#123;1..5&#125; | xargs -n 1 cp -v me.txt</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/jggF50km1I.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p><strong>7. 再次删除掉前面几个步骤建立的文件夹及文件。</strong> <code>rm -rf *</code></p>
-<p><strong>8. 下载 http://www.biotrainee.com/jmzeng/igv/test.bed 文件，后在里面选择含有 H3K4me3 的那一行是第几行，该文件总共有几行。</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget http://www.biotrainee.com/jmzeng/igv/test.bed</div><div class="line">grep -n &quot;H3K4me3&quot; test.bed</div><div class="line">wc test.bed</div></pre></td></tr></table></figure>
-<p>结果如下： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/6J951D225C.png?imageslim" alt="mark"> 可知，H3K4me3在第8行，用Notepad++打开的话，核对一下，确实如此。 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/CmBJ842fB1.png?imageslim" alt="mark"> 用<code>wc</code>命令查看有多少行，一共10行。</p>
-<p><strong>9. 下载 http://www.biotrainee.com/jmzeng/rmDuplicate.zip 文件，并且解压，查看里面的文件夹结构</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget http://www.biotrainee.com/jmzeng/rmDuplicate.zip</div><div class="line">unzip rmDuplicate.zip</div><div class="line">cd rmDuplicate.zip</div></pre></td></tr></table></figure>
-<p>查看文件： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/d87Hd2LjLm.png?imageslim" alt="mark"></p>
-<p><strong>10. 打开第九题解压的文件，进入 rmDuplicate/samtools/single 文件夹里面，查看后缀为 .sam 的文件，搞清楚 生物信息学里面的SAM/BAM 定义是什么。</strong> <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/2EhCCfda4e.png?imageslim" alt="mark"></p>
-<p><strong>SAM文件与BAM文件</strong> &gt; SAM是一种序列比对格式标准， 由sanger制定，是以TAB为分割符的文本格式。主要应用于测序序列mapping到基因组上的结果表示，当然也可以表示任意的多重比对结果。</p>
-<blockquote>
-<p>SAM要处理好的问题：</p>
-</blockquote>
-<blockquote>
-<p>非常多序列（read)，mapping到多个参考基因组（reference）上； 同一条序列，分多段（segment）比对到参考基因组上； 无限量的，结构化信息表示，包括错配、删除、插入等比对信息； SAM分为两部分，注释信息（header section）和比对结果部分（alignment section），注释信息可有可无，都是以@开头，用不同的tag表示不同的信息，主要有@HD，说明符合标准的版本、对比序列的排列顺序；<span class="citation">@SQ</span>，参考序列说明；<span class="citation">@RG</span>，比对上的序列（read）说明；<span class="citation">@PG</span>，使用的程序说明；<span class="citation">@CO</span>，任意的说明信息。</p>
-</blockquote>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/h0kI4HLFg8.jpg?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<blockquote>
-<p>比对结果部分（alignment section），每一行表示一个片段（segment）的比对信息，包括11个必须的字段（mandatory fields）和一个可选的字段，字段之间用tag分割。必须的字段有11个，顺序固定，不可用时，根据字段定义，可以为’0‘或者’*‘，这是11个字段包括：</p>
-</blockquote>
-<blockquote>
-<p>QNAME，比对片段的（template）的编号； FLAG，位标识，template mapping情况的数字表示，每一个数字代表一种比对情况，这里的值是符合情况的数字相加总和； RNAME，参考序列的编号，如果注释中对SQ-SN进行了定义，这里必须和其保持一致，另外对于没有mapping上的序列，这里是’<em>‘； POS，比对上的位置，注意是从1开始计数，没有比对上，此处为0； MAPQ，mappint的质量； CIGAR，简要比对信息表达式（Compact Idiosyncratic Gapped Alignment Report），其以参考序列为基础，使用数字加字母表示比对结果，比如3S6M1P1I4M，前三个碱基被剪切去除了，然后6个比对上了，然后打开了一个缺口，有一个碱基插入，最后是4个比对上了，是按照顺序的； RNEXT，下一个片段比对上的参考序列的编号，没有另外的片段，这里是’</em>‘，同一个片段，用’=‘； PNEXT，下一个片段比对上的位置，如果不可用，此处为0； TLEN，Template的长度，最左边得为正，最右边的为负，中间的不用定义正负，不分区段（single-segment)的比对上，或者不可用时，此处为0； SEQ，序列片段的序列信息，如果不存储此类信息，此处为’*‘，注意CIGAR中M/I/S/=/X对应数字的和要等于序列长度； QUAL，序列的质量信息，格式同FASTQ一样。 可选字段（optional fields)，格式如：TAG:TYPE:VALUE，其中TAG有两个大写字母组成，每个TAG代表一类信息，每一行一个TAG只能出现一次，TYPE表示TAG对应值的类型，可以是字符串、整数、字节、数组等。</p>
-</blockquote>
-<p><strong>11. 安装 samtools 软件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">mkdir soft</div><div class="line">cd soft</div><div class="line">wget https://github.com/samtools/samtools/releases/download/1.7/samtools-1.7.tar.bz2</div><div class="line">tar jxvf samtools-1.7.tar.bz2</div><div class="line">cd samtools-1.7/</div><div class="line">./configure --prefix=/trainee/home/jlzhang/biosoft</div><div class="line">make</div><div class="line">make install</div><div class="line">export PATH=$PATH:/trainee/home/jlzhang/biosoft/bin:$PATH &gt;&gt;~/.bashrc</div><div class="line">source ~/.bashrc</div></pre></td></tr></table></figure>
-<p>可以通过<code>echo $PATH</code>来查看用户变量。</p>
-<p><strong>12. 打开 后缀为BAM 的文件，找到产生该文件的命令。</strong></p>
-<p>用samtools view打开BAM文件，过程如下：</p>
-<p>进入相应文件夹，即<code>samtools view tmp.rmdup.bam | head</code> 输入命令：<code>samtools view tmp.rmdup.bam | head</code> 打开后的BAM文件如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180328/I2gIbJihKE.png?imageslim" alt="mark"></p>
-<p><strong>13. 根据上面的命令，找到我使用的参考基因组 /home/jianmingzeng/reference/index/bowtie/hg38 具体有多少条染色体。</strong> 从网上找到的信息，hg38含有24条染色体，统计代码如下所示：</p>
-<p>先找到hg38.fa文件，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">locate hg38.fa</div></pre></td></tr></table></figure>
-<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/cf45ebk16a.png?imageslim" alt="mark"> 随便挑一个进行统计，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">grep &quot;chr[1-9,X,Y]&quot; /umac/reference/genome/hg38/hg38.fa| cut -d_ -f1 &gt; statistic.chrom</div><div class="line">sort statistic.chrom | uniq | wc</div></pre></td></tr></table></figure>
-<p>可以发现，hg38有24条染色体，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/HGHLBKhlEK.png?imageslim" alt="mark"></p>
-<p>其中,sort是对文本文件中的字符进行排序，uniq是去掉重复的行，但是uniq只能去掉相邻的重复行，因此之前要进行sort。</p>
-<p><strong>14. 上面的后缀为BAM 的文件的第二列，只有 0 和 16 两个数字，用 cut/sort/uniq等命令统计它们的个数。</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">samtools view tmp.rmdup.bam &gt; bamfile</div><div class="line">awk &apos;&#123;print $2&#125;&apos; bamfile &gt; zero_one</div><div class="line">grep -o &quot;0&quot; zero_one |wc -l</div><div class="line">grep -o &quot;16&quot; zero_one |wc -l</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/cbj6hmgGGB.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p><strong>15. 重新打开 rmDuplicate/samtools/paired 文件夹下面的后缀为BAM 的文件，再次查看第二列，并且统计</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">samtools view tmp.rmdup.bam &gt; pairbam</div><div class="line">awk &apos;&#123;print $2&#125;&apos; pairbam &gt; number </div><div class="line">awk &apos;&#123;print $2&#125;&apos; pairbam |sort|uniq -c</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/KDd1bmlk0F.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p><strong>16. 下载 http://www.biotrainee.com/jmzeng/sickle/sickle-results.zip 文件，并且解压，查看里面的文件夹结构， 这个文件有2.3M，注意留心下载时间及下载速度。</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">wget http://www.biotrainee.com/jmzeng/sickle/sickle-results.zip</div><div class="line">ls -lh</div><div class="line">unzip sickle-results.zip</div><div class="line">cd sickle-results</div><div class="line">ls -lh</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/096904lAFg.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p><strong>17. 解压 sickle-results/single_tmp_fastqc.zip 文件，并且进入解压后的文件夹，找到 fastqc_data.txt 文件，并且搜索该文本文件以 &gt;&gt;开头的有多少行？</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd sickle-results</div><div class="line">unzip single_tmp_fastqc.zip</div><div class="line">cd single_tmp_fastqc</div><div class="line">grep &quot;&gt;&gt;&quot;  fastqc_data.txt |wc -l</div></pre></td></tr></table></figure>
-<p>一共是24行 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/2hChiFB4FK.png?imageslim" alt="mark"></p>
-<p><strong>18. 下载 http://www.biotrainee.com/jmzeng/tmp/hg38.tss 文件，去NCBI找到TP53/BRCA1等自己感兴趣的基因对应的 refseq数据库 ID，然后找到它们的hg38.tss 文件的哪一行。 https://www.ncbi.nlm.nih.gov/gene/7157</strong></p>
-<ol style="list-style-type: decimal">
-<li>打开PUBMED，选GENE，输入“TP53”，点击Search，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/hE93c3HKlH.png?imageslim" alt="mark"></li>
-</ol>
-<p>Pubmed中有很多TP53的信息，但是hg38是人类基因组，因此选择第一行的TP53就行，进入即可，找到Go to reference sequence details，点进去即可，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/f5K40hH9mh.png?imageslim" alt="mark"></p>
-<p>找到Go to reference sequence details，进去，其中有NM开头的编号，NM表示mRNA的RefSeq，TP53的就是NM_00054635（小数点部分是版本号，不用管），在hg38.tss中查询即可，BRCA1按照同样操作，查询结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget http://www.biotrainee.com/jmzeng/tmp/hg38.tss</div><div class="line">grep &quot;NM_000546&quot; hg38.tss </div><div class="line">grep &quot;NM_005905&quot; hg38.tss</div></pre></td></tr></table></figure></p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/Ih5GL0fIAb.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p><strong>19. 解析hg38.tss 文件，统计每条染色体的基因个数。</strong></p>
-<p>hg38.tss文件是基因的坐标，查看了一下文件，文件内容如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/20jK2DK3Kl.png?imageslim" alt="mark"></p>
-<p>第1列是基因名称，第2列是染色体名称，第3列到第4列是转录起止坐标，第5列不清楚。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">awk &apos;$5 &gt; 0&apos; hg38.tss &gt; gene2</div><div class="line">awk &apos;&#123;print $2&#125;&apos; gene2 &gt; gene</div><div class="line">cut -d_ -f1 gene |sort |uniq -c</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180329/gHHAJ0II9A.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p><strong>20. 解析hg38.tss 文件，统计NM和NR开头的序列，了解NM和NR开头的含义。</strong></p>
-<p>没在hg38.tss文件里找到相应的序列，只找到了名称，提取NM和NR开头的名称命令如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">grep &quot;NM&quot; hg38.tss</div><div class="line">grep &quot;NR&quot; hg38.tss</div></pre></td></tr></table></figure>
-<p>NM，mRNA mixed，转录组产物序列；成熟mRNA转录本序列。 NR，RNA mixed，非编码的转录子序列，包括结构RNAs，假基因转子等。</p>
-<p>参考资料： 1. <a href="http://boyun.sh.cn/bio/?p=1890" target="_blank" rel="external">博耘生物</a> 2. <a href="http://blog.sina.com.cn/s/blog_72512a1d0102xp6f.html" target="_blank" rel="external">NCBI中编号/编码说明</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3763,7 +3858,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3785,7 +3880,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">52</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3859,7 +3954,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共182.4k字</span>
+  <span class="post-count">博客全站共191.3k字</span>
 </div>
 
         
