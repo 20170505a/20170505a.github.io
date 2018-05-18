@@ -249,6 +249,248 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/07/生信-转录组学习笔记07差异基因分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/07/生信-转录组学习笔记07差异基因分析/" itemprop="url">转录组学习笔记07-差异基因分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-07T12:00:00+08:00">
+                2017-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,050
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>利用DEseq2包进行分析不同组之间的差异。都是参考<a href="http://www.360doc.com/content/17/1023/22/41791033_697550480.shtml" target="_blank" rel="external">徐洲更.(伪)从零开始学转录组(7):差异基因表达分析</a>的。</p>
+<p>导入数据，构建 DESeq2 所需的 DESeqDataSet 对象，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">library(DESeq2)</div><div class="line">countData &lt;- raw_count_filt[,2:5]</div><div class="line">condition &lt;- factor(c(&quot;control&quot;,&quot;KD&quot;,&quot;KD&quot;,&quot;control&quot;))</div><div class="line">dds &lt;- DESeqDataSetFromMatrix(countData, DataFrame(condition), design= ~ condition )</div></pre></td></tr></table></figure>
+<h2 id="过滤掉低low-count">过滤掉低low count</h2>
+<p>接着， 过滤掉一些low count数据（通常是count为0的read），节省内存，提高运行速度，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">nrow(dds)</div><div class="line">dds &lt;- dds[ rowSums(counts(dds)) &gt; 1, ]</div><div class="line">nrow(dds)</div></pre></td></tr></table></figure></p>
+<h2 id="使用deseq进行差异表达分析">使用DESeq进行差异表达分析：</h2>
+<p>DESeq包含三步，estimation of size factors（estimateSizeFactors)， estimation of dispersion（estimateDispersons)， Negative Binomial GLM fitting and Wald statistics（nbinomWaldTest），可以分布运行，也可用一步到位，最后返回 results可用的DESeqDataSet对象，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dds &lt;- DESeq(dds)</div></pre></td></tr></table></figure>
+<blockquote>
+<p>estimating size factors estimating dispersions gene-wise dispersion estimates mean-dispersion relationship final dispersion estimates fitting model and testing</p>
+</blockquote>
+<p>出现上述结果表示运行结束，过程大概是十几秒。 可以通过<code>result</code>来查看运行的结果，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">res &lt;- results(dds)</div></pre></td></tr></table></figure></p>
+<p>可用mcols查看每一项结果的具体含义，比如说log2FoldChange 表示倍数变化取log2结果，还能画个火山图。padj 就是用BH对多重试验进行矫正。如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mcols(res, use.names = TRUE)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq112.png">
+
+</div>
+<p>用summary可以看描述性的结果，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq113.png"></p>
+<h3 id="绘制ma图">绘制MA图</h3>
+<blockquote>
+<p>An MA plot is an application of a Bland–Altman plot for visual representation of genomic data. The plot visualises the differences between measurements taken in two samples, by transforming the data onto M (log ratio) and A (mean average) scales, then plotting these values. Though originally applied in the context of two channel DNA microarray gene expression data, MA plots are also used to visualise high-throughput sequencing analysis —From wikipeida</p>
+</blockquote>
+<p>M表示log fold change，衡量基因表达量变化，上调还是下调。A表示每个基因的count的均值。根据summary可知，low count的比率很高，所以大部分基因表达量不高，也就是集中在0的附近（log2(1)=0，也就是变化1倍）,提供了模型预测系数的分布总览。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">plotMA(res, ylim = c(-5,5))</div><div class="line">topGene &lt;- rownames(res)[which.min(res$padj)]</div><div class="line">with(res[topGene, ], &#123;</div><div class="line">  points(baseMean, log2FoldChange, col=&quot;dodgerblue&quot;, cex=2, lwd=2)</div><div class="line">  text(baseMean, log2FoldChange, topGene, pos=2, col=&quot;dodgerblue&quot;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnqseq114.png"></p>
+<p>如果经过lfcShrink 收缩log2 fold change， 结果会好看很多 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">res.shrink &lt;- lfcShrink(dds, contrast = c(&quot;condition&quot;,&quot;KD&quot;,&quot;control&quot;), res=res)</div><div class="line">plotMA(res.shrink, ylim = c(-5,5))</div><div class="line">topGene &lt;- rownames(res)[which.min(res$padj)]</div><div class="line">with(res[topGene, ], &#123;</div><div class="line">  points(baseMean, log2FoldChange, col=&quot;dodgerblue&quot;, cex=2, lwd=2)</div><div class="line">  text(baseMean, log2FoldChange, topGene, pos=2, col=&quot;dodgerblue&quot;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq115.png"></p>
+<h3 id="寻找差异基因">寻找差异基因</h3>
+<p>提取差异基因</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">res.deseq2 &lt;- subset(res, padj &lt; 0.05)</div></pre></td></tr></table></figure>
+<h3 id="使用edger进行差异基因分析">使用edgeR进行差异基因分析</h3>
+<p>edgeR使用DGEList函数读取count matrix数据，也就说你需要提供一个现成的matrix数据，而不是指望它能读取单独的文件，然后进行合并，其实可以用 tximport 或 DESeqDataSetFromHTSeq 读取单独的文件，然后传递给DGEList。</p>
+<h4 id="第一步-构建dgelist对象">第一步： 构建DGEList对象</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">library(edgeR)</div><div class="line">group &lt;- factor(c(&quot;control&quot;,&quot;KD&quot;,&quot;KD&quot;,&quot;control&quot;))</div><div class="line">genelist &lt;- DGEList(counts=raw_count_filt[,2:5], group = group)</div></pre></td></tr></table></figure>
+<h4 id="第二步-过滤-low-counts数据">第二步： 过滤 low counts数据。</h4>
+<p>与DESeq2的预过滤不同，DESeq2的预过滤只是为了改善后续运算性能，在运行过程中依旧会自动处理low count数据，edgeR需要在分析前就要排除那些low count数据，而且非常严格。从生物学角度，有生物学意义的基因的表达量必须高于某一个阈值。从统计学角度上， low count的数据不太可能有显著性差异，而且在多重试验矫正阶段还会拖后腿。 综上所诉，放心大胆的过滤吧。</p>
+<p>根据经验，基因至少在某一些文库的count超过10 ~ 15 才被认为是表达。这一步全靠尝试， 剔除太多就缓缓，剔除太少就严格点。 我们可以简单的对每个基因的raw count进行比较，但是建议用CPM（count-per-million)标准化 后再比较，避免了文库大小的影响。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># 简单粗暴的方法</div><div class="line">keep &lt;- rowSums(genelist$count) &gt; 50</div><div class="line"># 利用CPM标准化</div><div class="line">keep &lt;- rowSums(cpm(genelist) &gt; 0.5 ) &gt;=2</div><div class="line">table(keep)</div><div class="line">genelist.filted &lt;- genelist[keep,,keep.lib.sizes=FALSE]</div></pre></td></tr></table></figure>
+<p>这里的0.5(即阈值）等于 10/(最小的文库的 read count数 /1000000)，keep.lib.size=FALSE表示重新计算文库大小。</p>
+<p>第三步： 根据组成偏好(composition bias)标准化。edgeR的calcNormFactors函数使用TMM算法对DGEList标准化.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">genelist.norm &lt;- calcNormFactors(genelist.filted)</div></pre></td></tr></table></figure>
+<p>注 大部分的mRNA-Seq数据分析用TMM标准化就行了，但是也有例外，比如说single-cell RNA-Seq(Lun, Bach, and Marioni 2016), 还有就是global differential expression， 基因组一半以上的基因都是差异表达的，请尽力避免，(D. Wu et al. 2013)， 不然就需要用到内参进行标准化了(Risso et al. 2014).</p>
+<p>第四步： 实验设计矩阵(Design matrix)， 类似于DESeq2中的design参数。 edgeR的线性模型和差异表达分析需要定义一个实验设计矩阵。很直白的就能发现是1vs0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">design &lt;- model.matrix(~0+group)</div><div class="line">colnames(design) &lt;- levels(group)</div></pre></td></tr></table></figure>
+<p>第五步： 估计离散值（Dispersion）。前面已经提到负二项分布（negative binomial，NB)需要均值和离散值两个参数。edgeR对每个基因都估测一个经验贝叶斯稳健离散值（mpirical Bayes moderated dispersion），还有一个公共离散值（common dispersion，所有基因的经验贝叶斯稳健离散值的均值）以及一个趋势离散值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">genelist.Disp &lt;- estimateDisp(genelist.norm, design, robust = TRUE)</div><div class="line">plotBCV(genelist.Disp)</div></pre></td></tr></table></figure>
+<p>还可以进一步通过quasi-likelihood (QL)拟合NB模型，用于解释生物学和技术性导致的基因特异性变异 (Lund et al. 2012; Lun, Chen, and Smyth 2016).</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">fit &lt;- glmQLFit(genelist.Disp, design, robust=TRUE)</div><div class="line">head(fit$coefficients)</div></pre></td></tr></table></figure>
+<p>第六步: 差异表达检验（1）。这一步主要构建比较矩阵，类似于DESeq2中的results函数的 contrast 参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cntr.vs.KD &lt;- makeContrasts(control-KD, levels=design)</div><div class="line">res &lt;- glmQLFTest(fit, contrast=cntr.vs.KD)</div><div class="line">ig.edger &lt;- res$table[p.adjust(res$table$PValue, method = &quot;BH&quot;) &lt; 0.01, ]</div></pre></td></tr></table></figure>
+<p>这里用的是glmQLFTest而不是glmLRT是因为前面用了glmQLTFit进行拟合，所以需要用QL F-test进行检验。如果前面用的是glmFit，那么对应的就是glmLRT. 作者称QL F-test更加严格。多重试验矫正用的也是BH方法。</p>
+<p>后续就是提取显著性差异的基因用作下游分析，做一些图看看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">topTags(res,n=10)</div><div class="line">is.de &lt;- decideTestsDGE(res)</div><div class="line">summary(is.de)</div><div class="line">plotMD(res, status=is.de, values=c(1,-1), col=c(&quot;red&quot;,&quot;blue&quot;),legend=&quot;topright&quot;)</div></pre></td></tr></table></figure>
+<p>如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq116.png"></p>
+<p>第六步：差异表达检验（2）。上面找到的显著性差异的基因，没有考虑效应值，也就是具体变化了多少倍。我们也可用找表达量变化比较大的基因，对应的函数是 glmTreat。</p>
+<h3 id="使用limma进行差异分析">使用limma进行差异分析</h3>
+<p>导入read count， 保存为专门的对象用于后续分析 原始数据过滤，根据标准化read count 或者 raw count 作为筛选标准 raw read count 标准化 通过各种算法（如经验贝叶斯，EM）预测dispersion离散值 广义线性模型拟合数据 差异分析，也就是统计检验部分</p>
+<p>Limma原先用于处理基因表达芯片数据。如果你仔细看edgeR导入界面，你就会发现，edgeR有一部分功能依赖于limma包。Limma采用经验贝叶斯模型（ Empirical Bayesian model）让结果更稳健。</p>
+<p>在处理RNA-Seq数据时，raw read count先被转成log2-counts-per-million (logCPM)，然后对mean-variance关系建模。建模有两种方法：</p>
+<p>精确权重法（precision weights）也就是“voom” 经验贝叶斯先验趋势（empirical Bayes prior trend），也就是”limma-trend“</p>
+<p>数据预处理： Limma使用edgeR的DGEList对象，并且过滤方法都是一致的，对应edgeR的第一步,第二步， 第三步</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">library(edgeR)library(limma)</div><div class="line">group &lt;- factor(c(&quot;control&quot;,&quot;KD&quot;,&quot;KD&quot;,&quot;control&quot;))</div><div class="line">genelist &lt;- DGEList(counts=raw_count_filt[,2:5], group = group)</div><div class="line">### filter base  use CPM</div><div class="line">keep &lt;- rowSums(cpm(genelist) &gt; 0.5 ) &gt;=2table(keep)</div><div class="line">genelist.filted &lt;- genelist[keep, ,keep.lib.sizes=FALSE]</div><div class="line">### normalizaition</div><div class="line">x &lt;- calcNormFactors(x, method = &quot;TMM&quot;)</div></pre></td></tr></table></figure></p>
+<p>差异表达分析: 使用“limma-trend”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">design &lt;- model.matrix(~0+group)</div><div class="line">colnames(design) &lt;- levels(group)</div><div class="line">logCPM &lt;- cpm(genelist.norm, log=TRUE, prior.count=3)</div><div class="line">fit &lt;- lmFit(logCPM, design)</div><div class="line">fit &lt;- eBayes(fit, trend=TRUE)</div><div class="line">topTable(fit, coef=ncol(design))</div></pre></td></tr></table></figure>
+<p>差异表达分析: 使用”limma-voom“</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">### DGE with voom</div><div class="line">v &lt;- voom(genelist.norm, design, plot=TRUE)</div><div class="line">#v &lt;- voom(counts, design, plot=TRUE)</div><div class="line">fit &lt;- lmFit(v, design)</div><div class="line">fit &lt;- eBayes(fit)</div><div class="line">all &lt;- topTable(fit, coef=ncol(design), number=10000)</div><div class="line">sig.limma &lt;- all[all$adj.P.Val &lt; 0.01, ]</div><div class="line">fit &lt;- treat(fit, lfc=log2(1.2))</div><div class="line">topTreat(fit, coef=ncol(design))</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/06/生信-转录组学习笔记06reads计数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2395,297 +2637,6 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/20/生信-RNA-seq入门/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/20/生信-RNA-seq入门/" itemprop="url">生信笔记-RNA-Seq分析简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-20T12:00:00+08:00">
-                2017-09-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
-                    <span itemprop="name">生物信息学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,366
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  12
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这是对<a href="http://mp.weixin.qq.com/s/KQ7wfCTCT1UIEeMfJBC78Q" target="_blank" rel="external">沈梦圆PPT</a>的整理。是一篇非常好的关于RNA-seq数据分析的文章。</p>
-<h3 id="rna-seq到底测的是什么">RNA-seq到底测的是什么？</h3>
-<p>mRNA在生物个体内RNA的组分中只占很小的一部分，rRNA占绝大多数。一般我们说RNA-seq指的都是mRNA-seq，后面的流程也都是主要针对mRNA-seq数据分析的。在科学家们的努力下，可以把那些非编码RNA提取出来建库，进行测序。 一个成功的RNA-seq研究，起决定性因素的是一个好的实验设计。还依赖于建库的类型、测序深度和设置适于的生物重复。并且尽量减少测序本身以外带来的数据误差。</p>
-<h4 id="真核生物与原核生物的mrna结构差异">真核生物与原核生物的mRNA结构差异</h4>
-<ol style="list-style-type: decimal">
-<li>真核生物mRNA由5’端帽子结构、5’端非翻译区、翻译区、3’端聚腺苷酸尾巴构成。</li>
-<li>原核生物mRNA无5’端帽子结构和3’端聚腺苷酸尾巴。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq3.png"></li>
-</ol>
-<h3 id="数据分析前工作">数据分析前工作</h3>
-<p>如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq4.png"></p>
-<h4 id="实验设计">实验设计</h4>
-<p>需要注意的问题：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq5.png">
-
-</div>
-<ol style="list-style-type: decimal">
-<li>单端测序还是双端测序？</li>
-<li>测序读长是多少？</li>
-<li>是否建链特异性文库？</li>
-<li>需要多少数据量？（测序深度）</li>
-<li>设置多少个生物学重复比较合适？</li>
-<li>如果我们做了生物重复还要做技术重复么？</li>
-</ol>
-<h3 id="文库构建">文库构建</h3>
-<p>1.一般生物体中的的RNA中，rRNA占绝大多数，含量超过90%，而mRNA的含量在1-2%左右。对于真核生物，一般使用加poly(A)选择性富集mRNA或者而原核生物则是通过去除rRNA； 2.是否建stand-preserving库； 3.对于Illumina，测序插入片段一般小于500bp。确定合适长度的插入片段是后续测序和分析的关键； 4.单端还是双端测序毫无疑问的是，单端测序更便宜一些，如果你研究的某个物种的基因表达水平，并且它的转录组已经被注释很好了，单端测序产生的数据量一般是足够的了。双端测序呢，它的读长更长，更适合于那些没有被注释的转录组物种的研究，便于其转录本的从头拼接。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq6.png"></p>
-<h3 id="测序深度和重复数">测序深度和重复数</h3>
-<ol style="list-style-type: decimal">
-<li>测序深度和数据量不能一味加大。测序深度虽然可以提高基因定量和检测的敏感性（低丰度的基因），但是同时也会增加一些噪音和一些无用的转录本。</li>
-<li>重复数，很重要。（举例子：比较两个班的语文成绩，抽取一个人代表一个班来比较，显然是不科学的。）增加重复数可以减少实验误差，对提高结果的可靠性，是非常有意义的。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq7.png"></li>
-</ol>
-<p>误差分为技术误差和生物学差异。技术误差-可以通过选择最优化的实验测序程序；生物误差-三个生物学重复。 然后设定生物学重复对差异基因的检出率（真阳性率，TPR）的提高具有明显效果。上面说增加测序深度可以检测到低丰度基因，但是对任何样品来说的当测序深度增加再增加，它就会到达平台期。由于科研经费有限，无法无限制地增加样本数或数据量。 所以在生物学重复数和单个样本测序量上必须找到平衡点。在总数据量不变的情况下，将总数据量分配到更多的生物学重复样本中，差异分析结果的可靠性在不断提升。对于RNA-seq，生物学重复数的价值要大于单个样本测序量。但增加生物学重复的样本数，意味着要增加建库费用。因此，即使总数据不变，设置过多的生物学重复也是不合理的。 我们最终确定设置多少生物学重复还是需要看样本个体之间的差异大不大，这点我们一般都很清楚，在测序之前，如果你所研究的现象在两个实验样本之间差异很稳定的话，就可以少设置一些重复，差异不稳定的话有时候设置10个/20个都不够。具体问题具体分析.</p>
-<p><strong>测序深度（Sequencing depth），也叫乘数</strong>，指每个碱基被测序的平均次数，是用来衡量测序量的首要参数。研究表明，增加测序深度，测序量从1.6M条reads增加到20M条reads,（75bp）但到10M条reads时就已经达到平衡了，80%的基因转录本被检测到。在此基础上增加测序量，它们会比对到已经存在的转录本上。因此即使提高测序深度，低表达水平的基因的检测是比较困难的。并且提高测序深度确实能够增加基因差异表达的敏感度，但是并不能保证检测到的差异具有生物学意义。</p>
-<p>直观一些说，如果某个基因在RNA-seq结果显示差异表达，但QPCR结果表明这个基因表达差异不显著，可以认为这个基因RNA-seq结果为假阳性；反之，这个结果就是真阳性。</p>
-<p><strong>生物学重复对差异表达分析的影响</strong></p>
-<p>在单样本测序量保持不变的情况下，随着生物学重复(n)的提高，差异分析的假阳性率（FP R）基本稳定，但真阳性率（TPR）在不断提高。也就是说提高生物学重复数，实验对差异基因的检测更加敏感，那些差异倍数较小或差异量较低的差异表达基因（此类基因的差异检测难度较大）能够更加容易被检测到。</p>
-<p><strong>判定差异分析结果可靠性的指标</strong></p>
-<p>假阳性与真阳性 假阳性率（FPR）：真实非差异表达的基因中，被错误判定为差异表达的比例，FPR越低越好。 真阳性率（TRP）：真实差异表达的基因中，能够正确判定为差异表达的比例，TRP越高越好。</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq1.png">
-
-</div>
-<p>提高生物学重复数，实验对差异基因的检验更加敏感。那些差异倍数较小或差异量较低的差异表达基因（此类基因的差异检测难度较大）能够更加容易被检测到。</p>
-<p>在一定的生物学重复数（n）的情况下，随着单样本测序量（Depth）的提高（25% → 100%），真阳性率（TPR）都只有有限的提高（图1）。例如在n=3的情况下，单个样本的测序量从25%提高到100%，TPR仅仅从6.24%提高到8.95%。在表3中，如果Depth等于25%不变，当n从2提高到12，TPR的提高则是非常明显的。因此测序深度对结果改善效果不如增加生物学重复。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq8.png"></p>
-<p>总数据量不变，生物学重复数与单样品测序量最佳组合 如果保持总测序量不变（即如果生物量重复数为n,则单个样品的测序量降低为1/n,总数据量为n*1/n=1,保持不变）。如图A,灰色实线代表不同的生物学重复数（n）和单样本数据量（1/n）组合的情况下，真阳性率（TPR）的变化。结果表明，随着n的提高，TPR率不断提高。例如n=2,TPR约为3%，如果n=6,TPR则提高到24.3%。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq9.png"></p>
-<p>同时我们也可以对“单样本测序量对差异表达分析的影响”再进行深入观察。如果n保持不变，但单个样本的数据量不断降低，TPR的降低十分缓慢。例如，n=3,单个样本的数据量从100%降低到15%，TPR的值一直处于平台期，仅仅从9%降低到5%。 但是不同的生物学重复数和单样本测序量的组合，对假阳性率（ FPR）的影响却较小。如图B，灰色实线代表不同生物学重复数（n）和单样本数据量（1/n）组合的情况下，真阳性率（FPR）的变化。虽然 n 从2 变化到 96，FPR 基本没有太大变化。</p>
-<p>从图中我们很容易发现，基于负二项分布的差异分析检验（P value），FPR 对生物学重复数和单个样本数据量均不敏感，始终保持低于 0.1%水平。或者说，这个算法对 FPR 的控制还是非常理想的。</p>
-<h3 id="讨论">讨论</h3>
-<p>随着测序单价的下降，目前市场上 RNA-seq 类项目的单样本测序量正在不断提高。以 2G，PE100 测序的表达谱项目为例，其对应的测序量为 20M 条 reads。如果一条长度为 1kbp 的低表达基因的表达量为 RPKM=0.5，其理论上可以检测到的 reads 数为 20×0.5=10。所以低丰度基因的检测，对 RNA-seq 这个技术来说并非最大问题。</p>
-<p>第二个问题“转录本表达量的高低变化”比“转录本的有无”更具有普遍的生物学意义。虽然个别基因的表达量变化程度，可以使用 Qpcr 来验证。但我们往往也使用所有差异基因来统计某些规律。例如使用差异基因的 pathway 富集分析来寻找与性状相关的 pathway。如果在全局水平的差异基因集并不可靠，那么 pathway富集分析得出的结论的可靠性自然也受到影响。而全局水平的差异基因数量巨大，是难以使用 Qpcr 验证的。因此，定量以及差异分析的准确性是在 RNA-seq 中更值得关心的问题。</p>
-<h4 id="测序设计">测序设计</h4>
-<p>RNA-seq文库的制备和测序过程：RNA碎裂，cDNA合成，接头连接，PCR扩增，加标签（多样品混合测序），上泳池测序; <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq10.png"></p>
-<h5 id="如何减少误差">如何减少误差：</h5>
-<ol style="list-style-type: decimal">
-<li>使用末端带随机核酸的接头或者使用化学碎裂法代替Rnase III碎裂法；</li>
-<li>不同批次实验或者不同runs。</li>
-</ol>
-<ol style="list-style-type: lower-alpha">
-<li>如果样品太多在一个批次或者一个run跑不完，为了避免技术误差造成太大的实验误差，要把样品随机分配到每个批次或runs中;(到底怎么设计，我们要讨论一下！！)</li>
-<li>如果你的样品是多样品混合测序，每个样品要单独加上标签，每个lanes要保证足够的测序深度，为了保证所有的样品在每个lane中都有。如果送给公司去做的话，我们要选择建库水平好些的，并且要求他们这么去做，应该会更好。</li>
-</ol>
-<h4 id="质量控制">质量控制</h4>
-<h5 id="重复数">重复数：</h5>
-<ol style="list-style-type: decimal">
-<li>技术重复（spearman秩相关系数R²&gt;0.9）;</li>
-<li>生物重复（主成分分析PCA）</li>
-</ol>
-<h5 id="原始数据的质量控制">原始数据的质量控制：</h5>
-<p>原始数据回来后，你做完备份以后，做的第一件事情就是看看数据质量如何，一般来自llumina测序平台用软件FastQC看；其他平台的数据用软件NGSQC。一般会有原始数据的序列质量，GC含量，存在的接头以及K-mers子串图并且重复序列太多的reads。并且reads 3‘末端的质量低于前段，原因是随着测序读长的增加，酶活性下降，荧光强度也在下降，因此测序数据质量逐渐降低乃是自然趋势。常用的数据过滤的软件有FASTX-Toolkit and Trimmomatic，其他还有许多，你也可以自己写代码处理数据。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq11.png"></p>
-<h5 id="reads比对后的质量控制评估比对质量的指标">Reads比对后的质量控制(评估比对质量的指标)：</h5>
-<p>比对上的reads占总reads的百分比； Reads比对到外显子和参考链上的覆盖度是否一致；比对到基因组序列：多重比对reads？比对到转录组序列：来自未被注释的转录本的reads会丢失； 产生更多的多重比对reads; 转录本被定量以后，应该看一下GC含量和基因长度偏差，确定定量的方法是否适用。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq12.png"></p>
-<h5 id="数据分析">数据分析</h5>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq13.png">
-
-</div>
-<h5 id="转录本分析">转录本分析</h5>
-<p>需要注意的问题： 1. 比对到基因组序列、比对到转录组序列？ 2. 一条reads比对到多个地方？ 3. 用什么来表示表达量的高低？</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq14.png">
-
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq15.png">
-
-</div>
-<p>把所有样本的reads混合用于转录本的拼接。二代测序的转录组reads用于拼接还是存在一些问题的，最终拼接结果不太理想。一个转录本的拼接结果会是10~100contigs。三代测序的读长直接可以把一个转录本读完了，完全不需要拼接。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq16.png"></p>
-<h5 id="表达定量">表达定量</h5>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq17.png">
-
-</div>
-<p>RPKM/FPKM/TPM用来表示RNA-seq基因表达水平的值；对于单端测序RPKM和FPKM值是一样的，FPKM可以转换成TPM。Cufflinks(支持双端测序数据，并且需要GTF格式的注释文件)。</p>
-<h5 id="表达差异分析">表达差异分析</h5>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq18.png">
-
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq19.png">
-
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq20.png">
-
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq21.png">
-
-</div>
-<h4 id="功能分析">功能分析</h4>
-<p>功能分析是标准转录组分析流程的最后一步，分析差异表达基因的分子功能和代谢通路。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseq22.png"></p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rnaseq23.png">
-
-</div>
-<p>参考资料： 1. http://www.biotrainee.com/thread-166-1-1.html</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2736,7 +2687,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2758,7 +2709,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2832,7 +2783,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共199.0k字</span>
+  <span class="post-count">博客全站共204.2k字</span>
 </div>
 
         
