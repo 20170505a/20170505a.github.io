@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="统计学,统计基础," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言——主要内容 这篇笔记是StatQuest视频教程的第16到22。其中第16内容是线性回归（Linear Regression，它也叫一般线性模型 即General Linear Models）的基本原理；第17内容是在R语言中进行线性回归；第18内容是多重线性回归；第19内容是R主语言与多重线性回归；第20内容是一般线性模型中的t检验与ANOVA；第21内容是设计矩阵；第22内容是在R语言">
+<meta name="keywords" content="统计学,统计基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StatQuest学习笔记05——线性模型">
+<meta property="og:url" content="http://rvdsd.top/2018/06/07/生物统计-StatQuest学习笔记05-线性模型/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言——主要内容 这篇笔记是StatQuest视频教程的第16到22。其中第16内容是线性回归（Linear Regression，它也叫一般线性模型 即General Linear Models）的基本原理；第17内容是在R语言中进行线性回归；第18内容是多重线性回归；第19内容是R主语言与多重线性回归；第20内容是一般线性模型中的t检验与ANOVA；第21内容是设计矩阵；第22内容是在R语言">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/b5am62BhE2.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/gDe3AGfDBj.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/llg8BiCmIl.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/E4GC21lG41.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/d2l3L45a4e.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/hLfHFHcjcI.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/kJG4CG8I8L.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/ADA8Jeb8Dl.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/fFIaGgfmAA.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/9ejGaaCEH9.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/mbkIaFaBI5.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/am90i94fe3.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/biakGCAiG1.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/HL5IbhEmFb.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/hG3E3cf0Km.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/jH78Fa0ICc.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/Kc9JJ6bgB1.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/3fh8agIiBH.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/g98DJFkcIG.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/k5AI8FkF13.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/fjGACBGgKK.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/K10C6i7hcK.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/DmeicEd6f8.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/jBam00c63F.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/cA3bj677If.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/3K885habj7.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/4Fim4ElIHI.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/52aL6bKfGg.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/AH5Edak0Em.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/dDblkBkjkE.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/50bBJ7ALcf.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/9FGeEHF7lI.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/lgDGeBbE07.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/61Ib3a9mCD.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/4becki579f.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/A0D1LmjL79.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/KeCFjAGcKB.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/68kEKmLaGc.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/2a18Lh3dm8.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/hh1jDb2m3b.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/1IAk8bAGJj.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/JFeFa4H7j1.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/Em7j9A2ed1.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/aedJcKB2iH.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/I1B6K7Ahi8.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/4ebc09Fbfm.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/D7Bej0lC12.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/8aE5cflKFH.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/AdAhH4ffki.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/Fe7mjdAjc4.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/mimdidHdEd.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/deie0Im1kC.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/dE1GCC46KI.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/f1FCFjHd46.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/K5J78EcCA6.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/99GH7G9bCC.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/8mABdhme89.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/Bccac0BCk4.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/40ehheJDij.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/d9Kfka3l1h.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/c3KFKc0Dii.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/52IAkleAm9.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/mB45b3bhFj.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/LmCbG3mKf7.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/idblehLefG.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180608/1DlbA0BIHC.png?imageslim">
+<meta property="og:updated_time" content="2018-06-08T02:36:38.588Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="StatQuest学习笔记05——线性模型">
+<meta name="twitter:description" content="前言——主要内容 这篇笔记是StatQuest视频教程的第16到22。其中第16内容是线性回归（Linear Regression，它也叫一般线性模型 即General Linear Models）的基本原理；第17内容是在R语言中进行线性回归；第18内容是多重线性回归；第19内容是R主语言与多重线性回归；第20内容是一般线性模型中的t检验与ANOVA；第21内容是设计矩阵；第22内容是在R语言">
+<meta name="twitter:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180607/b5am62BhE2.png?imageslim">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2018/06/07/生物统计-StatQuest学习笔记05-线性模型/"/>
+
+
+
+
+
+  <title>StatQuest学习笔记05——线性模型 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">学习过程中的输出</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/07/生物统计-StatQuest学习笔记05-线性模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">StatQuest学习笔记05——线性模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-07T12:10:54+08:00">
+                2018-06-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,420
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  17
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言主要内容">前言——主要内容</h2>
+<p>这篇笔记是StatQuest视频教程的第16到22。其中第16内容是线性回归（Linear Regression，它也叫一般线性模型 即General Linear Models）的基本原理；第17内容是在R语言中进行线性回归；第18内容是多重线性回归；第19内容是R主语言与多重线性回归；第20内容是一般线性模型中的t检验与ANOVA；第21内容是设计矩阵；第22内容是在R语言中设计矩阵。</p>
+<h2 id="线性回归主要思想">线性回归主要思想</h2>
+<p>线性回归的主要思想就是利用最小二乘法找到最佳拟合曲线，计算<span class="math inline">\({R}^2\)</span>，计算p值，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/b5am62BhE2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在第4篇笔记中，我们利用了最小二乘法计算了小鼠的体重与大小的线性关系，具体的计算过程可以参见上一篇笔记，最终的线性回归方程如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/gDe3AGfDBj.png?imageslim" alt="mark"></p>
+<p>由于这个方程的斜率不为0，因此我们知道小鼠的体重的话，就能够预测小鼠的大小。此时我们要看一下这个回归方程的好坏程度，也就是看一下<span class="math inline">\({R}^2\)</span>的意义，第一步，计算小鼠的平均大小，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/llg8BiCmIl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>将这些小鼠大小的点投射到y轴上，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/E4GC21lG41.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>下图中的黑色横线就是小鼠大小的平均值，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/d2l3L45a4e.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>接着计算离均差平方和（SS），这里需要与残差平方和进行区分。</p>
+<p>离均差平方和是指一组数据中，每个数据与均值差值的平方，英文就是SS，全称为sum of squares of deviation from mean ），而残差平方和（SSE）是指观察值与拟合值之间的差异的平方，图计算的是SS：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/hLfHFHcjcI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>SS的公式，而这组数据的方差则是指SS除以样本数，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/kJG4CG8I8L.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时再回到原始数据，我们将通过最小二乘得到的曲线与每个原始值差值的平方加起来，这个是残差平方和SS(fit)（这个其实就是上篇笔记中提到的SSE），残差平方和除以样本数，就是残差的平均方差（即Var(fit)=SS(fit)/n，这个值没有找到相应的术语），它的公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/ADA8Jeb8Dl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>通常来说，变异等于总的离均差平方和除以样本数，也就是均方差，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/fFIaGgfmAA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>下图的左图是小鼠的大小的变异（variance），右图是原始数据与回归曲线之间的变异：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/9ejGaaCEH9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果将上述左图的点与自身均值差值的平方和与右图中原始数据的点和拟合的曲线的距离相比，右边这种通过最小二乘法得到的曲线的变异更小。因此我们在右图中可以知道，如果考虑了小鼠的体重，那么这条曲线可以解释小鼠大小的变异，也就是说，小鼠体重越大，它的大小就越大，反之，也是如此，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/mbkIaFaBI5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p><span class="math inline">\({R}^2\)</span>指的就是小鼠的体重可以解释小鼠大小的程度，它的公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/am90i94fe3.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>经计算，发现原始数据的均言状为11.1，拟合曲线的均方差为4.4，那么<span class="math inline">\({R}^2\)</span>的结果如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/biakGCAiG1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从上图我们可以说，当考虑了小鼠的体重时，小鼠的大小的变异程度会降低60%（这是与原始数据只考虑小鼠的大小，不考虑小鼠的体重相比），也可以说，小鼠大小的变异可以解释小鼠体重变异的60%。</p>
+<p>我们也可以采用平方和来计算，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/HL5IbhEmFb.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>我们再看一个案例，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/hG3E3cf0Km.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在这个案例中，拟合曲线的变异是0，因此小鼠的体重可以解释小鼠大小100%的变异。</p>
+<p>再看一个案例，在这个案例中，我们知道小鼠的体重，但是无法根据小鼠的体重来预测小鼠的大小，因为原始数据的变异为11.1，拟合曲线的变异也是11.1，那么<span class="math inline">\({R}^2\)</span>就等于0，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/jH78Fa0ICc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>当我们计算离均差平方和（SS(mean)）时，我们会将忽略小鼠的体重，将每个数据点投射到y轴（也就是小鼠的大小上），如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/Kc9JJ6bgB1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时我们绘制一条小鼠大小的平均值曲线，如下图所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/3fh8agIiBH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时计算这些数据点距离这个平均值曲线的距离，也就是SS(mean）)，最终我们会得到这个回归曲线，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/g98DJFkcIG.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>以上就是最小二乘法求线性回归的基本思想，它可以应用到更复杂的公式中去，它的思想就是，先计算原始数据的离均差平方和SS(mean)，再计算这些数据与拟合曲线的的差值平方和，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/k5AI8FkF13.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="复杂案例">复杂案例</h2>
+<p>此时我们再看一个稍微复杂的案例。</p>
+<p>还是以小鼠为例说明，如果我们知道小鼠的体重（<code>weight</code>），尾巴长度（<code>tail length</code>）和小鼠的身体长度（<code>body length</code>），我们就可以根据前两个变量来预测第三个变量，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/fjGACBGgKK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，我们将这3个变量投射到一个三维坐标系中，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/K10C6i7hcK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>例如我们有一个数据，它在坐标中的位置就如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/DmeicEd6f8.png?imageslim" alt="mark"></p>
+<p>现在把所有的数据点都放到这个坐标中，则如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/jBam00c63F.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，我们利用最小二乘法来计算拟合曲线，由于这是三维坐标，这个曲线其实是不是曲线（在二维坐标中是曲线，在三维坐标中就是一个平面了），而是一个平面，如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/cA3bj677If.png?imageslim" alt="mark"></p>
+<p>这个平面的方程就如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/3K885habj7.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中，y是身体长度，x是体重，z是尾巴长度，而0.1则是在y轴上的截矩。如果我们知道一个小鼠的体重和尾巴长度，那么我们就能计算出小鼠的身体长度，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/4Fim4ElIHI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，我们按照二维坐标的计算方式来计算<span class="math inline">\({R}^2\)</span>，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180607/52aL6bKfGg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，这个z轴数据是没用的，它并不会用于计算SS(fit)，此时可以将z值视为0并不会影响预测小鼠的身体长度，然后使用最小二乘法，如下所示（这一步的推导过程我不理解）：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/AH5Edak0Em.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在上图中，把z视为0，意味着，与更少的参数相比，更多的参数并不会让SS(fit)更差（字面翻译，具体原理还没弄懂）。换句话说，像下面的这个公式那样：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/dDblkBkjkE.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>虽然Mouse size这个等号后面有很多参数，但是这个公式与下面Mouse size = 0.3 + mouse weight是差不多的，剔除的那几个参数并不会影响Mouse size，因此可以把那些不必要的参数系数设为0，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/50bBJ7ALcf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>由于存在一些随机因素，小老鼠在这个数据集中得到硬币朝上（get heads）概率并不比大老鼠的高，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/9FGeEHF7lI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>因此在这个公式中，如果有更多的参数，那么我们就有了更多的随机事情来降低SS(fit)，导致产生一个更好的<span class="math inline">\({R}^2\)</span>，因此人们会使用一个调整的<span class="math inline">\({R}^2\)</span>（adjusted <span class="math inline">\({R}^2\)</span>，从本质上来讲，就是参数的数据来对<span class="math inline">\({R}^2\)</span>进行校正。</p>
+<p><span class="math inline">\({R}^2\)</span>虽然是一个很重要的指标，但是它也有一些局限，看下面的案例：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/lgDGeBbE07.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在上图中，只有2个点，计算的SS(mean)=10，SS(fit)=0，后者等于0是因为你总能画出经过两个点的直线，并求出其方程，因此求出的R的平方就是100%，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/61Ib3a9mCD.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>虽然R的平方是100%，这是一个很好的数字，但是任意两个数字都能得到同样的R的平方（其实在利用Qubit测文库的时候，就只是使用了2个标准品，标准品虽然含量非常准，但也是一个非常粗糙的估计，因此在对文库进行定量时，还要配合使用qPCR），下面的这两个数字得到的R的平方也是100%，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/4becki579f.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>为了解决这个问题，我们需要研究一下R的平方是否有统计学意义，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/A0D1LmjL79.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在计算p值之前，我们先看一下<span class="math inline">\({R}^2\)</span>是如何定义的，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/KeCFjAGcKB.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在小鼠的体重与大小的数据中，我们得到的<span class="math inline">\({R}^2\)</span>是0.6，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/68kEKmLaGc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在计算<span class="math inline">\({R}^2\)</span>方面，我们会使用一个统计量，即F，F的公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/2a18Lh3dm8.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p><span class="math inline">\({R}^2\)</span>的计算公式和F统计量的计算公式的分子是一样的，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/hh1jDb2m3b.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>这个分子的意义就是小鼠体重的变异，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/1IAk8bAGJj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>F的分母有点不太一样，它的意义如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/JFeFa4H7j1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在上图中，下图中的蓝色虚线就是拟合曲线与实际值的差值，它的平方和就变异程度，也就是无法被体重解释的小鼠大小的程度，现在再看一下<span class="math inline">\({R}^2\)</span>和F统计量的公式，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/Em7j9A2ed1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>这两个公式的有一部分是一样的，也就是那些平方和，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/aedJcKB2iH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>转换到图形上，则是这个样子：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/I1B6K7Ahi8.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>F统计量分母中的一部分是拟合后的平方和，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/4ebc09Fbfm.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>F后面的那一坨东西是自由度，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/D7Bej0lC12.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>我们此时看一下什么是自由度，就先从红色方框中的部分开始，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/8aE5cflKFH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>拟合曲线中有2个参数，即y=y-intercept + slope x中有intercept和slope这两个参数，它就有2个自由度，而均值的公式是y=y-intercept，它只有一个参数，因此它就是1个自由度。换话句话说，与均值的公式相比，拟合曲线多了一个自由度，即斜率，斜率代表了体重与大小的关系，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/AdAhH4ffki.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>那么原来红色方框中的那一部分的值就是1，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/Fe7mjdAjc4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>那么F统计量的分子就是由这个多出来的参数解释的变异程度，在这个案例中，就是由小鼠的体重解释小鼠大小的变异程度，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/mimdidHdEd.png?imageslim" alt="mark"></p>
+<p>如果我们使用小鼠的体重，尾巴长度来解释小鼠大小的变异，就是这个样子：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/deie0Im1kC.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>它的拟合曲线的自由度就是3，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/dE1GCC46KI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时我们再看一下F统计量的分子，这个分母就是由拟合曲线无法解释的程度，这个分母中的有一个参数n，随后我们会解释，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/f1FCFjHd46.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>直观上讲，如果我们的公式中有更多的的参数，那么我们就需要多的数据来估计它们，例如我们只需要2个点就能绘制出一条直线，但是我们如果要绘制一个平面，那么至少需要3个点。再接着看F统计量，如果拟合曲线比较好，那么F的值就是一个比较大的数字（从公式上也能看出来，拟合比较好的话，肯定是我们解释的程度要远远大于不能解释的程度），如下图所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/K5J78EcCA6.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，我们需要把F值转换为p值，先看一个小案例，下面的是一组随机数据，它们计算出来的F值是2，把F值绘制到一个直方图上，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/99GH7G9bCC.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>再来看一组数据，计算其SS(mean)和SS(fit)，计算F值，再添加到直方图上，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/8mABdhme89.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>再来计算一组随机数据，方法同上，得到F值为1，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/Bccac0BCk4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>不断地重复这个过程，我们会得到很多F值，然后把它们都绘制到直方图上，例如其中一个F值是6，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/40ehheJDij.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从上面的这个图中我们可以知道这些信息：</p>
+<ol style="list-style-type: decimal">
+<li>x轴上对应的是F值，从左到右依次增大；</li>
+<li>F值越大，这个F值的点占到整个直方图中的比例也就越低，换句话讲，就是F值更大，它就是一个越不容易得到的值，如果把得到F值的这个概率定为p，那么，F值越大，p值就越小（也就是说F值越大，它越是一个极端的值，不太容易出现）。</li>
+</ol>
+<p>此时，把上面的直方图用一条曲线拟合起来，事实上，我们在计算F值对应的p值时，通常是使用曲线，而不是直方图，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/d9Kfka3l1h.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时我们看一个F值的分布，F值的分布曲线是由其自由度决定的，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/c3KFKc0Dii.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>再看由两个F分布叠加的图形，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/52IAkleAm9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从这张图形上我们可以看出，自由度越大，F分布的曲线下降得越厉害，也就是说，拟合曲线中的参数越多（自由度高），样本数目赵多，p值越小。其实这也是F分布的原理。</p>
+<h2 id="r语言与线性回归">R语言与线性回归</h2>
+<p>此时我们看一下原始数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">weight = <span class="number">0.9</span>, <span class="number">1.8</span>, <span class="number">2.4</span>, <span class="number">3.5</span>, <span class="number">3.9</span>, <span class="number">4.4</span>, <span class="number">5.1</span>, <span class="number">5.6</span>, <span class="number">6.3</span></div><div class="line">size = <span class="number">1.4</span>, <span class="number">2.6</span>, <span class="number">1.0</span>, <span class="number">3.7</span>, <span class="number">5.5</span>, <span class="number">3.2</span>, <span class="number">3.0</span>, <span class="number">4.9</span>, <span class="number">6.3</span></div></pre></td></tr></table></figure>
+<p>此时绘制出小鼠的体重与其大小的散点图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">weight &lt;- c(<span class="number">0.9</span>, <span class="number">1.8</span>, <span class="number">2.4</span>, <span class="number">3.5</span>, <span class="number">3.9</span>, <span class="number">4.4</span>, <span class="number">5.1</span>, <span class="number">5.6</span>, <span class="number">6.3</span>)</div><div class="line">size &lt;- c(<span class="number">1.4</span>, <span class="number">2.6</span>, <span class="number">1.0</span>, <span class="number">3.7</span>, <span class="number">5.5</span>, <span class="number">3.2</span>, <span class="number">3.0</span>, <span class="number">4.9</span>, <span class="number">6.3</span>)</div><div class="line">mouse.data &lt;- data.frame(weight, size)</div><div class="line">head(mouse.data)</div><div class="line">plot(mouse.data$weight,mouse.data$size)</div><div class="line">mouse.regression &lt;- lm(size~weight, data=mouse.data)</div><div class="line">summary(mouse.regression)</div></pre></td></tr></table></figure>
+<p>图形如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/mB45b3bhFj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>线性回归统计结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; summary(mouse.regression)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = size ~ weight, data = mouse.data)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">    Min      1Q  Median      3Q     Max </div><div class="line">-<span class="number">1.5482</span> -<span class="number">0.8037</span>  <span class="number">0.1186</span>  <span class="number">0.6186</span>  <span class="number">1.8852</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </div><div class="line">(Intercept)   <span class="number">0.5813</span>     <span class="number">0.9647</span>   <span class="number">0.603</span>   <span class="number">0.5658</span>  </div><div class="line">weight        <span class="number">0.7778</span>     <span class="number">0.2334</span>   <span class="number">3.332</span>   <span class="number">0.0126</span> *</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">1.19</span> on <span class="number">7</span> degrees of freedom</div><div class="line">Multiple R-squared:  <span class="number">0.6133</span>,	Adjusted R-squared:  <span class="number">0.558</span> </div><div class="line"><span class="literal">F</span>-statistic:  <span class="number">11.1</span> on <span class="number">1</span> and <span class="number">7</span> DF,  p-value: <span class="number">0.01256</span></div></pre></td></tr></table></figure>
+<p>现在解释一下这个结果：</p>
+<p>第一部分：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Call:</div><div class="line">lm(formula = size ~ weight, data = mouse.data)</div></pre></td></tr></table></figure>
+<p>这一行表示的是使用<code>lm()</code>函数进行线性回归的公式，这里的size是自变量，weight是因变量，数据集来源于<code>mouse.data</code>。</p>
+<p>第二部分：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Residuals:</div><div class="line">    Min      1Q  Median      3Q     Max </div><div class="line">-<span class="number">1.5482</span> -<span class="number">0.8037</span>  <span class="number">0.1186</span>  <span class="number">0.6186</span>  <span class="number">1.8852</span></div></pre></td></tr></table></figure>
+<p>这是残差的结果，它表示原始数据距离拟合曲线的距离的 一些统计情况，如果是理想情况，那么正值与负值的频率是一样的，也就是说原始值在拟合曲线上方与下方的点是一样的。</p>
+<p>第三部分：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </div><div class="line">(Intercept)   <span class="number">0.5813</span>     <span class="number">0.9647</span>   <span class="number">0.603</span>   <span class="number">0.5658</span>  </div><div class="line">weight        <span class="number">0.7778</span>     <span class="number">0.2334</span>   <span class="number">3.332</span>   <span class="number">0.0126</span> *</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">1.19</span> on <span class="number">7</span> degrees of freedom</div></pre></td></tr></table></figure>
+<p>这一部分是经过最小二乘法计算得到出的拟合曲线的系数，其中第1列第1个数字0.5813，就是截矩，截矩下方的0.7778是斜率，那么得到的拟合曲线公式就是：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">size = <span class="number">0.5813</span> + <span class="number">0.7778</span> x weight</div></pre></td></tr></table></figure>
+<p>第2列与第3列是回归曲线的截矩与斜率的标准差与t值。第4列，也就是最后一列，是这些估计值的p值，通常来说，我们并不关注截矩的这个值。也就是说，它的p值大小我们不乎。但是，斜率，也就是说<code>weight</code>的这个p值必须要小于0.05，也就是说，它必须要有统计学意义，只有这样，我们才能对小鼠的大小进行一个可靠的估计，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/LmCbG3mKf7.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>这个案例的线性回归结果中，<code>weight</code>的p值是小于0.05的，也就是说它有意义，它后面有一个<code>*</code>号，这个<code>*</code>表示p值大于0.01，小于0.5，我们可以在统计结果中看到<code>*</code>的数量对应的p值大小。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/idblehLefG.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>最后一行是下面的内容：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Residual standard error: <span class="number">1.19</span> on <span class="number">7</span> degrees of freedom</div></pre></td></tr></table></figure>
+<p>它表示，拟合曲线有7个自由度，残差的标准差为1.19。</p>
+<p>第四部分：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Multiple R-squared:  <span class="number">0.6133</span>,	Adjusted R-squared:  <span class="number">0.558</span> </div><div class="line"><span class="literal">F</span>-statistic:  <span class="number">11.1</span> on <span class="number">1</span> and <span class="number">7</span> DF,  p-value: <span class="number">0.01256</span></div></pre></td></tr></table></figure>
+<p>在这一部分的结果中，我们可以得到这些信息：</p>
+<ol style="list-style-type: decimal">
+<li><code>Multiple R-squared:  0.6133</code>表示的是<span class="math inline">\({R}^2\)</span>，它表示体重可以解释61%的小鼠大小的变异，这已经是很好的结果了；</li>
+<li><code>Adjusted R-squared:  0.558</code>这个是由参数的多少调控后的<span class="math inline">\({R}^2\)</span>的值；</li>
+<li><code>F-statistic:  11.1 on 1 and 7 DF,</code>这表示F的统计量为11.1，1和7是两个自由度；</li>
+<li><code>p-value: 0.01256</code>这是F统计量对应的结果。</li>
+</ol>
+<p>最后我们可以在这个散点图上添加拟合曲线，输入命令<code>abline(mouse.regression, col=&quot;blue&quot;)</code>即可，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180608/1DlbA0BIHC.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="多元线性回归">多元线性回归</h2>
+<h2 id="r语言与多重线性回归">R语言与多重线性回归</h2>
+<h2 id="t检验与anova">t检验与ANOVA</h2>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/统计学/" <i class="fa fa-tag"></i> 统计学</a>
+          
+            <a href="/tags/统计基础/" <i class="fa fa-tag"></i> 统计基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/04/生物统计-StatQuest学习笔记04-拟合/" rel="next" title="StatQuest学习笔记04——拟合">
+                <i class="fa fa-chevron-left"></i> StatQuest学习笔记04——拟合
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言主要内容"><span class="nav-number">1.</span> <span class="nav-text">前言——主要内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线性回归主要思想"><span class="nav-number">2.</span> <span class="nav-text">线性回归主要思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复杂案例"><span class="nav-number">3.</span> <span class="nav-text">复杂案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#r语言与线性回归"><span class="nav-number">4.</span> <span class="nav-text">R语言与线性回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多元线性回归"><span class="nav-number">5.</span> <span class="nav-text">多元线性回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#r语言与多重线性回归"><span class="nav-number">6.</span> <span class="nav-text">R语言与多重线性回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t检验与anova"><span class="nav-number">7.</span> <span class="nav-text">t检验与ANOVA</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共279.3k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
