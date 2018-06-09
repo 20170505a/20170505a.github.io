@@ -249,6 +249,704 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/06/Linux-shell08-sed与gawk(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/06/Linux-shell08-sed与gawk(1)/" itemprop="url">Shell学习笔记（8）——sed与gawk基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-06T12:12:54+08:00">
+                2018-05-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  9,874
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  41
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="sed与gawk的基本用法">sed与gawk的基本用法</h2>
+<p>Linux系统中有两个常用的命令行编辑器，分别为<code>sed</code>和<code>gawk</code>。</p>
+<h3 id="sed编辑器">sed编辑器</h3>
+<p>sed编辑器被称作流编辑器（streameditor），和普通的交互式文本编辑器有所不同。在交互式文本编辑器中（比如vim），用户可以用键盘命令来交互式地插入、删除或替换数据中的文本。而流编辑器则会在编辑器处理数据之前基于预先提供的一组规则来编辑数据流。sed编辑器可以根据命令来处理数据流中的数据，这些命令要么从命令行中输入，要么存储在一个命令文本文件中。可以简单地理解为，流编辑器像一种滤器，数据进入后，会以一定标准的格式出来，sed编辑器会执行下列操作：</p>
+<ol style="list-style-type: decimal">
+<li>一次从输入中读取一行数据。</li>
+<li>根据所提供的编辑器命令匹配数据。</li>
+<li>按照命令修改流中的数据。</li>
+<li>将新的数据输出到STDOUT。</li>
+</ol>
+<p>在流编辑器将所有命令与一行数据匹配完毕后，它会读取下一行数据并重复这个过程。在流编辑器处理完流中的所有数据行后，它就会终止。由于命令是按顺序逐行给出的，sed编辑器只需对数据流进行一遍处理就可以完成编辑操作。</p>
+<p>sed命令的格式如下为<code>sed options script file</code>，其中sed的选项如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>-e script</td>
+<td>在处理输入时，将script中指定的命令添加到已有的命令中</td>
+</tr>
+<tr class="even">
+<td>-f file</td>
+<td>在处理输入时，将file中指定的命令添加到已有的命令中</td>
+</tr>
+<tr class="odd">
+<td>-n</td>
+<td>不产生命令输出，使用print命令来完成输出</td>
+</tr>
+</tbody>
+</table>
+<p>script参数指定了应用于流数据上的单个命令。如果需要用多个命令，要么使用-e选项在命令行中指定，要么使用-f选项在单独的文件中指定。</p>
+<h4 id="在命令行定义编辑器命令">在命令行定义编辑器命令</h4>
+<p>默认情况下，sed编辑器会将指定的命令应用到STDIN输入流上。这样你可以直接将数据通过管道输入sed编辑器处理，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "This is a test"|sed 's/test/big test/'</div><div class="line">This is a big test</div></pre></td></tr></table></figure>
+<p>在这个例子中，sed编辑器使用了s命令。s命令会用斜线间指定的第二个文本字符串（这里是big test）来替换第一个文本字符串（test）模式。在本例中是big test替换了test。在运行这个例子时，结果应该立即就会显示出来，再看一个案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dogs.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed 's/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
+<p>sed命令几乎瞬间就执行完并返回数据。在处理每行数据的同时，结果也显示出来了。可以在sed编辑器处理完整个文件之前就开始观察结果。需要注意的是，sed编辑器并不会修改文本文件的数据。它只会将修改后的数据发送到STDOUT，也可以发送到某个文件。如果你查看原来的文本文件，它仍然保留着原始数据，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/dog/cat/' data1.txt &gt; data1b.txt</div><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">biotest@ubuntu:~/sed$ cat data1b.txt</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
+<h4 id="在命令行使用多个编辑器命令">在命令行使用多个编辑器命令</h4>
+<p>要在sed命令行上执行多个命令时，只要用-e选项就可以了，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -e 's/brown/green/;s/dog/cat/' data1.txt</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
+<p>两个命令都作用到文件中的每行数据上。命令之间必须用分号隔开，并且在命令末尾和分号之间不能有空格。如果不想用分号，也可以用bash shell中的次提示符来分隔命令。只要输入第一个单引号标示出sed程序脚本的起始（sed编辑器命令列表），bash会继续提示你输入更多命令，直到输入了标示结束的单引号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -e '</div><div class="line"><span class="meta">&gt;</span> s/brown/green/</div><div class="line"><span class="meta">&gt;</span> s/fox/elephant/</div><div class="line"><span class="meta">&gt;</span> s/dog/cat/' data1.txt</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div></pre></td></tr></table></figure>
+<h4 id="从文件中读取编辑器命令">从文件中读取编辑器命令</h4>
+<p>如果有大量要处理的sed命令，那么将它们放进一个单独的文件中，可以在sed命令中用-f选项来指定文件，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script1.sed</div><div class="line">s/brown/green/</div><div class="line">s/fox/elephant/</div><div class="line">s/dog/cat/</div><div class="line">biotest@ubuntu:~/sed$ sed -f script1.sed data1.txt</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div></pre></td></tr></table></figure>
+<p>在这种情况下，不用在每条命令后面放一个分号。sed编辑器知道每行都是一条单独的命令。跟在命令行输入命令一样，sed编辑器会从指定文件中读取命令，并将它们应用到数据文件中的每一行上。</p>
+<h3 id="gawk-程序">gawk 程序</h3>
+<p>gawk程序是另外的一个处理文本文件的工具，它是Unix原始awk程序的GUN版本，它能提供一个类编程环境来修改和重新组织文件中的数据。 gawk的强大之处在于程序脚本，用户可以写脚本来读取文本行的数据，然后处理并显示数据，创 建任何类型的输出报告。 Ubuntu本身并没有带gawk工具，需要自己安装，即<code>get apt install gawk</code>。在gawk编程语言中，用户可以做下面的事情：</p>
+<ol style="list-style-type: decimal">
+<li>定义变量来保存数据；</li>
+<li>使用算术和字符串操作符来处理数据；</li>
+<li>使用结构化编程概念（比如 if-then 语句和循环）来为数据处理增加处理逻辑；</li>
+<li>通过提取数据文件中的数据元素，将其重新排列或格式化，生成格式化报告。</li>
+</ol>
+<p>gawk程序通常用来从大文本文件中提取数据元素，并将它们格式化成可读的报告。其中最常用的就是格式化日志文件。在日志文件中找出错误行会很难，gawk程序可以让用户从日志文件中过滤出需要的数据元素，然后将其格式化，使得重要的数据更易于阅读。</p>
+<h4 id="gawk的用法">gawk的用法</h4>
+<p>gawk的使用格式为<code>gawk options program file</code>，可用选项如下表所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>-F fs</td>
+<td>指定行中划分数据字段的字段分隔符</td>
+</tr>
+<tr class="even">
+<td>-f file</td>
+<td>从指定的文件中读取程序</td>
+</tr>
+<tr class="odd">
+<td>-v var=value</td>
+<td>定义gawk程序中的一个变量及其默认值</td>
+</tr>
+<tr class="even">
+<td>-mf N</td>
+<td>指定要处理的数据文件中的最大字段数</td>
+</tr>
+<tr class="odd">
+<td>-mr N</td>
+<td>指定数据文件中的最大数据行数</td>
+</tr>
+<tr class="even">
+<td>-W keyword</td>
+<td>指定gawk的兼容模式或警告等级</td>
+</tr>
+</tbody>
+</table>
+<h4 id="从命令行读取程序脚本">从命令行读取程序脚本</h4>
+<p>gawk程序脚本用一对花括号来定义。你必须将脚本命令放到两个花括号（{}）中。如果你错误地使用了圆括号来包含gawk脚本，就会得到一条类似于下面的错误提示，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk '(print "Hello World!"&#125;'</div><div class="line">gawk: cmd. line:1: (print "Hello World!"&#125;</div><div class="line">gawk: cmd. line:1:                     ^ syntax error</div></pre></td></tr></table></figure>
+<p>由于gawk命令行假定脚本是单个文本字符串，必须将脚本放到单引号中。下面的例子在命令行上指定了一个简单的gawk程序脚本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk '&#123;print "Hello World!"&#125;'</div><div class="line">Hello World!</div><div class="line">Hello World!</div></pre></td></tr></table></figure>
+<p>这个程序脚本定义了一个命令：print命令。这个命令会将文本打印到STDOUT。如果尝试运行这个命令，什么都不会发生。原因在于没有在命令行上指定文件名，所以gawk程序会从STDIN接收数据。在运行这个程序时，它会一直等待从STDIN输入的文本。如果输入一行文本并按下回车键，gawk会对这行文本运行一遍程序脚本。跟sed编辑器一样，gawk程序会针对数据流中的每行文本执行程序脚本。由于程序脚本被设为显示一行固定的文本字符串，因此不管在数据流中输入什么文本，都会得到同样的文本输出。</p>
+<p>要终止这个gawk程序，你必须表明数据流已经结束了。bash shell提供了一个组合键来生成EOF（End-of-File）字符。Ctrl+D组合键会在bash中产生一个EOF字符。这个组合键能够终止该gawk程序并返回到命令行界面提示符下。</p>
+<h4 id="使用数据字段变量">使用数据字段变量</h4>
+<p>gawk的主要特性之一是其处理文本文件中数据的能力。它会自动给一行中的每个数据元素分配一个变量。默认情况下，gawk会将如下变量分配给它在文本行中发现的数据字段：</p>
+<ol style="list-style-type: decimal">
+<li><code>$0</code> 代表整个文本行；</li>
+<li><code>$1</code> 代表文本行中的第1个数据字段；</li>
+<li><code>$2</code> 代表文本行中的第2个数据字段；</li>
+<li><code>$n</code> 代表文本行中的第n个数据字段。</li>
+</ol>
+<p>在文本行中，每个数据字段都是通过字段分隔符划分的。gawk在读取一行文本时，会用预定义的字段分隔符划分每个数据字段。gawk中默认的字段分隔符是任意的空白字符（例如空格或制表符）。在下面的例子中，gawk程序读取文本文件，只显示第1个数据字段的值。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data2.txt</div><div class="line">One line of test text.</div><div class="line">Two lines of test text.</div><div class="line">Three lines of test text.</div><div class="line">biotest@ubuntu:~/sed$ gawk '&#123;print $1&#125;' data2.txt</div><div class="line">One</div><div class="line">Two</div><div class="line">Three</div></pre></td></tr></table></figure>
+<p>该程序用$1字段变量来仅显示每行文本的第1个数据字段。如果你要读取采用了其他字段分隔符的文件，可以用-F选项指定，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk -F: '&#123;print $1&#125;' /etc/passwd</div><div class="line">root</div><div class="line">daemon</div><div class="line">bin</div><div class="line">sys</div><div class="line">sync</div><div class="line">games</div><div class="line">man</div><div class="line">lp</div><div class="line">mail</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>这个简短的程序显示了系统中密码文件的第1个数据字段。由于/<code>etc/passwd</code>文件用冒号来分隔数字字段，因而如果要划分开每个数据元素，则必须在gawk选项中将冒号指定为字段分隔符，其中<code>-F:</code>就是指定冒号为分隔符。</p>
+<h4 id="在程序脚本中使用多个命令">在程序脚本中使用多个命令</h4>
+<p>gawk编程语言允许多条命令组合成一个正常的程序。要在命令行上的程序脚本中使用多条命令，只要在命令之间放个分号即可，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "My name is Zhang" |gawk '&#123;$4="Li";print $0&#125;'</div><div class="line">My name is Li</div></pre></td></tr></table></figure>
+<p>第一条命令会给字段变量<code>$4</code>赋值。第二条命令会打印整个数据字段。注意，gawk程序在输出中已经将原文本中的第四个数据字段替换成了新值。也可以用次提示符一次一行地输入程序脚本命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk '&#123;</div><div class="line"><span class="meta">&gt;</span> $4="Li"</div><div class="line"><span class="meta">&gt;</span> print $0&#125;'</div><div class="line">My name is Zhang</div><div class="line">My name is Li</div></pre></td></tr></table></figure>
+<p>在用了表示起始的单引号后，bashs hell会使用次提示符来提示你输入更多数据。可以每次在每行加一条命令，直到输入了结尾的单引号。因为没有在命令行中指定文件名，gawk程序会从STDIN中获得数据。当运行这个程序的时候，它会等着读取来自STDIN的文本。要退出程序，只需按下Ctrl+D组合键来表明数据结束。</p>
+<h4 id="从文件中读取程序">从文件中读取程序</h4>
+<p>gawk编辑器允许将程序存储到文件中，然后再在命令行中引用，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script2.gawk</div><div class="line">&#123;print $1 "'s home directory is " $6&#125;</div><div class="line">biotest@ubuntu:~/sed$ gawk -F: -f script2.gawk /etc/passwd</div><div class="line">root's home directory is /root</div><div class="line">daemon's home directory is /usr/sbin</div><div class="line">bin's home directory is /bin</div><div class="line">sys's home directory is /dev</div><div class="line">sync's home directory is /bin</div><div class="line">......</div></pre></td></tr></table></figure>
+<p>在这个案例中，script2.gawk程序脚本会再次使用print命令打印/etc/passwd文件的主目录数据字段（字段变量<code>$6），以及userid数据字段（字段变量</code>$1`）。可以在程序文件中指定多条命令。要这么做的话，只要一条命令放一行即可，不需要用分号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script3.gawk </div><div class="line">&#123;</div><div class="line">text = "'s home directory is " # 变量未使用美元符号，需要注意</div><div class="line">print $1 text $6</div><div class="line">&#125;</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ gawk -F: -f script3.gawk /etc/passwd</div><div class="line">root's home directory is /root</div><div class="line">daemon's home directory is /usr/sbin</div><div class="line">bin's home directory is /bin</div><div class="line">sys's home directory is /dev</div><div class="line">sync's home directory is /bin</div></pre></td></tr></table></figure>
+<p>script3.gawk程序脚本定义了一个变量来保存print命令中用到的文本字符串。注意，gawk程序在引用变量值时并未像shell脚本一样使用美元符。</p>
+<h4 id="在处理数据前运行脚本">在处理数据前运行脚本</h4>
+<p>gawk可以指定程序脚本何时运行。默认情况下，gawk会从输入中读取一行文本，然后针对该行的数据执行程序脚本。有时可能需要在处理数据前运行脚本，比如为报告创建标题。BEGIN关键字就是用来做这个的。它会强制gawk在读取数据前执行BEGIN关键字后指定的程序脚本。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk 'BEGIN &#123;print "Hello World!"&#125;'</div><div class="line">Hello World!</div></pre></td></tr></table></figure>
+<p>这次print命令会在读取数据前显示文本。但在它显示了文本后，它会快速退出，不等待任何数据。如果想使用正常的程序脚本中处理数据，必须用另一个脚本区域来定义程序，看下面的案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data3.txt</div><div class="line">Line 1</div><div class="line">Line 2</div><div class="line">Line 3</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ gawk 'BEGIN &#123;pirnt "The data3 File Contents:"&#125;</div><div class="line"><span class="meta">&gt;</span> &#123;print $0&#125;' data3.txt</div><div class="line">Line 1</div><div class="line">Line 2</div><div class="line">Line 3</div></pre></td></tr></table></figure>
+<p>在gawk执行了BEGIN脚本后，它会用第二段脚本来处理文件数据。这么做时要小心，两段脚本仍然被认为是gawk命令行中的一个文本字符串。你需要相应地加上单引号。</p>
+<h4 id="在处理数据后运行脚本">在处理数据后运行脚本</h4>
+<p>与BEGIN关键字类似，END关键字允许你指定一个程序脚本，gawk会在读完数据后执行它，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk 'BEGIN &#123;pirnt "The data3 File Contents:"&#125;</div><div class="line"><span class="meta">&gt;</span> &#123;print $0&#125;</div><div class="line"><span class="meta">&gt;</span> END &#123;print "End of FIle"&#125;' data3.txt</div><div class="line">Line 1</div><div class="line">Line 2</div><div class="line">Line 3</div><div class="line">End of FIle</div></pre></td></tr></table></figure>
+<p>当gawk程序打印完文件内容后，它会执行END脚本中的命令。这是在处理完所有正常数据后给报告添加页脚的最佳方法。可以将所有这些内容放到一起组成一个脚本文件，用它从一个简单的数据文件中创建一份完整的报告，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script4.gawk </div><div class="line">BEGIN &#123;</div><div class="line">print "The latest list of users and shells"</div><div class="line">print " UserID \t Shell"</div><div class="line">print "-------- \t --------"</div><div class="line">FS=":"</div><div class="line">&#125;</div><div class="line"></div><div class="line">&#123;</div><div class="line">print $1 "        \t " $7</div><div class="line">&#125;</div><div class="line"></div><div class="line">END &#123;</div><div class="line">print "This concludes the listing"</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~/sed$ gawk -f script4.gawk /etc/passwd</div><div class="line">The latest list of users and shells</div><div class="line"> UserID 	 Shell</div><div class="line">-------- 	 --------</div><div class="line">root        	 /bin/bash</div><div class="line">daemon        	 /usr/sbin/nologin</div><div class="line">bin        	 /usr/sbin/nologin</div></pre></td></tr></table></figure>
+<p>这个脚本用BEGIN脚本来为报告创建标题。它还定义了一个叫作FS的特殊变量。这是定义字段分隔符的另一种方法。这样就不用依靠脚本用户在命令行选项中定义字段分隔符了。BEGIN脚本创建了标题，程序脚本处理特定数据文件（<code>/etc/passwd）</code>中的信息，END脚本生成页脚。</p>
+<h2 id="sed-编辑器基础">sed 编辑器基础</h2>
+<h3 id="更多的替换选项">更多的替换选项</h3>
+<p>s命令（substitute）用来在行中替换文本。这个命令还有另外一些选项。</p>
+<h4 id="替换标记">替换标记</h4>
+<p>先看一个案例，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data4.txt </div><div class="line">This is a test of the test script.</div><div class="line">This is the second test of the test script.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/' data4.txt </div><div class="line">This is a trial of the test script.</div><div class="line">This is the second trial of the test script.</div></pre></td></tr></table></figure>
+<p>替换命令在替换多行中的文本时能正常工作，但默认情况下它只替换每行中出现的第一处。要让替换命令能够替换一行中不同地方出现的文本必须使用替换标记（substitution flag）。替换标记会在替换命令字符串之后设置，格式为<code>s/pattern/replacement/flags</code>，有4种可用的替换标记：</p>
+<ol style="list-style-type: decimal">
+<li>数字，表明新文本将替换第几处模式匹配的地方；</li>
+<li>g ，表明新文本将会替换所有匹配的文本；</li>
+<li>p ，表明原先行的内容要打印出来；</li>
+<li>w file ，将替换的结果写到文件中。</li>
+</ol>
+<h5 id="数字替换标记">数字替换标记</h5>
+<p>在第一类替换中，可以指定sed编辑器用新文本替换第几处模式匹配的地方，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/2' data4.txt </div><div class="line">This is a test of the trial script.</div><div class="line">This is the second test of the trial script.</div></pre></td></tr></table></figure>
+<p>这个脚本运行的结果是：sed编辑器只替换每行中第2次出现的匹配模式。</p>
+<h5 id="g替换标记">g替换标记</h5>
+<p>g替换标记使你能替换文本中匹配模式所匹配的每处地方，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/g' data4.txt</div><div class="line">This is a trial of the trial script.</div><div class="line">This is the second trial of the trial script.</div></pre></td></tr></table></figure>
+<p>如结果所示，使用了g替换标记后，文本中所有的地方都被替换了。</p>
+<h5 id="p替换标记">p替换标记</h5>
+<p>p替换标记会打印与替换命令中指定的模式匹配的行。这通常会和sed的-n选项一起使用，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test5.txt</div><div class="line">This is a test line.</div><div class="line">This is a different line.</div><div class="line">biotest@ubuntu:~/sed$ sed -n 's/test/trial/p' test5.txt</div><div class="line">This is a trial line.</div></pre></td></tr></table></figure>
+<p>-n选项将禁止sed编辑器输出。但p替换标记会输出修改过的行。将二者配合使用的效果就是只输出被替换命令修改过的行，第二行并没有被替换，也就不输出了。</p>
+<h5 id="w替换标记">w替换标记</h5>
+<p>w 替换标记会产生同样的输出，不过会将输出保存到指定文件中，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/w test.txt' test5.txt </div><div class="line">This is a trial line.</div><div class="line">This is a different line.</div><div class="line">biotest@ubuntu:~/sed$ cat test.txt</div><div class="line">This is a trial line.</div></pre></td></tr></table></figure>
+<p>sed编辑器的正常输出是在STDOUT中，而只有那些包含匹配模式的行才会保存在指定的输出文件中。</p>
+<h4 id="替换字符">替换字符</h4>
+<p>有时会在文本字符串中遇到一些不太方便在替换模式中使用的字符。Linux中一个常见的例子就是正斜线（/）。替换文件中的路径名会比较麻烦。比如想用C shell替换/etc/passwd文件中的bash shell，必须这么做：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/\/bin\/bash/\/bin\/csh/' /etc/passwd</div><div class="line">root:x:0:0:root:/root:/bin/csh</div><div class="line">daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin</div><div class="line">bin:x:2:2:bin:/bin:/usr/sbin/nologin</div><div class="line">sys:x:3:3:sys:/dev:/usr/sbin/nologin</div></pre></td></tr></table></figure>
+<p>由于正斜线通常用作字符串分隔符，因而如果它出现在了模式文本中的话，必须用反斜线来转义。这通常会带来一些困惑和错误。 要解决这个问题，sed编辑器允许选择其他字符来作为替换命令中的字符串分隔符：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's!/bin/bash!/bin/csh!' /etc/passwd</div><div class="line">root:x:0:0:root:/root:/bin/csh</div><div class="line">daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin</div><div class="line">bin:x:2:2:bin:/bin:/usr/sbin/nologin</div></pre></td></tr></table></figure>
+<p>在这个例子中，感叹号被用作字符串分隔符，这样路径名就更容易阅读和理解了。</p>
+<h4 id="使用地址">使用地址</h4>
+<p>默认情况下，在sed编辑器中使用的命令会作用于文本数据的所有行。如果只想将命令作用于特定行或某些行，则必须用行寻址（lineaddressing）。在sed编辑器中有两种形式的行寻址：第一，以数字形式表示区间；第二，用文本模式来过滤出行。两种形式都使用相同的格式来指定地址：</p>
+<p><code>[address] command</code>或者是将特定地址的多个命令分组，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">address &#123;</div><div class="line">    command1</div><div class="line">    command2</div><div class="line">    command3</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>sed编辑器会将指定的每条命令作用到匹配指定地址的行上。本节将会演示如何在sed编辑器脚本中使用两种寻址方法。</p>
+<h5 id="第一数字方式的行寻址">第一，数字方式的行寻址。</h5>
+<p>当使用数字方式的行寻址时，可以用行在文本流中的行位置来引用。sed编辑器会将文本流中的第一行编号为1，然后继续按顺序为接下来的行分配行号。在命令中指定的地址可以是单个行号，或是用起始行号、逗号以及结尾行号指定的一定区间范围内的行。这里有个sed命令作用到指定行号的例子，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2s/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
+<p>sed编辑器只修改地址指定的第二行的文本。这里有另一个例子，这次使用了行地址区间，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2,3s/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
+<p>如果需要将命令作用到文本从某行开始的所有行，可以使用美元符号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2,$s/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
+<h5 id="第二使用文本模式过滤器">第二，使用文本模式过滤器</h5>
+<p>另一种限制命令作用到哪些行上的方法会稍稍复杂一些。sed编辑器允许指定文本模式来过滤出命令要作用的行。格式为<code>/pattern/command，</code>必须用正斜线将要指定的pattern封起来。sed编辑器会将该命令作用到包含指定文本模式的行上。举个例子，如果你想只修改用户test001的默认shell，可以使用sed命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ grep biotest /etc/passwd</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/bash</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/csh</div></pre></td></tr></table></figure>
+<p>该命令只作用到匹配文本模式的行上。虽然使用固定文本模式能帮你过滤出特定的值，就跟上面这个用户名的例子一样，但其作用难免有限。sed编辑器在文本模式中支持正则表达式（regular expression）。</p>
+<h5 id="第三命令组合">第三，命令组合</h5>
+<p>如果需要在单行上执行多条命令，可以用花括号将多条命令组合在一起，sed编辑器会处理地址行处列出的每条命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed '2&#123;</div><div class="line"><span class="meta">&gt;</span> s/fox/elephant/</div><div class="line"><span class="meta">&gt;</span> s/dog/cat/</div><div class="line"><span class="meta">&gt;</span> &#125;' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown elephant jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
+<p>两条命令都会作用到该地址上，也可以在一组命令前指定一个地址区间，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '3,$&#123;</div><div class="line"><span class="meta">&gt;</span> s/brown/green/</div><div class="line"><span class="meta">&gt;</span> s/lazy/active/</div><div class="line"><span class="meta">&gt;</span> &#125;' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick green fox jumps over the active dog.</div><div class="line">The quick green fox jumps over the active dog.</div></pre></td></tr></table></figure>
+<h3 id="删除行">删除行</h3>
+<p>在sed中，删除使用的是<code>d</code>参数，使用此命令需要谨慎，如果用户忘记加入寻址模式的话，流中所有的文都会被删除，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test6.txt # 原始文本</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '3d' test6.txt # 删除第3行</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '2,3d' test6.txt # 删除第2，3行</div><div class="line">This is line number 1.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '3,$d' test6.txt # 删除第3行及3行以下</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">biotest@ubuntu:~/sed$ sed '/number 1/d' test6.txt # 删除第1行</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '/1/,/3/d' test6.txt # 删除1到3行</div><div class="line">This is line number 4.</div><div class="line"><span class="meta">#</span> 指定的第一个模式会“打开”行删除功能，第二个模式会“关闭”行删除功能。sed编辑器会删除两个指定行之间的所有行</div></pre></td></tr></table></figure>
+<p>只要sed编辑器在数据流中匹配到了开始模式，删除功能就会打开。这可能会导致意外的结果，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test7.txt </div><div class="line">This is line number 1.</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">This is line number 1 again.</div><div class="line">THis is text you want to keep.</div><div class="line">This is the last line in the file.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed '/1/,/3/d' test7.txt</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>在这段代码中，第二个出现数字“1”的行再次触发了删除命令，因为没有找到停止模式，所以就将数据流中的剩余行全部删除了。如果你指定了一个从未在文本中出现的停止模式，显然会出现另外一个问题，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/1/,/5/d' test7.txt</div><div class="line">biotest@ubuntu:~/sed$</div></pre></td></tr></table></figure>
+<p>在这段代码中，因为删除功能在匹配到第一个模式的时候打开了，但一直没匹配到结束模式，所以整个数据流都被删掉了。</p>
+<h3 id="插入和附加文本">插入和附加文本</h3>
+<p>sed编辑器可以向数据流插入和附加文本行。它有两种操作：第一，插入（insert）：命令（i）会在指定行前增加一个新行；第二，追加（append）命令（a）会在指定行后增加一个新行。这两条命令在使用格式上有些特殊，它们不能在单个命令行上使用。用户必须指定是要将行插入还是附加到另一行。格式如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sed '[address] command\</div><div class="line">new line'</div></pre></td></tr></table></figure>
+<p>其中，<code>new line</code>中的文本将会出现在sed编辑器输出中指定的位置。记住，当使用插入命令时，文本会出现在数据流文本的前面，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "Test Line2"|sed 'i\Test Line 1' # 在第2行之前插入文本</div><div class="line">Test Line 1</div><div class="line">Test Line2</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ echo "Test Line2"|sed 'a\Test Line 1' # 在第2行之后插入文本 </div><div class="line">Test Line2</div><div class="line">Test Line 1</div></pre></td></tr></table></figure>
+<p>在命令行界面提示符上使用sed编辑器时，用户会看到次提示符来提醒输入新的行数据。用户必须在该行完成sed编辑器命令。一旦你输入了结尾的单引号，bash shell就会执行该命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "Test Line 2"|sed 'i\</div><div class="line"><span class="meta">&gt;</span> Test Line 1'</div><div class="line">Test Line 1</div><div class="line">Test Line 2</div></pre></td></tr></table></figure>
+<p>前面所述的方法只能给数据流中的文本前面或后面添加文本，但有时候还需要向一行的前后添加文本，要向数据流行内部插入或附加数据，必须用寻址来告诉sed编辑器想让数据出现在什么位置。可以在用这些命令时只指定一个行地址。可以匹配一个数字行号或文本模式，但不能用地址区间（因为用户只能将文本插入或附加到单个行的前面或后面，而不是行区间的前面或后面），在下面的例子中，用户将一个新行插入到数据流第三行前。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test6.txt </div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line"></div><div class="line"><span class="meta">#</span> 将一个新行插入到数据流第三行前</div><div class="line">biotest@ubuntu:~/sed$ sed '3i\ </div><div class="line"><span class="meta">&gt;</span> This is an inserted line.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is an inserted line.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line"></div><div class="line"><span class="meta">#</span>将一个新行附加到数据流中第三行后</div><div class="line">biotest@ubuntu:~/sed$ sed '3a\ </div><div class="line"><span class="meta">&gt;</span> This is an appended line.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is an appended line.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>如果有一个多行数据流，需要将新行追加到数据流的末决，只要用代表数据最后一行的美元符号即可，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '$a\</div><div class="line"><span class="meta">&gt;</span> This is a new line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">This is a new line of text.</div></pre></td></tr></table></figure>
+<p>同样的方法也适用于要在数据流起始位置增加一个新行。只要在第一行之前插入新行即可。要插入或附加多行文本，就必须对要插入或附加的新文本中的每一行使用反斜线，直到最后一行。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '1i\</div><div class="line"><span class="meta">&gt;</span> This ia one line of new text.\</div><div class="line"><span class="meta">&gt;</span> This is another line of new text.' test6.txt</div><div class="line">This ia one line of new text.</div><div class="line">This is another line of new text.</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<h3 id="修改行">修改行</h3>
+<p>sed可以对文本进行修改，使用的参数是<code>c</code>，意思为修改（change）。这个参数允许修改数据流中整行文本的内容。它跟插入和附加命令的工作机制一样，必须在sed命令中单独指定新行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '3c\</div><div class="line"><span class="meta">&gt;</span> This is a change line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is a change line of text.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>在这个例子中，sed编辑器会修改第三行中的文本。也可以用文本模式来寻址，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/number 3/c\</div><div class="line"><span class="meta">&gt;</span> This is a changed line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is a changed line of text.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>文本模式修改命令会修改它匹配的数据流中的任意文本行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test8.txt</div><div class="line">This is line number 1. </div><div class="line">This is line number 2. </div><div class="line">This is line number 3. </div><div class="line">This is line number 4. </div><div class="line">This is line number 1 again. </div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file. </div><div class="line">biotest@ubuntu:~/sed$ sed '/number 1/c\</div><div class="line"><span class="meta">&gt;</span> This is a changed line of text.' test8.txt</div><div class="line">This is a changed line of text.</div><div class="line">This is line number 2. </div><div class="line">This is line number 3. </div><div class="line">This is line number 4. </div><div class="line">This is a changed line of text.</div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file.</div></pre></td></tr></table></figure>
+<p>在修改命令中使用地址区间，结果就会出问题，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2,3c\</div><div class="line"><span class="meta">&gt;</span> This is a new line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is a new line of text.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>sed编辑器会用这一行文本来替换数据流中的两行文本，而不是逐一修改这两行文本。</p>
+<h3 id="转换命令">转换命令</h3>
+<p>sed中还有一个转换命令，参数是<code>y</code>，转换（ transform ）可以处理单个字符。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[address]y/inchars/outchars/</div></pre></td></tr></table></figure>
+<p>转换命令会对inchars和outchars值进行一对一的映射。inchars中的第一个字符会被转换为outchars中的第一个字符，第二个字符会被转换成outchars中的第二个字符。这个映射过程会一直持续到处理完指定字符。如果inchars和outchars的长度不同，则sed编辑器会产生一条错误消息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test8.txt</div><div class="line">This is line number 1. </div><div class="line">This is line number 2. </div><div class="line">This is line number 3. </div><div class="line">This is line number 4. </div><div class="line">This is line number 1 again. </div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file. </div><div class="line">biotest@ubuntu:~/sed$ sed 'y/123/789/' test8.txt</div><div class="line">This is line number 7. </div><div class="line">This is line number 8. </div><div class="line">This is line number 9. </div><div class="line">This is line number 4. </div><div class="line">This is line number 7 again. </div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file.</div></pre></td></tr></table></figure>
+<p>在这个案例中，<code>inchars</code>械中指定的字符的每个实例都会被替换成<code>outchars</code>模式中相同位置的那个字符，转换命令是一个全局命令，它会在文本行中找到所有指定字符自动进行转换，而不会考虑它们出现的位置，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "This 1 is a test of 1 try."|sed 'y/123/456/'</div><div class="line">This 4 is a test of 4 try.</div></pre></td></tr></table></figure>
+<p>sed编辑器转换了在文本行中匹配到的字符1的两个实例。你无法限定只转换在特定地方出现的字符。</p>
+<h3 id="回顾打印">回顾打印</h3>
+<p>有3个命令可以打印文本行，分别为：</p>
+<ol style="list-style-type: decimal">
+<li>p命令用来打印文本行；</li>
+<li>等号（=）用于打印行号；</li>
+<li>l（小写的L）用于列出行。</li>
+</ol>
+<h4 id="打印行">打印行</h4>
+<p>这里的<code>p</code>参业与替换中的<code>p</code>参数类似，它可以打印sed编译器输出中的一行，如果只使用这个命令，就是显示这一行命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "This is a test"|sed 'p'</div><div class="line">This is a test</div><div class="line">This is a test</div></pre></td></tr></table></figure>
+<p><code>p</code>参数就是打印已有的数据文本，打印命令常用的用法就是打印包含匹配文本模式的行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed -n '/number 3/p' test6.txt</div><div class="line">This is line number 3.</div></pre></td></tr></table></figure>
+<p>在命令行上用-n选项，你可以禁止输出其他行，只打印包含匹配文本模式的行。也可以用它来快速打印数据流中的某些行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -n '2,3p' test6.txt</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div></pre></td></tr></table></figure>
+<p>如果需要在修改之前查看行，也可以使用打印命令，比如与替换或修改命令一起使用。可以创建一个脚本在修改行之前显示该行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -n '/3/&#123;</div><div class="line"><span class="meta">&gt;</span> p</div><div class="line"><span class="meta">&gt;</span> s/line/test/p</div><div class="line"><span class="meta">&gt;</span> &#125;' test6.txt</div><div class="line">This is line number 3.</div><div class="line">This is test number 3.</div></pre></td></tr></table></figure>
+<p>sed编辑器命令会查找包含数字3的行，然后执行两条命令。首先，脚本用 p 命令来打印出原始行；然后它用 s 命令替换文本，并用 p 标记打印出替换结果。输出同时显示了原来的行文本和新的行文本。</p>
+<h4 id="打印行号">打印行号</h4>
+<p>等号命令会打印行在数据流中的当前行号。行号由数据流中的换行符决定。每次数据流中出现一个换行符，sed编辑器会认为一行文本结束了，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">biotest@ubuntu:~/sed$ sed '=' data1.txt</div><div class="line">1</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">2</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">3</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">4</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
+<p>sed编辑器在实际的文本行出现前打印了行号。如果你要在数据流中查找特定文本模式的话，等号命令用起来非常方便，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -n '/number 4/&#123;</div><div class="line"><span class="meta">&gt;</span> =</div><div class="line"><span class="meta">&gt;</span> p</div><div class="line"><span class="meta">&gt;</span> &#125;' test6.txt</div><div class="line">4</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>利用 -n 选项，你就能让sed编辑器只显示包含匹配文本模式的行的行号和文本。</p>
+<h4 id="列出行">列出行</h4>
+<p>列出（list）命令（l）可以打印数据流中的文本和不可打印的ASCII字符。任何不可打印字符要么在其八进制值前加一个反斜线，要么使用标准C风格的命名法（用于常见的不可打印字符），比如，来代表制表符。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data9.txt </div><div class="line">This	line	contains	tabs.</div><div class="line">biotest@ubuntu:~/sed$ sed -n 'l' data9.txt</div><div class="line">This\tline\tcontains\ttabs.$</div></pre></td></tr></table></figure>
+<p>制表符的位置使用。行尾的美元符表示换行符。</p>
+<h3 id="使用sed处理文件">使用sed处理文件</h3>
+<h4 id="写入文件">写入文件</h4>
+<p><code>w</code>选项用于向文件写入行，该选项的命令格式为<code>[address] w filename</code>，其中<code>filename</code>可以使用相对路径或绝对路径，并且用户要有文件的写权限，地址可以是sed中支持的任意类型的寻址方式，例如单个行号、文本模式、行区间或文本模式。</p>
+<p>下面的例子是将数据流中的前两行打印到一个文本文件中。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '1,2w test.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ cat test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ cat test.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div></pre></td></tr></table></figure>
+<p>如果不想让行显示到STDOUT上，可以用sed命令的-n选项。如果要根据一些公用的文本值从主文件中创建一份数据文件，比如下面的邮件列表中的，那么w命令会非常好用，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data11.txt</div><div class="line">Zhang San</div><div class="line">Li Si</div><div class="line">Wang Er</div><div class="line">Liu Qi</div><div class="line">biotest@ubuntu:~/sed$ sed -n '/Zhang/w Zhang.txt' data11.txt</div><div class="line">biotest@ubuntu:~/sed$ cat Zhang.txt </div><div class="line">Zhang San</div></pre></td></tr></table></figure>
+<p>sed编辑器会只将包含文本模式的数据写入目标文件。</p>
+<h4 id="从文件读取数据">从文件读取数据</h4>
+<p>取（read）命令（r）允许用户将一个独立文件中的数据插入到数据流中。读取命令的格式为<code>[address]r filename</code>，其中filename参数指定了数据文件的绝对路径或相对路径，在读取命令中使用地址区间，只能指定单独一个行号或文本模式地址。sed编辑器会将文件中的文本插入到指定地址后，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data12.txt</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div><div class="line">biotest@ubuntu:~/sed$ sed '3r data12.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>使用文本模式进行读取，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/number 2/r data12.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
+<p>如果需要在数据流的末尾添加文件，需要使用美元符号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '$r data12.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div></pre></td></tr></table></figure>
+<p>读取命令的另一个很有用的用法是和删除命令配合使用：利用另一个文件中的数据来替换文件中的占位文本。举例来说，假定你有一份套用信件保存在文本文件中，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat notice.std </div><div class="line">Would the following people:</div><div class="line">LIST</div><div class="line">please report to the ship's captain.</div></pre></td></tr></table></figure>
+<p>套用信件将通用占位文本 LIST 放在人物名单的位置。要在占位文本后插入名单，只需读取 命令就行了。但这样的话，占位文本仍然会留在输出中。要删除占位文本的话，你可以用删除命 令。结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/LIST/&#123;</div><div class="line"><span class="meta">&gt;</span> r data11.txt</div><div class="line"><span class="meta">&gt;</span> d</div><div class="line"><span class="meta">&gt;</span> &#125;' notice.std</div><div class="line">Would the following people:</div><div class="line">Zhang San</div><div class="line">Li Si</div><div class="line">Wang Er</div><div class="line">Liu Qi</div><div class="line">please report to the ship's captain.</div></pre></td></tr></table></figure>
+<p>现在占位文本已经被替换成了数据文件中的名单。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/06/病毒包装笔记(7)-第三代慢病毒包装笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/06/病毒包装笔记(7)-第三代慢病毒包装笔记/" itemprop="url">病毒包装笔记(7)-第三代慢病毒</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-06T12:02:00+08:00">
+                2018-05-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">生物实验笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,283
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>最近在国内某公司买了一个慢病毒质粒，公司的人说可以用来包慢病毒，也可以用来瞬转。但是我发现这个质粒上没有<code>3'UTR</code>和<code>5' UTR</code>，我怀疑不能用来包慢病毒，公司说可以，但要用他们的试剂盒。我问了一下师兄，师兄说，这种质粒可能是第三代慢病毒包装质粒，试剂盒里的主要试剂就是包含三种包装质粒的混合液。我们实验室用的是第二代病毒包装系统，两个包装质粒，一个目的质粒，因此我对这种质粒包装系统并不清楚。现在查了一些三代包装系统的资料，现在总结如下。</p>
+<h2 id="慢病毒的成分">慢病毒的成分</h2>
+<p>现在的慢病毒包装系统通常包括几个质粒，这几个质粒上分别含有慢病毒复制的成分，这样做的目的就是为了增加安全性，毕竟如果只用一个成分的话，危险系数很高，人一旦接触这种病毒就有可能遇到危险。而把这几个成分分散在几个质粒中，很难在体外形成危险的病毒颗粒。第二代慢病毒包装系统含有3个质粒，第3代慢病毒包装系统含有4个质粒。这两代病毒包装系统都含有以下相同的成分：</p>
+<p>第一，编码目的蛋白或转录目的基因的转移质粒。其实就是你自己的目的质粒，也就是通常需要自己做载体的质粒。目的基因的两侧都含有长末端重复序列（LTR，long terminal repeat），LTR的作用就是辅助目的基因插入到宿主细胞的基因组。许多慢病毒质粒都是基于HIV-1病毒改造的。为了安全目的，这些目的质粒的复能能力并不完全，它们的<code>3'LTR</code>有所删减，这样病毒插入到基因组后会自我失活（self-inactivating）（SIN）。</p>
+<p>第二，包装质粒，毒包装的结构蛋白编码质粒。</p>
+<p>第三，包膜质粒，编码蛋白质外壳。</p>
+<p>第二代慢病毒利用病毒的LTR启动子用于基因的表达，第三代慢病毒利用一个杂合的LTR启动子进行基因表达。</p>
+<h2 id="第二代慢病毒">第二代慢病毒</h2>
+<p>下图是第二代慢病毒系统：</p>
+<div class="figure">
+<img src="https://media.addgene.org/data/easy-thumbnails/filer_public/cms/filer_public/56/36/563610a3-a100-4f87-9d10-309cf106dfe7/geneticorganizationoflentiviruses_1.jpg__450x255_q85_subsampling-2_upscale.png">
+
+</div>
+<p>这个系统含有3个质粒，第1个质粒：包装质粒，它编码Gag，PoI，Rev与Tat基因。第2个质粒：包膜质粒，含有VSV-G，编码蛋白Env。第3个质粒：目的质粒，含有病毒的LTRs和psi包装信号（图片未画出），除非有内部启动子，否则这个目的质粒的目的基因是由<code>5'LTR</code>驱动的，它是一个弱启动子，需要Tat元件 的来激活它。所有的第2代慢病毒目的质粒必须要用第2代慢病毒包装系统，因此它的LTR是Tat依赖性的。</p>
+<h2 id="第三代慢病毒">第三代慢病毒</h2>
+<p>第3代慢病毒如下所示：</p>
+<div class="figure">
+<img src="https://media.addgene.org/data/easy-thumbnails/filer_public/cms/filer_public/7f/54/7f549fd8-1c37-4448-a2d3-227e5c24c550/3rdgenerationplasmids.png__350x194_q85_subsampling-2_upscale.png">
+
+</div>
+<p>设计第3代病毒的目的主要还是提高安全性。在第3代病毒中，将第2代病毒的包装质粒分成了2个质粒，一个编码Rev，另外一个编码Gag和PoI。虽然第3代病毒更加安全了，但是它的效率却降低了。除此之外，第3代病毒删除了Tat元件，并且在目的质粒中引入了一个嵌合了<code>5'LTR</code>的异源启动子。这种目的质粒基因的启动子并不依赖于Tat元件。第3代病毒的目的质粒可以使用第2代或第3代的包装质粒，也就是说第3代慢病毒的目的质粒兼容第2代的包装系统。</p>
+<h2 id="第二代慢病毒与第第三代病毒的区别">第二代慢病毒与第第三代病毒的区别</h2>
+<table>
+<colgroup>
+<col width="10%">
+<col width="41%">
+<col width="47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>特点</th>
+<th>第2代慢病毒</th>
+<th>第3代慢病毒</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>目的质粒</td>
+<td>只能被含有TAT的2代病毒包装</td>
+<td>可以被第2代和第3代病毒包装系统包装</td>
+</tr>
+<tr class="even">
+<td>包装质粒</td>
+<td>一个质粒上含有Gag，PoI，Rev，Tat（也就是psPAX2）</td>
+<td>2个质粒，一个编码Gag和PoI；另外一个质粒编码Rev（也就是pMDLg/pRRE和pRSV-Rev）</td>
+</tr>
+<tr class="odd">
+<td>包膜质粒</td>
+<td>可替换，通常用于编码VSV-G（pMD2G）</td>
+<td>可替换，通常用于编码VSV-G（pMD2G）</td>
+</tr>
+<tr class="even">
+<td>案例性</td>
+<td>安全。复能能力不完全，使用编码各种HIV基因的3个质粒。</td>
+<td>更安全，复制能力不完全，有自身失活性（SIN）。使用4个质粒来替换2代慢病毒的3个质粒，删除了Tat元件。</td>
+</tr>
+<tr class="odd">
+<td>LTR病毒启动子</td>
+<td>广泛型</td>
+<td>杂合：删除了部分的5’LTR，与另外一个异源增强子/启动子融合，例如CMV或RSV。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="第三代病毒包装系统的过程">第三代病毒包装系统的过程</h2>
+<p>其实买的目的质粒虽然是三代病毒包装系统的，但是完全可以用二代慢病毒包装系统来替代，用PMD2G和psPAX2，外加目的质粒进行转染。</p>
+<h2 id="参考资料">参考资料</h2>
+<p>https://www.addgene.org/viral-vectors/lentivirus/lenti-guide/</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/05/Linux-shell07-构建函数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3327,609 +4025,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/28/Linux环境变量/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/28/Linux环境变量/" itemprop="url">Linux环境变量</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-28T12:10:54+08:00">
-                2018-04-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,588
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  21
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="什么是shell">1. 什么是shell？</h3>
-<p>答：在计算机科学中，Shell俗称壳（用来区别于核，核是指“内核”），Shell是指“提供使用者使用界面”的软件（命令解析器）。它类似于DOS下的command.com和后来的cmd.exe。它接收用户命令，然后调用相应的应用程序。</p>
-<p>在很多并不正式的场合，这两个名词表达的意思相同，即命令解释器。但从严格的意义上讲，命令行是指供用户输入命令的界面，其本身只是接受输入，然后把命令传递给命令解释器，后者就是Shell，从本质上讲，Shell是一个程序，它在用户和操作系统之间提供了一个面向行的可交互接口，用户在命令行中输入命令，运行在后台的Shell把命令转换成指令代码发送给操作系统。Shell并非只有命令行这一种形式，例如GNOME、KDE等图形界面也是Shell，不过它们是GUI Shell，都是为了解决人机交互的问题。</p>
-<p>目前在Linux环境下有几种不同类型的Shell，常用的有Bourne Again Shell（BASH）、TCSH Shell、Z-Shell。不同的Shell提供不同的语法和特性。</p>
-<p>例如在Ubuntu中，可以在<code>etc/passwd</code>文件中查看到自己的默认shell程序，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ cat /etc/passwd |grep biotest</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/bash</div></pre></td></tr></table></figure>
-<p>由上述结果可知，biotest用户所用到shell是bash。bash shell程序位于/bin目录内，从长列表中可以看出<code>/bin/bash</code>是一个可执行程序：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ls -lF /bin/bash</div><div class="line">-rwxr-xr-x 1 root root 1037528 May 16  2017 /bin/bash*</div></pre></td></tr></table></figure>
-<p>注：在Linux系统中，当使用ls，添加了-F参数时，会在每个输出项后追加文件的类型标识符，具体含义为：“*”表示具有可执行权限的普通文件，“/”表示目录，“@”表示符号链接，“|”表示命令管道FIFO，“=”表示sockets套接字。当文件为普通文件时，不输出任何标识符；</p>
-<h3 id="什么是bash">2. 什么是bash？</h3>
-<p>答：bash相当于shell中的某个，shell的范围更广。bash的全称是Bourne again / born again。</p>
-<h3 id="什么是环境变量">3. 什么是环境变量？</h3>
-<p>答：shell 在 shell 会话中保存着大量信息。这些信息被称为 (shell 的) 环境。 程序获取环境中的数据（即环境变量）来了解本机的配置。虽然大多数程序用配置文件来存储程序设置， 一些程序会根据环境变量来调整他们的行为。Linux是一个多用户的操作系统。每个用户登录系统后，都会有一个专用的运行环境。 通常每个用户默认的环境都是相同的，这个默认环境实际上就是一组环境变量的定义。 环境变量是全局的，设置好的环境变量可以被所有当前用户所运行的程序所使用。 用户可以对自己的运行环境进行定制，其方法就是修改相应的系统环境变量。在bash shell中，环境变量分为两类，分别为全局变量，局部变量。</p>
-<p>shell 在环境中存储了两种基本类型的数据，虽然 bash 几乎无法分辨这些数据的类型。 它们是环境变量和 shell 变量。Shell 变量是 bash 存放的少量数据。剩下的都是 环境变量。除了变量，shell 也存储了一些可编程的数据，即别名和 shell 函数。</p>
-<h3 id="如何查看环境变量">4. 如何查看环境变量？</h3>
-<p>答：<code>printenv</code>可以显示全局变量，如下所示：</p>
-<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180421/f429H66haH.png?imageslim" alt="mark"> 上述的内容是环境变量及其数值列表，环境变量通常是大写字母，这主要是为了与用户的变量进行区分，例如我们可以看到USER=biotest这行代码，就表示当前的用户是biotest，用<code>printenv</code>命令也可以查看当前用户，如下所示：</p>
-<blockquote>
-<p>biotest@ubuntu:~$ printenv USER biotest</p>
-</blockquote>
-<h4 id="通过echo来查看变量的值如下所示">通过echo来查看变量的值，如下所示：</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo $HOME</div><div class="line">/home/biotest</div><div class="line">biotest@ubuntu:~/miniconda2/opt$ echo $PWD # PWD是显示当前目录</div><div class="line">/home/biotest/miniconda2/opt</div></pre></td></tr></table></figure>
-<h4 id="的作用">$的作用</h4>
-<p>在echo命令中，在变量名前加上<code>$</code>就能显示当前变量的值，它也能让变量作为命令行参数，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/miniconda2/opt$ ls $HOME</div><div class="line">biosoft    Downloads         Miniconda2-latest-Linux-x86_64.sh  Public     Videos</div><div class="line">Desktop    examples.desktop  Music                              Templates</div><div class="line">Documents  miniconda2        Pictures                           test</div></pre></td></tr></table></figure>
-<h4 id="设置局部用户定义变量">设置局部用户定义变量</h4>
-<p>一旦启动了bash shell（或者执行一个shell脚本），就能创建在这个shell进程内可见的局部变量了。可以通过等号给环境变量赋值，值可以是数值或字符串，需要注意的是，在shell中，变量名，等号和值之间没有空格，否则会出错，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/miniconda2/opt$ echo $mywords</div><div class="line"></div><div class="line">biotest@ubuntu:~/miniconda2/opt$ mywords=hello</div><div class="line">biotest@ubuntu:~/miniconda2/opt$ echo $mywords</div><div class="line">hello</div></pre></td></tr></table></figure>
-<p>如果要给变量赋值一个含有空格的字符串，必须要加上单绰号来界定字符串的首和尾，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/miniconda2/opt$ mywords=Hello linux</div><div class="line">linux: command not found</div><div class="line">biotest@ubuntu:~/miniconda2/opt$ mywords="Hello linux"</div><div class="line">biotest@ubuntu:~/miniconda2/opt$ echo $mywords</div><div class="line">Hello linux</div></pre></td></tr></table></figure>
-<p>设置了局部变量后，就能在shell进程的任何地方使用它了，但是，如果生成了另外一个shell，在它的子shell中就无法使用。类似地，如果在子进程中设置了一个局部变量，一旦退出了子进程，那个局部环境变量就无法使用。</p>
-<h4 id="设置全局环境变量">设置全局环境变量</h4>
-<p>在设定全局环境变量的进程所创建的子进程中，该变量都是可见的。创建全局环境变量的方法是先创建一个局部环境变量，然后再把它导出到全局环境中。，这个过程是通过<code>export</code>命令实现的，变量名前面不加<code>$</code>，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ my_words="I love Linux"</div><div class="line">biotest@ubuntu:~$ export my_words</div><div class="line">biotest@ubuntu:~$ echo $mywords</div><div class="line">Hello linux</div><div class="line">biotest@ubuntu:~$ bash</div><div class="line">bbiotest@ubuntu:~$ echo $my_words</div><div class="line">I love Linux</div></pre></td></tr></table></figure>
-<p>在定义了my_words变量后，用bash命令启动了一个子shell，在空上子shell中能够显示变量my_words的值，这是因为export命令将其设为了全局变量。</p>
-<p>修改子shell中全局环境变量的值并不会影响你shell中该变量的值，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo $my_words</div><div class="line">I love Linux</div><div class="line">biotest@ubuntu:~$ bash</div><div class="line">biotest@ubuntu:~$ echo $my_words</div><div class="line">I love Linux</div><div class="line">biotest@ubuntu:~$ my_words="I love Ubuntu"</div><div class="line">biotest@ubuntu:~$ echo $my_words</div><div class="line">I love Ubuntu</div><div class="line">biotest@ubuntu:~$ exit</div><div class="line">exit</div><div class="line">biotest@ubuntu:~$ exit</div><div class="line">exit</div><div class="line">biotest@ubuntu:~$ ps</div><div class="line">   PID TTY          TIME CMD</div><div class="line"> 20142 pts/4    00:00:00 bash</div><div class="line"> 20318 pts/4    00:00:00 ps</div><div class="line">biotest@ubuntu:~$ echo $my_words</div><div class="line">I love Linux</div></pre></td></tr></table></figure>
-<p>子shell也无法通export命令改变父shell中全局变量的值。</p>
-<h4 id="删除环境变量">删除环境变量</h4>
-<p>删除环境变量使用<code>unset</code>命令，前面不加<code>$</code>符号，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo $my_words</div><div class="line">I love Linux</div><div class="line">biotest@ubuntu:~$ unset my_words</div><div class="line">biotest@ubuntu:~$ echo $my_words</div><div class="line"></div><div class="line">biotest@ubuntu:~$</div></pre></td></tr></table></figure>
-<p>在涉及变量名时，什么时候使用<code>$</code>，什么时候不使用<code>$</code>，只需要这样记忆：要具体地查看变量的值时，就需要<code>$</code>符号，如果不需要查看变量的值，只针对变量本身操作，就不使用<code>$</code>符号。</p>
-<h3 id="setprintenv都可以查看系统变量它们有什么区别">5. setprintenv都可以查看系统变量，它们有什么区别？</h3>
-<p>答：（1）通过<code>set</code>可以设置shell选项，如果只输入set而不加任何参数，它就会显示shell 变量，环境变量，和定义的 shell 函数，此时与printenv命令类似，与 printenv 命令不同的是，set 命令的输出很友好地按照首字母顺序排列，如下所示：</p>
-<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180421/Hc4BKfI9eL.png?imageslim" alt="mark"> 如上图所示，当使用没有带选项和参数的 set 命令时，shell 变量，环境变量，和定义的 shell 函数都会被显示。不同于 printenv 命令，set 命令的输出很友好地按照首字母顺序排列。 （2）set命令显示当前shell的变量，包括当前用户的变量；printenv（输入env也可以）命令只显示当前用户的变量。每个shell有自己特有的变量（set）显示的变量，这个和用户变量是不同的，当前用户变量和你用什么shell无关，不管你用什么shell都在，比如HOME,SHELL等这些变量，但shell自己的变量不同shell是不同的，比如BASH_ARGC， BASH等，这些变量只有set才会显示，是bash特有的。</p>
-<h3 id="环境变量存放在哪个地方">6. 环境变量存放在哪个地方？</h3>
-<p>答：当你进入系统的时候，linux 就会为你读入系统的环境变量，这些环境变量存放在什么地方，那就是环境变量的文件中。Linux 中有很多记载环境变量的文件，它们被系统读入是按照一定的顺序的，这些文件包括以下部分：</p>
-<h4 id="etcprofile">6.1 <code>/etc/profile</code>：</h4>
-<p>此文件是bash shell默认的主启动文件，只要登录了Linux，bash就会执行/etc/profile启动文件中的命令，该文件存储的是整个系统的环境变量，它为每个用户设置环境信息，这个文件只有root才能修改。当用户第一次登录时，该文件被执行。并从/etc/profile.d目录的配置文件中搜集shell 的设置。这个文件，是任何用户登陆操作系统以后都会读取的文件（如果用户的shell 是csh 、tcsh 、zsh ，则不会读取此文件），用于获取系统的环境变量，只在登陆的时候读取一次。</p>
-<h4 id="etcbashrc">6.2<code>/etc/bashrc</code>：</h4>
-<p>在执行完/etc/profile 内容之后，如果用户的Shell运行的是bash ，那么接着就会执行此文件。另外，当每次一个新的bash shell 被打开时, 该文件被读取。每个使用bash的用户在登陆以后执行完/etc/profile 中内容以后都会执行此文件，在新开一个bash 的时候也会执行此文件。因此，如果你想让每个使用bash 的用户每新开一个bash 和每次登陆都执行某些操作，或者给他们定义一些新的环境变量，就可以在这个里面设置。 注：<code>/etc/profile</code>，<code>/etc/bashrc</code> 是系统全局环境变量设定</p>
-<h4 id="home.bashrc">6.3<code>$HOME/.bashrc</code>：</h4>
-<p>该文件包含专用于单个人的bash shell 的bash 信息，当登录时以及每次打开一个新的shell 时, 该该文件被读取。 单个用户此文件的修改会影响到他以后的每一次登陆系统和每一次新开一个bash 。因此，可以在这里设置单个用户的特殊的环境变量或者特殊的操作，那么每次它新登陆系统或者新开一个bash ，都会去获取相应的特殊的环境变量和特殊操作。</p>
-<h4 id="home.bash_profile">6.4<code>$HOME/.bash_profile</code>：</h4>
-<p>每个用户都可使用该文件输入专用于自己使用的shell 信息。当用户登录时，该文件仅仅执行一次，默认情况下，它设置一些环境变量，执行用户的.bashrc 文件。单个用户此文件的修改只会影响到他以后的每一次登陆系统。因此，可以在这里设置单个用户的特殊的环境变量或者特殊的操作，那么它在每次登陆的时候都会去获取这些新的环境变量或者做某些特殊的操作，但是仅仅在登陆时。 <code>~/.bashrc</code>和<code>~/.bash_profile</code>都只对当前的用户永久生效，也就是说假如用户A设置了些类环境变量，这个环境变量只有A才能使用，而对于其他的B，C，D等用户来说，这个变量是不存在的。在根目录下，通过<code>ls -a</code>可以查看这两个文件，正常情况下，这两个文件是隐藏的。</p>
-<h4 id="home.bash_logout">6.5<code>$HOME/.bash_logout</code>：</h4>
-<p>当每次退出系统( 退出bash shell) 时, 执行该文件。</p>
-<h3 id="bashrc和.bash_profile的区别是什么">7. <code>~/.bashrc</code>和<code>~/.bash_profile</code>的区别是什么？</h3>
-<p>答：原则上来说，设置自己的环境变量时，在这两个文件中任意选一个即可，它们的区别在于：<code>~/.bash_profile</code>是交互式login方式进入bash shell运行而<code>~/ .bashrc</code>是交互式non-login方式进入bash shell运行。二者设置大致相同。通俗点说，就是<code>.bash_profile</code>文件只会在用户登录的时候读取一次，而<code>.bashrc</code>在每次打开终端进行一次新的会话时都会读取。</p>
-<h4 id="登录-shell-会读取一个或多个启动文件的总结">登录 shell 会读取一个或多个启动文件的总结:</h4>
-<table style="width:85%;">
-<colgroup>
-<col width="27%">
-<col width="56%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>文件</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>/etc/profile</td>
-<td>应用于所有用户的全局配置脚本。</td>
-</tr>
-<tr class="even">
-<td>$HOME/.bash_profile</td>
-<td>用户个人的启动文件。可以用来扩展或重写全局配置脚本中的设置。</td>
-</tr>
-<tr class="odd">
-<td>$HOME/.bash_login</td>
-<td>如果文件 ~/.bash_profile 没有找到，bash 会尝试读取这个脚本。</td>
-</tr>
-<tr class="even">
-<td>$HOME/.profile</td>
-<td>如果文件 ~/.bash_profile 或文件 ~/.bash_login 都没有找到，bash 会试图读取这个文件。 这是基于 Debian 发行版的默认设置，比方说 Ubuntu。</td>
-</tr>
-</tbody>
-</table>
-<p>非登录 shell 会话会读取以下启动文件：</p>
-<table>
-<thead>
-<tr class="header">
-<th>文件</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>/etc/bash.bashrc</td>
-<td>应用于所有用户的全局配置文件。</td>
-</tr>
-<tr class="even">
-<td>~/.bashrc</td>
-<td>用户个人的启动文件。可以用来扩展或重写全局配置脚本中的设置。</td>
-</tr>
-</tbody>
-</table>
-<p>在普通用户看来，文件 ~/.bashrc 可能是最重要的启动文件，因为它几乎总是被读取。非登录 shell 默认 会读取它，并且大多数登录 shell 的启动文件会以能读取 ~/.bashrc 文件的方式来书写。</p>
-<h3 id="如何查看某个变量的内容">8. 如何查看某个变量的内容？</h3>
-<p>答：如果只查看某个变量的内容，用echo，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180421/EEDi017BBh.png?imageslim" alt="mark"></p>
-<h3 id="什么是临时有效的环境变量">9. 什么是临时有效的环境变量？</h3>
-<p>答：临时有效的环境变量就是只对当前的shell有效，当我们退出登录或者关闭终端再打开时，这个环境变量就会消失，它是临时的，设置方法是直接使用<code>export</code>命令来添加，如下所示：</p>
-<blockquote>
-<p>biotest@ubuntu:~$ export Words=“Hello, world!” biotest@ubuntu:~$ echo $Words Hello, world! biotest@ubuntu:~</p>
-</blockquote>
-<h3 id="如何查看地自定义的别名">10. 如何查看地自定义的别名？</h3>
-<p>答：通过set或printenv无法查看通过alias命名的别名，此时需要通过alias来查看，如下所示：</p>
-<blockquote>
-<p>alias egrep=‘egrep –color=auto’ alias fgrep=‘fgrep –color=auto’ alias grep=‘grep –color=auto’ alias l=‘ls -CF’ alias la=‘ls -A’ alias ll=‘ls -alF’ alias ls=‘ls –color=auto’</p>
-</blockquote>
-<h3 id="shell中的一些大写字母是什么意思">11. Shell中的一些大写字母是什么意思？</h3>
-<p>答：这些大写字母表示一些特殊的环境变量，如下所示：</p>
-<table style="width:68%;">
-<colgroup>
-<col width="11%">
-<col width="56%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>变量</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>DISPLAY</td>
-<td>如果你正在运行图形界面环境，那么这个变量就是你显示器的名字。通常，它是 “:0”， 意思是由 X 产生的第一个显示器。</td>
-</tr>
-<tr class="even">
-<td>EDITOR</td>
-<td>文本编辑器的名字。</td>
-</tr>
-<tr class="odd">
-<td>SHELL</td>
-<td>shell 程序的名字。</td>
-</tr>
-<tr class="even">
-<td>HOME</td>
-<td>用户家目录。</td>
-</tr>
-<tr class="odd">
-<td>LANG</td>
-<td>定义了字符集以及语言编码方式。</td>
-</tr>
-<tr class="even">
-<td>OLD_PWD</td>
-<td>先前的工作目录。</td>
-</tr>
-<tr class="odd">
-<td>PAGER</td>
-<td>页输出程序的名字。这经常设置为/usr/bin/less。</td>
-</tr>
-<tr class="even">
-<td>PATH</td>
-<td>由冒号分开的目录列表，当你输入可执行程序名后，会搜索这个目录列表。</td>
-</tr>
-<tr class="odd">
-<td>PS1</td>
-<td>Prompt String 1. 这个定义了你的 shell 提示符的内容。随后我们可以看到，这个变量 内容可以全面地定制。</td>
-</tr>
-<tr class="even">
-<td>PWD</td>
-<td>当前工作目录。</td>
-</tr>
-<tr class="odd">
-<td>TERM</td>
-<td>终端类型名。类 Unix 的系统支持许多终端协议；这个变量设置你的终端仿真器所用的协议。</td>
-</tr>
-<tr class="even">
-<td>TZ</td>
-<td>指定你所在的时区。大多数类 Unix 的系统按照协调时间时 (UTC) 来维护计算机内部的时钟 ，然后应用一个由这个变量指定的偏差来显示本地时间。</td>
-</tr>
-<tr class="odd">
-<td>USER</td>
-<td>你的用户名</td>
-</tr>
-</tbody>
-</table>
-<h3 id="设置环境变量常用的指令有哪些">12. 设置环境变量常用的指令有哪些?</h3>
-<p>答:常用的命令有<code>echo</code>,<code>export</code>,<code>env</code>,<code>set</code>,<code>unset</code>，<code>readonly</code>等，如下所示：</p>
-<h4 id="echo">(1)<code>echo</code></h4>
-<p>查看某个环境变量．</p>
-<h4 id="env">(２)<code>env</code></h4>
-<p>查看所有环境变量</p>
-<h4 id="set">(３)<code>set</code></h4>
-<p>查看本地定义的所有shell变量．</p>
-<h4 id="unset">(４)<code>unset</code></h4>
-<p>删除一个环境变量，例如：</p>
-<blockquote>
-<p>biotest@ubuntu:~$ export Words=“Hello, world!” biotest@ubuntu:~$ echo $Words Hello, world! biotest@ubuntu:~$ unset Words biotest@ubuntu:~$ echo $Words biotest@ubuntu:~$</p>
-</blockquote>
-<h4 id="readonly">(5)<code>readonly</code></h4>
-<p>设置只读环境变量．</p>
-<h3 id="如何将某程序的目录添加到环境变量">13. 如何将某程序的目录添加到环境变量？</h3>
-<p>答：当在shell中输入一个外部命令时,shell就会搜索系统来找到相应的程序,<code>PATH</code>这个环境变量就是定义用于命令和程序查找的目录,通过<code>echo $PATH</code>可以查看环境变量，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180421/H7kICbk6jf.png?imageslim" alt="mark"></p>
-<p>在<code>PATH</code>变量中，可以看到许多由冒号（黄色方框标出的部分）分开的路径。每个冒号就是一个路径，这些搜索路径都是一些可以找到可执行程序的目录列表。当我们输入一个指令时，shell会先检查命令是否是内部命令，不是的话会再检查这个命令是否是一个应用程序。然后shell会试着从这些搜索路径，即PATH（上图中路径）中寻找这些应用程序。如果shell在这些路径目录里没有找到可执行文件。则会报错。若找到，shell内部命令或应用程序将被分解为系统调用并传给Linux内核。在某些时候,我们在Linux中安装了软件,如果没有把软件的可执行文件路径添加到PATH中去的话，要执行某个程序，就需要输入全路径，非常不方便，因此我们需要把软件的安装目录添加到PATH变量中。</p>
-<h4 id="path环境变量的一个案例"><code>PATH</code>环境变量的一个案例</h4>
-<ol style="list-style-type: decimal">
-<li>创建一个可执行文件 在<code>/mnt/hgfs/biotest</code>这个目录下建立一个<code>test.py</code>文件，输入以下内容：</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">print(<span class="string">"hello, world"</span>)</div></pre></td></tr></table></figure>
-<p>保存，退出。 然后将这个文件权限修改为可执行，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod +x test.py</div></pre></td></tr></table></figure>
-<ol start="2" style="list-style-type: decimal">
-<li><p>测试相对路径与绝对路径调用 在当前目录下打开客户端，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt;biotest@ubuntu:/mnt/hgfs/biotest$ ./test.py # 相对路径调用</div><div class="line">&gt;hello, world</div><div class="line">&gt;biotest@ubuntu:/mnt/hgfs/biotest$ </div><div class="line">&gt;biotest@ubuntu:/mnt/hgfs/biotest$ cd</div><div class="line">&gt;biotest@ubuntu:/mnt/hgfs/biotest/test.py # 绝对路径调用</div><div class="line">&gt;hello, world</div></pre></td></tr></table></figure></p></li>
-<li><p>未添加到环境变量PATH时的情况 此时，<code>test.py</code>文件并没添加到<code>PATH</code>的环境变量中，因此直接输入<code>test.py</code>会出错，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;biotest@ubuntu:$ test.py</div><div class="line">&gt;test.py: command not found</div></pre></td></tr></table></figure></p></li>
-<li><p>将文件的路径添加到环境变量PATH 通过设置PATH环境变量，直接用文件名调用：</p></li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;biotest@ubuntu:$export PATH=$PATH:/mnt/hgfs/biotest</div><div class="line">&gt;biotest@ubuntu:$ test.py</div><div class="line">&gt;hello, world</div><div class="line">&gt;biotest@ubuntu:$</div></pre></td></tr></table></figure>
-<p>注：在添加路径到环境变量时，用到了<code>export</code>，它的用法是<code>export PATH=$PATH:路径</code>，或<code>export $PATH=&quot;路径”</code></p>
-<ol start="5" style="list-style-type: decimal">
-<li>永久将文件路径添加到环境变量 此时，将这个客户端关闭，再打开，试着输入<code>test.py</code>，发现出错了，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;biotest@ubuntu:$ test.py</div><div class="line">&gt;test.py: command not found</div></pre></td></tr></table></figure></li>
-</ol>
-<p>因为在第4步中，<code>export PATH=$PATH:/mnt/hgfs/biotest</code>只是一种临时添加到环境变量的方法，如果要每次打开客户端时，都能直接执行<code>test.py</code>，则需要将目录添加到.bashrc文件中，步骤如下： 第一，输入<code>biotest@ubuntu:/$ vi ~/.bashrc</code>打开bashrc文件； 第二，移到bashrc文件的最末端，按<code>I</code>，切换到编辑模式，输入<code>export PATH=/mnt/hgfs/biotest:$PATH</code>，再按<code>Esc</code>键，输入<code>wq</code>，回车，退出； 第三，输入<code>source ~/.bashrc</code>，刷新文件，此时，再输入<code>test.py</code>，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;biotest@ubuntu:$ test.py</div><div class="line">&gt;hello, world</div></pre></td></tr></table></figure></p>
-<p>把客户端关闭或者是重启电脑，再次输入<code>test.py</code>也能够执行，用<code>export</code>查看一下环境变量，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180421/lfJc52FL4H.png?imageslim" alt="mark"> 可以发现，test.py所在的目录在环境变量中。</p>
-<p>如果觉得打开<code>~/.bashrc</code>文件，添加环境变量太麻烦了，可以直接在命令行模式下面进行添加，现在将原来的那个test.py文件拷到另外一个目录（<code>~/Downloads</code>）下面，并把文件名字进行修改，改为<code>test2.py</code>，此时输入以下命令即可： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo &apos;export PATH=$PATH:~/Downloads&apos;&gt;&gt;~/.bashrc &amp;&amp; source ~/.bashrc</div></pre></td></tr></table></figure></p>
-<p>运行过程如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/Downloads$ ./test2.py #相对路径运行</div><div class="line">hello, world</div><div class="line">biotest@ubuntu:~/Downloads$ echo &apos;export PATH=$PATH:~/Downloads&apos;&gt;&gt;~/.bashrc &amp;&amp; source ~/.bashrc #将路径添加到环境变量，直接运行；；</div><div class="line">biotest@ubuntu:~/Downloads$ test2.py</div><div class="line">hello, world</div></pre></td></tr></table></figure>
-<p>通过echo还可以添加alias，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo &quot;alias lh=&apos;ls -lh&apos;&quot; &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc</div></pre></td></tr></table></figure>
-<p>运行过程如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180421/0fJGD9KkA1.png?imageslim" alt="mark"></p>
-<h3 id="什么是非交互式shell">什么是非交互式shell？</h3>
-<p>答：在命令行中输入bash命令，这就是交互式shell，系统执行shell脚本时则是非交互式shell，不同的地方就在于非交互式shell没有命令行提示答。bash shell有一个环境变量即，<code>BASH_ENV</code>环境变量，当shell启动一个非交互式shell进程时，它会检查这个环境变量来查提要执行的启动文件，如果有指定的文件，shell会执行该文件里的命令，这通常包括shell脚本变量设置。这个环境㸄在默认情况下并没有设置，输入<code>printenv BASH_ENV</code>不会返回任何信息。如果BASH_ENV没有设置，shell脚本获取环境变量的过程是这样的：shell脚本是通过启动一个子shell来执行的，子shell可以继承父shell导出过的变量，举例来说，如果父shell是登录shell，在<code>etc/profile</code>、<code>/etc/profile.d/*.sh</code>和<code>$HOME/.bashrc</code>文件中设置并导出了变量，用于执行脚本的子shell就能够继池在这些变量。需要注意的是，父shell设置但并未导出的变量都是局部变量，子shell无法继承局部变量。</p>
-<h3 id="什么是数组变量">什么是数组变量？</h3>
-<p>答：环境变量有一个很有用的特性就是它们可以作为数组使用，数组是能够储存多个值的变量，这些值可以单独引用，也可以作为整个数组来引物，要给某个环境变量设置多个值，可以把值放在括号里，值与值之间用空格分隔，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ mytest=(one two three four five)</div><div class="line">biotest@ubuntu:~$ echo $mytest</div><div class="line">one</div><div class="line">biotest@ubuntu:~$ echo $&#123;mytest[2]&#125;</div><div class="line">three</div><div class="line">biotest@ubuntu:~$ echo $&#123;mytest[0]&#125;</div><div class="line">one</div><div class="line">biotest@ubuntu:~$ echo $&#123;mytest[*]&#125;</div><div class="line">one two three four five</div><div class="line">biotest@ubuntu:~$ unset mytest[2]</div><div class="line">biotest@ubuntu:~$ echo $&#123;mytest[*]&#125;</div><div class="line">one two four five</div><div class="line">biotest@ubuntu:~$ echo $&#123;mytest[3]&#125;</div><div class="line">four</div><div class="line">biotest@ubuntu:~$ echo $&#123;mytest[*]&#125;</div><div class="line">one two four five</div><div class="line">biotest@ubuntu:~$ unset mytest</div><div class="line">biotest@ubuntu:~$ echo $&#123;mytest[*]&#125;</div></pre></td></tr></table></figure>
-<p>从上面结果可以知道，数组变量有这样的特点：①如果只输入变量的名称，只返回第1个元素的值；②如果要显其余的变量的值，格式为<code>echo ${mytest[n]}</code>，其中n是元素的索引，它是从0开始的，如果要显示全部的内容，需要输入星号（*）；③如果要删除数组变量中间的某个元素，删除后，原变量的索引不变；④</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/24/生信-KEGG学习笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/24/生信-KEGG学习笔记/" itemprop="url">KEGG学习笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-24T12:00:00+08:00">
-                2018-04-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
-                    <span itemprop="name">生物信息学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,225
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>1. 什么是通路分析？</strong> 答：一个生物学过程的实现会涉及到许多蛋白质，这些蛋白质合在一起就是一个通路。通路分析能够帮助我们更好地了解某个或某一些蛋白质在一个生物学过程中所扮演的角色。通路分析和GO都是对基因进行注释，那么为什么要对基因进行注释呢？因为基因说穿了其实是一串RNA，那么它的功能和结构虽然都是客观存在的，但是要如何描述这些客观的东西是基因注释所要解决的问题。 最常用的通路分析数据库是京都基因与基因组百科全书 (Kyoto Encyclopedia of Genes and Genomes, KEGG)。1995年，KEGG数据库项目由京都大学化学研究所教授Minoru Kanehisa领头启动。KEGG数据库是手工绘制的KEGG途径图的集合，每个途径图包含分子相互作用和反应的网络，将基因组中的基因与通路中的基因产物（主要是蛋白质）连接。KEGG pathway analysis即为将目的基因定位到KEGG途径图中的过程。下图为small cell lung cancer的KEGG途径图。</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/5e1AC87cD0.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p><strong>2. 什么是KEGG？</strong> 答：KEGG，Kyoto Encyclopedia of Genes and Genomes，京都基因和基因组百科全书，是系统分析基因功能，联系基因组信息和功能信息的知识库。其中包含有大量的通路图，如下图所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/cDH8eG65Fi.png?imageslim" alt="mark"></p>
-<p><strong>3. KEGG中的各种符号表示什么意思？</strong> 答：如下图所示，这种绿色方框里面的是酶； <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/IhKbhEe588.png?imageslim" alt="mark"></p>
-<p>圆圈代表代谢物，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/1e02LEaa7B.png?imageslim" alt="mark"> 点一个圆圈，如cAMP进去，有这个代谢物的各种信息，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/e1IG9ciEcK.png?imageslim" alt="mark"> 其中C00575的信息为，C代表人物，即compound，00575是这种化合物在KEGG中的编号。</p>
-<p>此外，还有一些白框，它们的信息如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/FKc3Flfl3I.jpg?imageslim" alt="mark"></p>
-<p><strong>4. KEGG中的不同颜色表示什么意思？</strong> 答：一般KEGG存在两种代谢图： ①reference pathway，这是根据已有的知识绘制的、概括的、详尽的具有一般参考意义的代谢图，为白色小框，在KEGG中名字以map开头，比如map00010，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/HHGK5jf20m.png?imageslim" alt="mark"></p>
-<p>②species-specific pathway，绿色小框为该物种特有的基因或酶，只有这些绿色的框有更详细的信息。KEGG中名字为特定物种种属英文缩写，比如酵母的糖酵解通路图，sce00010，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/bJLf2ck2i8.png?imageslim" alt="mark"></p>
-<p><strong>5. KEGG在生物信息学方面分析的原理是什么？ </strong> 答：人类的七千多个基因组都是有已知功能的，KEGG把这七千多个基因分成了300个类，就是我们通常说的kegg通路；比如，我现在做了个实验，发现某细胞系里面的两万个基因里面有300个基因变化了，那这300个基因会涉及到KEGG数据库的哪几个通路？这时候就需要用到我的工具啦~将这300个基因加入工具里面，得出结果：有30个Cell cycle通路。</p>
-<p><strong>6. 富集分析怎么分析？</strong> 答：事实上，Cell Cycle KEGG 通路 hsa04110只有124个基因；而我处理了细胞系之后，在只有300个基因发生统计学显著变化的情况下，就有30个是Cell Cycle通路？高达10%的概率，那到底这个Cell Cycle通路是不是被显著改变了呢？ 首先，我会把用户的300个基因，都用KEGG数据库的300个通路注释，然后一个个通路循环做超几何分布检验，给出P值；比如刚才的Cell Cycle 通路就很显著，因为124/7000就2%的概率，结果我 30/300有10%的概率~太可怕了，所以我的这个处理显著的改变了细胞系的Cell Cycle 通路。</p>
-<p><strong>7. KEGG分析后的结果是什么样子，怎么解读？</strong> 答：这是某个工具的KEGG分析后的结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180409/d5KH0eKjb8.jpg?imageslim" alt="mark"> 黄色是高表达（有的工具会是红色），绿色是低表达，灰色是表达不变。</p>
-<p><strong>8. KEGG中的代码是什么意思？</strong> 答：1. K+num（基因ID号，表示在所有同源物种中具有相似结构或功能的一类同源蛋白），如K04456=&gt;丝氨酸/苏氨酸蛋白激酶（备注：K建议大写）。 2. ko + num（代谢通路名称，表示一个特定的生物路径），如：k04151=&gt;PIK-Akt信号通路（备注：ko小写）。 3. M+num（模块名称），M00676=&gt;PI3K-Akt信号模块。 4. C+num（代合物名），如C00533表示NO。 5. E-.-.-.-（酶名），例如EC2.7.1.11.1=&gt;丝氨酶/苏氨酸激酶（即K04456，AKT）。 6. R+num（反应名） 7. RC+num(反应类型）RP + RP+num（反应物质对）</p>
-<p>参考资料 1. <a href="https://mp.weixin.qq.com/s?src=3&amp;timestamp=1523265048&amp;ver=1&amp;signature=SlU3Ctn3S1ucuf07HpdA5BO7jftw2xUN1IpV84vyrd2zq-RdrZhJihCJ1WKkxk0DkrPc--l-Gz-rqX4274h94eqWPiZ2Zsx6*tz0buy1Zxg54pZ-6D6smfhmLAUtCAbBE52Q8qgh5SrjjuJcVBZH91psMGXAb8oqFWTmlxB-EIg=" target="_blank" rel="external">手把手教你看KEGG通路图！</a> 2. <a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1523265396&amp;ver=806&amp;signature=5oh1CmbL0GLyXQ62PnvxR7ZafrvmFU-09TV0vuGJ4TNVw7vVVaEw**EjPiKXQBiYJG6LmwtjT2YRNiBOBYu3matCTy3cvVG9SICTWYkPAln7ivUte0n*KsIXY*yVauf-&amp;new=1" target="_blank" rel="external">KEGG富集分析从未如此简单</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3980,7 +4075,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-count">84</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4002,7 +4097,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -4076,7 +4171,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共287.3k字</span>
+  <span class="post-count">博客全站共290.1k字</span>
 </div>
 
         
