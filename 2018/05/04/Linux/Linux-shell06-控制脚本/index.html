@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Linux,Shell,脚本,结构化命令," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="控制信号 Linux利用信号与运行在系统中的进程进行通信。通过对脚本进行编程，使其在收到特定信号时执行某些命令，从而控制shell脚本的操作。Linux系统和应用程序可以生成超过30个信息，下表是常见的Linux系统信号： 常见的信号    信号 值 描述     1 SIGHUP 挂起进程   2 SIGINF 终止进程   3 SIGQUIT">
+<meta name="keywords" content="Linux,Shell,脚本,结构化命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shell学习笔记（6）——控制脚本">
+<meta property="og:url" content="http://rvdsd.top/2018/05/04/Linux/Linux-shell06-控制脚本/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="控制信号 Linux利用信号与运行在系统中的进程进行通信。通过对脚本进行编程，使其在收到特定信号时执行某些命令，从而控制shell脚本的操作。Linux系统和应用程序可以生成超过30个信息，下表是常见的Linux系统信号： 常见的信号    信号 值 描述     1 SIGHUP 挂起进程   2 SIGINF 终止进程   3 SIGQUIT">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-15T10:21:48.410Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Shell学习笔记（6）——控制脚本">
+<meta name="twitter:description" content="控制信号 Linux利用信号与运行在系统中的进程进行通信。通过对脚本进行编程，使其在收到特定信号时执行某些命令，从而控制shell脚本的操作。Linux系统和应用程序可以生成超过30个信息，下表是常见的Linux系统信号： 常见的信号    信号 值 描述     1 SIGHUP 挂起进程   2 SIGINF 终止进程   3 SIGQUIT">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2018/05/04/Linux/Linux-shell06-控制脚本/"/>
+
+
+
+
+
+  <title>Shell学习笔记（6）——控制脚本 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">学习过程中的输出</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/04/Linux/Linux-shell06-控制脚本/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Shell学习笔记（6）——控制脚本</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-04T12:12:54+08:00">
+                2018-05-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  8,083
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  33
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="控制信号">控制信号</h2>
+<p>Linux利用信号与运行在系统中的进程进行通信。通过对脚本进行编程，使其在收到特定信号时执行某些命令，从而控制shell脚本的操作。Linux系统和应用程序可以生成超过30个信息，下表是常见的Linux系统信号：</p>
+<h3 id="常见的信号">常见的信号</h3>
+<table>
+<thead>
+<tr class="header">
+<th>信号</th>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>SIGHUP</td>
+<td>挂起进程</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>SIGINF</td>
+<td>终止进程</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>SIGQUIT</td>
+<td>停止进程</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>SIGKILL</td>
+<td>无条件终止进程</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>SIGTERM</td>
+<td>尽可能终止进程</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>SIGSTOP</td>
+<td>无条件停止进程，但不是终止进程</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>SIGTSTP</td>
+<td>停止或暂停进程，但不终止进程</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>SIGCONT</td>
+<td>继续运行停止的进程</td>
+</tr>
+</tbody>
+</table>
+<p>默认情况下，bash shell会忽略收到的任何 SIGQUIT (3) 和 SIGTERM (5) 信号（正因为这样，交互式shell才不会被意外终止）。但是bash shell会处理收到的 SIGHUP (1) 和 SIGINT (2) 信号。如果bash shell收到了SIGHUP信号，比如当你要离开一个交互式shell，它就会退出。但在退出之前，它会将SIGHUP信号传给所有由该shell所启动的进程（包括正在运行的shell脚本）。通过SIGINT信号，可以中断shell。Linux内核会停止为shell分配CPU处理时间。这种情况发生时，shell会将SIGINT信号传给所有由它所启动的进程，以此告知出现的状况。你可能也注意到了，shell会将这些信号传给shell脚本程序来处理。而shell脚本的默认行为是忽略这些信号。它们可能会不利于脚本的运行。要避免这种情况，你可以脚本中加入识别信号的代码，并执行命令来处理信号。</p>
+<h3 id="生成信号">生成信号</h3>
+<p>使用键盘上的组合键可以生成2种基本的Linux信号。</p>
+<h4 id="中断进程">中断进程</h4>
+<p>Ctrl<code>+</code>C<code>会生成</code>SIGINT`信号，将其发送给当前在shell运行中的所有进程，停止shell当前运行的进程，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$ sleep 500</div><div class="line">^C</div><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$</div></pre></td></tr></table></figure>
+<h4 id="暂停进程">暂停进程</h4>
+<p><code>Ctrl</code>+<code>Z</code>可以生成一个SIGTSTP信号，停止shell运行的任何进程，停止进程（stopping）与终止（terminating）进程不同，停止进程会让程序继续保留在内存中，并能从上次停止的位置继续运行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$ sleep 100</div><div class="line">^Z</div><div class="line">[1]+  Stopped                 sleep 100</div></pre></td></tr></table></figure>
+<p>结果中的方括号里的数字是shell分配的作业号（job number），shell将运行中的每个进程称为作为，并为每个作业分配有唯一的作业号，第一个作业分配的是作业号1，第二个是2。如果shell会话中有一个已经停止的作业，在退出shell时，bash会提醒用户，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$ sleep 100</div><div class="line">^Z</div><div class="line">[1]+  Stopped                 sleep 100</div><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$ ^C</div><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$ exit</div><div class="line">exit</div><div class="line">There are stopped jobs.</div></pre></td></tr></table></figure>
+<p>通过ps命令可以查看已经停止的作业，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$ ps -l</div><div class="line">F S   UID    PID   PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD</div><div class="line">0 S  1000  10009  10002  0  80   0 -  5700 wait   pts/4    00:00:01 bash</div><div class="line">0 T  1000  28664  10009  0  80   0 -  1822 signal pts/4    00:00:00 sleep</div><div class="line">0 R  1000  28674  10009  0  80   0 -  7229 -      pts/4    00:00:00 ps</div></pre></td></tr></table></figure>
+<p>在S列（进程状态），ps命令将已经停止作业的状态显示为T，这说明命令要么被跟踪，要么被停止了。如果在有已停止作业存在的情况下，你仍旧想退出shell，只要再输入一遍 exit 命令就行了。shell会退出，终止已停止作业。或者，既然你已经知道了已停止作业的PID，就可以用 kill 命令来发送一个 SIGKILL 信号来终止它(-9表示强迫终止）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/input/dir.4ZeP0T$ kill -9 28664</div><div class="line">[1]+  Killed                  sleep 100</div></pre></td></tr></table></figure>
+<h3 id="捕获信号">捕获信号</h3>
+<p>在信号出现时捕获它们并执行其他命令时用<code>trap</code>，此命令可以指定shell脚本要监视并从shell中拦截的Linux信号，如果脚本收到了trap命令中列出的信号，此信号不再由shell处理，则是交给本地处理，trap的用法为<code>trap commands signals</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing signla trapping</div><div class="line"></div><div class="line">trap "echo ' Sorry! I have trapped Ctrl-C'" SIGINT</div><div class="line"></div><div class="line">echo This is a test script</div><div class="line"></div><div class="line">count=1</div><div class="line">while [ $count -le 10 ]</div><div class="line">do</div><div class="line">    echo "Loop #$count"</div><div class="line">    sleep 1</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line"></div><div class="line">echo "This is the end of the test script"</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test1.sh </div><div class="line">This is a test script</div><div class="line">Loop #1</div><div class="line">Loop #2</div><div class="line">Loop #3</div><div class="line">^C Sorry! I have trapped Ctrl-C</div><div class="line">Loop #4</div><div class="line">Loop #5</div><div class="line">^C Sorry! I have trapped Ctrl-C</div><div class="line">Loop #6</div><div class="line">^C Sorry! I have trapped Ctrl-C</div><div class="line">Loop #7</div><div class="line">^C Sorry! I have trapped Ctrl-C</div><div class="line">Loop #8</div><div class="line">^C Sorry! I have trapped Ctrl-C</div><div class="line">Loop #9</div><div class="line">Loop #10</div><div class="line">This is the end of the test script</div></pre></td></tr></table></figure>
+<p>在这个案例中，使用了trap命令，在检测到SIGINT信号时，就会显示一行简单的文本消息，捕获这些信号会阻止用户使用bash shell组合键<code>Ctrl</code>+<code>C</code>来停止程序。也就是说每次使用组合键<code>Ctrl</code>+<code>C</code>时，脚本就都会执行<code>trap</code>命令中指定的<code>echo</code>语句，而不是处理该信号并允许shell停止该脚本。</p>
+<h3 id="捕获脚本退出">捕获脚本退出</h3>
+<p>shell脚本在退出时也能进行捕获，这是在shell完成任务时执行命令的一种简便方法，用法是在trap命令后加上EXIT信号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Trapping the script exit</div><div class="line"><span class="meta">#</span></div><div class="line">trap "echo Goodbye..." EXIT</div><div class="line"><span class="meta">#</span></div><div class="line">count=1</div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">    echo "Loop #$count"</div><div class="line">    sleep 1</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test2.sh</div><div class="line">Loop #1</div><div class="line">Loop #2</div><div class="line">Loop #3</div><div class="line">Loop #4</div><div class="line">Loop #5</div><div class="line">Goodbye...</div><div class="line"></div><div class="line">biotest@ubuntu:~/signal$ bash test2.sh</div><div class="line">Loop #1</div><div class="line">Loop #2</div><div class="line">Loop #3</div><div class="line">^CGoodbye...</div></pre></td></tr></table></figure>
+<p>当脚本运行到正常的退出位置时，捕获就被触发了，shell会执行在trap命令行指定的命令。如果提前退出脚本，同样能够捕获到EXIT。这是因为SIGINT信号并没有出现在trap命令的捕获列表中，当按下Ctrl+C组合键发送SIGINT信号时，脚本就退出了。但在脚本退出前捕获到了EXIT，于是shell执行了trap命令。</p>
+<h3 id="修改或移除捕获">修改或移除捕获</h3>
+<p>要想在脚本中的不同位置进行不同的捕获处理，只需重新使用带有新选项的trap命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Modifying a set trap</div><div class="line"></div><div class="line">trap "echo ' Sorry...Ctrl-C is trapped.'" SIGINT</div><div class="line"></div><div class="line">count=1</div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">    echo "Loop #$count"</div><div class="line">    sleep 1</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line"></div><div class="line">trap "echo 'I modified the trap!'" SIGINT</div><div class="line"></div><div class="line">count=1</div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">    echo "Second Loop #$count"</div><div class="line">    sleep 1</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test3.sh</div><div class="line">Loop #1</div><div class="line">Loop #2</div><div class="line">^C Sorry...Ctrl-C is trapped.</div><div class="line">Loop #3</div><div class="line">Loop #4</div><div class="line">Loop #5</div><div class="line">Second Loop #1</div><div class="line">^CI modified the trap!</div><div class="line">Second Loop #2</div><div class="line">Second Loop #3</div><div class="line">Second Loop #4</div><div class="line">Second Loop #5</div></pre></td></tr></table></figure>
+<p>修改了信号捕获之后，脚本处理信号的方式就会发生变化。但如果一个信号是在捕获被修改前接收到的，那么脚本仍然会根据最初的 trap 命令进行处理。 也可以删除已设置好的捕获。只需要在 trap 命令与希望恢复默认行为的信号列表之间加上两个破折号就行了。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> removing a set trap</div><div class="line"></div><div class="line">trap "echo ' Sorry...Ctrl-C is trapped.'" SIGINT</div><div class="line"></div><div class="line">count=1</div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">   echo "Loop #$count"</div><div class="line">   sleep 1</div><div class="line">   count=$[ $count+1 ]</div><div class="line">done</div><div class="line"></div><div class="line"><span class="meta">#</span> Remove the trap</div><div class="line">trap -- SIGINT</div><div class="line">echo "I just removed the trap"</div><div class="line"></div><div class="line">count=1</div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">   echo "Second Loop #$count"</div><div class="line">   sleep 1</div><div class="line">   count=$[ $count+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test3b.sh</div><div class="line">Loop #1</div><div class="line">Loop #2</div><div class="line">^C Sorry...Ctrl-C is trapped.</div><div class="line">Loop #3</div><div class="line">Loop #4</div><div class="line">Loop #5</div><div class="line">I just removed the trap</div><div class="line">Second Loop #1</div><div class="line">Second Loop #2</div><div class="line">^C</div></pre></td></tr></table></figure>
+<p>移除信号捕获后，脚本按照默认行为来处理 SIGINT 信号，也就是终止脚本运行。但如果信号是在捕获被移除前接收到的，那么脚本会按照原先 trap 命令中的设置进行处理。 在本例中，第一个Ctrl+C组合键用于提前终止脚本。因为信号在捕获被移除前已经接收到了，脚本会照旧执行 trap 中指定的命令。捕获随后被移除，再按Ctrl+C就能够提前终止脚本了。</p>
+<h2 id="后台模式运行脚本">后台模式运行脚本</h2>
+<p>有些脚本不会在终端的显示器上显示，而是在后台（background）运行，在后台模式中，进行运行不会与STDIN、STDOUT以及STDERR发生关联。</p>
+<h3 id="后台运行脚本">后台运行脚本</h3>
+<p>打开后台模式运行脚本霜肆在脚本后面添加上<code>&amp;</code>符号即可，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> test running in the background</div><div class="line"><span class="meta">#</span></div><div class="line">count=1</div><div class="line">while [ $count -le 10 ]</div><div class="line">do</div><div class="line">    sleep 1</div><div class="line">    count=$[ $count + 1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test4.sh &amp;</div><div class="line">[1] 28920</div><div class="line">biotest@ubuntu:~/signal$ ps </div><div class="line">   PID TTY          TIME CMD</div><div class="line"> 10009 pts/4    00:00:01 bash</div><div class="line"> 28920 pts/4    00:00:00 bash</div><div class="line"> 28923 pts/4    00:00:00 sleep</div><div class="line"> 28924 pts/4    00:00:00 ps</div><div class="line"> </div><div class="line"> # 按回车键</div><div class="line"> biotest@ubuntu:~/signal$ </div><div class="line">[1]+  Done                    bash test4.sh</div></pre></td></tr></table></figure>
+<p>从结果可以看出，当 &amp; 符放到命令后时，它会将命令和bash shell分离开来，将命令作为系统中的一个独立的后 台进程运行。显示的第一行是[1] 28920，其中[1]是shell分配给后台进程的作业号。28920是进程号。在运行结束后，按回车键，脚本会在终端显示消息（<code>[1]+ Done...</code>），就是结果的最后一部分，这表明了作业的作业号以及作业状态（Done）。当脚本在后台运行时，它仍然会使用终端显示器来显示STDOUT和STDERR，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Test running in the background with output</div><div class="line"><span class="meta">#</span></div><div class="line"><span class="meta">#</span></div><div class="line">echo "Start the test script"</div><div class="line">count=1</div><div class="line">while [ $count -le 5 ]</div><div class="line">do</div><div class="line">    echo "Loop #$count"</div><div class="line">    sleep 5</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line"><span class="meta">#</span></div><div class="line">echo "Test script is complete"</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>结果运行如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test5.sh &amp;</div><div class="line">[1] 28986</div><div class="line">biotest@ubuntu:~/signal$ Start the test script</div><div class="line">Loop #1</div><div class="line">Loop #2</div><div class="line">Loop #3</div><div class="line">Loop #4</div><div class="line">Loop #5</div><div class="line">Test script is complete</div><div class="line"></div><div class="line">[1]+  Done                    bash test5.sh</div></pre></td></tr></table></figure>
+<p>在这个案例中，脚本test5.sh的输出与shell提示符混杂在一歧异，这也是为什么Start the test script会出现在提示符普边的原因。在显示输出的同时，仍然可以运行命令，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ Start the test script</div><div class="line">Loop #1</div><div class="line">ls</div><div class="line">test1.sh  test2.sh  test3b.sh  test3.sh  test4.sh  test5.sh</div></pre></td></tr></table></figure>
+<p>当脚本test5.sh运行在后台模式时，输入了命令ls。脚本输出、输入的命令以及命令输出全都混在了一起。针对这种情况，最好是将后台运行的脚本的STDOUT和STDERR进行重定向，避免这种杂乱的输出。</p>
+<h3 id="运行多个后台作业">运行多个后台作业</h3>
+<p>可以在命令行提示符下同时启动多个后台作业，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test6.sh &amp;</div><div class="line">[2] 29019</div><div class="line">[1]   Done                    bash test5.sh</div><div class="line">biotest@ubuntu:~/signal$ bash: test6.sh: No such file or directory</div><div class="line">bash test7.sh &amp;</div><div class="line">[3] 29020</div><div class="line">[2]   Exit 127                bash test6.sh</div><div class="line">biotest@ubuntu:~/signal$ bash: test7.sh: No such file or directory</div><div class="line">bash test8.sh &amp;</div><div class="line">[4] 29021</div><div class="line">[3]   Exit 127                bash test7.sh</div><div class="line">biotest@ubuntu:~/signal$ bash: test8.sh: No such file or directory</div><div class="line">ps</div><div class="line">   PID TTY          TIME CMD</div><div class="line"> 10009 pts/4    00:00:01 bash</div><div class="line"> 29022 pts/4    00:00:00 ps</div><div class="line">[4]+  Exit 127                bash test8.sh</div></pre></td></tr></table></figure>
+<p>每次启动新作业时，Linux系统都会为其分配一个新的作业号和PID。通过 ps 命令，可以看到所有脚本处于运行状态。 在终端会话中使用后台进程时一定要小心。注意，在ps命令的输出中，每一个后台进程都和终端会话（pts/0）终端联系在一起。如果终端会话退出，那么后台进程也会随之退出。</p>
+<h2 id="nohup命令">nohup命令</h2>
+<p>在有些情况下，用户会终端会话中启动shell脚本，即使退出了终端会话，脚本也会一直在后台模式运行，直到结束。这可以用nohup命令来实现。nohup命令运行了另外一个命令来阻断所有发送给该进程的SIGHUP信号。这会在退出终端会话时阻止进程退出。nohup命令的格式为<code>nohup commands &amp;</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ nohup bash test1.sh &amp;</div><div class="line">[1] 29325</div><div class="line">biotest@ubuntu:~/signal$ nohup: ignoring input and appending output to 'nohup.out'</div></pre></td></tr></table></figure>
+<p>shell会给命令分配一个作业号，Linux系统会为其分配一个PID号。与shell中的普通进程相比，区 别在于，当使用nohup命令时，如果关闭该会话，脚本会忽略终端会话发过来的SIGHUP信号。 由于nohup命令会解除终端与进程的关联，进程也就不再同STDOUT和STDERR联系在一起。 为了保存该命令产生的输出，nohup命令会自动将STDOUT和STDERR的消息重定向到一个名为 nohup.out的文件中。如果使用nohup运行了另一个命令，该命令的输出会被追加到已有的nohup.out文件中。因此，当运行位于同一个目录中的多个命令时一定要小心，因为所有的输出都会被发送到同一个nohup.out文件中，结果会让人摸不清头脑。</p>
+<p>nohup.out文件包含了通常会发送到终端显示器上的所有输出。在进程完成运行后，你可以查 看nohup.out文件中的输出结果。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ ls</div><div class="line">nohup.out  test1.sh  test2.sh  test3b.sh  test3.sh  test4.sh  test5.sh</div><div class="line">biotest@ubuntu:~/signal$ cat nohup.out </div><div class="line">This is a test script</div><div class="line">Loop #1</div><div class="line">Loop #2</div><div class="line">Loop #3</div><div class="line">Loop #4</div><div class="line">Loop #5</div><div class="line">Loop #6</div><div class="line">Loop #7</div><div class="line">Loop #8</div><div class="line">Loop #9</div><div class="line">Loop #10</div><div class="line">This is the end of the test script</div></pre></td></tr></table></figure>
+<h2 id="作业控制">作业控制</h2>
+<p>在作业停止后，Linux系统会让用户选择是终止还是重启。用户可以用kill命令终止该进程。要重启停止的进程需要向其发送一个SIGCONT信号。启动、停止、终止以及恢复作业的这些功能统称为<strong>作业控制</strong>。通过作业控制，就能完全控制shell环境中所有进程的运行方式。</p>
+<h3 id="查看作业">查看作业</h3>
+<p>查看作业的命令是<code>jobs</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> test job control</div><div class="line"></div><div class="line">echo "Script process ID: $$"</div><div class="line">count=1</div><div class="line">while [ $count -le 10 ]</div><div class="line">do</div><div class="line">    echo "Loop #$count"</div><div class="line">    sleep 10</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line">echo "End of script ..."</div></pre></td></tr></table></figure>
+<p>运行结果，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test10.sh</div><div class="line">Script process ID: 29360</div><div class="line">Loop #1</div><div class="line">^Z</div><div class="line">[1]+  Stopped                 bash test10.sh</div><div class="line"></div><div class="line">biotest@ubuntu:~/signal$ bash test10.sh &gt; test10.out &amp;</div><div class="line">[2] 29364</div><div class="line">biotest@ubuntu:~/signal$ jobs</div><div class="line">[1]+  Stopped                 bash test10.sh</div><div class="line">[2]-  Running                 bash test10.sh &gt; test10.out &amp;</div><div class="line">biotest@ubuntu:~/signal$ jobs -l</div><div class="line">[1]+ 29360 Stopped                 bash test10.sh</div><div class="line">[2]- 29364 Running                 bash test10.sh &gt; test10.out &amp;</div></pre></td></tr></table></figure>
+<p>代码及结果解释：脚本使用<code>$$</code>变量业显示Linux系统分配给此脚本的PID，然后进入循环，每次迭代都休眠10秒，可以从命令行中启动脚本，然后使用<code>Ctrl</code>+<code>Z</code>停止脚本。随后又使用了<code>&amp;</code>操作将另外一个作用设为后台进程启动，出于简化目的，在这个案例中，脚本的输出被重定向到文件中，避免出现在屏幕上。<code>jobs</code>命令可以查看分配给Shell的作用，jobs命令显示了2个已经停止/运行中的作用，以及它们的作业号和作业中使用的命令。如果使用<code>job -l</code>则会业显示作用的PID，有关jobs命令的一些参数，如下表所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>-l</td>
+<td>列出进程的PID以及作业号</td>
+</tr>
+<tr class="even">
+<td>-n</td>
+<td>只列出上次shell发出的通知后改变了状态的作业</td>
+</tr>
+<tr class="odd">
+<td>-p</td>
+<td>只列出作业的PID</td>
+</tr>
+<tr class="even">
+<td>-r</td>
+<td>只列出运行中的作业</td>
+</tr>
+<tr class="odd">
+<td>-s</td>
+<td>只列出已停止的作业</td>
+</tr>
+</tbody>
+</table>
+<p>jobs命令输出中有加号和减号。带加号的作业会被当做默认作业。在使用作业控制命令时，如果未在命令行指定任何作业号，该作业会被当成作业控制命令的操作对象。当前的默认作业完成处理后，带减号的作业成为下一个默认作业。任何时候，不管shell中有多少个正在运行的作业，shell中都只有一个带加号的作业和一个带减号的作业。</p>
+<p>下面例子说明了队列中的下一个作业在默认作业移除时是如何成为默认作业的。有3个独立的进程在后台被启动。jobs命令显示出了这些进程、进程的PID及其状态。注意，默认进程（带有加号的那个）是最后启动的那个进程，也就是3号作业。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test10.sh &gt; test10a.out &amp;</div><div class="line">[2] 29402</div><div class="line">biotest@ubuntu:~/signal$ bash test10.sh &gt; test10.out &amp;</div><div class="line">[3] 29404</div><div class="line">biotest@ubuntu:~/signal$ bash test10.sh &gt; test10c.out &amp;</div><div class="line">[4] 29409</div><div class="line">biotest@ubuntu:~/signal$ jobs -l</div><div class="line">[2]+ 29402 Running                 bash test10.sh &gt; test10a.out &amp;</div><div class="line">[3]  29404 Running                 bash test10.sh &gt; test10.out &amp;</div><div class="line">[4]- 29409 Running                 bash test10.sh &gt; test10c.out &amp;</div><div class="line">biotest@ubuntu:~/signal$ kill 29402</div><div class="line">biotest@ubuntu:~/signal$ jobs -l</div><div class="line">[3]+ 29404 Running                 bash test10.sh &gt; test10.out &amp;</div><div class="line">[4]- 29409 Terminated              bash test10.sh &gt; test10c.out</div><div class="line">biotest@ubuntu:~/signal$ kill 29404</div><div class="line"><span class="meta">#</span> 调用了 kill 命令向默认进程发送了一个 SIGHUP 信号，终止了该作业。在接下来的 jobs</div><div class="line"><span class="meta">#</span> 命令输出中，先前带有减号的作业成了现在的默认作业，减号也变成了加号。</div><div class="line">biotest@ubuntu:~/signal$ jobs -l</div><div class="line">[3]+ 29409 Terminated              bash test10.sh &gt; test10.out</div></pre></td></tr></table></figure>
+<h3 id="重启停止的作业">重启停止的作业</h3>
+<p>在bash作业控制中，可以将已停止的作业作为后台进程或前台进程重启。前台进程会接管你当前工作的终端，所以在使用该功能时要小心，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test10.sh</div><div class="line">Script process ID: 29612</div><div class="line">Loop #1</div><div class="line">^Z</div><div class="line">[1]+  Stopped                 bash test10.sh</div><div class="line">biotest@ubuntu:~/signal$ bg</div><div class="line">[1]+ bash test10.sh &amp;</div><div class="line">biotest@ubuntu:~/signal$ jobs</div><div class="line">[1]+  Running                 bash test10.sh &amp;</div></pre></td></tr></table></figure>
+<p>因为该作业是默认作业（从加号可以看出），只需要使用bg命令就可以将其以后台模式重启。 注意，当作业被转入后台模式时，并不会列出其PID。如果有多个作业，需要在<code>bg</code>命令后加上作业号，如果要以前台模式恢复运行，则用<code>fg</code>加上作业号。</p>
+<h2 id="调整优先级">　调整优先级</h2>
+<p>在多任务操作系统中（Linux就是），内核负责将CPU时间分配给系统上运行的每个进程。调度优先级（scheduling priority）是内核分配给进程的CPU时间（相对于其他进程）。在Linux系统中，由shell启动的所有进程的调度优先级默认都是相同的。调度优先级是个整数值，从20（最高优先级）到+19（最低优先级）。默认情况下，bashshell以优先级0来启动所有进程。</p>
+<p>有时用户要改变一个shell脚本的优先级。不管是降低它的优先级（这样它就不会从占用其他 进程过多的处理能力），还是给予它更高的优先级（这样它就能获得更多的处理时间），都可以通过<code>nice</code>这个命令达到目的。</p>
+<h3 id="nice命令">nice命令</h3>
+<p>nice命令允许你设置命令启动时的调度优先级。要让命令以更低的优先级运行，只要用nice的-n命令行来指定新的优先级级别。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ nice -n 10 bash test4.sh &gt; test4.out &amp;</div><div class="line">[2] 29646</div><div class="line">biotest@ubuntu:~/signal$ ps -p 29646 -o pid,ppid,ni,cmd</div><div class="line">   PID   PPID  NI CMD</div><div class="line">[2]-  Done                    nice -n 10 bash test4.sh &gt; test4.out</div></pre></td></tr></table></figure>
+<p>注意，必须将nice命令和要启动的命令放在同一行中。ps命令的输出验证了谦让度值（NI列）已经被调整到了10。</p>
+<p>nice命令会让脚本以更低的优先级运行。但如果想提高某个命令的优先级，普通用户则无法实现,如下所示:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ nice -n -10 bash test4.sh &gt; test4.out &amp;</div><div class="line">[2] 29677</div><div class="line">biotest@ubuntu:~/signal$ nice: cannot set niceness: Permission denied</div></pre></td></tr></table></figure>
+<p>nice命令阻止普通系统用户来提高命令的优先级。注意，指定的作业的确运行了，但是试图使用nice命令提高其优先级的操作却失败了,这很好,理解计算机的资源是有限有，用户可以将自己的作业推后，但是你不能提前。nice命令的-n选项并不是必须的，只需要在破折号后面跟上优先级就行了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ nice -10 bash test4.sh &gt; test4.out &amp;</div><div class="line">[3] 29691</div><div class="line">[2]   Done                    nice -n -10 bash test4.sh &gt; test4.out</div><div class="line">biotest@ubuntu:~/signal$ ps -p 29691 -o pid,ppid,ni,cmd</div><div class="line">   PID   PPID  NI CMD</div><div class="line">[3]-  Done                    nice -10 bash test4.sh &gt; test4.out</div></pre></td></tr></table></figure>
+<h3 id="renice命令">renice命令</h3>
+<p><code>renice</code>命令可以改变系统上已经运行命令的优先级，它允许用户指定运行进程的PID来改变它的优先级，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ bash test10.sh &amp;</div><div class="line">[2] 29718</div><div class="line">biotest@ubuntu:~/signal$ ps -p 29718 -o pid,Loop #3</div><div class="line">ppid,ni,cmd</div><div class="line">   PID   PPID  NI CMD</div><div class="line"> 29718  10009   0 bash test10.sh</div><div class="line">biotest@ubuntu:~/signal$ renice -n 10 -p 29718</div><div class="line">29718 (process ID) old priority 0, new priority 10</div><div class="line">biotest@ubuntu:~/signal$ ps -p 29718 -o pid,ppid,ni,cmd</div><div class="line">   PID   PPID  NI CMD</div><div class="line"> 29718  10009  10 bash test10.sh</div></pre></td></tr></table></figure>
+<p>renice命令会自动更新当前运行进程的调度优先级。和nice命令一样，renice命令也有一些限制：第一，只能对属于用户自身的进程执行renice；只能通过renice降低进程的优先级；root用户可以通过renice来任意调整进程的优先级。如果想完全控制运行进程，必须以root账户身份登录或使用sudo命令。</p>
+<h2 id="定时运行作业">定时运行作业</h2>
+<p><code>at</code>命令和<code>cron</code>表可以指定用户在某个时间运行脚本。</p>
+<h3 id="at命令"><code>at</code>命令</h3>
+<p>at命令允许指定Linux系统何时运行脚本。at命令会将作业提交到队列中，指定shell何时运行该作业。at的守护进程atd会以后台模式运行，检查作业队列来运行作业。atd守护进程会检查系统上的一个特殊目录（通常位于/var/spool/at）来获取用at命令提交的作业。默认情况下，atd守护进程会每60秒检查一下这个目录。有作业时，atd守护进程会检查作业设置运行的时间。如果时间跟当前时间匹配，atd守护进程就会运行此作业。</p>
+<h4 id="at命令的格式">at命令的格式</h4>
+<p>at命令的格式at命令的基本格式为：<code>at [-f filename ] time</code></p>
+<p>默认情况下，at命令会将STDIN的输入放到队列中。用户可以用-f参数来指定用于读取命令（脚本文件）的文件名。time参数指定了Linux系统何时运行该作业。如果你指定的时间已经错过，at命令会在第二天的那个时间运行指定的作业。at命令能识别多种不同的时间格式。</p>
+<ol style="list-style-type: decimal">
+<li>标准的小时和分钟格式，比如10:15。</li>
+<li>AM/PM指示符，比如10:15 PM。</li>
+<li>特定可命名时间，比如now、noon、midnight或者teatime（4 PM）。 除了指定运行作业的时间，也可以通过不同的日期格式指定特定的日期。</li>
+<li>标准日期格式，比如MMDDYY、MM/DD/YY或DD.MM.YY。</li>
+<li>文本日期，比如Jul 4或Dec 25，加不加年份均可。</li>
+<li>可以指定时间增量（例如当前时间+25min；明天10:15 PM；10:15 + 7days）。</li>
+</ol>
+<p>在使用at命令时，该作业会被提交到作业队列（jobqueue）。作业队列会保存通过at命令提交的待处理的作业。针对不同优先级，存在26种不同的作业队列。作业队列通常用小写字母a<sub>z和大写字母A</sub>Z来指代。作业队列的字母排序越高，作业运行的优先级就越低（更高的nice值）。默认情况下，at的作业会被提交到a作业队列。如果想以更高优先级运行作业，可以用-q参数指定不同的队列字母。</p>
+<h4 id="获取作业的输出">获取作业的输出</h4>
+<p>当作业在Linux系统上运行时，显示器并不会关联到该作业。取而代之的是，Linux系统会将提交该作业的用户的电子邮件地址作为STDOUT和STDERR。任何发到STDOUT或STDERR的输出都会通过邮件系统发送给该用户。看一个案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>注：Ubuntu上可能没有安装<code>at</code>，需要自己手动安装。at命令会显示分配给作业的作业号以及为作业安排的运行时间。-f选项指明使用哪个脚本 文件，now指示at命令立刻执行该脚本。</p>
+<p>使用e-mail作为at命令的输出极其不便。at命令利用sendmail应用程序来发送邮件。如果你的系统中没有安装sendmail，那就无法获得任何输出，因此在使用at命令时，最好在脚本中对STDOUT和STDERR进行重定向，如下例所示。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Test using at command</div><div class="line"></div><div class="line">echo "This script ran at $(date +%B%d,%T)" &gt; test13b.out</div><div class="line">echo &gt;&gt; test13b.out</div><div class="line">sleep 5</div><div class="line">echo "This is the script's end ..." &gt;&gt; test13b.out</div><div class="line"></div><div class="line">biotest@ubuntu:~/signal$ chmod u+x test13b.sh</div><div class="line">biotest@ubuntu:~/signal$ at -M -f test13b.sh now</div><div class="line">warning: commands will be executed using /bin/sh</div><div class="line">job 3 at Sun May  6 05:10:00 2018</div><div class="line">biotest@ubuntu:~/signal$ cat test13b.out</div><div class="line">This script ran at May06,05:10:51</div><div class="line"></div><div class="line">This is the script's end ...</div></pre></td></tr></table></figure>
+<p>如果不想在at命令中使用邮件或重定向，最好加上-M选项来屏蔽作业产生的输出信息。</p>
+<h4 id="列出等待的作业">列出等待的作业</h4>
+<p>atq命令可以查看系统中有哪些作业在等待，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ at -M -f test13b.sh teatime</div><div class="line">warning: commands will be executed using /bin/sh</div><div class="line">job 4 at Sun May  6 16:00:00 2018</div><div class="line">biotest@ubuntu:~/signal$ at -M -f test13b.sh tomorrow</div><div class="line">warning: commands will be executed using /bin/sh</div><div class="line">job 5 at Mon May  7 05:16:00 2018</div><div class="line">biotest@ubuntu:~/signal$ at -M -f test13b.sh 13:30</div><div class="line">warning: commands will be executed using /bin/sh</div><div class="line">job 6 at Sun May  6 13:30:00 2018</div><div class="line">biotest@ubuntu:~/signal$ at -M -f test13b.sh now</div><div class="line">warning: commands will be executed using /bin/sh</div><div class="line">job 7 at Sun May  6 05:16:00 2018</div><div class="line">biotest@ubuntu:~/signal$ atq</div><div class="line">4	Sun May  6 16:00:00 2018 a biotest</div><div class="line">1	Sun May  6 05:06:00 2018 = biotest</div><div class="line">5	Mon May  7 05:16:00 2018 a biotest</div><div class="line">2	Sun May  6 05:06:00 2018 = biotest</div><div class="line">7	Sun May  6 05:16:00 2018 = biotest</div><div class="line">6	Sun May  6 13:30:00 2018 a biotest</div></pre></td></tr></table></figure>
+<p>作业列表中显示了作业号、系统运行该作业的日期和时间及其所在的作业队列。</p>
+<h4 id="删除作业">删除作业</h4>
+<p>一旦知道了哪些作业在作业队列中等待，就能用 atrm 命令来删除等待中的作业。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ atq</div><div class="line">4	Sun May  6 16:00:00 2018 a biotest</div><div class="line">1	Sun May  6 05:06:00 2018 = biotest</div><div class="line">5	Mon May  7 05:16:00 2018 a biotest</div><div class="line">2	Sun May  6 05:06:00 2018 = biotest</div><div class="line">6	Sun May  6 13:30:00 2018 a biotest</div><div class="line">biotest@ubuntu:~/signal$ atrm 2</div><div class="line">Warning: deleting running job</div><div class="line">biotest@ubuntu:~/signal$ atq</div><div class="line">4	Sun May  6 16:00:00 2018 a biotest</div><div class="line">1	Sun May  6 05:06:00 2018 = biotest</div><div class="line">5	Mon May  7 05:16:00 2018 a biotest</div><div class="line">6	Sun May  6 13:30:00 2018 a biotest</div></pre></td></tr></table></figure>
+<h3 id="cron时间表">cron时间表</h3>
+<p>如果用户需要脚本在每天的同一时间运行或是每周一次、每月一次运行，就要使用cron程序来安排要定期执行的作业。cron程序会在后台运行并检查一个特殊的表（被称作cron时间表），以获知已安排执行的作业。</p>
+<h4 id="cron时间表-1">cron时间表</h4>
+<ol style="list-style-type: decimal">
+<li>cron时间表采用一种特别的格式来指定作业何时运行。其格式为<code>min hour dayofmonth month dayofweek command</code>，cron时间表允许你用特定值、取值范围（比如1~5）或者是通配符（星号）来指定条目。</li>
+<li>例如，如果想在每天的10:15运行一个命令，可以用cron时间表条目：<code>15 10 * * * command</code>，在<code>dayofmonth</code>、<code>month</code>以及<code>dayofweek</code>字段中使用了通配符，表明cron会在每个月每天的10:15执行该命令。要指定在每周一4:15PM运行的命令，可以用这样的命令，即<code>15 16 * * 1 command</code>。</li>
+<li>可以用三字符的文本值（mon、tue、wed、thu、fri、sat、sun）或数值（0为周日，6为周六）来指定dayofweek表项。 再看一个例子，如果要在每个月的第一天中午12点执行命令。可以用这样的命令，即<code>00 12 1 * * command</code>，dayofmonth表项指定月份中的日期值（1~31）。</li>
+<li>如何设置一个在每个月的最后一天执行的命令，因为无法设置dayofmonth的值来涵盖所有的月份。常用的方法是加一条使用date 命令的 if-then 语句来检查明天的日期是不是01，如下所示：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">00 12 * * * if [ ` date +%d -d tomorrow `  = 01 ] ; then ; command</div></pre></td></tr></table></figure>
+<p>上述这段代码会在每天中午12点来检查是不是当月的最后一天，如果是，cron将会运行该命令。</p>
+<ol start="5" style="list-style-type: decimal">
+<li>命令列表必须指定要运行的命令或脚本的全路径名。你可以像在普通的命令行中那样，添加任何想要的命令行参数和重定向符号。 <code>15 10 * * * /home/biotest/test4.sh &gt; test4out</code>，cron程序会用提交作业的用户账户运行该脚本。因此，用户必须有访问该命令和命令中指定的输出文件的权限。</li>
+</ol>
+<h4 id="构建cron时间表">构建cron时间表</h4>
+<p>每个系统用户（包括root用户）都可以用自己的cron时间表来运行安排好的任务。Linux提供了crontab命令来处理cron时间表。要列出已有的cron时间表，可以用-l选项，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ crontab -l</div><div class="line">no crontab for biotest</div></pre></td></tr></table></figure>
+<p>默认情况下，用户的cron时间表文件并不存在。要为cron时间表添加条目，可以用-e选项。 在添加条目时，crontab命令会启用一个文本编辑器，使用已有的cron时间表作为文件内容，如果时间表不存在的话，它会新建一个空文件。</p>
+<h4 id="浏览cron目录">浏览cron目录</h4>
+<p>如果你创建的脚本对精确的执行时间要求不高，用预配置的cron脚本目录会更方便。有4个基本目录：hourly、daily、monthly和weekly。 Ubuntu无此目录，略过。</p>
+<h4 id="anacron程序">anacron程序</h4>
+<p>cron程序的唯一问题是它假定Linux系统是7×24小时运行的。如果某个作业在cron时间表中安排运行的时间已到，但这时候Linux系统处于关机状态，那么这个作业就不会被运行。当系统开机时，cron程序不会再去运行那些错过的作业。要解决这个问题，许多Linux发行版还包含了anacron程序。如果anacron知道某个作业错过了执行时间，它会尽快运行该作业。这意味着如果Linux系统关机了几天，当它再次开机时，原定在关机期间运行的作业会自动运行。这个功能常用于进行常规日志维护的脚本。如果系统在脚本应该运行的时间刚好关机，日志文件就不会被整理，可能会变很大。通过anacron，至少可以保证系统每次启动时整理日志文件。anacron程序只会处理位于cron目录的程序，比如/etc/cron.monthly。它用时间戳来决定作业是否在正确的计划间隔内运行了。每个cron目录都有个时间戳文件，该文件位于/var/spool/anacron，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ sudo cat /var/spool/anacron/cron.monthly</div><div class="line">[sudo] password for biotest: </div><div class="line">20180427</div></pre></td></tr></table></figure>
+<p>anacron程序使用自己的时间表（通常位于/etc/anacrontab）来检查作业目录。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/signal$ sudo cat /etc/anacrontab </div><div class="line"><span class="meta">#</span> /etc/anacrontab: configuration file for anacron</div><div class="line"></div><div class="line"><span class="meta">#</span> See anacron(8) and anacrontab(5) for details.</div><div class="line"></div><div class="line">SHELL=/bin/sh</div><div class="line">PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</div><div class="line">HOME=/root</div><div class="line">LOGNAME=root</div><div class="line"></div><div class="line"><span class="meta">#</span> These replace cron's entries</div><div class="line">1	5	cron.daily	run-parts --report /etc/cron.daily</div><div class="line">7	10	cron.weekly	run-parts --report /etc/cron.weekly</div><div class="line">@monthly	15	cron.monthly	run-parts --report /etc/cron.monthly</div></pre></td></tr></table></figure>
+<p>anacron时间表的基本格式和cron时间表略有不同，前者的格式为<code>period delay identifier command。</code></p>
+<p>period条目定义了作业多久运行一次，以天为单位。anacron程序用此条目来检查作业的时间戳文件。delay条目会指定系统启动后anacron程序需要等待多少分钟再开始运行错过的脚本。command条目包含了run-parts程序和一个cron脚本目录名。run-parts程序负责运行目录中传给它的任何脚本。注意，anacron不会运行位于/etc/cron.hourly的脚本。这是因为anacron程序不会处理执行时间需求小于一天的脚本。identifier条目是一种特别的非空字符串，如cron-weekly。它用于唯一标识日志消息和错误邮件中的作业。</p>
+<h2 id="使用新-shell-启动脚本">使用新 shell 启动脚本</h2>
+<p>如果每次运行脚本的时候都能够启动一个新的bashshell（即便只是某个用户启动了一个bashshell），将会非常的方便。有时候，用户希望为shell会话设置某些shell功能，或者只是为了确保已经设置了某个文件。用户登入bashshell时需要运行的启动文件基本上依照下列顺序所找到的第一个文件会被运行，其余的文件会被忽略：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$HOME/.bash_profile </div><div class="line">$HOME/.bash_login </div><div class="line">$HOME/.profile</div></pre></td></tr></table></figure>
+<p>因此，应该将需要在登录时运行的脚本放在上面第一个文件中。每次启动一个新shell时，bash shell都会运行.bashrc文件。可以这样来验证：在主目录下的.bashrc文件中加入一条简单的echo语句，然后启动一个新shell。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span> source global definitions</div><div class="line">if [ -f /etc/bashrc ]; then</div><div class="line">          . /etc/bashrc</div><div class="line">fi</div><div class="line"><span class="meta">#</span> User specific aliases and functions</div><div class="line">echo "I'm in a new shell!"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash</div><div class="line">I&apos;m in a new shell!</div><div class="line">biotest@ubuntu:~$ exit</div><div class="line">exit</div></pre></td></tr></table></figure>
+<p>.bashrc文件通常也是通过某个bash启动文件来运行的。因为.bashrc文件会运行两次：一次是当你登入bashshell时，另一次是当你启动一个bashshell时。如果你需要一个脚本在两个时刻都得以运行，可以把这个脚本放进该文件中。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Linux/" <i class="fa fa-tag"></i> Linux</a>
+          
+            <a href="/tags/Shell/" <i class="fa fa-tag"></i> Shell</a>
+          
+            <a href="/tags/脚本/" <i class="fa fa-tag"></i> 脚本</a>
+          
+            <a href="/tags/结构化命令/" <i class="fa fa-tag"></i> 结构化命令</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/03/Linux/Linux-shell05-理解shell的重定向/" rel="next" title="Shell学习笔记（5）——理解Shell的重定向">
+                <i class="fa fa-chevron-left"></i> Shell学习笔记（5）——理解Shell的重定向
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/05/Linux/Linux-shell07-构建函数/" rel="prev" title="Shell学习笔记（7）——构建函数">
+                Shell学习笔记（7）——构建函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">93</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">83</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制信号"><span class="nav-number">1.</span> <span class="nav-text">控制信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的信号"><span class="nav-number">1.1.</span> <span class="nav-text">常见的信号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成信号"><span class="nav-number">1.2.</span> <span class="nav-text">生成信号</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#中断进程"><span class="nav-number">1.2.1.</span> <span class="nav-text">中断进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#暂停进程"><span class="nav-number">1.2.2.</span> <span class="nav-text">暂停进程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#捕获信号"><span class="nav-number">1.3.</span> <span class="nav-text">捕获信号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#捕获脚本退出"><span class="nav-number">1.4.</span> <span class="nav-text">捕获脚本退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改或移除捕获"><span class="nav-number">1.5.</span> <span class="nav-text">修改或移除捕获</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后台模式运行脚本"><span class="nav-number">2.</span> <span class="nav-text">后台模式运行脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#后台运行脚本"><span class="nav-number">2.1.</span> <span class="nav-text">后台运行脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行多个后台作业"><span class="nav-number">2.2.</span> <span class="nav-text">运行多个后台作业</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nohup命令"><span class="nav-number">3.</span> <span class="nav-text">nohup命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作业控制"><span class="nav-number">4.</span> <span class="nav-text">作业控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看作业"><span class="nav-number">4.1.</span> <span class="nav-text">查看作业</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重启停止的作业"><span class="nav-number">4.2.</span> <span class="nav-text">重启停止的作业</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调整优先级"><span class="nav-number">5.</span> <span class="nav-text">　调整优先级</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nice命令"><span class="nav-number">5.1.</span> <span class="nav-text">nice命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#renice命令"><span class="nav-number">5.2.</span> <span class="nav-text">renice命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定时运行作业"><span class="nav-number">6.</span> <span class="nav-text">定时运行作业</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#at命令"><span class="nav-number">6.1.</span> <span class="nav-text">at命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#at命令的格式"><span class="nav-number">6.1.1.</span> <span class="nav-text">at命令的格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取作业的输出"><span class="nav-number">6.1.2.</span> <span class="nav-text">获取作业的输出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#列出等待的作业"><span class="nav-number">6.1.3.</span> <span class="nav-text">列出等待的作业</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除作业"><span class="nav-number">6.1.4.</span> <span class="nav-text">删除作业</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cron时间表"><span class="nav-number">6.2.</span> <span class="nav-text">cron时间表</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cron时间表-1"><span class="nav-number">6.2.1.</span> <span class="nav-text">cron时间表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建cron时间表"><span class="nav-number">6.2.2.</span> <span class="nav-text">构建cron时间表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浏览cron目录"><span class="nav-number">6.2.3.</span> <span class="nav-text">浏览cron目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#anacron程序"><span class="nav-number">6.2.4.</span> <span class="nav-text">anacron程序</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用新-shell-启动脚本"><span class="nav-number">7.</span> <span class="nav-text">使用新 shell 启动脚本</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共309.2k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine@1.1.4/dist/Valine.min.js"></script>
+  <script type="text/javascript">
+    new Valine({
+        av: AV,
+        el: '#vcomments' ,
+        verify: true,
+        notify: true,
+        app_id: '4ORLDMxXCFDLSHPJ4wSSDkkw-gzGzoHsz',
+        app_key: 'HSWpCY7XlN0pGV5DCrKoC0ic',
+        placeholder: 'Comment input placeholder'
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
