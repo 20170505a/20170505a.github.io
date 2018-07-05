@@ -511,7 +511,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5,768
+                  9,885
                 </span>
               
 
@@ -527,7 +527,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  20
+                  38
                 </span>
               
             </div>
@@ -550,7 +550,7 @@
       
         
           
-            <h2 id="前言">前言</h2>
+            <h2 id="前言主要内容">前言——主要内容</h2>
 <p>这篇笔记是StatQuest系列视频的第53-55节，其中第53节讲的是随机森林，第54节讲的是缺失值的处理，第55节讲的是R与随机森林。</p>
 <h2 id="决策树的局限">决策树的局限</h2>
 <p>随机森林（Random Forests）来源于决策树，因此如果不了解决策树的话，可以看上一篇笔记。如下所示：</p>
@@ -1270,6 +1270,224 @@
 <p class="caption">mark</p>
 </div>
 <h2 id="r语言与随机森林">R语言与随机森林</h2>
+<h3 id="加载包">加载包</h3>
+<p>在使用R语言构建随机森林的时候，需要使用如下三个包：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line"><span class="keyword">library</span>(cowplot)</div><div class="line"><span class="keyword">library</span>(randomForest)</div></pre></td></tr></table></figure>
+<h3 id="数据集的处理">数据集的处理</h3>
+<p>原始数据使用UCI机器学习的数据，这里的数据很多，我们只用其中的心脏病方面的一个数据集，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/Ee1H7e343c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url &lt;- <span class="string">"http://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"</span></div><div class="line">data &lt;- read.csv(url, header=<span class="literal">FALSE</span>)</div><div class="line">head(data)</div></pre></td></tr></table></figure>
+<p>数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data)</div><div class="line">  V1 V2 V3  V4  V5 V6 V7  V8 V9 V10 V11 V12 V13 V14</div><div class="line"><span class="number">1</span> <span class="number">63</span>  <span class="number">1</span>  <span class="number">1</span> <span class="number">145</span> <span class="number">233</span>  <span class="number">1</span>  <span class="number">2</span> <span class="number">150</span>  <span class="number">0</span> <span class="number">2.3</span>   <span class="number">3</span> <span class="number">0.0</span> <span class="number">6.0</span>   <span class="number">0</span></div><div class="line"><span class="number">2</span> <span class="number">67</span>  <span class="number">1</span>  <span class="number">4</span> <span class="number">160</span> <span class="number">286</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">108</span>  <span class="number">1</span> <span class="number">1.5</span>   <span class="number">2</span> <span class="number">3.0</span> <span class="number">3.0</span>   <span class="number">2</span></div><div class="line"><span class="number">3</span> <span class="number">67</span>  <span class="number">1</span>  <span class="number">4</span> <span class="number">120</span> <span class="number">229</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">129</span>  <span class="number">1</span> <span class="number">2.6</span>   <span class="number">2</span> <span class="number">2.0</span> <span class="number">7.0</span>   <span class="number">1</span></div><div class="line"><span class="number">4</span> <span class="number">37</span>  <span class="number">1</span>  <span class="number">3</span> <span class="number">130</span> <span class="number">250</span>  <span class="number">0</span>  <span class="number">0</span> <span class="number">187</span>  <span class="number">0</span> <span class="number">3.5</span>   <span class="number">3</span> <span class="number">0.0</span> <span class="number">3.0</span>   <span class="number">0</span></div><div class="line"><span class="number">5</span> <span class="number">41</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">130</span> <span class="number">204</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">172</span>  <span class="number">0</span> <span class="number">1.4</span>   <span class="number">1</span> <span class="number">0.0</span> <span class="number">3.0</span>   <span class="number">0</span></div><div class="line"><span class="number">6</span> <span class="number">56</span>  <span class="number">1</span>  <span class="number">2</span> <span class="number">120</span> <span class="number">236</span>  <span class="number">0</span>  <span class="number">0</span> <span class="number">178</span>  <span class="number">0</span> <span class="number">0.8</span>   <span class="number">1</span> <span class="number">0.0</span> <span class="number">3.0</span>   <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>从数据中我们可以发现，第一行对于每个变量的命名并不是特别的规范，因此，根据网站提供的信息，我们把这些变量名改一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">colnames(data) &lt;- c(</div><div class="line">  <span class="string">"age"</span>,</div><div class="line">  <span class="string">"sex"</span>,</div><div class="line">  <span class="string">"cp"</span>,</div><div class="line">  <span class="string">"trestbps"</span>,</div><div class="line">  <span class="string">"chol"</span>,</div><div class="line">  <span class="string">"fbs"</span>,</div><div class="line">  <span class="string">"restecg"</span>,</div><div class="line">  <span class="string">"thalach"</span>,</div><div class="line">  <span class="string">"exang"</span>,</div><div class="line">  <span class="string">"oldpeak"</span>,</div><div class="line">  <span class="string">"slope"</span>,</div><div class="line">  <span class="string">"ca"</span>,</div><div class="line">  <span class="string">"thal"</span>,</div><div class="line">  <span class="string">"hd"</span></div><div class="line">)</div><div class="line">head(data)</div></pre></td></tr></table></figure>
+<p>更改后的结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data)</div><div class="line">  age sex cp trestbps chol fbs restecg thalach exang oldpeak slope  ca thal hd</div><div class="line"><span class="number">1</span>  <span class="number">63</span>   <span class="number">1</span>  <span class="number">1</span>      <span class="number">145</span>  <span class="number">233</span>   <span class="number">1</span>       <span class="number">2</span>     <span class="number">150</span>     <span class="number">0</span>     <span class="number">2.3</span>     <span class="number">3</span> <span class="number">0.0</span>  <span class="number">6.0</span>  <span class="number">0</span></div><div class="line"><span class="number">2</span>  <span class="number">67</span>   <span class="number">1</span>  <span class="number">4</span>      <span class="number">160</span>  <span class="number">286</span>   <span class="number">0</span>       <span class="number">2</span>     <span class="number">108</span>     <span class="number">1</span>     <span class="number">1.5</span>     <span class="number">2</span> <span class="number">3.0</span>  <span class="number">3.0</span>  <span class="number">2</span></div><div class="line"><span class="number">3</span>  <span class="number">67</span>   <span class="number">1</span>  <span class="number">4</span>      <span class="number">120</span>  <span class="number">229</span>   <span class="number">0</span>       <span class="number">2</span>     <span class="number">129</span>     <span class="number">1</span>     <span class="number">2.6</span>     <span class="number">2</span> <span class="number">2.0</span>  <span class="number">7.0</span>  <span class="number">1</span></div><div class="line"><span class="number">4</span>  <span class="number">37</span>   <span class="number">1</span>  <span class="number">3</span>      <span class="number">130</span>  <span class="number">250</span>   <span class="number">0</span>       <span class="number">0</span>     <span class="number">187</span>     <span class="number">0</span>     <span class="number">3.5</span>     <span class="number">3</span> <span class="number">0.0</span>  <span class="number">3.0</span>  <span class="number">0</span></div><div class="line"><span class="number">5</span>  <span class="number">41</span>   <span class="number">0</span>  <span class="number">2</span>      <span class="number">130</span>  <span class="number">204</span>   <span class="number">0</span>       <span class="number">2</span>     <span class="number">172</span>     <span class="number">0</span>     <span class="number">1.4</span>     <span class="number">1</span> <span class="number">0.0</span>  <span class="number">3.0</span>  <span class="number">0</span></div><div class="line"><span class="number">6</span>  <span class="number">56</span>   <span class="number">1</span>  <span class="number">2</span>      <span class="number">120</span>  <span class="number">236</span>   <span class="number">0</span>       <span class="number">0</span>     <span class="number">178</span>     <span class="number">0</span>     <span class="number">0.8</span>     <span class="number">1</span> <span class="number">0.0</span>  <span class="number">3.0</span>  <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>查看一下数据结构，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; str(data)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">303</span> obs. of  <span class="number">14</span> variables:</div><div class="line"> $ age     : num  <span class="number">63</span> <span class="number">67</span> <span class="number">67</span> <span class="number">37</span> <span class="number">41</span> <span class="number">56</span> <span class="number">62</span> <span class="number">57</span> <span class="number">63</span> <span class="number">53</span> <span class="keyword">...</span></div><div class="line"> $ sex     : num  <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ cp      : num  <span class="number">1</span> <span class="number">4</span> <span class="number">4</span> <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ trestbps: num  <span class="number">145</span> <span class="number">160</span> <span class="number">120</span> <span class="number">130</span> <span class="number">130</span> <span class="number">120</span> <span class="number">140</span> <span class="number">120</span> <span class="number">130</span> <span class="number">140</span> <span class="keyword">...</span></div><div class="line"> $ chol    : num  <span class="number">233</span> <span class="number">286</span> <span class="number">229</span> <span class="number">250</span> <span class="number">204</span> <span class="number">236</span> <span class="number">268</span> <span class="number">354</span> <span class="number">254</span> <span class="number">203</span> <span class="keyword">...</span></div><div class="line"> $ fbs     : num  <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ restecg : num  <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">0</span> <span class="number">2</span> <span class="number">0</span> <span class="number">2</span> <span class="number">0</span> <span class="number">2</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ thalach : num  <span class="number">150</span> <span class="number">108</span> <span class="number">129</span> <span class="number">187</span> <span class="number">172</span> <span class="number">178</span> <span class="number">160</span> <span class="number">163</span> <span class="number">147</span> <span class="number">155</span> <span class="keyword">...</span></div><div class="line"> $ exang   : num  <span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ oldpeak : num  <span class="number">2.3</span> <span class="number">1.5</span> <span class="number">2.6</span> <span class="number">3.5</span> <span class="number">1.4</span> <span class="number">0.8</span> <span class="number">3.6</span> <span class="number">0.6</span> <span class="number">1.4</span> <span class="number">3.1</span> <span class="keyword">...</span></div><div class="line"> $ slope   : num  <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">3</span> <span class="number">1</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="keyword">...</span></div><div class="line"> $ ca      : Factor w/ <span class="number">5</span> levels <span class="string">"?"</span>,<span class="string">"0.0"</span>,<span class="string">"1.0"</span>,..: <span class="number">2</span> <span class="number">5</span> <span class="number">4</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">2</span> <span class="number">3</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ thal    : Factor w/ <span class="number">4</span> levels <span class="string">"?"</span>,<span class="string">"3.0"</span>,<span class="string">"6.0"</span>,..: <span class="number">3</span> <span class="number">2</span> <span class="number">4</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ hd      : int  <span class="number">0</span> <span class="number">2</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">3</span> <span class="number">0</span> <span class="number">2</span> <span class="number">1</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
+<p>现在解释一下各个变量：</p>
+<p><code>sex</code>是性别，其中0表示女性，1表示男性，在分析时，需要把<code>sex</code>这个变量根据1或0更改为M或F。</p>
+<p><code>cp</code>是<code>chest pain</code>的缩写，其数值是1-3，这个范围表示不同类型的胸痛，4表示没有胸痛。</p>
+<p><code>ca</code>与<code>thal</code>是因子数据类型，我们看到，其中有的数值是<code>?</code>，这个是不符合规范的，因此后面我们会把它改为<code>NA。</code></p>
+<p>此外，还要把其它的变量更改为因子类型，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">data[data == <span class="string">"?"</span>] &lt;- <span class="literal">NA</span></div><div class="line">data[data$sex == <span class="number">0</span>,]$sex &lt;- <span class="string">"F"</span></div><div class="line">data[data$sex == <span class="number">1</span>,]$sex &lt;- <span class="string">"M"</span></div><div class="line">data$sex &lt;- as.factor(data$sex)</div><div class="line">data$cp &lt;- as.factor(data$cp)</div><div class="line">data$fbs &lt;- as.factor(data$fbs)</div><div class="line">data$restecg &lt;- as.factor(data$restecg)</div><div class="line">data$exang &lt;- as.factor(data$exang)</div><div class="line">data$slope &lt;- as.factor(data$slope)</div><div class="line">data$ca &lt;- as.integer(data$ca)</div><div class="line">data$ca &lt;- as.factor(data$ca)</div><div class="line">data$thal &lt;- as.factor(data$thal)</div><div class="line">data$hd &lt;- ifelse(test=data$hd == <span class="number">0</span>, yes = <span class="string">"Healthy"</span>, no=<span class="string">"Unhealthy"</span>)</div><div class="line">data$hd &lt;- as.factor(data$hd)</div></pre></td></tr></table></figure>
+<p>查看一下数据类型，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; str(data)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">303</span> obs. of  <span class="number">14</span> variables:</div><div class="line"> $ age     : num  <span class="number">63</span> <span class="number">67</span> <span class="number">67</span> <span class="number">37</span> <span class="number">41</span> <span class="number">56</span> <span class="number">62</span> <span class="number">57</span> <span class="number">63</span> <span class="number">53</span> <span class="keyword">...</span></div><div class="line"> $ sex     : Factor w/ <span class="number">2</span> levels <span class="string">"F"</span>,<span class="string">"M"</span>: <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ cp      : Factor w/ <span class="number">4</span> levels <span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>: <span class="number">1</span> <span class="number">4</span> <span class="number">4</span> <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ trestbps: num  <span class="number">145</span> <span class="number">160</span> <span class="number">120</span> <span class="number">130</span> <span class="number">130</span> <span class="number">120</span> <span class="number">140</span> <span class="number">120</span> <span class="number">130</span> <span class="number">140</span> <span class="keyword">...</span></div><div class="line"> $ chol    : num  <span class="number">233</span> <span class="number">286</span> <span class="number">229</span> <span class="number">250</span> <span class="number">204</span> <span class="number">236</span> <span class="number">268</span> <span class="number">354</span> <span class="number">254</span> <span class="number">203</span> <span class="keyword">...</span></div><div class="line"> $ fbs     : Factor w/ <span class="number">2</span> levels <span class="string">"0"</span>,<span class="string">"1"</span>: <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ restecg : Factor w/ <span class="number">3</span> levels <span class="string">"0"</span>,<span class="string">"1"</span>,<span class="string">"2"</span>: <span class="number">3</span> <span class="number">3</span> <span class="number">3</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">3</span> <span class="number">3</span> <span class="keyword">...</span></div><div class="line"> $ thalach : num  <span class="number">150</span> <span class="number">108</span> <span class="number">129</span> <span class="number">187</span> <span class="number">172</span> <span class="number">178</span> <span class="number">160</span> <span class="number">163</span> <span class="number">147</span> <span class="number">155</span> <span class="keyword">...</span></div><div class="line"> $ exang   : Factor w/ <span class="number">2</span> levels <span class="string">"0"</span>,<span class="string">"1"</span>: <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ oldpeak : num  <span class="number">2.3</span> <span class="number">1.5</span> <span class="number">2.6</span> <span class="number">3.5</span> <span class="number">1.4</span> <span class="number">0.8</span> <span class="number">3.6</span> <span class="number">0.6</span> <span class="number">1.4</span> <span class="number">3.1</span> <span class="keyword">...</span></div><div class="line"> $ slope   : Factor w/ <span class="number">3</span> levels <span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>: <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">3</span> <span class="number">1</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="keyword">...</span></div><div class="line"> $ ca      : Factor w/ <span class="number">4</span> levels <span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>,<span class="string">"5"</span>: <span class="number">1</span> <span class="number">4</span> <span class="number">3</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ thal    : Factor w/ <span class="number">4</span> levels <span class="string">"?"</span>,<span class="string">"3.0"</span>,<span class="string">"6.0"</span>,..: <span class="number">3</span> <span class="number">2</span> <span class="number">4</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ hd      : Factor w/ <span class="number">2</span> levels <span class="string">"Healthy"</span>,<span class="string">"Unhealthy"</span>: <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
+<h3 id="补充缺失值">补充缺失值</h3>
+<p>由于我们要生成随机森林，此时我们设一个种子，用于生成随机数，这样我们可以重复我们的计算结果，在构建随机森林之间，由于我们的数据集中的缺失值，此时要对缺失值进行补充，补充缺失值使用的是<code>rfImpute()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">42</span>)</div><div class="line">data.imputed &lt;- rfImpute(hd ~.,data=data,iter=<span class="number">6</span>)</div></pre></td></tr></table></figure>
+<p><code>hd~.</code>是第1个参数，它表示，我们使用hd（heart disease）这一列作为最终的预测，也就是说拿一个患者的数据，预测患者是否得有心脏病。</p>
+<p><code>data = data</code>这个表示，我们使用<code>data</code>这个数据集来构建随机森林。</p>
+<p><code>iter=6</code>用来指定迭代多少次来评估缺失值，从理论上讲，这个值是4到6就足够了，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/Cj4eI7ijfg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; data.imputed &lt;- rfImpute(hd ~.,data=data,iter=<span class="number">6</span>)</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.49</span>% <span class="number">12.80</span>% <span class="number">23.02</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">16.83</span>% <span class="number">14.02</span>% <span class="number">20.14</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.82</span>% <span class="number">13.41</span>% <span class="number">23.02</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.49</span>% <span class="number">14.02</span>% <span class="number">21.58</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.16</span>% <span class="number">12.80</span>% <span class="number">22.30</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">18.15</span>% <span class="number">14.63</span>% <span class="number">22.30</span>%</div></pre></td></tr></table></figure>
+<p>经过每次迭代，<code>rflmpute()</code>就会在第2列输出出袋错误率（OOB，即Out-of-Bag），如果估计值在不断地改善，那么这个值就会不断地变小，但在这个结果中，我们发现这个值并没有不断地变小，那么我们就可以认为，我们利用此函数得到的估计值可以满足计算，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/dEjEkhCB74.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="构建随机森林-1">构建随机森林</h3>
+<p>接着，我们使用<code>randomForest()</code>函数来构建随机森林，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">model &lt;- randomForest(hd ~., data=data.imputed, proximity= <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<p>在这些参数中，第1个参数不用解释，跟前面的一样，第2个参数<code>data.imputed</code>是填充了估计值后的数据集，第3个参数是<code>proximity = TRUE</code>，它表示要返回相似矩阵，最终我们可以使用这个数据来进行聚类。</p>
+<p>现在我们看一下结果，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; model</div><div class="line"></div><div class="line">Call:</div><div class="line"> randomForest(formula = hd ~ ., data = data.imputed, proximity = <span class="literal">TRUE</span>) </div><div class="line">               Type of random forest: classification</div><div class="line">                     Number of trees: <span class="number">500</span></div><div class="line">No. of variables tried at each split: <span class="number">3</span></div><div class="line"></div><div class="line">        OOB estimate of  error rate: <span class="number">16.83</span>%</div><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">29</span>       <span class="number">110</span>   <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
+<p>现在说明一下这个结果，先看第一部分，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Call:</div><div class="line"> randomForest(formula = hd ~ ., data = data.imputed, proximity = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<p>这一部分是构建随机森林的一些参数。</p>
+<p>再看第二部分，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Type of random forest: classification</div></pre></td></tr></table></figure>
+<p>这一部分的意思是讲，我们构建随机森林的类型是分类（classification），如果我们使用随机森林来预测体重或身高这种连续型变量，那么这个就是回归（regression），如果我们忽略随机森林要预测的某个变量（我的理解就是，即不预测分类，也就是说不预测心脏病，也不预测回归，也就是说不预测体重或身高），那么这里就是无监督（unsupervised），如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/9meC64bAJ4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>再看下一部分，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Number of trees: <span class="number">500</span></div></pre></td></tr></table></figure>
+<p>这里是说，随机森林中有多少棵树，默认的数字是500，随后我们会看一下500棵树能否做出一个很好的分类。</p>
+<p>再看下一部分，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">No. of variables tried at each split: <span class="number">3</span></div></pre></td></tr></table></figure>
+<p>这一段文字是说，在每个内部节点上，使用的变量（也就是列）的数目，用于分类的随机森林默认使用变量数目的平方根进行计算，例如在这个案例中，变量的数目是13（不包括hd这个变量），那么13的平方根就是3.6，取整数（这里不是四舍五入），就是3，至于这个3是不是最好的数值，我们随后会进行调整，如果是用于回归的随机森林，那么这个数字就是变量的数目除以3，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/bljiFd1EI4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>再看下一部分，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">OOB estimate of  error rate: <span class="number">16.83</span>%</div></pre></td></tr></table></figure>
+<p>这一部分是出袋错误率（OOB，即Out-of-Bag），这表明，这个随机森林能够将83.5%的OOB样本正确地归类，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/lLFadBLCB8.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>最后一部分是混淆矩阵（confusion matrix），如下所示（可能与教程中的有些出入，但整体相差不大）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">29</span>       <span class="number">110</span>   <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
+<p>混淆矩阵是总结分类模型预测结果的情形分析表，它以矩阵形式将数据集中的记录按照真实的类别与分类模型作出的分类判断两个标准进行汇总，那么，在上面的这个矩阵中，我们可以看到：</p>
+<ol style="list-style-type: decimal">
+<li>有142名健康的病人被正确地标记为“健康”；</li>
+<li>有29名健康的病人被错误地标记为“健康”；</li>
+<li>有22名健康的病人被错误地标记为“不健康”；</li>
+<li>有110名不健康的病人被正确地标记为“不健康”。</li>
+</ol>
+<h3 id="绘制错误率图">绘制错误率图</h3>
+<p>此时，我们看一下，500棵树能否做出一个良好的分类，我们先画出错误率，绘图使用的是ggplot2包，因此要构建一个数据框用于ggplot2的识别，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">oob.error.data &lt;- data.frame(</div><div class="line">  Trees=rep(<span class="number">1</span>:nrow(model$err.rate),times=<span class="number">3</span>),</div><div class="line">  Type=rep(c(<span class="string">"OOB"</span>,<span class="string">"Healthy"</span>,<span class="string">"Unhealthy"</span>),each=nrow(model$err.rate)),</div><div class="line">  Error=c(model$err.rate[,<span class="string">"OOB"</span>],</div><div class="line">          model$err.rate[,<span class="string">"Healthy"</span>],</div><div class="line">          model$err.rate[,<span class="string">"Unhealthy"</span>]))</div></pre></td></tr></table></figure>
+<p>这段代码有点复杂，现在解释一下：</p>
+<ol style="list-style-type: decimal">
+<li>这段代码的大部分都是基于<code>model</code>这个数据中的<code>err.rate</code>来构建的，我们查看下这个数据，如下所示：</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; head(model$err.rate)</div><div class="line">           OOB   Healthy Unhealthy</div><div class="line">[<span class="number">1</span>,] <span class="number">0.2571429</span> <span class="number">0.2765957</span> <span class="number">0.2413793</span></div><div class="line">[<span class="number">2</span>,] <span class="number">0.2470588</span> <span class="number">0.2068966</span> <span class="number">0.2891566</span></div><div class="line">[<span class="number">3</span>,] <span class="number">0.2783019</span> <span class="number">0.2758621</span> <span class="number">0.2812500</span></div><div class="line">[<span class="number">4</span>,] <span class="number">0.2704918</span> <span class="number">0.2647059</span> <span class="number">0.2777778</span></div><div class="line">[<span class="number">5</span>,] <span class="number">0.2592593</span> <span class="number">0.2600000</span> <span class="number">0.2583333</span></div><div class="line">[<span class="number">6</span>,] <span class="number">0.2597865</span> <span class="number">0.2467532</span> <span class="number">0.2755906</span></div><div class="line">&gt; tail(model$err.rate)</div><div class="line">             OOB   Healthy Unhealthy</div><div class="line">[<span class="number">495</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">496</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">497</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">498</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">499</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">500</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
+<p>其中第1列是OOB错误率，第2列是健康患者错误率（就是说有多大的可能性会把健康患者错误分类），第3列是不健康患者错误率（就是说有多大的可能性会把不健康患者错误分类）。</p>
+<p>每1行表示的是，在构建随机森林的不同阶段的的错误率，如下所示：</p>
+<div class="figure">
+<img src="C:\Users\20161111\AppData\Local\Temp\1530801100691.png" alt="1530801100691">
+<p class="caption">1530801100691</p>
+</div>
+<p>其中，第1行表示构建了第1棵树后的错误率，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/h0fC9f2ah4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第2行表示，构建了前2棵树后的错误率，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/jL4BfBAi40.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>那么最后1行则表示，已经构建了随机森林中500棵树后的错误率，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/h4k3bkEkfF.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>因此，使用上述代码，我们最终生成的数据框则是下面的这个样本，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(oob.error.data)</div><div class="line">  Trees Type     Error</div><div class="line"><span class="number">1</span>     <span class="number">1</span>  OOB <span class="number">0.2571429</span></div><div class="line"><span class="number">2</span>     <span class="number">2</span>  OOB <span class="number">0.2470588</span></div><div class="line"><span class="number">3</span>     <span class="number">3</span>  OOB <span class="number">0.2783019</span></div><div class="line"><span class="number">4</span>     <span class="number">4</span>  OOB <span class="number">0.2704918</span></div><div class="line"><span class="number">5</span>     <span class="number">5</span>  OOB <span class="number">0.2592593</span></div><div class="line"><span class="number">6</span>     <span class="number">6</span>  OOB <span class="number">0.2597865</span></div></pre></td></tr></table></figure>
+<p>第1列数字则表示的是随机森林中树的数目，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/g2d0bj2j30.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第2列则是错误类型，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/jK2Cl6DKb6.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>再看一下其他的：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/j6DfFLFBja.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>最后1列是错误的实际数值，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/cDIEdjEJj5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>调用ggplot函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(data=oob.error.data,aes(x=Trees,y=Error)) +</div><div class="line">  geom_line(aes(color=Type))</div></pre></td></tr></table></figure>
+<p>绘图结果如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/D16lggFmc0.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中蓝线是对不健康患者进行归类时的错误率，绿线是总的OOB错误率，红线是对健康患者进行归类时的错误率。通常我们发现，随着随机森林中的树越来越多，错误率是逐步下降的，如下所示</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/1jFhED6JEA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="各项参数调整">各项参数调整</h3>
+<h4 id="添加树的数目">添加树的数目</h4>
+<p>我们试想一下，如果我们增加更多的树，错误率会不会更低，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/gKkFkHejJ2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，我们将树的数目设为1000，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">model &lt;- randomForest(hd ~., data=data.imputed, ntree = <span class="number">1000</span>, proximity= <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<p>这里我们需要注意一下，前面我们并没有使用<code>ntree=1000</code>这个参数，这是因为<code>randomForest</code>默认的<code>ntree=500</code>，因此这个参数如果使用默认值，就可以不添加，如果要改变这个数字，就需要更改，现在看一下结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Call:</div><div class="line"> randomForest(formula = hd ~ ., data = data.imputed, ntree = <span class="number">1000</span>,      proximity = <span class="literal">TRUE</span>) </div><div class="line">               Type of random forest: classification</div><div class="line">                     Number of trees: <span class="number">1000</span></div><div class="line">No. of variables tried at each split: <span class="number">3</span></div><div class="line"></div><div class="line">        OOB estimate of  error rate: <span class="number">16.5</span>%</div><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">28</span>       <span class="number">111</span>   <span class="number">0.2014388</span></div></pre></td></tr></table></figure>
+<p>看一下<code>OOB estimate of  error rate: 16.5%</code>这一行，它的OOB值是16.5%，而当<code>ntree=500</code>时，这个数值是16.83%，基本上两者是相同的，我们再看一下<code>ntree=500</code>时的混淆矩阵，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">29</span>       <span class="number">110</span>   <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
+<p>这两者的数值也差不多，再看一下绘图结果，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/m2a4jgFEhL.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从这个绘图结果来看，当树的数目超过500后，错误率基本上就稳定了，因此我们添加再多的树，意义不大，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/FDmlkEJ1L6.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h4 id="更改节点变量数目">更改节点变量数目</h4>
+<p>现在我们再来看一下构建原来内部节点时使用的变量数目，原来使用的是3，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/7FaicGcC96.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在我们改一下这个数字，此时我们需要一个空向量，它所含元素的数目是10，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">oob.values &lt;- vector(length = <span class="number">10</span>)</div></pre></td></tr></table></figure>
+<p>然后再使用一个循环，用于测试构建每个内部节点的不同变量数目，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/4EAAEeJ3gi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>代码为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>查看一下输出结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">oob.values</div><div class="line">[<span class="number">1</span>] <span class="number">0.1650165</span> <span class="number">0.1716172</span> <span class="number">0.1650165</span> <span class="number">0.1815182</span> <span class="number">0.1848185</span> <span class="number">0.1815182</span> <span class="number">0.1848185</span> <span class="number">0.1914191</span></div><div class="line">[<span class="number">9</span>] <span class="number">0.1881188</span> <span class="number">0.1881188</span></div></pre></td></tr></table></figure>
+<p>其中第3个数值对应的就是<code>mtry=3</code>，它是构建随机森林的默认数字，从中我们可以发现，这个数字基本上是最小的（0.1716172），也就是说它有最低的OOB错误率，因此，默认数值已经是最好的数值了，不过，如果我们不知道最优的数值，那么就要尝试一下其他的数值，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/9D0eG8Fjd9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="绘制随机森林的mds图">绘制随机森林的MDS图</h3>
+<p>最后，我们绘制一下随机森林的MDS图，首先利用<code>dist()</code>函数从<code>1- 相似矩</code>中构建一个距离矩阵，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">distance.matrix &lt;- dist(<span class="number">1</span>-model$proximity)</div></pre></td></tr></table></figure>
+<p>然后使用缩放函数<code>cmdscale</code>，再计算距离矩阵的x轴与y轴的占总变异的百分比，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.stuff &lt;- cmdscale(distance.matrix,eig=<span class="literal">TRUE</span>,x.ret=<span class="literal">TRUE</span>)</div><div class="line">mds.var.per &lt;- round(mds.stuff$eig/sum(mds.stuff$eig)*<span class="number">100</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p>构建ggplot绘图的数据集并绘图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">mds.values &lt;- mds.stuff$points</div><div class="line">mds.data &lt;- data.frame(Sample = rownames(mds.values),</div><div class="line">                       X=mds.values[,<span class="number">1</span>],</div><div class="line">                       Y=mds.values[,<span class="number">2</span>],</div><div class="line">                       Status=data.imputed$hd)</div><div class="line"></div><div class="line">ggplot(data=mds.data, aes(x=X, y=Y, label=Sample)) +</div><div class="line">  geom_text(aes(color=Status)) +</div><div class="line">  theme_bw()+</div><div class="line">  xlab(paste(<span class="string">"MDS1 - "</span>, mds.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>)) +</div><div class="line">  ylab(paste(<span class="string">"MDS2 - "</span>, mds.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>)) +</div><div class="line">  ggtitle(<span class="string">"MDS plot using(1 - Random Forest Proximities)"</span>)</div></pre></td></tr></table></figure>
+<p>最终绘图结果如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/E6hflkBd2j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从图上我们可以得到如下信息：</p>
+<ol style="list-style-type: decimal">
+<li>不健康的患者位于左侧，健康的患者位于右侧；</li>
+<li>但在左侧，有几个患者被错误归类了（绿色中的红色文字）；</li>
+<li>我们再看一下x轴，可以发现，MDS1占了总变异的47.7%，y轴上是MDS2，它占据了总异的14.2%；</li>
+<li>整个图形呈一个V型（教程中是倒V型，我不太理解为什么我绘图出来是反的），它的开口是朝上x轴的相反方向的，这表明，在V型的两臂上，两个样本相离得越远，他们之间的差异就越大；</li>
+<li>如果我们拿到一个新的患者的数据，在不知道他是否得了心脏病的情况下，如果经计算，他被归类到V型的左臂，那么我们就可以得到一个肯定的结论，他得了心脏病，如下所示：</li>
+</ol>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180705/79b6GiHJ4B.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
 
           
         
@@ -5647,7 +5865,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共344.3k字</span>
+  <span class="post-count">博客全站共349.0k字</span>
 </div>
 
         
