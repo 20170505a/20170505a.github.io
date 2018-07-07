@@ -336,7 +336,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  76
+                  1,924
                 </span>
               
 
@@ -352,7 +352,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  7
                 </span>
               
             </div>
@@ -377,9 +377,137 @@
           
             <h2 id="前言主要内容">前言——主要内容</h2>
 <p>这篇笔记是StatQuest系列笔记的第63节，这篇笔记跳过59节，60节，61节主要是因为第63节的内容是讲RPKM，FPKM和TPM这几个概念的区别，在进行差异分析前，有必要了解一下这几个概念。</p>
+<h2 id="测序的度量单位">测序的度量单位</h2>
+<p>在RNA-Seq中，我们通常使用RPKM（全称为Reads Per Kilobase Million）或FPKM（Fragments Per Kilobase Million）来来作为均一化后，基因表达量的单位，这些均一化的数据（normalized data）主要解决两个问题：</p>
+<ol style="list-style-type: decimal">
+<li>测序深度（这个是指Million这一部分，侧重于数量），我们知道，测序浓度越高，那么比对到基因上的reads数就越多；</li>
+<li>基因的长度（这个指的是Kilobase这一部分，侧生于长度），我们知道，一个基因越长，那么比对到这个基因上的reads数就越多。</li>
+</ol>
+<p>不过现在我们还使用TPM（全称为Transcripts per million）来作为均一化后的基因的表达单位，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/JiHcmFDJ0f.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>为了能够更好的区分这三个单位，即RPKM，FPKM和TPM，我们就通过一个简单的案例来说明一下，在这个案例中，我们一共有3个重复，分别为Rep1，Rep2和Rep3，检测了4个基因，分别为A，B，C，D，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/9gFk8hlFj2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从上面的图表可以发现，Rep3的reads数比其它的2个更多，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/2g0HFmcLm9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>我们再看一下基因B，它的长度（4kb）是基因A（2kb）的2倍，这个或许就可以说明为什么基因B的reads数是基因A的reads数的2倍了，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/c9mC4iCdK5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
 <h2 id="rpkm">RPKM</h2>
+<p>RPKM的全称为Reads Per Kilobase Million，中文翻译就是<code>每千个碱基的转录每百万映射读取的reads数</code>。</p>
+<p>现在我们使用RPKM来均一化这些数据，如下所示</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/C65bi6gHjj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>均一化的步骤如下所示：</p>
+<p>第一步：均一化read深度。</p>
+<p>我们计算一下某个重复的总reads数，然后用它们除以10，这里我们只是简单地模拟一下，真正的应该是除以1000000，因为RPKM的M指的就是million，是百万，但如果要除以1百万的话，小数点太多，不太直观，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/c3ghd98Ag3.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在就得到了总reads数除以10的结果，分别为3.5，4.5，10.6，此时，再用每个基因对应的reads数除以相应的前面结合，例如对于Rep1中的基因A来说，就是使用10除以3.5，也就是2.86，得到的这个单位我们称之为RPM，也就是reads per million，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/i2Ii3gF1Bj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第二步：均一化基因长度。</p>
+<p>在这一步骤中，我们需要对基因的长度进行均一化，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/gGcd0Ag9Dh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，用RPM的数值除以每个基因的长度，例如，对于Rep1的基因A来说，就是2.86，基因A的长度是2kb，那么这个数值就是2.86除以2等于1.43，这就是RPKM，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/j5KFIkIbbB.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在我们看一下RPKM的效果，在均一化之前的数据与均一化之后的数据，我们可以发现，经过均一化后的数据，每个重复里的每个基因的RPKM就非常接近了，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/Idf8cm0bHi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
 <h2 id="fpkm">FPKM</h2>
+<p>FPKM的全称为Fragments Per Kilobase Million，对应的中文就是<code>每千个碱基的转录每百万映射读取的fragments</code>。FPKM与RPKM的计算非常接近，其中区别就在于一个是FPKM的Fragemnts，而RPKM则是reads。</p>
+<p>另外，RPKM通常用于单端测序，FPKM常用于双端测序，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/m3E9H3cJ0K.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在RNA-Seq中，我们建库时会把DNA打断成小片段（fragment），两端加上接头，然后测序。</p>
+<p>如果是单端测序，那么一个fragmetns就对应了一条read，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/jGcBj9l9jf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果是双端测序，那么一条fragments就对应两条reads，当然，有时候双端测序也有可能出现一条fragment对应一条read（另外一条read有可能会因为质量低而被剔除），FPKM就保证了，一条fragment的两条reads不会被统计2次，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/lGeDidKD8e.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>也就是说FPKM是以fragment为准，而不是以reads数为准，它们的计算方式是一样的。</p>
 <h2 id="tpm">TPM</h2>
+<p>TPM的全称为Transcripts per million，中文就是<code>每百万条reads的转录本</code>。我们现在还以原来的案例，看一下TPM是如何计算的。</p>
+<p>第一步：均一化基因长度。</p>
+<p>每个重复中的每个基因的reads数除以该基因的长度，对于Rep1的基因A来说，就是10除以2，也就是5，也叫RPK，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/3CEL7B3jl2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第二步：均一化测序深度。</p>
+<p>先计算出一个重复中总的RPK之和，然后除以10，对于Rep1来说，总的RPK是15，除以10就是1.5，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/KDBFKIb2c8.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>然后再用每个基因的RPK除以上面计算出来的数值，对于Rep1的基因A来说，就是5除以1.5，即3.33，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/5GeeKL7eA3.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>经过TPM这样的均一化后，我们可以发现，这3个重复的数值就比较接近了。</p>
+<h2 id="tpm和rpkm的区别">TPM和RPKM的区别</h2>
+<p>我们比较一下RPKM与TPM均一化扣的结果，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/CBGLlD974L.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>TPM和RPKM（FPKM）都是基于基因的长度与测序深度进行均一化的，但是它们也有所不同。我们看一下，对于每个重复来说，它们的总TPM和RPKM的数据数据之间的是存在一定差异的，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/D462mh9Fce.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>对于RPKM来说，每个重复的总RPKM值不一样，分别是4.29，4.5和4.25。</p>
+<p>对于TPM来说，每个重复的总TPM是相同的，都是10（也就是说总的TPM）。</p>
+<p>我们再来看一下这两种的差异有何重要意义。</p>
+<p>我们先看下面的3个饼图，每个饼图的有大小相同，数值都是10。从中我们可以发现，对于同样的饼图来说，一份3.33的扇形（它代表了Rep1中的基因A）肯定比一份3.32的扇形（它代表了Rep2中的基因A）要大。而TPM就能发现这种3.33和3.32的这种差异，我们可以看到，在Rep1的总reads数中，比对到基因A上的reads数的比例肯定比Rep3中相应的比例要高，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/gGFEhlj554.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>为什么会出现这种差异，我们可以再看上图，我们可以发现，在Rep3中，比对到基因D上的reads数所占的比例要大于Rep1中，比对到基因D的reads数的比例。通过TPM我们更容易发现，在每个重复中，比对到哪些基因上的reads更高或更低。</p>
+<p>而对于RPKM这种均一化来说，很难比较比对到哪个基因上的总reads高，因为每个重复的总reads数都不同，也就是说这个饼图形的大小都不一样，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/DhmBk8DKkK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>还看上图，对于Rep1中的基因A来说，它的RPKM是1.43，而在Rep3中，基因A的RPKM是1.42，那么我们不能直接说在Rep1中，比对到基因A上的总Reads数大于Rep3中基因A的总Reads数，也就是无法直接说在Rep1中基因A的转录水平高于Rep3中基因A的转录水平，因为Rep1和Rep3的总RPKM不同。</p>
+<p>而对于TPM就不一样，每个重复的总TPM是一样的，这样很容易比较相同基因在不同的重复中的转录水平高低。由于RNA-Seq主要是研究基因的转录水平，也就是说研究基因的转录本的reads的相对比例，因此使用TPM更加合理，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180707/kj9kAbF0Dj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
 
           
         
@@ -5246,7 +5374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,466
+                  3,486
                 </span>
               
 
@@ -5310,7 +5438,7 @@
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/0lCjI2f6Lj.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>但问题就在于，仅从直观的角度来看，我们不太容易区分它们，但我们可以通过RNA-Seq的手段来发现这些细胞有哪些基因是活跃的，这样就可以理解这些细胞的具体功能，如果这是一群人，我们可以测量他们的血压，身高等数据，如下所示：</p>
+<p>但问题就在于，仅从直观的角度来看，我们不太容易区分它们，但我们可以通过类似RNA-Seq这样的手段来发现这些细胞有哪些基因是活跃的，这样就可以理解这些细胞的具体功能，如果这是一群人，我们可以测量他们的血压，身高等数据，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/FDeK8BdJHd.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -5346,7 +5474,7 @@
 <p class="caption">mark</p>
 </div>
 <h3 id="欧氏距离">欧氏距离</h3>
-<h4 id="一种常见的计算两个样本之间距离的方法是欧氏距离euclidean-distance-计算法如下所示">一种常见的计算两个样本之间距离的方法是欧氏距离(Euclidean Distance) 计算法，如下所示：</h4>
+<p>一种常见的计算两个样本之间距离的方法是欧氏距离(Euclidean Distance) 计算法，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/CgIJBkAlK0.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -5388,11 +5516,11 @@
 </div>
 <p>不过，计算两两样本之间的距离并非只有欧氏距离（Euclidean Distance）一种方法，如下所示：</p>
 <div class="figure">
-<embed src="!%5Bmark%5D(http://ortxpw68f.bkt.clouddn.com/professional/180627/1HJLh9KccE.png?imageslim)">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180627/1HJLh9KccE.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
 <h3 id="其他距离方法">其他距离方法</h3>
-<p>例如，另外一种计算两两样本之间的距离方法就是计算基因间差值的log转换的平均值，例如在下面的案例中，对于Cell1和Cell2的Gene1，它经过log转换后的数值就是log(3/0.25)，同理，Gene2和Gene 8的计算也同样如此，如下所示：</p>
+<p>例如，另外一种计算两两样本之间的距离方法就是计算基因间差值的log转换的平均值，例如在下面的案例中，对于Cell1和Cell2的Gene1，它经过log转换后的数值就是<code>log(3/0.25)</code>，同理，Gene2和Gene 8的计算也同样如此，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/clhfD69k9l.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -5448,7 +5576,7 @@
 <p>第一步，构建距离距离，使用<code>dist()</code>函数，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">distance.matrix &lt;- dist(scale(t(data.matrix), center=<span class="literal">TRUE</span>, scale=<span class="literal">TRUE</span>),</div><div class="line">                        method=<span class="string">"euclidean"</span>)</div><div class="line"><span class="comment"># parameter of method has 6 types different distnace to choose</span></div></pre></td></tr></table></figure>
 <p>第二步：在距离矩阵的基础上进行多维尺度变换，这里使用<code>cmdscale()</code>函数，这个函数的名称比较奇怪，其实它是Classical Muti-Dimensional Scaling的缩写，代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.stuff &lt;- cmdscale(distance.matrix, eig=<span class="literal">TRUE</span>, x.ret=<span class="literal">TRUE</span>)</div><div class="line"><span class="comment"># eig=TRUE willl return eigen values</span></div></pre></td></tr></table></figure>
 <p>其中使用<code>eig=TRUE</code>会返回特征值，用这些特征来计算最终MDS图中的每个坐标占距离矩阵总变异的比例。<code>x.ret=TRUE</code>用于表示是否返回双中心对称的距离矩阵。如果使用<code>eigen()</code>函数替代<code>cmdscale()</code>函数来演示做MDS分析时，这就比较有用（不太理解这一段的意思），如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/LLdkJfEAhl.png?imageslim" alt="mark">
@@ -5494,7 +5622,7 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; log2.distance.matrix</div><div class="line">           wt1       wt2        wt3        wt4      wt5        ko1        ko2</div><div class="line">wt1 <span class="number">0.00000000</span> <span class="number">0.0000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt2 <span class="number">0.11484382</span> <span class="number">0.0000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt3 <span class="number">0.09904503</span> <span class="number">0.1019653</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt4 <span class="number">0.09221168</span> <span class="number">0.1037076</span> <span class="number">0.09493001</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt5 <span class="number">0.09885778</span> <span class="number">0.1108717</span> <span class="number">0.09948529</span> <span class="number">0.09023129</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">ko1 <span class="number">1.31334287</span> <span class="number">1.2943370</span> <span class="number">1.29838285</span> <span class="number">1.29338723</span> <span class="number">1.282153</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">ko2 <span class="number">1.29918744</span> <span class="number">1.2802797</span> <span class="number">1.28559603</span> <span class="number">1.28138419</span> <span class="number">1.268754</span> <span class="number">0.09949390</span> <span class="number">0.00000000</span></div><div class="line">ko3 <span class="number">1.29038890</span> <span class="number">1.2721498</span> <span class="number">1.27904237</span> <span class="number">1.27301615</span> <span class="number">1.263254</span> <span class="number">0.09166573</span> <span class="number">0.09141794</span></div><div class="line">ko4 <span class="number">1.30741667</span> <span class="number">1.2850593</span> <span class="number">1.29054531</span> <span class="number">1.28755635</span> <span class="number">1.273766</span> <span class="number">0.09707109</span> <span class="number">0.09566890</span></div><div class="line">ko5 <span class="number">1.29516621</span> <span class="number">1.2726247</span> <span class="number">1.27697549</span> <span class="number">1.27384192</span> <span class="number">1.260347</span> <span class="number">0.10435400</span> <span class="number">0.10674809</span></div><div class="line">           ko3        ko4 ko5</div><div class="line">wt1 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt2 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt3 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt4 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt5 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko1 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko2 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko3 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko4 <span class="number">0.08960051</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko5 <span class="number">0.10106993</span> <span class="number">0.09935345</span>   <span class="number">0</span></div></pre></td></tr></table></figure>
 <p>此时，使用新的矩阵进行MDS分析，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mds.stuff &lt;- cmdscale(as.dist(log2.distance.matrix),</div><div class="line">                      eig=<span class="literal">TRUE</span>,</div><div class="line">                      x.ret=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>拉妆计算MDS图中每个坐标所占总变异的比例，如下所示：</p>
+<p>接着计算MDS图中每个坐标所占总变异的比例，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.var.per &lt;- round(mds.stuff$eig/sum(mds.stuff$eig)*<span class="number">100</span>,<span class="number">1</span>)</div><div class="line">mds.var.per</div></pre></td></tr></table></figure>
 <p>结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mds.var.per</div><div class="line"> [<span class="number">1</span>] <span class="number">99.1</span>  <span class="number">0.3</span>  <span class="number">0.2</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.0</span>  <span class="number">0.0</span></div></pre></td></tr></table></figure>
@@ -5696,7 +5824,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共357.4k字</span>
+  <span class="post-count">博客全站共359.5k字</span>
 </div>
 
         
