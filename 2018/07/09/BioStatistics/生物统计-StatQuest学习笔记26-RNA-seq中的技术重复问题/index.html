@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="统计学,统计基础,技术重复," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言这是StatQuest系列视频教程笔记的最后一篇了，我在YouTube上看了一下，作者还有其他的几个视频，有兴趣的同学还可以看看。这篇笔记是视频教程的第62节，主要内容是讲RNA-Seq中的技术重复问题。 是否需要技术重复前面有一篇笔记我们提到了技术重复与生物重复。但在RNA-Seq中，我们是否需要做技术重复呢？答案就是，如果你做了生物重复，就不需要做技术重复。或许有同学知道这个答案，但是，为">
+<meta name="keywords" content="统计学,统计基础,技术重复">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StatQuest学习笔记26——RNA-seq中的技术重复问题">
+<meta property="og:url" content="http://rvdsd.top/2018/07/09/BioStatistics/生物统计-StatQuest学习笔记26-RNA-seq中的技术重复问题/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言这是StatQuest系列视频教程笔记的最后一篇了，我在YouTube上看了一下，作者还有其他的几个视频，有兴趣的同学还可以看看。这篇笔记是视频教程的第62节，主要内容是讲RNA-Seq中的技术重复问题。 是否需要技术重复前面有一篇笔记我们提到了技术重复与生物重复。但在RNA-Seq中，我们是否需要做技术重复呢？答案就是，如果你做了生物重复，就不需要做技术重复。或许有同学知道这个答案，但是，为">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="c:/Users/20161111/AppData/Local/Temp/1531363631181.png">
+<meta property="og:image" content="c:/Users/20161111/AppData/Local/Temp/1531364041493.png">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/AFI67kAK8L.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/bFF7b1GlhL.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/K0g9kl0JAd.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/BA93C7H0GI.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/KafG96lE29.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/Jii6ldihEe.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/33D22GAB6d.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/J2I979617e.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/KbLIKDhFb1.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/bjAkm4ehdK.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/d16jilIIJH.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/bA1E0338eb.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/A0KL9i4mff.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/jBlhgH8BcI.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/jICAJK7JgH.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/hD5ElCdl88.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/6IbL3I8GJ6.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/ilhADGC2Ib.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/KCHj2kggIf.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/A37d4f95aD.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/al8Khj3Dbj.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/klgKKb1483.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/bG093mgmk2.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/c36JJ6L1f3.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/2JIdlgBKca.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/h042dEG6mH.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/EAH869j3LB.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180712/39dKDc8kBl.png?imageslim">
+<meta property="og:updated_time" content="2018-07-12T04:44:13.571Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="StatQuest学习笔记26——RNA-seq中的技术重复问题">
+<meta name="twitter:description" content="前言这是StatQuest系列视频教程笔记的最后一篇了，我在YouTube上看了一下，作者还有其他的几个视频，有兴趣的同学还可以看看。这篇笔记是视频教程的第62节，主要内容是讲RNA-Seq中的技术重复问题。 是否需要技术重复前面有一篇笔记我们提到了技术重复与生物重复。但在RNA-Seq中，我们是否需要做技术重复呢？答案就是，如果你做了生物重复，就不需要做技术重复。或许有同学知道这个答案，但是，为">
+<meta name="twitter:image" content="c:/Users/20161111/AppData/Local/Temp/1531363631181.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2018/07/09/BioStatistics/生物统计-StatQuest学习笔记26-RNA-seq中的技术重复问题/"/>
+
+
+
+
+
+  <title>StatQuest学习笔记26——RNA-seq中的技术重复问题 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">学习过程中的输出</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/09/BioStatistics/生物统计-StatQuest学习笔记26-RNA-seq中的技术重复问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">StatQuest学习笔记26——RNA-seq中的技术重复问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-09T12:10:54+08:00">
+                2018-07-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信信息学/" itemprop="url" rel="index">
+                    <span itemprop="name">生信信息学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,444
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这是StatQuest系列视频教程笔记的最后一篇了，我在YouTube上看了一下，作者还有其他的几个视频，有兴趣的同学还可以看看。这篇笔记是视频教程的第62节，主要内容是讲RNA-Seq中的技术重复问题。</p>
+<h2 id="是否需要技术重复"><a href="#是否需要技术重复" class="headerlink" title="是否需要技术重复"></a>是否需要技术重复</h2><p>前面有一篇笔记我们提到了<a href="http://rvdsd.top/2018/06/02/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B002-%E6%A0%B7%E6%9C%AC%E9%87%8F%E4%B8%8E%E9%87%8D%E5%A4%8D/">技术重复与生物重复</a>。但在RNA-Seq中，我们是否需要做技术重复呢？答案就是，如果你做了生物重复，就不需要做技术重复。或许有同学知道这个答案，但是，为什么做了生物重复后，就不需要做技术重复了呢，后面我们就会回答这个问题，如下所示：</p>
+<p><img src="C:\Users\20161111\AppData\Local\Temp\1531363631181.png" alt="1531363631181"></p>
+<h2 id="RNA-Seq变异的两个来源"><a href="#RNA-Seq变异的两个来源" class="headerlink" title="RNA-Seq变异的两个来源"></a>RNA-Seq变异的两个来源</h2><p>RNA-Seq的测序数据的变异主要来源两个方面，第一个是生物学变异（Biological Variation），第二个是技术变异（）。</p>
+<h3 id="生物学变异"><a href="#生物学变异" class="headerlink" title="生物学变异"></a>生物学变异</h3><p>生物学变异是指生物本身千万的变异，例如即使是遗传背景完全一样的小鼠，例如C57BL/6N小鼠这样的小鼠，也不存在RNA转录本数目完全相同的两只小鼠。</p>
+<p>任何物种的两个生物都不可能完全一样，无论这种生物是人，还是小鼠，还是果蝇。</p>
+<h3 id="技术变异"><a href="#技术变异" class="headerlink" title="技术变异"></a>技术变异</h3><p>每当我们做一个实验时，实验过程中都会参杂一些非常小的非实验因素（例如今天你的心情，不同批次的培养基，移液枪的吹打次数），其中的一些是完全100%的随机因素，因此，当我们再重复这个实验的时候，即使保持相同的条件，也不可能得到100%相同的结果（当然，总体的结果会相差不大），如下所示：</p>
+<p><img src="C:\Users\20161111\AppData\Local\Temp\1531364041493.png" alt="1531364041493"></p>
+<h2 id="生物学变异的案例"><a href="#生物学变异的案例" class="headerlink" title="生物学变异的案例"></a>生物学变异的案例</h2><p>为了说明这两个变异的问题，我们先来看一个简单的案例，在这个案例中，我们只研究生物学变异。这个案例是对几只小鼠做了RNA-Seq，并且没有做任何技术重复，其中在下图，X轴是小鼠的编号，Y轴是基因X的reads数，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/AFI67kAK8L.png?imageslim" alt="mark"></p>
+<p>我们再看一下第2只小鼠的数据，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/bFF7b1GlhL.png?imageslim" alt="mark"></p>
+<p>由于我们没有做技术重复，因此从上图我们可以知道，第2只小鼠与第1只小鼠的基因X的reads数差异就是完全来源于生物学变异了，现在看第其它小鼠的数据，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/K0g9kl0JAd.png?imageslim" alt="mark"></p>
+<p>假设我们把地球的所有小鼠都给测了，也就是说上图的X轴上有无数个小鼠的基因X的reads数，此时，我们求出基因X的reads数的平均值，并用希腊字母μ表示，就是下面的这个样子：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/BA93C7H0GI.png?imageslim" alt="mark"></p>
+<p>现在我们计算出每只小鼠与平均reads数的差值，先看第1只小鼠，它与基因X的reads数的平均值的差值是5，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/KafG96lE29.png?imageslim" alt="mark"></p>
+<p>现在再求出剩下的所有小鼠的基因X的reads数与reads数平均值的差值，我们只计算5只用于说明情况，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/Jii6ldihEe.png?imageslim" alt="mark"></p>
+<p>此时，我们使用数学公式来表示这前5只小鼠的基因X的reads数，这个公式很简单，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/33D22GAB6d.png?imageslim" alt="mark"></p>
+<p>现在我们只计算这5只小鼠的基因X的reads数的均值，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/J2I979617e.png?imageslim" alt="mark"></p>
+<p>把上面的公式再整理一下，应时下面的这个样子，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/KbLIKDhFb1.png?imageslim" alt="mark"></p>
+<p>其中上图公式右侧红圏的部分，会随机样本数量的增多而降低，公式左侧的均值μ的数值其实是确定的，但是当我们使用的样本越来越多的时候，使用样本的这个均值其实就会逐渐地接近于这个真正的均值，可以理解为就是这个真正的均值，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/bjAkm4ehdK.png?imageslim" alt="mark"></p>
+<h2 id="生物学变异与技术变异案例"><a href="#生物学变异与技术变异案例" class="headerlink" title="生物学变异与技术变异案例"></a>生物学变异与技术变异案例</h2><p>还以上述的案例来说明生物学变异和技术变异，为了清楚地说明这两个变异，在下图中，我们使用橘黄色的线段来表示生物学变异，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/d16jilIIJH.png?imageslim" alt="mark"></p>
+<p>我们使用绿色的简单来表示技术变异，其中绿色箭头向下表示技术重复导致的reads数降低的情况，绿色箭头向上表示reads数上升的情况，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/bA1E0338eb.png?imageslim" alt="mark"></p>
+<p>现在我们考虑生物学变异和技术变异的情况下，来计算一下前5只小鼠的基因X的reads数均值，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/A0KL9i4mff.png?imageslim" alt="mark"></p>
+<p>现在整理一下上面的均值公式，我们可以发现，这个公式可以公为3部分，第1部分是均值μ，第2部分是生物学变异，第3部分是技术变异，如果我们增加样本的话，那么这两个变异就会接近于0，因为它们的分子会相互抵消，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/jBlhgH8BcI.png?imageslim" alt="mark"></p>
+<h2 id="做了技术重复的情况"><a href="#做了技术重复的情况" class="headerlink" title="做了技术重复的情况"></a>做了技术重复的情况</h2><p>我们现在考虑一种情况，我们做了技术重复，例如对于第1只小鼠，我们做了5次技术重复，它的基因X的reads数如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/jICAJK7JgH.png?imageslim" alt="mark"></p>
+<p>其中生物学变异使用橘黄色表示，技术变异使用绿色表示，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/hD5ElCdl88.png?imageslim" alt="mark"></p>
+<p>现在我们计算一下第1只小鼠的基因X的reads数均值，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/6IbL3I8GJ6.png?imageslim" alt="mark"></p>
+<p>其中我们可以发现，在这个案例中，在生物学变异的分子中，一直是正值，因此随着技术重复的增多，生物学变异的分子不会相互抵消，也就是说它不会是0，它一直是一个固定的值是5。但是由于技术变异的分子部分有正数，有负数，因此随着技术重复的增多，技术变异的分子会相互抵消，最终接近于0。</p>
+<h2 id="比较生物学重复和技术重复"><a href="#比较生物学重复和技术重复" class="headerlink" title="比较生物学重复和技术重复"></a>比较生物学重复和技术重复</h2><h3 id="有生物学重复"><a href="#有生物学重复" class="headerlink" title="有生物学重复"></a>有生物学重复</h3><p>现在我们比较一下生物学重复和技术重复，回到我们前面的部分，我们知道，基因X的reads数的平均值公式是由三部分构成的，其中橘黄色表示生物学重复，绿色表示技术重复部分，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/ilhADGC2Ib.png?imageslim" alt="mark"></p>
+<p>第1部分是真正的均值μ，真正的均值可以理解为所有小鼠基因X的reads数的均值，而我们平时所测的小鼠基因X的reads数是对这个均值μ的估计值，因为我们不可能把所有的小鼠基因X都给测了，估计值只能无限接近于真正的均值μ。</p>
+<p>公式的第2部分是生物学重复，第3部分是技术重复。由于生物学重复和技术重复的分子部分都是有正值，负值，因此第2部分与第3部分最终会抵消，得到的结果就会非常接近于真正的均值μ，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/KCHj2kggIf.png?imageslim" alt="mark"></p>
+<h3 id="无生物学重复"><a href="#无生物学重复" class="headerlink" title="无生物学重复"></a>无生物学重复</h3><p>现在我们再看一下无生物学重复的情况下，我们计算一下基因X的reads数均值，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/A37d4f95aD.png?imageslim" alt="mark"></p>
+<p>这个公式由2部分组成，也应时均值μ和技术重复，如果我们不断地增加样本，那么这个均值就成了<code>Average = μ +5</code>，最终这个结要只能提供这只小鼠的信息，而不是真正均值μ的信息，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/al8Khj3Dbj.png?imageslim" alt="mark"></p>
+<p>如果我们只对这个小鼠做多次技术重复，最终得到的数据就是这个小鼠的数据，不具有代表性，也就是说，如果别人的实验室重复这个实验的话，就有可能重复不出来。</p>
+<h2 id="同时做生物学重复和技术重复"><a href="#同时做生物学重复和技术重复" class="headerlink" title="同时做生物学重复和技术重复"></a>同时做生物学重复和技术重复</h2><p>此时我们可能会想，如果我既做了生物学重复，又做了技术重复，那么是不是能得到最精确的结果？很不幸，答案是否定的。在下面的这个案例中，我们对第1只小鼠做了2个技术重复，第2只小鼠做了3个技术重复，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/klgKKb1483.png?imageslim" alt="mark"></p>
+<p>那么我们求出均值，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/bG093mgmk2.png?imageslim" alt="mark"></p>
+<p>如果我们不再做另外的生物学重复，那么上述公式的第2部分（也就是橘黄色的生物学重复部分）就不会接近于0，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/c36JJ6L1f3.png?imageslim" alt="mark"></p>
+<p>但是，如果做了更多的生物学重复，那么它可能会接近于0，不过需要的生物学重复数量会更多（在这个案例中是做3个重复），因为如果不使用更多的生物学重复，那么中间的这一项就不会相互抵消为0，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/2JIdlgBKca.png?imageslim" alt="mark"></p>
+<p>我们就看一下，将中间这一项相互抵消为0需要多少个生物学重复。我们对第2只小鼠做了3次技术重复，如果我们再做5个生物学重复，每个生物学重复做3个技术重复，就是15个样本，这样才能与原来中间的那一项相等，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/h042dEG6mH.png?imageslim" alt="mark"></p>
+<p>现在我们比较一下这三种实验（分别是只做生物学重复，只做技术重复，做生物学重复又做技术重复）的情况：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/EAH869j3LB.png?imageslim" alt="mark"></p>
+<p>从上述的结果我们可以发现，只做生物学生重复的结果最接近于均值μ，这是最好的结果，而做了生物学重复，又做了技术重复的话，它要么接近于均值μ（这个需要做更多的生物学重复），要么是均值<code>μ+常数</code>，最差的结果就是不做生物学重复，只做技术重复，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180712/39dKDc8kBl.png?imageslim" alt="mark"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/统计学/" <i class="fa fa-tag"></i> 统计学</a>
+          
+            <a href="/tags/统计基础/" <i class="fa fa-tag"></i> 统计基础</a>
+          
+            <a href="/tags/技术重复/" <i class="fa fa-tag"></i> 技术重复</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/08/BioStatistics/生物统计-StatQuest学习笔记25-差异表达分析/" rel="next" title="StatQuest学习笔记25——差异表达分析">
+                <i class="fa fa-chevron-left"></i> StatQuest学习笔记25——差异表达分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#是否需要技术重复"><span class="nav-number">2.</span> <span class="nav-text">是否需要技术重复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RNA-Seq变异的两个来源"><span class="nav-number">3.</span> <span class="nav-text">RNA-Seq变异的两个来源</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生物学变异"><span class="nav-number">3.1.</span> <span class="nav-text">生物学变异</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#技术变异"><span class="nav-number">3.2.</span> <span class="nav-text">技术变异</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生物学变异的案例"><span class="nav-number">4.</span> <span class="nav-text">生物学变异的案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生物学变异与技术变异案例"><span class="nav-number">5.</span> <span class="nav-text">生物学变异与技术变异案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#做了技术重复的情况"><span class="nav-number">6.</span> <span class="nav-text">做了技术重复的情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#比较生物学重复和技术重复"><span class="nav-number">7.</span> <span class="nav-text">比较生物学重复和技术重复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有生物学重复"><span class="nav-number">7.1.</span> <span class="nav-text">有生物学重复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#无生物学重复"><span class="nav-number">7.2.</span> <span class="nav-text">无生物学重复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同时做生物学重复和技术重复"><span class="nav-number">8.</span> <span class="nav-text">同时做生物学重复和技术重复</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共371.1k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine@1.1.4/dist/Valine.min.js"></script>
+  <script type="text/javascript">
+    new Valine({
+        av: AV,
+        el: '#vcomments' ,
+        verify: true,
+        notify: true,
+        app_id: '4ORLDMxXCFDLSHPJ4wSSDkkw-gzGzoHsz',
+        app_key: 'HSWpCY7XlN0pGV5DCrKoC0ic',
+        placeholder: 'Comment input placeholder'
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
