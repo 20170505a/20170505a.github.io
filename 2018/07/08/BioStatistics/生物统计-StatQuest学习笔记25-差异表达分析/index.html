@@ -241,7 +241,7 @@
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180711/8J1AjLH7dL.png?imageslim">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180711/bg74lc7Deg.png?imageslim">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180711/F4jE19eGfa.png?imageslim">
-<meta property="og:updated_time" content="2018-07-12T09:35:54.750Z">
+<meta property="og:updated_time" content="2018-07-18T01:54:07.927Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="StatQuest学习笔记25——差异表达分析">
 <meta name="twitter:description" content="前言——主要内容 这篇笔记是StatQuest系列视频教程的第59，60，61节。主要内容讲的是高通测序数据的差异基因分析，其中，第59节的内容是edgeR进行的文库均一化；第60节是DESeq2的文库均一化；第61节则是讲的是edgeR和DESeq2均一化的一些阈值选择。 RPKM等均一化的局限 edgeR与DESeq2这两种方法并不使用RPKM，FPKM，TPM等方法来进行均一化，edg">
@@ -493,7 +493,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  11,417
+                  11,465
                 </span>
               
 
@@ -543,7 +543,7 @@
 <h2 id="edger均一化步骤">edgeR均一化步骤</h2>
 <p>下面是edgeR进行文库均一化的步骤。</p>
 <h3 id="第一步移除所有未转录的基因">第一步：移除所有未转录的基因</h3>
-<p>我们先看下面的一批测序数据，在这批数据中，有3个样本，每个样本有5个基因，如下所示：</p>
+<p>我们先看下面的一批测序数据，在这批数据中，有3个样本，每个样本有5个基因（这个数据只是虚拟的，为了方便说明问题，实际测序中不可能只有这几个基因），如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/gdg50imBjG.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -629,7 +629,7 @@
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/lfEfei1bIJ.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>现在我们以样本2为例，说明一下如何选择用于创建标准化因子的基因集，我们先来看一下用于选择的基因的不同类型，下图是一个XY二维坐标系，如下所示：</p>
+<p>现在我们以Sample #2为例，说明一下如何选择用于创建标准化因子的基因集，我们先来看一下用于选择的基因的不同类型，下图是一个XY二维坐标系，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/7Bd6A3gl5m.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -639,27 +639,27 @@
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/glh0HJ74jC.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>我们再看第2个点，这个点位于最右的坐标轴上，根据坐标轴的说明，我们知道，这个基因主要在样本2中转录，如下所示：</p>
+<p>我们再看第2个点，这个点位于最右的坐标轴上，根据坐标轴的说明，我们知道，这个基因主要在Sample #2中转录，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/lbh5k2f68f.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>我们再看第3个点（下图中红色圆圈标出的点），这个点位于正中间的坐标轴上，它表示这个基因的很多reads在参考样本和样本2中都存在，如下所示：</p>
+<p>我们再看第3个点（下图中红色圆圈标出的点），这个点位于正中间的坐标轴上，它表示这个基因的很多reads在参考样本和Sample #2中都存在，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/J97f75C0Gj.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>我们再看第4个点，它们于中间最下面的坐标轴上，根据坐标轴的说明，我们知道，在参考样本和样本2中，都很少含有这个基因的reads，如下所示：</p>
+<p>我们再看第4个点，它们于中间最下面的坐标轴上，根据坐标轴的说明，我们知道，在参考样本和Sample #2中，都很少含有这个基因的reads，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/HHAFg8I6L1.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>这样，我们把所有的基因的reads数都放到这个坐标上，我们就可以发现，中间有很大一部分基因没有偏倚，没有偏倚的意思是说，在中间的这些基因，它们在参考样本和样本2中的reads数都差不多，区别不大，如下所示：</p>
+<p>这样，我们把所有的基因的reads数都放到这个坐标上，我们就可以发现，中间有很大一部分基因没有偏倚，没有偏倚的意思是说，在中间的这些基因，它们在参考样本和Sample #2中的reads数都差不多，区别不大，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/BKjIIL40b3.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>而edgeR就会选择中间区域（红色椭圆区域）的这个基因，排除那些有偏倚的基因，如下所示：</p>
+<p>而edgeR就会选择中间区域（红色椭圆区域）里的这些基因，排除那些有偏倚的基因，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180710/IC0ae1hIdC.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -916,7 +916,7 @@
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/mGcI5k52B7.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>还有一种文库补偿造成差异的案例就是在同一种类型的细胞中出来的，例如针对某细胞，我们敲除掉这个细胞中的某个转录因子或者是某些具有调控功能的基因，那么野生型细胞和敲除型细胞的转录组就有可能出现差异，如下所示：</p>
+<p>还有一种文库补偿造成差异的案例就是在同一种类型的细胞中会出现，例如针对某细胞，我们敲除掉这个细胞中的某个转录因子或者是某些具有调控功能的基因，那么野生型细胞和敲除型细胞的转录组就有可能出现差异，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/5aDb42Lmm9.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -945,7 +945,7 @@
 <p class="caption">mark</p>
 </div>
 <h2 id="deseq2均一化的步骤">DESeq2均一化的步骤</h2>
-<p>现在我们看一个简单的案例，在下面的这个案例中，我们有3个样本，每个样本有3个基因，在这个案例中，我们的目标是计算每个样本的标准化因子（scaling factor），标准化因子会解决测序浓度（read depth）和文库补偿（library composition）的问题，如下所示：</p>
+<p>现在我们看一个简单的案例，在下面的这个案例中，我们有3个样本，每个样本有3个基因，在这个案例中，我们的目标是计算每个样本的标准化因子（scaling factor），标准化因子会解决测序深度（read depth）和文库补偿（library composition）的问题，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/9DDF4ad0EI.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -1200,22 +1200,22 @@
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/A4fADFhDdA.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>再看gene 3，由于gene 3只在一个样本，即liver 2中的CPM值大于1，即使这个值很大，我们也不需要（下图中的这个值是103.3，又跟前面视频的数据不一样的，我估计作者主要是为了说明，即可这个值在一个样本中很大，在其他样本中仍然小于1，也是要剔除这个问题故意改成这么大的），如下所示：</p>
+<p>再看gene 3，由于gene 3只在一个样本，即liver 2中的CPM值大于1，即使这个值很大，我们也不需要（下图中的这个值是103.3，跟前面视频的数据不一样的，我估计作者在这里主要是为了说明一个问题，即使某个值在一个样本中很大，在其他样本中仍然小于1，也是要剔除这个数据），如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/IBc0AJ6D30.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>再看gene 4，由于有2个样本的CPM值小于1（可能作者没有算另外两个CPM等于0的样本），因此也要剔除，如下所示：</p>
+<p>再看Gene 4，由于有2个样本的CPM值小于1（可能作者没有算另外两个CPM等于0的样本），因此也要剔除，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/fB63EA4fb8.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>再看gene 5，它在所有的4个样本中CPM值都小于1，因此gene 4也不用保留，如下所示：</p>
+<p>再看Gene 5，它在所有的4个样本中CPM值都小于1，因此Gene 5也不用保留，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/bcfG5HcmC7.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>再看gene 6，这个基因在2个样本中CPM值大于1，即使这两个样本不是同一类型的，但我们可以保留这个基因，如下所示：</p>
+<p>再看Gene 6，这个基因在2个样本中CPM值大于1，即使这两个样本不是同一类型的，但我们可以保留这个基因，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/eI4ldDBm6J.png?imageslim" alt="mark">
 <p class="caption">mark</p>
@@ -1285,12 +1285,12 @@
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/I9Cll7Dcac.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>但是对于DESeq2来说，gene 1在4个样本中的平均值为1250，它会被DESeq2保留，如下所示：</p>
+<p>但是对于DESeq2来说，gene 1在4个样本中的平均值为1250，它会被DESeq2保留（这种情况下DESeq2无法处理，也就是一个类型中有2个样本），如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/BhI5HJKjjK.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>不过DESeq2本身具备异常值的检测方法，不过这种方法只有在每类别中，有超过2个样本的时候才发挥作用（具体的可以参考这篇文献：<a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8" target="_blank" rel="external">Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2</a>）。</p>
+<p>但DESeq2本身具备异常值的检测方法，不过这种方法只有在每类别中，有超过2个样本的时候才发挥作用（具体的可以参考这篇文献：<a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8" target="_blank" rel="external">Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2</a>）。</p>
 <p>下图是分别使用这两种方法（edgeR和DESeq2）对同一批数据进行计算的结果，其中横坐标表示最小CPM阈值，纵坐标表示有显著差异的基因的数目，如下所示：</p>
 <div class="figure">
 <img src="http://ortxpw68f.bkt.clouddn.com/professional/180711/4eEH6G0bDa.png?imageslim" alt="mark">
@@ -1614,7 +1614,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共376.5k字</span>
+  <span class="post-count">博客全站共381.8k字</span>
 </div>
 
         
