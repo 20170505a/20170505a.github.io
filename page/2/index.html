@@ -249,6 +249,255 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/30/BioStatistics/生物统计-StatQuest学习笔记18-K邻近算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/30/BioStatistics/生物统计-StatQuest学习笔记18-K邻近算法/" itemprop="url">StatQuest学习笔记18——K邻近算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-30T12:10:54+08:00">
+                2018-06-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,391
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是StatQuest系列视频教程的第50节，主要内容是讲K邻近算法（K-Nearest neighbors algorithm，缩写为KNN）。K邻近算法是一种对数据进行分类的，非常简单的算法。例如我们已经有了很多对细胞进行分类的数据，那么我们要研究某个细胞属于这些分类中的哪个类别，就需要使用这种算法，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/cJiDgAF61c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="k邻近算法基本思想">K邻近算法基本思想</h2>
+<p>先看一个简单的案例。</p>
+<p>第一步，我们拥有一批数据，这批数据已经进行了分类，在下图中，来源于小肠肿瘤中的这些细胞拥有不同的分类，我们使用PCA对这些细胞进行聚类，如下图所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/lCCejBDFcF.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第二步，当我们再往这批数据中添加一个新的细胞时，我们此时并不清楚这个新细胞的分类，因为这个细胞是从另外的一个肿瘤中取出来的，不好归类，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/1hj04hfJKI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第三步：我们计算这个新的细胞离它最近的那个分类（也就是最近的领居“nearest neighbors”），这个细胞就属于这个分类。如果“K最近的邻居（K-nearest neighbors）”中的这个K等于1（这个K表示的是邻居的数目），那么我们就能把这个新的细胞归于这个离它最近的分类中，在这个案例中，这个最近的分类是绿色的。如果K等于11，那我们就需要使用11个最近的邻居，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/efF6a3jBE5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>假如这个新的细胞在其它的地方，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/Ldk19D3CA9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果K=11（这个意思表示，最这个点最近的邻居有11个），那么这个新的细胞就位于两类或更多的类中间，我们就把它归于得到“票数”最多的那个类别，那么在这个案例中，有7个最近的邻居是红色，3个最近的邻居是橘黄色，有1个最近的邻居是绿色，由于红色得到的票数最多，那么这个新的细胞就属于红色这一类，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/K3Dg3dkdLe.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="热图案例">热图案例</h2>
+<p>K邻近算法同样适用于热图，下面的这个热图是用采用层次聚类算法得到的，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/ggBCL7fCgl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时如果我们有一个新的细胞，它的基因表达模式位于热图中浅蓝色区域的中央，如果K=1，那么我们仅仅需要看一下离它最近的细胞，我们就知道这个新的细胞是属于哪个类型的，这种情况下，它属于浅蓝色区域的分类，如果K=5，我们看一下离个细胞最近的邻居，它还是属于这个浅蓝色区域（仔细数一下，浅蓝色区域中有17列），如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/d19Jg0hjFj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>假如这个新的细胞的基因表达模式位于浅蓝色区域的偏左侧的话，如果此时K=11，我们就需要进行一个投票，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/kh3kBkdGm2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>经过投票发现，在这11个最近的邻居中，有7个位于浅蓝色区域，有4个位于浅绿色区域，因此，我们把这个新细胞类型归于浅蓝色区域，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/Kck4mfEiGA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果这个新的细胞分类正好位于两个区域中央，这个细胞的归类就有两种解决方法：</p>
+<p>第一，如果K值是奇数，那么我们就很容易进行计算；</p>
+<p>第二，（如果K值是偶数），那么我们就会得到一个比较很麻烦的投票，此时就要靠投硬币来决定这个细胞属于哪个分类了，或者就是不归类，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/A4C4Aa77hd.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="训练数据">训练数据</h2>
+<p>在这里我们讲一些简单的机器学习方面的内容，我们把那些用于最初始聚类的数据（这些数据我们已经知道它们是什么分类了）称为“训练数据”（training data），如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/LLb8hBce9J.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="如何选择k值">如何选择K值</h2>
+<p>K值只是算法意义上的数字，它无关生理学或生物学方面的意义，因此在设置K值之前，你或许会尝试设置多设几个K值。在多设几个K值时，此时假定你不清楚一部分训练数据（实际上是知道的）的分类，那么通过K邻近算法（KNN），你对这些未知的训练数据进行分类，进而查看你的数据（此处是非训练数据）的分类情况。</p>
+<p>上面的这一段是完全翻译视频中的文字，我是不太理解，但就我自己的理解而言，就先找一批训练数据，这些数据的分类已经很明确了，把这些数据分成2份，分别定义为A和B，其中A用于聚类（这部分数据通常比较大），另外一份B用KNN进行分类（也就是A中分好的类），此时能找出最佳的K值，然后再使用一批新的数据C进行KNN分类。</p>
+<p>如果K值比较低（例如K=1或K=2），那么噪音就会比较大，会受到异常值的影响。如果K值过大，虽然会解决K值过小的问题，但是，你也不会想让K值太大，因为如果你只有几个样本，那么运算时间会过长，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180703/J2ElCChBjm.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/29/BioStatistics/生物统计-StatQuest学习笔记17-聚类/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1861,7 +2110,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  890
+                  963
                 </span>
               
 
@@ -1877,7 +2126,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  4
                 </span>
               
             </div>
@@ -1918,10 +2167,15 @@
 <li><code>Vega:OTTHUMG00000162125</code>。脊椎动物基因组注释（Vertebrate Genome Annotation，Vega）数据库已经被设计为浏览来自各种脊椎动物基因组的完结序列的人工注释的一个社区资源。它的核心数据库是基于Ensembl样式的模式，扩展到包含精选-特异的元数据。</li>
 </ol>
 <p>常用的基因名转换工具：</p>
-<p>DAVID：https://david.ncifcrf.gov/</p>
-<p>Absolute Gene ID Conversion Tools：http://bioinformatics.louisville.edu/abid/</p>
-<p>bioDBnet：（https://biodbnet-abcc.ncifcrf.gov/db/db2db.php）</p>
-<p>ENSEMBL biomart：（http://asia.ensembl.org/biomart/martview/bbd9fa2dd0eac95aa098be3514472b0e）</p>
+<ol style="list-style-type: decimal">
+<li>DAVID：https://david.ncifcrf.gov/</li>
+<li>Absolute Gene ID Conversion Tools：http://bioinformatics.louisville.edu/abid/</li>
+<li>bioDBnet：（https://biodbnet-abcc.ncifcrf.gov/db/db2db.php）</li>
+<li>ENSEMBL biomart：（http://asia.ensembl.org/biomart/martview/bbd9fa2dd0eac95aa098be3514472b0e）</li>
+<li><code>bitr</code>是<code>clusterProfiler</code>包中的一个函数，它用于生物ID的转换，用法如下所示:</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bitr(geneID, fromType, toType, OrgDb, drop = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<p>其中，geneID是输入的基因ID，fromType是输入的ID类型，<code>toType</code>是输出的ID类型，<code>OrgDb</code>注释的db文件，<code>drop</code>剔除NA数据与否。</p>
 <h2 id="参考资料">参考资料</h2>
 <p><a href="https://blog.csdn.net/liufeichendi/article/details/78819884" target="_blank" rel="external">各类基因ID转换</a></p>
 <p>简述几种Gene ID的转换方法</p>
@@ -5089,188 +5343,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/11/BioStatistics/生物统计-StatQuest学习笔记10-t检验/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/11/BioStatistics/生物统计-StatQuest学习笔记10-t检验/" itemprop="url">StatQuest学习笔记10——t检验</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-11T12:10:54+08:00">
-                2018-06-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  110
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="笔记略">笔记（略）</h2>
-<p>这篇笔记是是StatQuest视频教程的第32个，主要内容是讲t检验的，原视频只是作者的口头讲解，并没有相应的示意图，公式等，我以前也写有关t检验的一些笔记，可以参考这两篇笔记，它们分别是<a href="http://rvdsd.top/2017/06/20/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-02%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E4%B8%8ET%E6%A3%80%E9%AA%8C/">《正态分布与t检验》</a>和<a href="http://rvdsd.top/2017/06/21/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-02b%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E4%B8%8ET%E6%A3%80%E9%AA%8C%E7%9A%84%E8%AE%A1%E7%AE%97%E5%8E%9F%E7%90%86/">《正态分布与t检验的计算原理》</a>。</p>
-<p>这篇笔记就不写了。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -5316,7 +5393,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">111</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -5412,7 +5489,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共400.9k字</span>
+  <span class="post-count">博客全站共407.2k字</span>
 </div>
 
         
