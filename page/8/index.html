@@ -249,7 +249,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/01/Python/Python学习笔记（1）-基础笔记/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/02/BioInformation/生信-0-GO分析笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -268,7 +268,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/04/01/Python/Python学习笔记（1）-基础笔记/" itemprop="url">Python学习笔记（1）——基础笔记</a></h1>
+                <a class="post-title-link" href="/2018/04/02/BioInformation/生信-0-GO分析笔记/" itemprop="url">GO分析学习笔记</a></h1>
         
 
         <div class="post-meta">
@@ -280,8 +280,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-01T12:00:00+08:00">
-                2018-04-01
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-02T12:00:00+08:00">
+                2018-04-02
               </time>
             
 
@@ -303,8 +303,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
+                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
+                    <span itemprop="name">生物信息学</span>
                   </a>
                 </span>
 
@@ -336,7 +336,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,336
+                  10,623
                 </span>
               
 
@@ -352,7 +352,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  6
+                  41
                 </span>
               
             </div>
@@ -375,62 +375,405 @@
       
         
           
-            <h2 id="一前言">（一）前言</h2>
-<p>很早以前就学过Python，当时是在为知笔记里做的笔记，不过当时笔记记得是七零八落，很多参考资料当也没有记全。为了形成学习Python的系统思维，也为了方便自己检索，现在把以前学习的Python笔记汇总一下。汇总的过程以<a href="http://www.runoob.com/python3/python3-basic-syntax.html" target="_blank" rel="external">菜鸟教程</a>的思路为标准，把自己以前的笔记按照菜鸟教程的顺序给理一下，并在虚拟机（ubuntu系统）或Windows下的Python交互模式里把代码跑一遍，列出代码与结果。</p>
-<h2 id="二基本语法">（二）基本语法</h2>
-<p>先看一段代码，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/python3/<span class="number">01</span>basic$ cat hello.py</div><div class="line"><span class="comment">#!/usr/bin/python3</span></div><div class="line"></div><div class="line"><span class="comment"># This is a comment</span></div><div class="line">print(<span class="string">"Hello, python3!"</span>)</div><div class="line"></div><div class="line"><span class="comment"># This is another comment</span></div><div class="line">biotest@biotest-VirtualBox:~/python3/<span class="number">01</span>basic$ python3 hello.py </div><div class="line">Hello, python3!</div></pre></td></tr></table></figure>
-<p>从上面的这段代码可以知道这些信息：</p>
+            <h2 id="什么是富集分析">什么是富集分析？</h2>
+<p>当我们获得了一批生物数据时，例如转录组的数据，蛋白质组的数据，其中必然要做不同样本之间的差异基因分析这一步，例如空白对照组与实验组的差异基因或蛋白分析。在得到差异的基因或蛋白列表后，这个时候可能还会遇到一个问题，差异基因可能有很多，有几十个到上百个不等，如何对它们进行比较呢？这几十甚至上百差异基因或蛋白如何去呈现，这是一个问题，如果直接列张表，把所有的差异基因都放进去这样不合适，因为不直观，不方便分析。</p>
+<p>此时我们就需要把这些差异基因进行注释，把这些基因或蛋白分成几大类（一个类别就相当于一个GO term），此时看这几大类的区别，肯定比看几十甚至上百个基因或蛋白的差异要更加直观，分析的难度也会降低，这个过程就是富集分析，富集分析属于差异基因的下游分析，常用的富集分析方法有GO分析，KEGG分析，GSEA分析等。</p>
+<p>富集分析涉及到两个概念，前景基因和背景基因（不同的教程使用的术语不一样，总之看具体的含义）。前景基因就是你关注的要重点研究的基因集，背景基因就是所有的基因集。比如做两个样本对照组和处理组的转录组测序，前景基因就是对照组vs处理组的差异基因，背景基因就是这两组样本的所有表达基因。</p>
+<h3 id="富集分析的例子">富集分析的例子</h3>
+<p>再打个比方，我想知道与整个广东省相比，深圳市的大学生是不是显著更多（“大学生”就相当于深圳市民的其中一个GO term）。那么前景就是深圳市的人口，背景就是广东省的人口，每个个体都会有一个标签（如大学生、中学生、小学生等）。 富集的意思就是，某个GO term在所关注的前景基因集中占的比例要显著高于在所有背景基因集中所占的比例。比如上面的例子，深圳市大学生显著富集，意思就是深圳市本科毕业的人口所占深圳市总人口的比例显著高于广东省本科毕业人口在广东省总人口中所占的比例，例如我们要计算的就是10%与2%相比是否有显著性，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/m3BL96D59j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>这个显著性是如何计算的呢，就是利用<a href="http://rvdsd.top/2018/07/23/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-02-%E8%B6%85%E5%87%A0%E4%BD%95%E5%88%86%E5%B8%83/">超几何分布</a>来计算出来的。</p>
+<h2 id="什么是go什么又是go分析">什么是GO，什么又是GO分析</h2>
+<p>GO的全称是Gene Ontology，中文意思是<code>基因本体论</code> 。GO的出现主要是源于生物研究的复杂性以及生物研究规模的日益扩大，为了对基因的产物进行统一的描述，就需要使用当前储备的知识，以计算机为工具对这些生物研究进行描述，这就是GO项同出现的背景，GO提供了对基因功能与基因产物最为全面的描述。GO知识库主要由两个内容构成：</p>
 <ol style="list-style-type: decimal">
-<li>在Python中，注释是以<code>#</code>进行标识的；</li>
-<li>Python程序文件以<code>.py</code>为后缀。</li>
-<li>开头的代码指明了Python3解释的位置，即<code>#!/usr/bin/pyhton3</code>（其实我发现，不加这一行也能运行）。</li>
+<li>GO terms，它提供生物过程的逻辑结构与相关关系，不同GO terms之间的关系可以通过一个有向无环图来表示。这是由基因本体联合会(Gene Ontology Consortium，GOC) 负责的，GO是一个国际标准化的基因功能分类体系，提供了一套动态并可控的词汇表（controlled vocabulary）来全面描述生物体中基因和基因产物的属性，它由一组预先定义好的GO术语（GO term）组成，这组术语对基因产物的功能进行限定和描述。此处需要注意的是，GO terms是对基因的产物，而不是基因本身进行描述，因为基因本身的产物有时候不止一种。GO数据库中的GO分类相关信息会得到不断地更新与增加，这个特点要记住，因为不同的GO分析工具使用的数据库版本有可能不一样，造成GO分析结果出现不同，例如以前Y叔就写过这样的文章<a href="https://mp.weixin.qq.com/s/ITyD4fyAQeUzg-yCbIJnpg" target="_blank" rel="external">《SCIENCE文章用了DAVID被吐槽》</a>。</li>
+<li>GO注释（GO annotations）库，它主要是为GO terms提供注释，也就是描述这个GO terms有什么功能（例如某些基因的产物是什么，是蛋白质，还是非编码RNA，还是大分子等）。</li>
 </ol>
-<p>除了<code>#</code>可以作为注释外，还可以使用多个<code>#</code>和<code>'''</code>和<code>&quot;&quot;&quot;</code>作为注释，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<h2 id="三行与缩进">（三）行与缩进</h2>
-<p>Python语法的一大特点应时使用缩进来表示代码块，不需要使用大括号，在下面的例子中，第二行与第四行，必须要缩进4个字符，才能正常运行，否则就会出错，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> <span class="keyword">True</span>:</div><div class="line">    <span class="keyword">print</span> (<span class="string">"True"</span>)</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    <span class="keyword">print</span> (<span class="string">"False"</span>)</div></pre></td></tr></table></figure>
-<h2 id="四多行语句与引号">（四）多行语句与引号</h2>
-<p>如果语句比较长，可以使用反斜杠（<code>\</code>）来实现多行语句，格式如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">total = item_one + \</div><div class="line">        item_two + \</div><div class="line">        item_three</div></pre></td></tr></table></figure>
-<p>但是在<code>[]</code>，<code>{}</code>或<code>()</code>中，不需要使用反斜杠，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">total = [<span class="string">'item_one'</span>, <span class="string">'item_two'</span>,<span class="string">'item_three'</span>,</div><div class="line">        <span class="string">'item_four'</span>,<span class="string">'item_five'</span>]</div></pre></td></tr></table></figure>
-<p>使用3个双引号，可以直接换行，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3 = <span class="string">"""hello,</span></div><div class="line"><span class="string"><span class="meta">... </span>world,</span></div><div class="line"><span class="string"><span class="meta">... </span>this is a multiline statements"""</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">hello,</div><div class="line">world,</div><div class="line">this <span class="keyword">is</span> a multiline statements</div></pre></td></tr></table></figure>
-<p>其实这段代码就相当下面的代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3 = <span class="string">"hello,\nworld,\nthis is a multiline statements."</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">hello,</div><div class="line">world,</div><div class="line">this <span class="keyword">is</span> a multiline statements</div></pre></td></tr></table></figure>
-<p>三引号，双引号和单引号的区别</p>
-<p>看下面的案例就明白了：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s4 = <span class="string">'Let\'s go'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s4)</div><div class="line">Let<span class="string">'s go</span></div><div class="line"><span class="string">&gt;&gt;&gt; s5 = "Let'</span>s go<span class="string">"</span></div><div class="line"><span class="string">&gt;&gt;&gt; print(s5)</span></div><div class="line"><span class="string">Let's go</span></div></pre></td></tr></table></figure>
-<p>只使用单引号的话，如果字符串里还有单引号，那么需要进行转义，或者说是如果双引号里面还有双引号，也需要转义。</p>
-<h3 id="转义字符">转义字符</h3>
-<p>先看一个案例，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str1)</div><div class="line">C:</div><div class="line">ow</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>str2 = <span class="string">'c:\\now'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str2)</div><div class="line">c:\now</div></pre></td></tr></table></figure>
-<p>从这个案例中可以知道，在用Python处理目录时，需要对斜杠进行转义，如果目录的字符串比较长，例如<code>C:\Program Files\Intel\WiFi\Help</code>，那就可以在这个字符串前面加上一个<code>r</code>，如果最后要以斜杠结尾，那么只需要在最后使用转义符号即可，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>str3 =<span class="string">r'C:\Program Files\Intel\WiFi\Help'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str3)</div><div class="line">C:\Program Files\Intel\WiFi\Help</div><div class="line">    &gt;&gt;&gt; str4 =<span class="string">r'C:\Program Files\Intel\WiFi\Help'</span><span class="string">'\\'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str4)</div><div class="line">C:\Program Files\Intel\WiFi\Help\</div></pre></td></tr></table></figure>
-<h2 id="五关键字">（五）关键字</h2>
-<p>Python的关键字指的Python编译器自己使用的，用户不可以使用，可以通过下面的代码进行查看，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> keyword</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>keyword.kwlist</div><div class="line">[<span class="string">'False'</span>, <span class="string">'None'</span>, <span class="string">'True'</span>, <span class="string">'and'</span>, <span class="string">'as'</span>, <span class="string">'assert'</span>, <span class="string">'break'</span>, <span class="string">'class'</span>, <span class="string">'continue'</span>, <span class="string">'def'</span>, <span class="string">'del'</span>, <span class="string">'elif'</span>, <span class="string">'else'</span>, <span class="string">'except'</span>, <span class="string">'finally'</span>, <span class="string">'for'</span>, <span class="string">'from'</span>, <span class="string">'global'</span>, <span class="string">'if'</span>, <span class="string">'import'</span>, <span class="string">'in'</span>, <span class="string">'is'</span>, <span class="string">'lambda'</span>, <span class="string">'nonlocal'</span>, <span class="string">'not'</span>, <span class="string">'or'</span>, <span class="string">'pass'</span>, <span class="string">'raise'</span>, <span class="string">'return'</span>, <span class="string">'try'</span>, <span class="string">'while'</span>, <span class="string">'with'</span>, <span class="string">'yield'</span>]</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
-<h2 id="六帮助文档查阅">（六）帮助文档查阅</h2>
-<h3 id="help函数">（6.1）help函数</h3>
-<p>使用help函数可以查看某个函数的帮助，也可以查看所用模块的名称，如下所示：</p>
-<p>查看<code>print</code>这个函数的帮助：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>help(<span class="keyword">print</span>)</div><div class="line">Help on built-<span class="keyword">in</span> function <span class="keyword">print</span> <span class="keyword">in</span> module builtins:</div><div class="line"></div><div class="line">print(...)</div><div class="line">    print(value, ..., sep=<span class="string">' '</span>, end=<span class="string">'\n'</span>, file=sys.stdout, flush=<span class="keyword">False</span>)</div><div class="line"></div><div class="line">    Prints the values to a stream, <span class="keyword">or</span> to sys.stdout by default.</div><div class="line">    Optional keyword arguments:</div><div class="line">    file:  a file-like object (stream); defaults to the current sys.stdout.</div><div class="line">    sep:   string inserted between values, default a space.</div><div class="line">    end:   string appended after the last value, default a newline.</div><div class="line">    flush: whether to forcibly flush the stream.</div></pre></td></tr></table></figure>
-<p>查看<code>math</code>这个包以及这个包中<code>ssqrt</code>这个函数的帮助，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> math</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>help(math)</div><div class="line">Help on built-<span class="keyword">in</span> module math:</div><div class="line"></div><div class="line">NAME</div><div class="line">    math</div><div class="line"></div><div class="line">DESCRIPTION</div><div class="line">    This module <span class="keyword">is</span> always available.  It provides access to the</div><div class="line">    mathematical functions defined by the C standard.</div><div class="line"></div><div class="line">FUNCTIONS</div><div class="line">    acos(...)</div><div class="line">        acos(x)</div><div class="line"></div><div class="line">        Return the arc cosine (measured <span class="keyword">in</span> radians) of x.</div><div class="line"></div><div class="line">-- More  --</div><div class="line"></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>help(math.sqrt)</div><div class="line">Help on built-<span class="keyword">in</span> function sqrt <span class="keyword">in</span> module math:</div><div class="line"></div><div class="line">sqrt(...)</div><div class="line">    sqrt(x)</div><div class="line"></div><div class="line">    Return the square root of x.</div></pre></td></tr></table></figure>
-<h2 id="七包的操作">（七）包的操作</h2>
-<p>使用<code>import</code>可以加载某个包，例如<code>import math</code>就加载了<code>math</code>这个包，使用<code>dir()</code>这个函数可以查看这个包的成员，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> math</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>dir(math)</div><div class="line">[<span class="string">'__doc__'</span>, <span class="string">'__loader__'</span>, <span class="string">'__name__'</span>, <span class="string">'__package__'</span>, <span class="string">'__spec__'</span>, <span class="string">'acos'</span>, <span class="string">'acosh'</span>, <span class="string">'asin'</span>, <span class="string">'asinh'</span>, <span class="string">'atan'</span>, <span class="string">'atan2'</span>, <span class="string">'atanh'</span>, <span class="string">'ceil'</span>, <span class="string">'copysign'</span>, <span class="string">'cos'</span>, <span class="string">'cosh'</span>, <span class="string">'degrees'</span>, <span class="string">'e'</span>, <span class="string">'erf'</span>, <span class="string">'erfc'</span>, <span class="string">'exp'</span>, <span class="string">'expm1'</span>, <span class="string">'fabs'</span>, <span class="string">'factorial'</span>, <span class="string">'floor'</span>, <span class="string">'fmod'</span>, <span class="string">'frexp'</span>, <span class="string">'fsum'</span>, <span class="string">'gamma'</span>, <span class="string">'gcd'</span>, <span class="string">'hypot'</span>, <span class="string">'inf'</span>, <span class="string">'isclose'</span>, <span class="string">'isfinite'</span>, <span class="string">'isinf'</span>, <span class="string">'isnan'</span>, <span class="string">'ldexp'</span>, <span class="string">'lgamma'</span>, <span class="string">'log'</span>, <span class="string">'log10'</span>, <span class="string">'log1p'</span>, <span class="string">'log2'</span>, <span class="string">'modf'</span>, <span class="string">'nan'</span>, <span class="string">'pi'</span>, <span class="string">'pow'</span>, <span class="string">'radians'</span>, <span class="string">'sin'</span>, <span class="string">'sinh'</span>, <span class="string">'sqrt'</span>, <span class="string">'tan'</span>, <span class="string">'tanh'</span>, <span class="string">'tau'</span>, <span class="string">'trunc'</span>]</div></pre></td></tr></table></figure>
-<h2 id="八内置函数与模块">（八）内置函数与模块</h2>
-<h3 id="内置函数">内置函数</h3>
-<p>内置函数不需要导入任何模块即可直接使用，执行下面的命令可以列出所有内置函数和内置对象，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>dir(__builtins__)</div><div class="line">[<span class="string">'ArithmeticError'</span>, <span class="string">'AssertionError'</span>, <span class="string">'AttributeError'</span>, <span class="string">'BaseException'</span>, <span class="string">'BlockingIOError'</span>, <span class="string">'BrokenPipeError'</span>, <span class="string">'BufferError'</span>, <span class="string">'BytesWarning'</span>, <span class="string">'ChildProcessError'</span>, <span class="string">'ConnectionAbortedError'</span>, <span class="string">'ConnectionError'</span>, <span class="string">'ConnectionRefusedError'</span>, <span class="string">'ConnectionResetError'</span>, <span class="string">'DeprecationWarning'</span>, <span class="string">'EOFError'</span>, <span class="string">'Ellipsis'</span>, <span class="string">'EnvironmentError'</span>, <span class="string">'Exception'</span>, <span class="string">'False'</span>, <span class="string">'FileExistsError'</span>, <span class="string">'FileNotFoundError'</span>, <span class="string">'FloatingPointError'</span>,</div><div class="line"> ... ...</div></pre></td></tr></table></figure>
-<h3 id="内置模块">内置模块</h3>
-<p>内置模块的查看方法如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> sys</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(sys.builtin_module_names)</div><div class="line">(<span class="string">'_ast'</span>, <span class="string">'_bisect'</span>, <span class="string">'_blake2'</span>, <span class="string">'_codecs'</span>, <span class="string">'_codecs_cn'</span>, <span class="string">'_codecs_hk'</span>, <span class="string">'_codecs_iso2022'</span>, <span class="string">'_codecs_jp'</span>, <span class="string">'_codecs_kr'</span>, <span class="string">'_codecs_tw'</span>, <span class="string">'_collections'</span>, <span class="string">'_csv'</span>, <span class="string">'_datetime'</span>, <span class="string">'_findvs'</span>, <span class="string">'_functools'</span>, <span class="string">'_heapq'</span>, <span class="string">'_imp'</span>, <span class="string">'_io'</span>, <span class="string">'_json'</span>, <span class="string">'_locale'</span>, <span class="string">'_lsprof'</span>, <span class="string">'_md5'</span>, <span class="string">'_multibytecodec'</span>, <span class="string">'_opcode'</span>, <span class="string">'_operator'</span>, <span class="string">'_pickle'</span>, <span class="string">'_random'</span>, <span class="string">'_sha1'</span>, <span class="string">'_sha256'</span>, <span class="string">'_sha3'</span>, <span class="string">'_sha512'</span>, <span class="string">'_signal'</span>, <span class="string">'_sre'</span>, <span class="string">'_stat'</span>, <span class="string">'_string'</span>, <span class="string">'_struct'</span>, <span class="string">'_symtable'</span>, <span class="string">'_thread'</span>, <span class="string">'_tracemalloc'</span>, <span class="string">'_warnings'</span>, <span class="string">'_weakref'</span>, <span class="string">'_winapi'</span>, <span class="string">'array'</span>, <span class="string">'atexit'</span>, <span class="string">'audioop'</span>, <span class="string">'binascii'</span>, <span class="string">'builtins'</span>, <span class="string">'cmath'</span>, <span class="string">'errno'</span>, <span class="string">'faulthandler'</span>, <span class="string">'gc'</span>, <span class="string">'itertools'</span>, <span class="string">'marshal'</span>, <span class="string">'math'</span>, <span class="string">'mmap'</span>, <span class="string">'msvcrt'</span>, <span class="string">'nt'</span>, <span class="string">'parser'</span>, <span class="string">'sys'</span>, <span class="string">'time'</span>, <span class="string">'winreg'</span>, <span class="string">'xxsubtype'</span>, <span class="string">'zipimport'</span>, <span class="string">'zlib'</span>)</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
+<p>总之，通过ontology和注释能够对生物系统提供一个广泛的描述。目前，GO知识库（GO knowledgebase）包含源于14万篇论文中的实验验证，它代表了60万个有实验支持的GO注释。这些核心知识库中还含有另外600万个推断而来的GO注释。除了核心知识库外，GOC还提供了能够编辑并推断ontology之间逻辑关系的软件，分析工具等，GO中的注释来源，通用不同的代码进行了区分，如下所示。</p>
+<h2 id="go中的基因注释证据代码">GO中的基因注释证据代码</h2>
+<p>一个GO注释由一个与GO term相关的特定参考和基因产物构成，GO注释的来源各异，下表就说明了GO注释的各种来源代码，其中<code>*</code>部分表示证据来源可靠性比较高</p>
+<table>
+<colgroup>
+<col width="37%">
+<col width="20%">
+<col width="42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>缩写</th>
+<th>证据代码</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IC,Inferred by curator</td>
+<td>由专家推测得到</td>
+<td>推测它定位在细胞核中一个蛋白质如果有“转录因子”的功能注释，专家就可以</td>
+</tr>
+<tr class="even">
+<td>*IDA,Inferred from direct assay</td>
+<td>有直接实验证据</td>
+<td>如酶活化实验（针对“分子功能”），免疫荧光显微镜（针对“细胞组分”）</td>
+</tr>
+<tr class="odd">
+<td>IEA,Inferred from electronic annotation</td>
+<td>有电子注释</td>
+<td>基于像BLAST这些搜索软件搜索结果的电子注释（与ISS比较，IEA没有被专家证实）</td>
+</tr>
+<tr class="even">
+<td>*IEP,Inferred from expression pattern</td>
+<td>有表达模式方面的证据</td>
+<td>转录水平（如Nothern Bloting或微阵列实验结果）或蛋白质表达水平（Western blots实验结果）</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>*IGI,Inferred from genetic interaction</td>
+<td>有遗传相互作用方面的证据</td>
+<td>抑制基因；遗传致死基因；互补试验；还有其他一些可以提供某一基因功能信息的实验</td>
+</tr>
+<tr class="odd">
+<td>*IMP,Inferred from mutant phenotype</td>
+<td>由突变表型推测得到</td>
+<td>基因突变；基因敲出；过量表达；反义RNA实验</td>
+</tr>
+<tr class="even">
+<td>*IPI,Inferred from physical interaction</td>
+<td>由物理相互作用推测得到</td>
+<td>酵母双杂交实验；共纯化实验；免疫共沉淀实验；结合实验</td>
+</tr>
+<tr class="odd">
+<td>ISS,Inferred from sequence or structural similarity</td>
+<td>由序列或结构的相似性得到</td>
+<td>序列的相似性；结构域；被专家确认的BLAST软件的搜索结果</td>
+</tr>
+<tr class="even">
+<td>NAS,Non-traceable author statement</td>
+<td>有报道，但报道信息来源不可知</td>
+<td>数据库（如SwissPort数据库）登录条目的记录中没有引用已发表的文献</td>
+</tr>
+<tr class="odd">
+<td>ND,No biological data</td>
+<td>没有相关的生物数据</td>
+<td>对应于“unknown”的分子功能、细胞过程或细胞组分</td>
+</tr>
+<tr class="even">
+<td>TAS,Traceable author statement</td>
+<td>有报道，且可知报道信息来源</td>
+<td>有一些综述文章或字典中可以找到相关信息</td>
+</tr>
+</tbody>
+</table>
+<h3 id="为什么要做go分析">为什么要做GO分析</h3>
+<p>GO主要用于解决一些组学实验（omics）中大量分子变化的研究问题。一个典型的组学实验会检测数以千计的分子，因此对于这些变化的分子进行解释非常困难（例如一个肿瘤细胞与一个正常细胞之间的差异）。而GO富集分析（GO Enrichment Analysis）就能把这些数以千计的分子（例如蛋白质或一些非编码RNA）根据其功能的相似性放到不同的类别中，然后对它们进行分析，这样就在很大的程度上降低了分析的难度。GO分析比较的就是两组差异基因，例如实验组与对照组的差异基因，存在在某个通路中的比例是否有差异，其统计学基因就是超几何分布。</p>
+<h3 id="go分析的统计学基础">GO分析的统计学基础</h3>
+<p>GO分析的统计学基础就是<a href="http://rvdsd.top/2018/07/23/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-02-%E8%B6%85%E5%87%A0%E4%BD%95%E5%88%86%E5%B8%83/">超几何分布</a>，超几何的相关知识在笔记的最后，就是对每个GO term计算一个P值，公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/AI391eeChk.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>N表示总基因数；</p>
+<p>n表示N中差异表达基因的总数；</p>
+<p>M表示N中属于某个GO term的基因个数；</p>
+<p>k表示n中属于某个GO term的基因个数。</p>
+<p>这个公式表示的意思是，从总的N个基因中挑出n个基因，作为分母（这是背景基因），分子则是M个基因（我们的差异基因，这是前景基因），有k个落在了某通路里，有n-k个不落在了某通路里，然后使用超几何分布来对它们进行计算，即前景基因落在某通路的比例是否高于背景基因在这一通路的比例，实际计算时，是算的odds ratio的差异。</p>
+<p>现在举个例子，在GO分析的结果表格中，会出现以下信息：</p>
+<p>Background Frequency，背景基因频数，指的是在整个背景基因集中，注释到一个GO term中的基因数目。 Sample Frequency，样本基因频数（有的也叫前景基因频数，总之，就是你要研究的一批基因）指的是，在你研究的基因列表中，注释到这个GO term（与Background Frequency的GO term相同的这个GO term）的基因数目。例如，我们在研究酿酒酵母（S. cerevisiae）的生物过程（biological process）时，这个物种的背景基因是6442个基因，例如我们要研究的目的基因有10个，其中有5个基因被注释到了一个这样的GO term上，这个GO term是：DNA修复（DNA repair），然后样本中的DNA修复的基因频率就是5/10，如果在酿酒酵母（S. cerevisiae）的整个基因组中，只有100个基因注释到了DNA修复的这个GO term上，那么背景基因的频率就是100/6442。GO分析就是利用超几何分布（或Fisher精确检验）来比较一下5/10和100/6442有没有统计学差异，GO分析结果的表格中会列出这个计算结果的P值。 P-value，</p>
+<h2 id="go-term的查询">GO term的查询</h2>
+<p>浏览GO term经常有使用到两个工具，分别是AmiGO（GO Central ）和QuickGO（EBI-GOA ）。</p>
+<p>AmiGO的GO注释文件（GAF，GO Annotation File）与基因是1对1的关系。QuickGO中的GO注释文件是GOA（Gene Ontology Annotation），它主要用于注释蛋白质，而一个基因有时候会产生有几个蛋白质（因为有异构体的情况，isoform）。</p>
+<h2 id="go对基因的描述">GO对基因的描述</h2>
+<p>一个GO term的编号是由两部分构成，第一个部分相同，都是<code>GO</code>，第二部分是一个唯一的数字标记，它是以0开头的7位数字，例如<code>GO:0005125</code>，其中数字部分并没有任何任何生物学方面的意义，它仅起到一个标记的作用。除了这个名称外，GO term还有一些文本，来作用GO term的名称，比如 <code>&quot;cell&quot;</code>, <code>&quot;fibroblast growth factor receptor binding&quot;</code>，或者<code>&quot;signal transduction&quot;</code>，如下所示（由AmiGO 2查询而来）：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/G2kkliF27b.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>GO term按照分类，一共三个ontology（本体），分别描述基因的分子功能（molecular function，MF）、细胞组分（cellular component，CC）、参与的生物过程（biological process，BP）。G这三个本体的含义如下所示：</p>
+<ol style="list-style-type: decimal">
+<li>细胞组成（cellular component，CC）：一般用来描述基因产物的发挥作用的位置，比如一个蛋白可能定位在细胞核中，也可能定位在核糖体中；</li>
+<li>生物过程（biological process，BP）：描述的是指基因产物所联系的一个大的生物功能，或者说是它们要完成的一个大的生物目标，例如有丝分裂或嘌呤代谢；</li>
+<li>分子功能（Molecular Function，MF）：主要是指基因产物分子所执行的任务，例如一个蛋白质可能一个转录因子或是一个载体蛋白。</li>
+</ol>
+<p>蛋白质或者基因可以通过<code>ID对应</code>或者<code>序列注释</code>的方法找到与之对应的GO号，而GO号可应用到到相应的GO Term，即功能类别或者细胞定位，<code>ID对应</code>我的理解就是根据基因的EntrezID或SYMBOL等，将这个基因与相应的GO term对应起来，<code>序列注释</code>则是通过将某段序列与数据库中的序列进行比对，然后将这段序列与GO term对应起来，这个过程也就是将基因的产物与相应的GO term对应起来，也就是注释过程。</p>
+<p>在一个GO注释中，例如，一个基因的产物是细胞色素c（cytochrome c），那么这个基因的产物就会被一个分子功能术语（Molecular Function）描述为氧化还原酶活性（oxidoreductase activity ），被生物过程（Biological Process）描述为氧化磷酸化（oxidative phosphorylation ），被细胞成分（Cellular Component ）描述为线性体基质（mitochondrial matrix ）和线粒体内膜（mitochondrial inner membrane ）。</p>
+<p>再举个例子，对于一个基因或蛋白来说，最终一个基因的产物会被多个GO术语进行注释（反之亦然，一个GO术语中也可以注释多个基因的产物），形成的GO分析描述就是这个样子的：HOTAIR出没于胞核（CC），参与了组蛋白甲基化调控引发癌基因沉默（BP），具体是结合PRC2复合物以及LSD1（MF）。这样GO分析就从某个基因或蛋白在细胞中的定位，功能，参与的生物途径等方面对这个基因或蛋白进行了标准化的描述，即对基因产物进行了简单的注释，通过GO富集分析可以了解差异基因富集在哪些生物学功能、途径或细胞定位。</p>
+<h2 id="go-term的结构">GO term的结构</h2>
+<p>所有的GO terms之间都存在着相互关系，它们的关系可以用有向无环图（DAG，Directed Acyclic Graph）来说明，DAG图就能够明确地表示出不同GO term之间的关系，它们之间的关系有很多种，例如<code>is_a</code>，<code>part_of</code>,<code>regulates</code>,<code>has part</code>, <code>negatively regulates</code>和<code>positively regulates</code>。除了根节点（例如CC，BP，MF这些节点）外，其余的GO terms都与其它的GO terms都有一定的亚类关系，例如<code>GO:0015758</code> （葡萄糖运输，glucose transport）is a <code>GO:0015749</code>单糖转运（monosaccharide transport）的一个亚类。其他的关系还有<code>GO:0031966</code>: mitochondrial membrane <code>part of</code> <code>GO:0005740</code> : mitochondrial envelope， <code>GO:0006916</code> : anti-apoptosis <code>regulates</code> <code>GO:0012501</code> : programmed cell death。</p>
+<p>一个典型的GO term内容如下所示（通过QuickGO查询）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">Accession</div><div class="line">GO:0005515</div><div class="line">Name</div><div class="line">protein binding</div><div class="line">Ontology</div><div class="line">molecular_function</div><div class="line">Synonyms</div><div class="line">protein amino acid binding, glycoprotein binding</div><div class="line">Alternate IDs</div><div class="line">GO:0045308, GO:0001948</div><div class="line">Definition</div><div class="line">Interacting selectively and non-covalently with any protein or protein complex (a complex of two or more proteins that may include other nonprotein molecules). Source: GOC:go_curators</div><div class="line">Comment</div><div class="line">None</div><div class="line">History</div><div class="line">See term history for GO:0005515 at QuickGO</div><div class="line">Subset</div><div class="line">goslim_metagenomics</div><div class="line">goslim_aspergillus</div><div class="line">goslim_chembl</div><div class="line">goslim_plant</div><div class="line">gosubset_prok</div><div class="line">goslim_candida</div><div class="line">goslim_pir</div></pre></td></tr></table></figure>
+<p>这些就是一个GO term的内容，GO就是为了对基因以及基因的产物进行统一注释说明而形成的一套标准，这些注释说明来自称为ontology的一套词汇。此外，GO terms中还存在着一些次要IDs（secondary IDs），这些次要IDs也叫替代ID，即Alternate ID，它指的是一个GO term，当有两个或更多的GO terms是同样的含义时，就需要使用到二级IDs，此时可以把它们合并为一个GO term。</p>
+<h3 id="有向无环图说明">有向无环图说明</h3>
+<p>GO terms的结构是一个有向无环图，每个GO term是一个节点，它们之间的关系用这些节点之间的箭头来表示。GO分析是一个松散的层次结构，其子GO term比父GO term更具体，不过与严格的层次结构不同，一个GO term也许有不止一个父GO term，比如biological process term “hexose biosynthesis” 有两个parents，它们分别是 “hexose metabolism”和“monosaccharide biosynthesis”，这是因为生物合成是代谢的一种，而己糖又是单糖的一种。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180720/H3l3illBH0.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上图是色素沉着的一系列GO term，在这张图形里，不同GO terms之间的关系用标了颜色的箭头来表示，每个箭头中间的字母就是关系类型。箭头指向的方向，是分类更加精细的方向，图表项部的节点就是细胞成分（CC），生物学过程（BP）与分子功能（MF），这三个节点没有共同的父节点，每个都是一个根节点，因此GO是三本原系统，不过在一些GO分析工具中会做出一个虚拟的根节点，把这三个节点都指向这个虚拟根节点。这三个节点之间不存在<code>is_a</code>关系，但是，这三个本体之间可能存在着其它的关系，例如<code>part_of</code>和<code>regulates</code>，例如，分子功能（MF）的GO term“细胞周期蛋白依赖性蛋白激酶活性”（cyclin-dependent protein kinase activity）与生物学过程（BP）term的“细胞周期（cell cycle）”之间的关系是<code>part_of</code>。</p>
+<h2 id="不同的term之间的关系">不同的term之间的关系</h2>
+<p>不同的GO term之间的关系有很多种，例如<code>is</code>，<code>part of</code>等，并且不同的关系还能组合，衍生出不同GO terms之间的关系，这里只列举几个说明一下。</p>
+<h3 id="is关系">is关系</h3>
+<p>不同GO terms之间的关系使用箭头来表示，实心箭头表示了它们的直接关系，虚线表示了对于它们的关系的推测，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/FKaIiHBCdI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>A，B，C是上述关系，那么我们就能推测出A是C的一部分。</p>
+<p>在GO的关系图中，一个节点有可能有不止一个子节点（child node），也有可能不止有一个父节点（parent node），例如一个节点A与节点B的关系是<code>a part of</code>的关系，它与节点C的关系就有可能是<code>is a</code>的关系，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/F2EmA41iLe.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在上面的这张图中我们可以发现，线粒体（mitochondrion）有两个父节点，分别为细胞质（cytoplasm）和细胞器（organelle），它是细胞质的一部分（关系为<code>part of</code>），它是一个细胞器（关系为<code>is</code>）。而细胞器（organelle）这个节点有2个子节点（children nodes），分别为线粒体（mitochondrion）和细胞器膜（organelle membrane），与它们的关系分别为<code>is</code>和<code>part of</code>。</p>
+<p>GO关系的基础是<code>is</code>关系，如果我们说A<code>is</code>a B，那么我们所表示的含义就是A节点是B节点的一个亚类（subtype）。例如，有丝细胞分裂周期（mitotic cell cycle）<code>is</code>a 细胞周期（cell cycle）或者裂解酶活性（lyase activity）<code>is</code>a 催化活性（catalytic activity），它所表示的意思是就是<code>有丝分裂周期</code>是<code>细胞周期</code>的一个亚类，<code>裂解酶活性</code>是<code>催化活性</code>的一个亚类。</p>
+<p>这里的<code>is</code>不是指一个“实例（instance）”，从本体论的角度来看，一个“实例”专门指的是某个抽象分类的一个具体事物，例如，猫是一种动物，这里猫与动物的关系，就是GO中的<code>is</code>关系，而加菲猫（这里专门指的动画片中的那只猫）是猫的一个具体事物，不是猫的一个亚类，这里加菲猫与猫的关系就不等于GO中的<code>is</code>这个关系。GO中并不使用具体的实例，GO terms指的是一类现象或一类事物，是一种抽象的概念，例如我们知道了猫是（<code>is</code>）一类动物，那么我们就可以说猫的每个实例都是动物。</p>
+<p>is关系的推理</p>
+<p>is这种关系是可以传递（transitive），如果我们说A<code>is</code>a B，B<code>is</code>a C，那么我们就能推断出A<code>is</code>a C，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/l54e4DE9Ig.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>举个例子，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/HAia8E4ik5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在这张图中，线粒体（mitochondrion）<code>is</code>a 细胞内细胞器（ intracellular organelle ），细胞内细胞器（ intracellular organelle ）<code>is</code>a细胞器（organelle  0，因此我们可以推断出，线粒体是一个细胞器，用逻辑符号表示就是<em>is a∘ </em>is a* → is a `。</p>
+<p>用<code>is</code>可以对注释进行分组，例如。如果一个基因的产物是X，那它被注释为有酪氨酸激酶活性，这个GO就可以记录它为酪氨酸激酶活性<code>is</code>a（type of）激酶活性，然后我们就可以下结论，认为基因产物X有激酶活性。</p>
+<h3 id="part-of关系">part of关系</h3>
+<p><code>part of</code>在GO中用于表示整体与部分的关系，如果B是A的必要组成部分，那么B存在的地方，A必定存在。但是，如果A存在，我们不能说B也存在。它们的关系如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/7j7AlbA2CH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上图：整个B是A的组成部分，而A的一部分则含有B。</p>
+<p>下图：复制叉（Replication fork）是染色体的必要组成（necessarily part of），所有（all）的复制叉是一些染色体的部分（part of），但是（some）染色体只有一有部分（have part）含有复制叉。</p>
+<p><code>part of</code>的推断：<code>part of∘ part of → part of</code></p>
+<p>与<code>is</code>这种关系一样，<code>part of</code>这种关系也能传递，如果A<code>part of</code>B<code>part C</code>，那么<code>A part C</code>，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/8aI0C0m72A.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>举个例子，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/49kAlkI6BG.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>线粒体（mitochondrion）是细胞质（cytoplasm  ）的<code>part of</code>，而细胞质（cytoplasm  ）是细胞（cell）的<code>part of</code>，那么我们就可以说，线粒体是细胞的<code>part of</code>。GO中还有很多关系，由于篇幅问题，就略去了，具体的可以查看官网（http://geneontology.org/page/ontology-relations）。</p>
+<h2 id="go分析流程">GO分析流程</h2>
+<h3 id="go分析的思路">GO分析的思路</h3>
+<p>现在了解了GO分析的一些原理之后，我们自己就大概就明白了需要做哪些事情。</p>
+<p>第一件事情就是我们要把差异基因与相应的GO terms对应起来；</p>
+<p>第二件事情就是需要找到前景基因（也就是差异基因）与背景基因；</p>
+<p>第三件事情就是，将对应起来的GO terms进行比较，也就是利用超几何检验，这些差异基因在某个通路中的比例是否要高于背景基因；</p>
+<p>第四件事情就是绘图，也就是文献中经常出现的GO条形图。</p>
+<h3 id="go分析所需的文件">GO分析所需的文件</h3>
+<p>进行GO分析需要下载以下数据文件。</p>
+<p>第一个文件就是注释文件，这个文件的主要用于将不同的基因与其相应的GO terms对应起来。GO中的术语如何和相对应的基因产物相联系的呢？</p>
+<p>这是由参与合作的数据库来完成的，它们使用GO的定义方法，对它们所包含的基因产物进行注解，并且提供支持这种注解的参考和证据。每个基因或基因产物都会有一个列表，列出与之相关的GO术语。每个数据库都会给出这些基因产物和GO术语的联系数据库，并且也可以在GO的ftp站点上和WEB方式查询到。而且，GO联合会提供了简化的本体论术语（GO slim），这样，可以在更高级的层面上研究基因组的功能。比如，粗略地估计哪一部分的基因组与信号传导、代谢合成或复制有关。GO对基因和蛋白的注释阐明了基因产物和用于定义他们的GO术语之间的关系。</p>
+<p>基因产物指一个基因编码的RNA或蛋白产物。因为一个基因可能编码多个具有很不相同性质的产物，所以GO推荐的注释是针对基因产物的而不是基因的。一个基因是和所有适用于它的术语联系在一起的。一个基因产物可以被一种本体论定义的多种分支或多种水平注释。注释需要反映在正常情况下此基因产物的功能，生物途径，定位等，而并不包括其在突变或病理状态下的情况。GO联合会的各个数据库成员采用手动或自动的方式生成注释，这两种方式共有的原理是：一.所有的注释都需要有来源,可以是文字、另一个数据库 或是计算机分析结果；二.注释必须提供支持这种基因产物和GO术语之间联系的证据，</p>
+<p>注释文件通常是以后缀<code>db</code>结尾的文件，例如<code>org.Hs.eg.db</code>文件，<code>org.Hs.eg.db</code>文件里面含有很多主流数据库的数据，例如entrez ID和Ensembl数据库的ID，在R中，可以使用一些命令提取这个文件中相应的信息，这个文件是一个AnnotationDb-objects对象，使用方法如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">columns(x)</div><div class="line">keytypes(x)</div><div class="line">keys(x, keytype, ...)</div><div class="line">select(x, keys, columns, keytype, ...)</div><div class="line">mapIds(x, keys, column, keytype, ..., multiVals)</div><div class="line">saveDb(x, file)</div><div class="line">loadDb(file, packageName=NA)</div></pre></td></tr></table></figure>
+<p>命令解释如下所示：</p>
+<p><code>columns</code>：从数据库中检索的列或种类，例如基因名（GENENAME）或者是基因标记（SYMBOL），如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; columns(org.Hs.eg.db)</div><div class="line"> [1] &quot;ACCNUM&quot;       &quot;ALIAS&quot;        &quot;ENSEMBL&quot;      &quot;ENSEMBLPROT&quot;  &quot;ENSEMBLTRANS&quot; &quot;ENTREZID&quot;     &quot;ENZYME&quot;      </div><div class="line"> [8] &quot;EVIDENCE&quot;     &quot;EVIDENCEALL&quot;  &quot;GENENAME&quot;     &quot;GO&quot;           &quot;GOALL&quot;        &quot;IPI&quot;          &quot;MAP&quot;         </div><div class="line">[15] &quot;OMIM&quot;         &quot;ONTOLOGY&quot;     &quot;ONTOLOGYALL&quot;  &quot;PATH&quot;         &quot;PFAM&quot;         &quot;PMID&quot;         &quot;PROSITE&quot;     </div><div class="line">[22] &quot;REFSEQ&quot;       &quot;SYMBOL&quot;       &quot;UCSCKG&quot;       &quot;UNIGENE&quot;      &quot;UNIPROT&quot;</div></pre></td></tr></table></figure>
+<p><code>keytypes</code> ：哪些类型可以使用函数<code>select</code>或<code>keys</code>以及<code>keytype</code>参数，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">keytypes(org.Hs.eg.db)</div><div class="line"> [1] &quot;ACCNUM&quot;       &quot;ALIAS&quot;        &quot;ENSEMBL&quot;      &quot;ENSEMBLPROT&quot;  &quot;ENSEMBLTRANS&quot; &quot;ENTREZID&quot;     &quot;ENZYME&quot;      </div><div class="line"> [8] &quot;EVIDENCE&quot;     &quot;EVIDENCEALL&quot;  &quot;GENENAME&quot;     &quot;GO&quot;           &quot;GOALL&quot;        &quot;IPI&quot;          &quot;MAP&quot;         </div><div class="line">[15] &quot;OMIM&quot;         &quot;ONTOLOGY&quot;     &quot;ONTOLOGYALL&quot;  &quot;PATH&quot;         &quot;PFAM&quot;         &quot;PMID&quot;         &quot;PROSITE&quot;     </div><div class="line">[22] &quot;REFSEQ&quot;       &quot;SYMBOL&quot;       &quot;UCSCKG&quot;       &quot;UNIGENE&quot;      &quot;UNIPROT&quot;</div></pre></td></tr></table></figure>
+<p><code>keys</code>：返回AnnotationDb 中数据库的keys，通常是某个基因的ENSEMBL的编号，ENTREZID 的编号等，经常与select配合使用，通常情况下会返回数据库的关键词，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; head(keys(org.Hs.eg.db))</div><div class="line">[1] &quot;1&quot;  &quot;2&quot;  &quot;3&quot;  &quot;9&quot;  &quot;10&quot; &quot;11&quot;</div></pre></td></tr></table></figure>
+<p><code>select</code>：(x, keys, columns, keytype, …)，基于keys, columns和keytypes以data.frame数据类型返回数据，可以是一对多的关系，使用select函数可以把任意公共数据库的数据进行一一对应，例如我们有几个ENSEMBL的基因ID号，然后我想找到它们所对应的gene名和缩略词简称，就可以按以下进行的操作：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">ensids &lt;-c(<span class="string">"ENSG00000130720"</span>,<span class="string">"ENSG00000103257"</span>,<span class="string">"ENSG00000156414"</span>,<span class="string">"ENSG00000144644"</span>,<span class="string">"ENSG00000159307"</span>, <span class="string">"ENSG00000144485"</span>)</div><div class="line"><span class="comment"># 基因的ENSEMBL编号</span></div><div class="line"></div><div class="line">cols &lt;- c(<span class="string">"SYMBOL"</span>, <span class="string">"GENENAME"</span>)</div><div class="line"><span class="comment"># 基因的SYMBOL和GENENAME</span></div><div class="line"></div><div class="line">select(org.Hs.eg.db, keys=ensids, columns=cols, keytype=<span class="string">"ENSEMBL"</span>)</div><div class="line"><span class="comment"># 使用select函数从org.Hs.eg.db数据库中提取这些基因的信息</span></div><div class="line"></div><div class="line">select(org.Hs.eg.db, keys=ensids, columns=cols, keytype=<span class="string">"ENTREZID"</span>)</div><div class="line"><span class="comment"># 使用select函数从org.Hs.eg.db数据库中提取这些基因的信息</span></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">          ENSEMBL SYMBOL                                                    GENENAME</div><div class="line">1 ENSG00000130720 FIBCD1                            fibrinogen C domain containing 1</div><div class="line">2 ENSG00000103257 SLC7A5                            solute carrier family 7 member 5</div><div class="line">3 ENSG00000156414  TDRD9                                   tudor domain containing 9</div><div class="line">4 ENSG00000144644  GADL1                              glutamate decarboxylase like 1</div><div class="line">5 ENSG00000159307 SCUBE1 signal peptide, CUB domain and EGF like domain containing 1</div><div class="line">6 ENSG00000144485   HES6                      hes family bHLH transcription factor 6</div></pre></td></tr></table></figure>
+<p>再举个例子，现在我从<code>org.Hs.eg.db</code>数据库中提取<code>BRCA1</code>基因，提取它的ENSEMBL编号，UNIGENE，ENTREZID，CHR，GO和GENENAME等，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select(org.Hs.eg.db, keys=<span class="string">"BRCA1"</span>, columns=c(<span class="string">"ENSEMBL"</span>,<span class="string">"UNIGENE"</span>,<span class="string">"ENTREZID"</span>,<span class="string">"CHR"</span>,<span class="string">"GO"</span>,<span class="string">"GENENAME"</span>), keytype=<span class="string">"SYMBOL"</span>)</div></pre></td></tr></table></figure>
+<p>信息很多，只显示前几行，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">  SYMBOL         ENSEMBL   UNIGENE ENTREZID CHR         GO EVIDENCE ONTOLOGY                     GENENAME</div><div class="line"><span class="number">1</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0000151</span>      NAS       CC BRCA1, DNA repair associated</div><div class="line"><span class="number">2</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0000724</span>      IDA       BP BRCA1, DNA repair associated</div><div class="line"><span class="number">3</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0000729</span>      TAS       BP BRCA1, DNA repair associated</div><div class="line"><span class="number">4</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0000731</span>      TAS       BP BRCA1, DNA repair associated</div><div class="line"><span class="number">5</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0000732</span>      TAS       BP BRCA1, DNA repair associated</div><div class="line"><span class="number">6</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0000800</span>      IDA       CC BRCA1, DNA repair associated</div><div class="line"><span class="number">7</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0003677</span>      TAS       MF BRCA1, DNA repair associated</div><div class="line"><span class="number">8</span>   BRCA1 ENSG00000012048 Hs.194143      <span class="number">672</span>  <span class="number">17</span> GO:<span class="number">0003684</span>      IEA       MF BRCA1, DNA repair associated</div></pre></td></tr></table></figure>
+<p>从上面案例就可以发现，一个BRCA1基因可以对应好几个GO terms，再举个例子，根据EntrezID来查询基因名，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; en &lt;-c(<span class="string">"23032"</span>,<span class="string">"11215"</span>)</div><div class="line">&gt; coils&lt;-c(<span class="string">"SYMBOL"</span>,<span class="string">"GENENAME"</span>)</div><div class="line">&gt; select(org.Hs.eg.db,keys=en,columns=cols,keytype=<span class="string">"ENTREZID"</span>)</div><div class="line"><span class="string">'select()'</span> returned <span class="number">1</span>:<span class="number">1</span> mapping between keys and columns</div><div class="line">  ENTREZID SYMBOL                        GENENAME</div><div class="line"><span class="number">1</span>    <span class="number">23032</span>  USP33 ubiquitin specific peptidase <span class="number">33</span></div><div class="line"><span class="number">2</span>    <span class="number">11215</span> AKAP11   A-kinase anchoring protein <span class="number">11</span></div></pre></td></tr></table></figure>
+<p>同时，一个GO term也能对应好几个基因，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; select(org.Hs.eg.db,keys=&quot;GO:0000122&quot;,columns=c(&quot;ENSEMBL&quot;),keytype=&quot;GO&quot;)</div><div class="line">&apos;select()&apos; returned 1:many mapping between keys and columns</div><div class="line">          GO EVIDENCE ONTOLOGY SYMBOL</div><div class="line">1 GO:0000122      IGI       BP ACVR2B</div><div class="line">2 GO:0000122      TAS       BP  PARP1</div><div class="line">3 GO:0000122      IMP       BP  AEBP1</div><div class="line">4 GO:0000122      IMP       BP    AES</div><div class="line">5 GO:0000122      IEA       BP  NR0B1</div><div class="line">6 GO:0000122      IGI       BP  APBB1</div><div class="line">.....</div><div class="line">.....</div><div class="line">776 GO:0000122      TAS       BP ZNF559-ZNF177</div></pre></td></tr></table></figure>
+<p>可以看到，<code>GO:0000122</code>这一个GO terms对应了776个基因。</p>
+<p><code>mapIds</code>功能和<code>select</code>类似，只不过他返回的是一组向量，而不是数据库，用法为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mapIds(x, keys, column, keytype, ..., multiVals)</div></pre></td></tr></table></figure>
+<p>如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; mapIds(org.Hs.eg.db,keys=c(&quot;1&quot;,&quot;2&quot;,&quot;672&quot;),column=c(&quot;ALIAS&quot;),keytype=&quot;ENTREZID&quot;)</div><div class="line">&apos;select()&apos; returned 1:many mapping between keys and columns</div><div class="line">      1       2     672 </div><div class="line">  &quot;A1B&quot;  &quot;A2MD&quot; &quot;BRCAI&quot;</div></pre></td></tr></table></figure>
+<p>现在就清楚了，ogDB这个数据库的用处在于将不同的基因与各自相应的GO terms给对应起来。</p>
+<p>第二个文件就是不同GO terms之间的关系文件，这个文件主要记录的是不同GO terms之间的关系，名字为<code>go-basic</code>，下载地址为：http://snapshot.geneontology.org/ontology/go-basic.obo，在进行GO分析时，就利用这个文件来将GO terms绘制成网络图的形式，现在以<code>go-basic.obo</code>为例，这些信息如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">[Term]</div><div class="line">id: GO:0000001</div><div class="line">name: mitochondrion inheritance</div><div class="line">namespace: biological_process</div><div class="line">def: &quot;The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton.&quot; [GOC:mcc, PMID:10873824, PMID:11389764]</div><div class="line">synonym: &quot;mitochondrial inheritance&quot; EXACT []</div><div class="line">is_a: GO:0048308 ! organelle inheritance</div><div class="line">is_a: GO:0048311 ! mitochondrion distribution</div><div class="line"></div><div class="line">[Term]</div><div class="line">id: GO:0000002</div><div class="line">name: mitochondrial genome maintenance</div><div class="line">namespace: biological_process</div><div class="line">def: &quot;The maintenance of the structure and integrity of the mitochondrial genome; includes replication and segregation of the mitochondrial chromosome.&quot; [GOC:ai, GOC:vw]</div><div class="line">is_a: GO:0007005 ! mitochondrion organization</div></pre></td></tr></table></figure>
+<p>第三个文件就是自己要研究的背景基因与背景基因文件。背景基因其实就是你自己所要研究物种的全部基因，前景基因就是你要研究的目的基因有哪些（例如对照组与实验组的差异基因）。</p>
+<h4 id="前景基因文件">前景基因文件</h4>
+<p>前景基因文件就是你要富集分析的基因集，例如对照组vs处理组的差异表达基因。格式为每行一个基因ID，可以是文本文件，也可以是表格，总之，就是含有一系列基因ID的文件，这个基因ID可以是EntrezID，也可以是SYMBOL等，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">NNMT</div><div class="line">MAL</div><div class="line">EEF1A2</div><div class="line">HGD</div><div class="line">TCN2</div><div class="line">CDA</div><div class="line">PCCA</div><div class="line">CRYM</div><div class="line">PDXK</div><div class="line">STC1</div><div class="line">WARS</div><div class="line">HMOX1</div><div class="line">FXYD2</div><div class="line">...</div></pre></td></tr></table></figure>
+<h4 id="背景基因文件">背景基因文件</h4>
+<p>GO背景基因文件：就是所有的基因集，例如如果对照组和处理组所有的表达基因。如果你研究的物种是有参考基因组的模式物种，那么可以直接使用数据库上已有的参考基因作为背景基因文件，背景基因文件就是这个特种所有的基因对应的GO terms，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180722/BId7Dmijkb.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第一列是基因名（这个基因名可以是基因的SYMBOL，也可以是GENENAME，也可以是ENTREZID，第2列为对应的GO term，一个基因可以对应多个GO terms。</p>
+<p>还可以是这样的形式：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180721/aHicjF8a2A.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第1列是基因ID，第2列以及第2列之后是这一个基因对应的所有GO号。</p>
+<p>前景基因文件与背景基因文件的关系就是，前景基因文件是背景基因文件的子集。</p>
+<h3 id="go分析实战">GO分析实战</h3>
+<p>前面讲了GO分析的一个大概思路，现在看一个具体的案例。</p>
+<p>此处使用Y叔的基因富集工具<code>clusterProfiler</code>，这个包操作容易，更新很快，引用率高，非常受欢迎。此外，<code>clusterProfiler</code>这个包功能很强大，除了能够做GO分析外，还能做GSEA分析，不过这里只介绍GO分析。</p>
+<p>以下是利用<code>clusterProfiler</code>包进行GO分析的流程。</p>
+<h4 id="第一步安装clusterprofiler">第一步：安装clusterProfiler</h4>
+<p>这个包是在bioLite上的，需要这个工具，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 1. Install clusterProfile</span></div><div class="line"><span class="keyword">source</span>(<span class="string">"https://bioconductor.org/biocLite.R"</span>)</div><div class="line">biocLite(<span class="string">'clusterProfiler'</span>)</div><div class="line">biocLite(<span class="string">'org.Hs.eg.db'</span>)</div><div class="line">biocLite(<span class="string">'DOSE'</span>)</div><div class="line">install.packages(<span class="string">"glue"</span>) </div><div class="line"><span class="comment"># 安装这个包的过程中，它还会依赖其它的包</span></div><div class="line"><span class="comment"># 可以根据R语言的提示进行安装其他包</span></div></pre></td></tr></table></figure>
+<p>注：这里提一下clusterProfiler包的gene ID转换功能，clusterProfiler包中提供了两个函数，分别为<code>bitr</code>和<code>bitr_kegg</code>，这两个函数用于转换基因ID，这里介绍一下<code>bitr</code>，bitr的参数为<code>bitr(geneID, fromType, toType, OrgDb, drop = TRUE)</code>，其中geneID是基因名，fromType表示的是基因名的类型，在下面的转换中，这个基因名的类型为<code>SYMBOL</code>，toType就是要转换为什么ID，在下面的案例中，我们将<code>SYMBOL</code>转换为<code>ENTREZID</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(<span class="string">"GPX3"</span>,  <span class="string">"GLRX"</span>,   <span class="string">"LBP"</span>,   <span class="string">"CRYAB"</span>, <span class="string">"DEFB1"</span>, <span class="string">"HCLS1"</span>,   <span class="string">"SOD2"</span>,   <span class="string">"HSPA2"</span>,</div><div class="line">       <span class="string">"ORM1"</span>,  <span class="string">"IGFBP1"</span>, <span class="string">"PTHLH"</span>, <span class="string">"GPC3"</span>,  <span class="string">"IGFBP3"</span>,<span class="string">"TOB1"</span>,    <span class="string">"MITF"</span>,   <span class="string">"NDRG1"</span>,</div><div class="line">       <span class="string">"NR1H4"</span>, <span class="string">"FGFR3"</span>,  <span class="string">"PVR"</span>,   <span class="string">"IL6"</span>,   <span class="string">"PTPRM"</span>, <span class="string">"ERBB2"</span>,   <span class="string">"NID2"</span>,   <span class="string">"LAMB1"</span>,</div><div class="line">       <span class="string">"COMP"</span>,  <span class="string">"PLS3"</span>,   <span class="string">"MCAM"</span>,  <span class="string">"SPP1"</span>,  <span class="string">"LAMC1"</span>, <span class="string">"COL4A2"</span>,  <span class="string">"COL4A1"</span>, <span class="string">"MYOC"</span>,</div><div class="line">       <span class="string">"ANXA4"</span>, <span class="string">"TFPI2"</span>,  <span class="string">"CST6"</span>,  <span class="string">"SLPI"</span>,  <span class="string">"TIMP2"</span>, <span class="string">"CPM"</span>,     <span class="string">"GGT1"</span>,   <span class="string">"NNMT"</span>,</div><div class="line">       <span class="string">"MAL"</span>,   <span class="string">"EEF1A2"</span>, <span class="string">"HGD"</span>,   <span class="string">"TCN2"</span>,  <span class="string">"CDA"</span>,   <span class="string">"PCCA"</span>,    <span class="string">"CRYM"</span>,   <span class="string">"PDXK"</span>,</div><div class="line">       <span class="string">"STC1"</span>,  <span class="string">"WARS"</span>,  <span class="string">"HMOX1"</span>, <span class="string">"FXYD2"</span>, <span class="string">"RBP4"</span>,   <span class="string">"SLC6A12"</span>, <span class="string">"KDELR3"</span>, <span class="string">"ITM2B"</span>)</div><div class="line">eg = bitr(x, fromType=<span class="string">"SYMBOL"</span>, toType=<span class="string">"ENTREZID"</span>, OrgDb=<span class="string">"org.Hs.eg.db"</span>)</div><div class="line">head(eg)</div></pre></td></tr></table></figure>
+<p>转换结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(eg)</div><div class="line">  SYMBOL ENTREZID</div><div class="line"><span class="number">1</span>   GPX3     <span class="number">2878</span></div><div class="line"><span class="number">2</span>   GLRX     <span class="number">2745</span></div><div class="line"><span class="number">3</span>    LBP     <span class="number">3929</span></div><div class="line"><span class="number">4</span>  CRYAB     <span class="number">1410</span></div><div class="line"><span class="number">5</span>  DEFB1     <span class="number">1672</span></div><div class="line"><span class="number">6</span>  HCLS1     <span class="number">3059</span></div></pre></td></tr></table></figure>
+<p><code>bitr</code>可以转换的基因ID有很多种，可以使用<code>keytypes</code>来查看，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">library</span>(org.Hs.eg.db)</div><div class="line">&gt; keytypes(org.Hs.eg.db)</div><div class="line"> [<span class="number">1</span>] <span class="string">"ACCNUM"</span>       <span class="string">"ALIAS"</span>        <span class="string">"ENSEMBL"</span>      <span class="string">"ENSEMBLPROT"</span>  <span class="string">"ENSEMBLTRANS"</span></div><div class="line"> [<span class="number">6</span>] <span class="string">"ENTREZID"</span>     <span class="string">"ENZYME"</span>       <span class="string">"EVIDENCE"</span>     <span class="string">"EVIDENCEALL"</span>  <span class="string">"GENENAME"</span>    </div><div class="line">[<span class="number">11</span>] <span class="string">"GO"</span>           <span class="string">"GOALL"</span>        <span class="string">"IPI"</span>          <span class="string">"MAP"</span>          <span class="string">"OMIM"</span>        </div><div class="line">[<span class="number">16</span>] <span class="string">"ONTOLOGY"</span>     <span class="string">"ONTOLOGYALL"</span>  <span class="string">"PATH"</span>         <span class="string">"PFAM"</span>         <span class="string">"PMID"</span>        </div><div class="line">[<span class="number">21</span>] <span class="string">"PROSITE"</span>      <span class="string">"REFSEQ"</span>       <span class="string">"SYMBOL"</span>       <span class="string">"UCSCKG"</span>       <span class="string">"UNIGENE"</span>     </div><div class="line">[<span class="number">26</span>] <span class="string">"UNIPROT"</span></div></pre></td></tr></table></figure>
+<p>再举个例子，现在我们将<code>SYMBOL</code>转换为<code>UNIPROT</code>与<code>ENSEMBL</code>的基因名，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ids &lt;- bitr(x, fromType=<span class="string">"SYMBOL"</span>, toType=c(<span class="string">"UNIPROT"</span>, <span class="string">"ENSEMBL"</span>), OrgDb=<span class="string">"org.Hs.eg.db"</span>)</div><div class="line">head(ids)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(ids)</div><div class="line">  SYMBOL    UNIPROT         ENSEMBL</div><div class="line"><span class="number">1</span>   GPX3     P22352 ENSG00000211445</div><div class="line"><span class="number">2</span>   GLRX A0A024RAM2 ENSG00000173221</div><div class="line"><span class="number">3</span>   GLRX     P35754 ENSG00000173221</div><div class="line"><span class="number">4</span>    LBP     P18428 ENSG00000129988</div><div class="line"><span class="number">5</span>    LBP     Q8TCF0 ENSG00000129988</div><div class="line"><span class="number">6</span>  CRYAB     P02511 ENSG00000109846</div></pre></td></tr></table></figure>
+<p>使用clusterProfiler这个包进行GO分析时，通常并不需要转换ID，所有的ID类型都可以由<code>OrgDb</code>文件提供，并且通过<code>keyType</code>参数在<code>groupGO</code>，<code>enrichGO</code>和<code>gseGO</code>中进行指定。</p>
+<h4 id="第二步原始数据">第二步：原始数据</h4>
+<p><code>groupGO</code>，<code>enrichGO</code>和<code>gseGO</code>这三个函数都支持拥有<code>OrgDb</code>对象的物种进行GO分析。Bioconductor提供了有20个物种的<code>OrgDb</code>文件。如果用户自身有GO注释数据（数据框形式，第1列是基因ID，第2列是GO ID），此时就可以使用<code>enricher()</code>和<code>gseGO()</code>函数进行表达分析（over-representation）和GSEA分析（gene set enrichment analysis）。</p>
+<p>如果基因是被直接注释的，那么这些基因也可以被祖GO节点（ancestor GO nodes）注释（间接注释）。如果用户只使用直接注释，那么这些基因可以使用<code>buildGOmap</code>函数来推测出来基因的间接注释，生成了一个数据框格式的文件，用于<code>enricher()</code>和<code>gesGO</code>分析。</p>
+<p>clusterProfiler包中的<code>groupGO</code>包用于基因的分类，此时举个例子，我们使用<code>DOSE</code>这个包里的<code>geneList</code>数据集。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">data(geneList, package=<span class="string">"DOSE"</span>)</div><div class="line">gene &lt;- names(geneList)[abs(geneList) &gt; <span class="number">2</span>]</div><div class="line">gene.df &lt;- bitr(gene, fromType = <span class="string">"ENTREZID"</span>,</div><div class="line">                toType = c(<span class="string">"ENSEMBL"</span>, <span class="string">"SYMBOL"</span>),</div><div class="line">                OrgDb = org.Hs.eg.db)</div><div class="line">head(gene.df)</div></pre></td></tr></table></figure>
+<p>这里使用到了DOSE这包，这个包的全称是Disease Ontology Semantic and Enrichment analysis，具体的内容不用管，这里我们只使用它里面的一些基因名称，把基因的名称赋给<code>gene</code>这个变量，此时<code>gene</code>这个变量里面是EntrezID，然后使用<code>bitr</code>把Entrezid转换为ENSEMBL和SYMBOL，结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(gene.df)</div><div class="line">  ENTREZID         ENSEMBL SYMBOL</div><div class="line"><span class="number">1</span>     <span class="number">4312</span> ENSG00000196611   MMP1</div><div class="line"><span class="number">2</span>     <span class="number">8318</span> ENSG00000093009  CDC45</div><div class="line"><span class="number">3</span>    <span class="number">10874</span> ENSG00000109255    NMU</div><div class="line"><span class="number">4</span>    <span class="number">55143</span> ENSG00000134690  CDCA8</div><div class="line"><span class="number">5</span>    <span class="number">55388</span> ENSG00000065328  MCM10</div><div class="line"><span class="number">6</span>      <span class="number">991</span> ENSG00000117399  CDC20</div></pre></td></tr></table></figure>
+<h4 id="第三步go分析函数">第三步：GO分析函数</h4>
+<p>在clusterProfiler包中有两个做GO分析的函数，一个是groupGO，一个是enrichGO，groupGO它能够指定具体要分析的GO terms的层级，而enrichGO则就是普通的GO分析，分析到哪一层就是哪一层，通常情况下，使用<code>enrichGO</code>就行。</p>
+<h5 id="groupgo">groupGO</h5>
+<p>这个函数的功能是：</p>
+<p>现在使用<code>groupGO</code>函数，对<code>gene</code>这里面的基因进行功能分析，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Step4. GO analysis</span></div><div class="line"><span class="comment"># groupGO</span></div><div class="line">ggo &lt;- groupGO(gene     = gene.df$ENTREZID,</div><div class="line">               OrgDb    = org.Hs.eg.db,</div><div class="line">               ont      = <span class="string">"CC"</span>,</div><div class="line">               level    = <span class="number">3</span>,</div><div class="line">               readable = <span class="literal">TRUE</span>)</div><div class="line">write.csv(ggo,<span class="string">"D:\\ggo.csv"</span>)</div></pre></td></tr></table></figure>
+<p>现在解释一下上述代码，其中gene是一个向量，它含有要分析的基因ID，OrgDb是数据库，ont的参数为<code>CC</code>，<code>BP</code>和<code>MF</code>。level用于指定分析的GO水平，readable：逻辑值，如果为TRUE，则geneID会比对到gene symbol上，现在查看一下使用<code>groupGO</code>分析的结果，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/bcCgelD75f.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h5 id="enrichgo">enrichGO</h5>
+<p>功能：过表达（over-representation）分析：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ego &lt;- enrichGO(gene          = gene,</div><div class="line">                universe      = names(geneList),</div><div class="line">                OrgDb         = org.Hs.eg.db,</div><div class="line">                ont           = <span class="string">"CC"</span>,</div><div class="line">                pAdjustMethod = <span class="string">"BH"</span>,</div><div class="line">                pvalueCutoff  = <span class="number">0.01</span>,</div><div class="line">                qvalueCutoff  = <span class="number">0.05</span>,</div><div class="line">        readable      = <span class="literal">TRUE</span>)</div><div class="line">head(ego)</div></pre></td></tr></table></figure>
+<p>分析结果如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/5EEal4bGij.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>由于<code>OrgDb</code>支持任何形式的gene ID，因此可以在GO分析中直接使用任何gene ID，用户只需要指定<code>keyType</code>标明输入的数据即可，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ego2 &lt;- enrichGO(gene =gene.df$ENSEMBL,</div><div class="line">                 OrgDb         = org.Hs.eg.db,</div><div class="line">                 keytype       = <span class="string">"ENSEMBL"</span>,</div><div class="line">                 ont           = <span class="string">"CC"</span>,</div><div class="line">                 pAdjustMethod = <span class="string">"BH"</span>,</div><div class="line">                 pvalueCutoff  = <span class="number">0.01</span>,</div><div class="line">                 qvalueCutoff  = <span class="number">0.05</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/ae514mcL52.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在解释一下这个结果，</p>
+<ol style="list-style-type: decimal">
+<li>GO ID: Gene Ontology数据库中唯一的标号信息；</li>
+<li>Description ：Gene Ontology功能的描述信息；</li>
+<li>GeneRatio：差异基因中与该Term相关的基因数与整个差异基因总数的比值；</li>
+<li>BgRation：所有（ bg）基因中与该Term相关的基因数与所有（ bg）基因的比值；</li>
+<li>pvalue: 富集分析统计学显著水平，一般情况下， P-value &lt; 0.05 该功能为富集项；</li>
+<li>p.adjust 矫正后的P-Value；</li>
+<li>qvalue：对p值进行统计学检验的q值；</li>
+<li>Count：差异基因中与该Term相关的基因数</li>
+</ol>
+<h4 id="第四步绘制go图">第四步：绘制GO图</h4>
+<h5 id="go条形图">GO条形图</h5>
+<p>接下来是GO的层次聚类图，一般是二级GO条目条形图，也就是把得到的GO注释结果再归于二级分类中，绘制出二级GO条目图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">barplot(ego_cc, showCategory=<span class="number">20</span>,title=<span class="string">"EnrichmentGO CC"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/H03B9H5H95.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>这里只是绘制了CC这一类的条形图，BP，MF的条形图可以都可以根据这个来绘制，看一下网上其他人绘制的二级图，如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180720/3b6gFee6ll.png?imageslim" alt="mark"></p>
+<p>这张图就是GO分析的二级分类图，它显示了差异基因在各个GO term的数目和富集情况。横坐标代表GO三个 ontology的更细一级分类，即二级分类；纵坐标代表每个分类条目所包含的基因数目。由于一个基因常常对应多个GO term，因此同一个基因会在不同分类条目下出现，即被多次统计，因此如果你把这里所有柱子的基因数目加起来，肯定是多于差异基因的总数目。</p>
+<h5 id="go点状图">GO点状图</h5>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dotplot(ego_cc,title=<span class="string">"Enrichment GO CCdot"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/BbfaajFHke.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h5 id="go的有向无环图">GO的有向无环图</h5>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plotGOgraph(ego_cc)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/ALkHFkgmA2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>进行局部放大，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/CALiilKbI1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>解释一下这个图形：从整体上来看，GO的注释系统是一个有向无环图（DAG，Directed Acyclic Graphs ），GO term之间的联系是单向，前面提到，GO term之间的关系主要有3种，分别为<code>is_a</code>，<code>part_of</code>和<code>regulates</code>，富集分析的结果会分别给出GO三个本体（CC，BP，MF）的有向无环图，这里我们只绘制了CC本体，在这张图中，超接近根结点的GO term的概括性越强，越往下，分支的GO term表示的结果更细，现在查看一个GO term里面的含义，如下所示，其中就是我们前面GO分析表格中的这一条，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/Gb2Dhb29Kg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在我们在GO分析的有向无环图中把这个结果放大，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/g9e1Dl7Hhl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中第一行是GO术语的编号，第二行是对GO term的描述，第三行是P值，如果大于0.05，就会显示NA，显白色，上图中的P值小于0.05，因此显黄色。每个节点都有一定的形状，系统默认会把显著性最高的前10个GO term设置为方形，其余的GO term为圆形，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/kEE2GfEFhJ.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>颜色的含义：颜色越深，代表该GO term越显著。颜色由浅到深分别为：无色——浅黄——深黄——红色。 那么，从颜色上来看，在molecular function这个ontology上，最显著的GO term是GO:0005819。因此后续可以从这个GO term入手，这个GO term所在的分支上的其他GO term也值得研究。，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180725/E11klgaD3L.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>GO的有向无环图展示了GO term之间的分类关系。</p>
+<h2 id="clusterprofiler包的go-basic.ogo文件">ClusterProfiler包的go-basic.ogo文件</h2>
+<p>前面说过，在进行GO分析时，需要使用到这几个文件，分别如下所示：</p>
+<ol style="list-style-type: decimal">
+<li>前景基因与背景基因文件，前景基因是你要研究的目的基因，背景基因其实就是你要研究的某个物种的全部基因文件；</li>
+<li>GO注释文件，GO注释文件的作用在于，将GO terms与你的前景基因与背景基因的Gene ID对应起来；</li>
+<li>go-basic.ogo文件，这个文件记录的主要是不同GO terms之间的联系，用于绘制DAG图，不过在使用clusterProfiler中，并没有发现这个文件，后来在群里问了一下其他同学，有人说，这个包里面含有GO.db包，这个包里面含的内容就是GO terms的层级信息，如下所示：</li>
+</ol>
+<p>现在看一下某个GO terms在<code>go-basic.ogo</code>中的信息，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">[Term]</div><div class="line">id: GO:0000015</div><div class="line">name: phosphopyruvate hydratase complex</div><div class="line">namespace: cellular_component</div><div class="line">def: &quot;A multimeric enzyme complex, usually a dimer or an octamer, that catalyzes the conversion of 2-phospho-D-glycerate to phosphoenolpyruvate and water.&quot; [GOC:jl, ISBN:0198506732]</div><div class="line">subset: goslim_metagenomics</div><div class="line">subset: gosubset_prok</div><div class="line">synonym: &quot;enolase complex&quot; EXACT []</div><div class="line">is_a: GO:0044445 ! cytosolic part</div><div class="line">is_a: GO:1902494 ! catalytic complex</div></pre></td></tr></table></figure>
+<p>可以发现，<code>GO:0000015</code>与其他GO terms的关系有2个，分别为<code>GO:0044445</code>和<code>GO:1902494</code>。</p>
+<p>现在看一下<code>GO.db</code>文件，如下所示：s</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; xx &lt;- GOCCPARENTS</div><div class="line">&gt; xx$`GO:0000015`</div><div class="line">        is_a         is_a </div><div class="line"><span class="string">"GO:0044445"</span> <span class="string">"GO:1902494"</span></div></pre></td></tr></table></figure>
+<p>可以发现，GOCCPARENTS（这个是GO.db包中的某个数据集）中含有<code>GO:0000015</code>与其他GO terms的关系。</p>
 <h2 id="参考资料">参考资料</h2>
-<p><a href="http://www.runoob.com/python3/python3-basic-syntax.html" target="_blank" rel="external">1. Python3教程|菜鸟教程</a></p>
+<ol style="list-style-type: decimal">
+<li><a href="https://mp.weixin.qq.com/s/FKlF3zkwnkOrXHvVzKYukw" target="_blank" rel="external">一文掌握GO和pathway分析（公众号：GCBI知识库）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/s2_yv7U65FlxE1nLqhxcDw" target="_blank" rel="external">GO、KEGG功能注释是一个相亲的过程（公众号：小张聊科研）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/d1KCETQZ88yaOLGwAtpWYg" target="_blank" rel="external">GO、GSEA富集分析一网打进（公众号：生信宝典）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/i7GOr5UMRp6OYTO40lgR8g" target="_blank" rel="external">R语言学习 - 富集分析泡泡图 （文末有彩蛋）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/AWWLIhxZrHnZkhYtoYx7gA" target="_blank" rel="external">手把手教你看富集分析结果之GO富集</a></li>
+<li><a href="http://blog.sina.com.cn/s/blog_670445240101m4z3.html" target="_blank" rel="external">每日一生信–富集分析（超几何分布）（Fisher’s Exact Test）</a></li>
+<li><a href="http://blog.sina.com.cn/s/blog_5d1edf6a0100ujcv.html" target="_blank" rel="external">R 超几何分布</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution" target="_blank" rel="external">Wikipedia:Hypergeometric distribution</a></li>
+<li><a href="https://mp.weixin.qq.com/s/TiX41zf4Vc5xizTYGj5HnQ" target="_blank" rel="external">基于R语言理解随机变量分布——离散型随机变量</a></li>
+<li><a href="https://www.jianshu.com/p/5d4dd7a75362" target="_blank" rel="external">理解差异表达与GO分析</a></li>
+<li><a href="http://www.biotrainee.com/thread-242-1-1.html" target="_blank" rel="external">GO层次聚类图-二级GO条目条形图</a></li>
+<li><a href="https://www.jianshu.com/p/5a4bda169247" target="_blank" rel="external">功能富集分析概述</a></li>
+<li><a href="https://www.jianshu.com/p/3765b1ac02b5" target="_blank" rel="external">基因表达分析</a></li>
+<li><a href="http://www.bio-info-trainee.com/370.html" target="_blank" rel="external">转录组-GO和KEGG富集的R包clusterProfiler</a></li>
+<li><a href="http://www.omicshare.com/forum/thread-826-1-1.html" target="_blank" rel="external">OS Tools-GO富集分析工具的使用与解读详细教程</a></li>
+<li><a href="http://blog.sina.com.cn/s/blog_6a6c136d0100waak.html" target="_blank" rel="external">《生物信息与功能基因组学》</a></li>
+<li><a href="http://geneontology.org/page/ontology-documentation" target="_blank" rel="external">Ontology Documentation</a></li>
+<li><a href="http://geneontology.org/page/ontology-structure" target="_blank" rel="external">Ontology Structure</a></li>
+<li><a href="http://www.bio-info-trainee.com/710.html" target="_blank" rel="external">Bioconductor的数据包library(org.Hs.eg.db)简介</a></li>
+<li><a href="https://www.jianshu.com/p/4910d7cec5c8?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation" target="_blank" rel="external">转录组入门（8）：差异基因结果注释</a></li>
+<li><a href="https://www.bioconductor.org/packages/devel/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html#kegg-analysis" target="_blank" rel="external">Statistical analysis and visualization of functional profiles for genes and gene clusters</a></li>
+</ol>
 
           
         
@@ -852,7 +1195,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/03/31/BioInformation/生信-生物信息学编程实战-01生信编程思维讲解/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/01/Python/Python学习笔记（1）-基础笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -871,7 +1214,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/03/31/BioInformation/生信-生物信息学编程实战-01生信编程思维讲解/" itemprop="url">生物信息学编程实战-01生信编程思维讲解</a></h1>
+                <a class="post-title-link" href="/2018/04/01/Python/Python学习笔记（1）-基础笔记/" itemprop="url">Python学习笔记（1）——基础笔记</a></h1>
         
 
         <div class="post-meta">
@@ -883,8 +1226,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-31T12:00:00+08:00">
-                2018-03-31
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-01T12:00:00+08:00">
+                2018-04-01
               </time>
             
 
@@ -906,8 +1249,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
-                    <span itemprop="name">生物信息学</span>
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
                   </a>
                 </span>
 
@@ -939,7 +1282,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  335
+                  1,336
                 </span>
               
 
@@ -955,7 +1298,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  6
                 </span>
               
             </div>
@@ -978,20 +1321,62 @@
       
         
           
-            <h2 id="前言">前言</h2>
-<h2 id="第1题perl提取fastq第1行">第1题：perl提取fastq第1行</h2>
-<p>所需要数据：Bowtie2软件中自带的数据，先安装 <a href="https://sourceforge.net/projects/bowtie-bio/files/latest/download?source=files" target="_blank" rel="external">Bowtie</a>，解压此软件，里面有个文件夹/example/reads，含有几个数据，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180331/35c9A6dkfJ.png?imageslim" alt="mark"></p>
-<p>查看一下longreads.fq文件，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180331/db5lCJi7Dd.png?imageslim" alt="mark"> longread.fq文件是一个fastq文件，在fastq文件中，序列一般都包含4行。</p>
-<h3 id="什么是fastq格式">什么是fastq格式</h3>
-<p>FastQ格式是序列格式中常见的一种，fastq文件的第一行由’@‘开始，后面跟着序列的描述信息，这点跟FASTA格式是一样的。第二行是序列。第三行由’+’开始，后面也可以跟着序列的描述信息。第四行是第二行序列的质量评价（quality values，注：应该是测序的质量评价），字符数跟第二行的序列是相等的，在这个案例中，即使在linux的命令行中第二行显示为多行，它也是一行（只是为了方便查看，这一行太长，进行了换行，其它还是一行），一个标准的fastq格式文件如下所示：</p>
-<blockquote>
-<p><span class="citation">@EAS54_6_R1_2_1_413_324</span> CCCTTCTTGTCTTCAGCGTTTCTCC + ;;3;;;;;;;;;;;;7;;;;;;;88 <span class="citation">@EAS54_6_R1_2_1_540_792</span> TTGGCAGGCCAAGGCCGATGGATCA + ;;;;;;;;;;;7;;;;;-;;;3;83 <span class="citation">@EAS54_6_R1_2_1_443_348</span> GTTGCTTCTGGCGTGGGTGGGGGGG +EAS54_6_R1_2_1_443_348 ;;;;;;;;;;;9;7;;.7;393333</p>
-</blockquote>
-<p>现在提取longreads.fq文件中第个序列的第一行，即@符号所在的那一行，代码为<code>perl -alne '{print if $.%4==1}' longreads.fq |head</code>，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180331/IG0IL9eLad.png?imageslim" alt="mark"></p>
-<h2 id="参考资料">参考资料：</h2>
+            <h2 id="一前言">（一）前言</h2>
+<p>很早以前就学过Python，当时是在为知笔记里做的笔记，不过当时笔记记得是七零八落，很多参考资料当也没有记全。为了形成学习Python的系统思维，也为了方便自己检索，现在把以前学习的Python笔记汇总一下。汇总的过程以<a href="http://www.runoob.com/python3/python3-basic-syntax.html" target="_blank" rel="external">菜鸟教程</a>的思路为标准，把自己以前的笔记按照菜鸟教程的顺序给理一下，并在虚拟机（ubuntu系统）或Windows下的Python交互模式里把代码跑一遍，列出代码与结果。</p>
+<h2 id="二基本语法">（二）基本语法</h2>
+<p>先看一段代码，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/python3/<span class="number">01</span>basic$ cat hello.py</div><div class="line"><span class="comment">#!/usr/bin/python3</span></div><div class="line"></div><div class="line"><span class="comment"># This is a comment</span></div><div class="line">print(<span class="string">"Hello, python3!"</span>)</div><div class="line"></div><div class="line"><span class="comment"># This is another comment</span></div><div class="line">biotest@biotest-VirtualBox:~/python3/<span class="number">01</span>basic$ python3 hello.py </div><div class="line">Hello, python3!</div></pre></td></tr></table></figure>
+<p>从上面的这段代码可以知道这些信息：</p>
 <ol style="list-style-type: decimal">
-<li></li>
+<li>在Python中，注释是以<code>#</code>进行标识的；</li>
+<li>Python程序文件以<code>.py</code>为后缀。</li>
+<li>开头的代码指明了Python3解释的位置，即<code>#!/usr/bin/pyhton3</code>（其实我发现，不加这一行也能运行）。</li>
 </ol>
+<p>除了<code>#</code>可以作为注释外，还可以使用多个<code>#</code>和<code>'''</code>和<code>&quot;&quot;&quot;</code>作为注释，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<h2 id="三行与缩进">（三）行与缩进</h2>
+<p>Python语法的一大特点应时使用缩进来表示代码块，不需要使用大括号，在下面的例子中，第二行与第四行，必须要缩进4个字符，才能正常运行，否则就会出错，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> <span class="keyword">True</span>:</div><div class="line">    <span class="keyword">print</span> (<span class="string">"True"</span>)</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    <span class="keyword">print</span> (<span class="string">"False"</span>)</div></pre></td></tr></table></figure>
+<h2 id="四多行语句与引号">（四）多行语句与引号</h2>
+<p>如果语句比较长，可以使用反斜杠（<code>\</code>）来实现多行语句，格式如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">total = item_one + \</div><div class="line">        item_two + \</div><div class="line">        item_three</div></pre></td></tr></table></figure>
+<p>但是在<code>[]</code>，<code>{}</code>或<code>()</code>中，不需要使用反斜杠，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">total = [<span class="string">'item_one'</span>, <span class="string">'item_two'</span>,<span class="string">'item_three'</span>,</div><div class="line">        <span class="string">'item_four'</span>,<span class="string">'item_five'</span>]</div></pre></td></tr></table></figure>
+<p>使用3个双引号，可以直接换行，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3 = <span class="string">"""hello,</span></div><div class="line"><span class="string"><span class="meta">... </span>world,</span></div><div class="line"><span class="string"><span class="meta">... </span>this is a multiline statements"""</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">hello,</div><div class="line">world,</div><div class="line">this <span class="keyword">is</span> a multiline statements</div></pre></td></tr></table></figure>
+<p>其实这段代码就相当下面的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3 = <span class="string">"hello,\nworld,\nthis is a multiline statements."</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">hello,</div><div class="line">world,</div><div class="line">this <span class="keyword">is</span> a multiline statements</div></pre></td></tr></table></figure>
+<p>三引号，双引号和单引号的区别</p>
+<p>看下面的案例就明白了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s4 = <span class="string">'Let\'s go'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s4)</div><div class="line">Let<span class="string">'s go</span></div><div class="line"><span class="string">&gt;&gt;&gt; s5 = "Let'</span>s go<span class="string">"</span></div><div class="line"><span class="string">&gt;&gt;&gt; print(s5)</span></div><div class="line"><span class="string">Let's go</span></div></pre></td></tr></table></figure>
+<p>只使用单引号的话，如果字符串里还有单引号，那么需要进行转义，或者说是如果双引号里面还有双引号，也需要转义。</p>
+<h3 id="转义字符">转义字符</h3>
+<p>先看一个案例，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str1)</div><div class="line">C:</div><div class="line">ow</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>str2 = <span class="string">'c:\\now'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str2)</div><div class="line">c:\now</div></pre></td></tr></table></figure>
+<p>从这个案例中可以知道，在用Python处理目录时，需要对斜杠进行转义，如果目录的字符串比较长，例如<code>C:\Program Files\Intel\WiFi\Help</code>，那就可以在这个字符串前面加上一个<code>r</code>，如果最后要以斜杠结尾，那么只需要在最后使用转义符号即可，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>str3 =<span class="string">r'C:\Program Files\Intel\WiFi\Help'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str3)</div><div class="line">C:\Program Files\Intel\WiFi\Help</div><div class="line">    &gt;&gt;&gt; str4 =<span class="string">r'C:\Program Files\Intel\WiFi\Help'</span><span class="string">'\\'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(str4)</div><div class="line">C:\Program Files\Intel\WiFi\Help\</div></pre></td></tr></table></figure>
+<h2 id="五关键字">（五）关键字</h2>
+<p>Python的关键字指的Python编译器自己使用的，用户不可以使用，可以通过下面的代码进行查看，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> keyword</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>keyword.kwlist</div><div class="line">[<span class="string">'False'</span>, <span class="string">'None'</span>, <span class="string">'True'</span>, <span class="string">'and'</span>, <span class="string">'as'</span>, <span class="string">'assert'</span>, <span class="string">'break'</span>, <span class="string">'class'</span>, <span class="string">'continue'</span>, <span class="string">'def'</span>, <span class="string">'del'</span>, <span class="string">'elif'</span>, <span class="string">'else'</span>, <span class="string">'except'</span>, <span class="string">'finally'</span>, <span class="string">'for'</span>, <span class="string">'from'</span>, <span class="string">'global'</span>, <span class="string">'if'</span>, <span class="string">'import'</span>, <span class="string">'in'</span>, <span class="string">'is'</span>, <span class="string">'lambda'</span>, <span class="string">'nonlocal'</span>, <span class="string">'not'</span>, <span class="string">'or'</span>, <span class="string">'pass'</span>, <span class="string">'raise'</span>, <span class="string">'return'</span>, <span class="string">'try'</span>, <span class="string">'while'</span>, <span class="string">'with'</span>, <span class="string">'yield'</span>]</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
+<h2 id="六帮助文档查阅">（六）帮助文档查阅</h2>
+<h3 id="help函数">（6.1）help函数</h3>
+<p>使用help函数可以查看某个函数的帮助，也可以查看所用模块的名称，如下所示：</p>
+<p>查看<code>print</code>这个函数的帮助：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>help(<span class="keyword">print</span>)</div><div class="line">Help on built-<span class="keyword">in</span> function <span class="keyword">print</span> <span class="keyword">in</span> module builtins:</div><div class="line"></div><div class="line">print(...)</div><div class="line">    print(value, ..., sep=<span class="string">' '</span>, end=<span class="string">'\n'</span>, file=sys.stdout, flush=<span class="keyword">False</span>)</div><div class="line"></div><div class="line">    Prints the values to a stream, <span class="keyword">or</span> to sys.stdout by default.</div><div class="line">    Optional keyword arguments:</div><div class="line">    file:  a file-like object (stream); defaults to the current sys.stdout.</div><div class="line">    sep:   string inserted between values, default a space.</div><div class="line">    end:   string appended after the last value, default a newline.</div><div class="line">    flush: whether to forcibly flush the stream.</div></pre></td></tr></table></figure>
+<p>查看<code>math</code>这个包以及这个包中<code>ssqrt</code>这个函数的帮助，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> math</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>help(math)</div><div class="line">Help on built-<span class="keyword">in</span> module math:</div><div class="line"></div><div class="line">NAME</div><div class="line">    math</div><div class="line"></div><div class="line">DESCRIPTION</div><div class="line">    This module <span class="keyword">is</span> always available.  It provides access to the</div><div class="line">    mathematical functions defined by the C standard.</div><div class="line"></div><div class="line">FUNCTIONS</div><div class="line">    acos(...)</div><div class="line">        acos(x)</div><div class="line"></div><div class="line">        Return the arc cosine (measured <span class="keyword">in</span> radians) of x.</div><div class="line"></div><div class="line">-- More  --</div><div class="line"></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>help(math.sqrt)</div><div class="line">Help on built-<span class="keyword">in</span> function sqrt <span class="keyword">in</span> module math:</div><div class="line"></div><div class="line">sqrt(...)</div><div class="line">    sqrt(x)</div><div class="line"></div><div class="line">    Return the square root of x.</div></pre></td></tr></table></figure>
+<h2 id="七包的操作">（七）包的操作</h2>
+<p>使用<code>import</code>可以加载某个包，例如<code>import math</code>就加载了<code>math</code>这个包，使用<code>dir()</code>这个函数可以查看这个包的成员，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> math</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>dir(math)</div><div class="line">[<span class="string">'__doc__'</span>, <span class="string">'__loader__'</span>, <span class="string">'__name__'</span>, <span class="string">'__package__'</span>, <span class="string">'__spec__'</span>, <span class="string">'acos'</span>, <span class="string">'acosh'</span>, <span class="string">'asin'</span>, <span class="string">'asinh'</span>, <span class="string">'atan'</span>, <span class="string">'atan2'</span>, <span class="string">'atanh'</span>, <span class="string">'ceil'</span>, <span class="string">'copysign'</span>, <span class="string">'cos'</span>, <span class="string">'cosh'</span>, <span class="string">'degrees'</span>, <span class="string">'e'</span>, <span class="string">'erf'</span>, <span class="string">'erfc'</span>, <span class="string">'exp'</span>, <span class="string">'expm1'</span>, <span class="string">'fabs'</span>, <span class="string">'factorial'</span>, <span class="string">'floor'</span>, <span class="string">'fmod'</span>, <span class="string">'frexp'</span>, <span class="string">'fsum'</span>, <span class="string">'gamma'</span>, <span class="string">'gcd'</span>, <span class="string">'hypot'</span>, <span class="string">'inf'</span>, <span class="string">'isclose'</span>, <span class="string">'isfinite'</span>, <span class="string">'isinf'</span>, <span class="string">'isnan'</span>, <span class="string">'ldexp'</span>, <span class="string">'lgamma'</span>, <span class="string">'log'</span>, <span class="string">'log10'</span>, <span class="string">'log1p'</span>, <span class="string">'log2'</span>, <span class="string">'modf'</span>, <span class="string">'nan'</span>, <span class="string">'pi'</span>, <span class="string">'pow'</span>, <span class="string">'radians'</span>, <span class="string">'sin'</span>, <span class="string">'sinh'</span>, <span class="string">'sqrt'</span>, <span class="string">'tan'</span>, <span class="string">'tanh'</span>, <span class="string">'tau'</span>, <span class="string">'trunc'</span>]</div></pre></td></tr></table></figure>
+<h2 id="八内置函数与模块">（八）内置函数与模块</h2>
+<h3 id="内置函数">内置函数</h3>
+<p>内置函数不需要导入任何模块即可直接使用，执行下面的命令可以列出所有内置函数和内置对象，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>dir(__builtins__)</div><div class="line">[<span class="string">'ArithmeticError'</span>, <span class="string">'AssertionError'</span>, <span class="string">'AttributeError'</span>, <span class="string">'BaseException'</span>, <span class="string">'BlockingIOError'</span>, <span class="string">'BrokenPipeError'</span>, <span class="string">'BufferError'</span>, <span class="string">'BytesWarning'</span>, <span class="string">'ChildProcessError'</span>, <span class="string">'ConnectionAbortedError'</span>, <span class="string">'ConnectionError'</span>, <span class="string">'ConnectionRefusedError'</span>, <span class="string">'ConnectionResetError'</span>, <span class="string">'DeprecationWarning'</span>, <span class="string">'EOFError'</span>, <span class="string">'Ellipsis'</span>, <span class="string">'EnvironmentError'</span>, <span class="string">'Exception'</span>, <span class="string">'False'</span>, <span class="string">'FileExistsError'</span>, <span class="string">'FileNotFoundError'</span>, <span class="string">'FloatingPointError'</span>,</div><div class="line"> ... ...</div></pre></td></tr></table></figure>
+<h3 id="内置模块">内置模块</h3>
+<p>内置模块的查看方法如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> sys</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(sys.builtin_module_names)</div><div class="line">(<span class="string">'_ast'</span>, <span class="string">'_bisect'</span>, <span class="string">'_blake2'</span>, <span class="string">'_codecs'</span>, <span class="string">'_codecs_cn'</span>, <span class="string">'_codecs_hk'</span>, <span class="string">'_codecs_iso2022'</span>, <span class="string">'_codecs_jp'</span>, <span class="string">'_codecs_kr'</span>, <span class="string">'_codecs_tw'</span>, <span class="string">'_collections'</span>, <span class="string">'_csv'</span>, <span class="string">'_datetime'</span>, <span class="string">'_findvs'</span>, <span class="string">'_functools'</span>, <span class="string">'_heapq'</span>, <span class="string">'_imp'</span>, <span class="string">'_io'</span>, <span class="string">'_json'</span>, <span class="string">'_locale'</span>, <span class="string">'_lsprof'</span>, <span class="string">'_md5'</span>, <span class="string">'_multibytecodec'</span>, <span class="string">'_opcode'</span>, <span class="string">'_operator'</span>, <span class="string">'_pickle'</span>, <span class="string">'_random'</span>, <span class="string">'_sha1'</span>, <span class="string">'_sha256'</span>, <span class="string">'_sha3'</span>, <span class="string">'_sha512'</span>, <span class="string">'_signal'</span>, <span class="string">'_sre'</span>, <span class="string">'_stat'</span>, <span class="string">'_string'</span>, <span class="string">'_struct'</span>, <span class="string">'_symtable'</span>, <span class="string">'_thread'</span>, <span class="string">'_tracemalloc'</span>, <span class="string">'_warnings'</span>, <span class="string">'_weakref'</span>, <span class="string">'_winapi'</span>, <span class="string">'array'</span>, <span class="string">'atexit'</span>, <span class="string">'audioop'</span>, <span class="string">'binascii'</span>, <span class="string">'builtins'</span>, <span class="string">'cmath'</span>, <span class="string">'errno'</span>, <span class="string">'faulthandler'</span>, <span class="string">'gc'</span>, <span class="string">'itertools'</span>, <span class="string">'marshal'</span>, <span class="string">'math'</span>, <span class="string">'mmap'</span>, <span class="string">'msvcrt'</span>, <span class="string">'nt'</span>, <span class="string">'parser'</span>, <span class="string">'sys'</span>, <span class="string">'time'</span>, <span class="string">'winreg'</span>, <span class="string">'xxsubtype'</span>, <span class="string">'zipimport'</span>, <span class="string">'zlib'</span>)</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="http://www.runoob.com/python3/python3-basic-syntax.html" target="_blank" rel="external">1. Python3教程|菜鸟教程</a></p>
 
           
         
@@ -1341,6 +1726,194 @@
 </table>
 <h2 id="参考资料">参考资料</h2>
 <p>https://github.com/dunovank/jupyter-themes</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/03/31/BioInformation/生信-生物信息学编程实战-01生信编程思维讲解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/31/BioInformation/生信-生物信息学编程实战-01生信编程思维讲解/" itemprop="url">生物信息学编程实战-01生信编程思维讲解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-31T12:00:00+08:00">
+                2018-03-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
+                    <span itemprop="name">生物信息学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  335
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<h2 id="第1题perl提取fastq第1行">第1题：perl提取fastq第1行</h2>
+<p>所需要数据：Bowtie2软件中自带的数据，先安装 <a href="https://sourceforge.net/projects/bowtie-bio/files/latest/download?source=files" target="_blank" rel="external">Bowtie</a>，解压此软件，里面有个文件夹/example/reads，含有几个数据，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180331/35c9A6dkfJ.png?imageslim" alt="mark"></p>
+<p>查看一下longreads.fq文件，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180331/db5lCJi7Dd.png?imageslim" alt="mark"> longread.fq文件是一个fastq文件，在fastq文件中，序列一般都包含4行。</p>
+<h3 id="什么是fastq格式">什么是fastq格式</h3>
+<p>FastQ格式是序列格式中常见的一种，fastq文件的第一行由’@‘开始，后面跟着序列的描述信息，这点跟FASTA格式是一样的。第二行是序列。第三行由’+’开始，后面也可以跟着序列的描述信息。第四行是第二行序列的质量评价（quality values，注：应该是测序的质量评价），字符数跟第二行的序列是相等的，在这个案例中，即使在linux的命令行中第二行显示为多行，它也是一行（只是为了方便查看，这一行太长，进行了换行，其它还是一行），一个标准的fastq格式文件如下所示：</p>
+<blockquote>
+<p><span class="citation">@EAS54_6_R1_2_1_413_324</span> CCCTTCTTGTCTTCAGCGTTTCTCC + ;;3;;;;;;;;;;;;7;;;;;;;88 <span class="citation">@EAS54_6_R1_2_1_540_792</span> TTGGCAGGCCAAGGCCGATGGATCA + ;;;;;;;;;;;7;;;;;-;;;3;83 <span class="citation">@EAS54_6_R1_2_1_443_348</span> GTTGCTTCTGGCGTGGGTGGGGGGG +EAS54_6_R1_2_1_443_348 ;;;;;;;;;;;9;7;;.7;393333</p>
+</blockquote>
+<p>现在提取longreads.fq文件中第个序列的第一行，即@符号所在的那一行，代码为<code>perl -alne '{print if $.%4==1}' longreads.fq |head</code>，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180331/IG0IL9eLad.png?imageslim" alt="mark"></p>
+<h2 id="参考资料">参考资料：</h2>
+<ol style="list-style-type: decimal">
+<li></li>
+</ol>
 
           
         
@@ -1952,7 +2525,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/03/20/BioInformation/生信-转录组数据分析入门实战/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/03/20/BioInformation/生信-实战-生信技能树转录组数据分析入门实战/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -1971,7 +2544,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/03/20/BioInformation/生信-转录组数据分析入门实战/" itemprop="url">生信技能树转录组数据分析入门实战</a></h1>
+                <a class="post-title-link" href="/2018/03/20/BioInformation/生信-实战-生信技能树转录组数据分析入门实战/" itemprop="url">转录组数据分析入门实战</a></h1>
         
 
         <div class="post-meta">
@@ -2006,8 +2579,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
-                    <span itemprop="name">生物信息学</span>
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
                   </a>
                 </span>
 
@@ -2039,7 +2612,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5,460
+                  5,482
                 </span>
               
 
@@ -2079,8 +2652,9 @@
         
           
             <h2 id="前言">前言</h2>
-<p>这是根据“思考问题的熊“的课程《生信技能树转录组数据分析入门实战》进行整理的，课程信息如下所示： ### 课程题目： 生信技能树转录组数据分析入门实战</p>
-<h3 id="课程时间">课程时间：</h3>
+<p>这是根据“思考问题的熊“的课程《生信技能树转录组数据分析入门实战》进行整理的，这是一个标准的转录组分析流程，所用模式生物是拟南芥，整个课程信息如下所示：</p>
+<h3 id="课程题目">课程题目：</h3>
+<p>生信技能树转录组数据分析入门实战</p>
 <h3 id="课程内容">课程内容：</h3>
 <ol style="list-style-type: decimal">
 <li>课程介绍</li>
@@ -2339,7 +2913,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/03/20/BioInformation/生信-实战-生信技能树转录组数据分析入门实战/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/03/20/BioInformation/生信-转录组数据分析入门实战/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -2358,7 +2932,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/03/20/BioInformation/生信-实战-生信技能树转录组数据分析入门实战/" itemprop="url">转录组数据分析入门实战</a></h1>
+                <a class="post-title-link" href="/2018/03/20/BioInformation/生信-转录组数据分析入门实战/" itemprop="url">生信技能树转录组数据分析入门实战</a></h1>
         
 
         <div class="post-meta">
@@ -2393,8 +2967,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
-                    <span itemprop="name">生信实战项目</span>
+                  <a href="/categories/生物信息学/" itemprop="url" rel="index">
+                    <span itemprop="name">生物信息学</span>
                   </a>
                 </span>
 
@@ -2426,7 +3000,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5,482
+                  5,460
                 </span>
               
 
@@ -2466,9 +3040,8 @@
         
           
             <h2 id="前言">前言</h2>
-<p>这是根据“思考问题的熊“的课程《生信技能树转录组数据分析入门实战》进行整理的，这是一个标准的转录组分析流程，所用模式生物是拟南芥，整个课程信息如下所示：</p>
-<h3 id="课程题目">课程题目：</h3>
-<p>生信技能树转录组数据分析入门实战</p>
+<p>这是根据“思考问题的熊“的课程《生信技能树转录组数据分析入门实战》进行整理的，课程信息如下所示： ### 课程题目： 生信技能树转录组数据分析入门实战</p>
+<h3 id="课程时间">课程时间：</h3>
 <h3 id="课程内容">课程内容：</h3>
 <ol style="list-style-type: decimal">
 <li>课程介绍</li>
@@ -2900,238 +3473,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/13/Literature/文献笔记-miRNA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/13/Literature/文献笔记-miRNA/" itemprop="url">microRNA笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-13T12:00:00+08:00">
-                2017-10-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/文献笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">文献笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,639
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景资料">背景资料</h2>
-<p>MicroRNA (miRNA) 是一类由内源基因编码的长度约为22 nt的非编码单链RNA 分子,它们在动植物中参与转录后基因表达调控。大意就是，Micro RNA就是一条不会翻译蛋白的小的RNA。其单位是22nt，而不是22bp，因为nt是核苷酸，bp是碱基对，Micro RNA是用nt作为单位的，起码说明了Micro RNA是单链的。</p>
-<h2 id="命名">命名</h2>
-<h3 id="mirna的转录">miRNA的转录</h3>
-<p>MiRNA首先是由MiRNA的host gene转录获得的，host gene转录，形成了primary microRNA（<strong>pri-MiRNA</strong>），然后通过Drosha–Pasha 复合体，形成了precursor microRNA（也就是<strong>pre-MiRNA</strong>），接着pre-MiRNA被Dicer剪切成双链的RNA，然后双链RNA被AGO1保护起来，其中一条链被降解，另一条链就被保留下来了。 <img src="http://ortxpw68f.bkt.clouddn.com/rnatrans.png"> 被降解的链一般被称之为“Passenger strand（过客链）”，这条链一般不容易被检测到，因为被降解了，这条链也被称之为星号链，一般会表示为“miR-×××*”。另一条链被称之为“Guide strand”，也就是先导链，这条就是我们通常所说的miRNA。</p>
-<p>注：从图上就可以看出，Passenger strand和Guide strand链都是来源于一个基因，但它们两个还能互补。</p>
-<h3 id="pri-mirna">pri-miRNA</h3>
-<p><strong>pri-miRNA：</strong>长度从几百到几千个碱基不等，带有5‘帽子和3’polyA尾巴，以及1到数个发夹径环结构，如下所示<img src="http://ortxpw68f.bkt.clouddn.com/rna2.png">：</p>
-<p>用上述的命名方法的话，比如我们说MiRNA-21和MiRNA-21*，就大概是这样的，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/m21.png">
-
-</div>
-<p>这个图上，我们可以看到MiRNA-21是产生在precursor microRNA的5’臂上的，而MiRNA-21*是产生于precursor microRNA的3’臂上的。“*”这个标志，主要告诉我们，这条链是“Passenger strand”，也就是miRNA-21产生的一个副产品，表达量超低，所以星号链经常被认为是没有功能的。</p>
-<h3 id="mirna的5p端与3p端">miRNA的5p端与3p端</h3>
-<p>但是，问题来了，2011年开始，有很多文献，开始表明miRNA星号链是有功能的（Widespread regulatory activity of vertebrate microRNA* species.，Yang，2011），星号链的功能，也有可能比先导链更为高级。那这样用“*”来标记就有点过时了。于是就产生了这样的命名方法，就是按照microRNA产生于precursor microRNA的5’臂或者是3’臂，来将miRNA表示成“MiR-×××-5p”或者“MiR-×××-3p”，这样的话miR-21，就被命名成为了“miR-21-5p”，它的星号链就被命名成为了“miR-21-3p”。之前还有用“-s”（sence）“-as”（antisence）来对先导链（先导链是-s）和星号链（星号链是-as）来命名，主要是dsRNA形成过程时的正向和反向。但由于很容易搞混，所以已经被取消了。可能看到老一点的文献中会有。</p>
-<h3 id="mirna的编号">miRNA的编号</h3>
-<p>pre-miRNA以“mir”命名，其编号以“MI”编号，如人的miRNA 122的前体ID为hsa-mir-122，Accession为MI0000442；而miRNA的成熟链以“miR”命名，其编号以“MIMAT”编号，如人的miR-122的一个成熟体的ID为hsa-miR-122-5p ，Accession为 MIMAT0000421。</p>
-<p>因此，miRNA的命令示意图如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180516/JCHALCKc33.png?imageslim" alt="mark"></p>
-<h3 id="mirna命名方式的汇总">miRNA命名方式的汇总</h3>
-<ol style="list-style-type: decimal">
-<li>一个系统命名包含三部分内容，即物种，microRNA类别，序号。三者间用短线连接。</li>
-<li>物种一般用三个小写字母表示，如hsa,mmu和rno分别代表人，小鼠和大鼠。</li>
-<li>MicroRNA类别是指所命名的microRNA是pre-miRNA还是mature miRNA。pre-miRNA用mir表示，mature miRNA用miR表示。</li>
-<li>序号为一阿拉伯数字，代表microRNA发现的先后。一般而言，数字越小，发现越早</li>
-<li>高度同源的miRNA在No.其后加英文字母(小写,一般从a开始) 如miR-199a 和miR-199b</li>
-<li>由不同染色体上的DNA序列转录加工而成的具有相同成熟体序列的miRNA，则在后面加上阿拉伯数字以区分, 如miR-199a-1和miR-199a-2；</li>
-<li>如果一个前体的2个臂分别加产生miRNA，则根据克隆实验，在表达水平较低的miRNA 后面加“<em>” ，如miR-199amiR-199a</em>，或进行如下命名，miR-142-5p(也可命名为miR-142-s，表示从5’ 端的臂加工而来)和miR-142-3p(也可命名为miR-142-as，表示从3’端的臂加工而来)；</li>
-<li>确定命名规则之前发现的miRNA，如let-7，则保留原来名字。</li>
-</ol>
-<h2 id="作用机理">作用机理</h2>
-<p>作用机理的图片如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180516/9JIG1HBfcd.png?imageslim" alt="mark"></p>
-<blockquote>
-<p>要说MiRNA具体是咋起作用的？好吧，给你举个例子，你感受一下。普通的mRNA就好比是一条高速公路，路上会有很多会排出尾气的汽车（核糖体，它们在mRNA上边走边翻译蛋白），一条高速路上会有很多辆车（多聚核糖体Polysome），车越多、开得越快，尾气就越大（蛋白表达量就越高），这个时候，在路快到尽头的地方（mRNA的3’UTR上）就出现了一个交警（MiRNA聚合一些蛋白的RISC，RNA-Induced SilencingComplex，RNA诱导沉默复合体），他稳稳地站在路的最后（通过RISC中的MiRNA与3’UTR互补，结合到mRNA的3’UTR上），整个车队就停下来了，尾气也没了（蛋白表达降低）。好了，现在也明白为啥过表达MiRNA之后下游基因的mRNA变化不大，但蛋白会有变化了吧？因为警察是不会拆路的……</p>
-</blockquote>
-<p>比较详细的图</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/rna6.jpg">
-
-</div>
-<h3 id="mirna种子区seedregion">miRNA种子区（“seed”region）</h3>
-<p>5’端2-8个碱基被称为种子序列 <img src="http://ortxpw68f.bkt.clouddn.com/rna3.jpg"></p>
-<h3 id="mirna与mirna靶标的结合">miRNA与miRNA靶标的结合</h3>
-<p>主要有两类：5’-dominant Site和3’-compensatory Site。 1. <strong>5‘显性位点：满足经典种子区2-8完全互补结合的方式</strong>。如下所示<img src="http://ortxpw68f.bkt.clouddn.com/rna4.jpg">： 2. <strong>3’端补偿位点：5‘端并非满足2-8经典完全互补，知识部分互补，这样3‘端补偿位点结合，增强了miRNA与标靶结合稳定性，如下所示：5’-dominant Site和3’-compensatory Site，如下所示</strong><img src="http://ortxpw68f.bkt.clouddn.com/rna5.jpg"></p>
-<h2 id="rna的靶点预测">RNA的靶点预测</h2>
-<h3 id="工具汇总如下">工具汇总如下</h3>
-<p>miEAA 网址：https://ccb-compute2.cs.uni-saarland.de/mieaa_tool/ 分析microRNA的功能、信号通路、疾病等进行分析</p>
-<p>YM500v2： http://ngs.ym.edu.tw/ym500v2/index.php</p>
-<p>Starbase（http://starbase.sysu.edu.cn/index.php） 交叉预测网站，既可以通过靶基因预测microRNA也可以通过microRNA预测靶基因。</p>
-<p>miRPathDB（https://mpd.bioinf.uni-sb.de/overview.html） 查询参与通路内调控的miRNAs，包含了人、鼠两类数据。</p>
-<p>mirbase（mirbase：http://www.mirbase.org/）</p>
-<h2 id="参考资料">参考资料：</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzA3ODU1NjUyNw==&amp;mid=404311107&amp;idx=1&amp;sn=85308a8ad9806f65072de4c8ed79f54c&amp;scene=1&amp;srcid=0314tK0Lw7HkKyoJRoAjwPmg#rd" target="_blank" rel="external">miRNA到底是怎么命名的？</a></li>
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzA3ODU1NjUyNw==&amp;mid=200526001&amp;idx=1&amp;sn=ae82f47928f8cd4c519c89f69ab8d103&amp;scene=21#wechat_redirect" target="_blank" rel="external">Micro RNA，从一窍不通到略知一二</a></li>
-<li><a href="http://mp.weixin.qq.com/s?__biz=MzA5ODQ1NDIyMQ==&amp;mid=2649602388&amp;idx=2&amp;sn=6097b6c76944a795a628bce7fbbac934&amp;chksm=888846f6bfffcfe0a579d0a9bd1dd24083a28937c4057db9e25abd3c006858b8d2675690f5ae&amp;mpshare=1&amp;scene=1&amp;srcid=0901fXzOX8InCPG3nb2oSiDS#rd" target="_blank" rel="external">搞懂RNA命名，miRNA、lncRNA、circRN不再傻傻分不清</a></li>
-<li><a href="https://mp.weixin.qq.com/profile?src=3&amp;timestamp=1507870340&amp;ver=1&amp;signature=y-Qin6PEYzPl9NMOQjgJYLIB1ca8JQ1JnnITRYLuVFI*N2jLLUI74CFzvPaSyi-PVLDYcUEOeEIiXXC4QtOf4w==" target="_blank" rel="external">艾博思生物（公众号： ibsbio）</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3278,7 +3619,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共437.5k字</span>
+  <span class="post-count">博客全站共438.9k字</span>
 </div>
 
         
