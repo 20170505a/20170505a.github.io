@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="统计学,统计基础,聚类方法,MDS," />
+  <meta name="keywords" content="统计学,统计基础,MDS,聚类方法," />
 
 
 
@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="前言——主要内容 这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。 MDS MDS的分类 MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Met">
-<meta name="keywords" content="统计学,统计基础,聚类方法,MDS">
+<meta name="description" content="前言——主要内容这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。 MDSMDS的分类MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Metric Mul">
+<meta name="keywords" content="统计学,统计基础,MDS,聚类方法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="StatQuest学习笔记15——MDS">
 <meta property="og:url" content="http://rvdsd.top/2018/06/26/BioStatistics/生物统计-StatQuest学习笔记15-MDS/index.html">
 <meta property="og:site_name" content="RVDSD的个人笔记本">
-<meta property="og:description" content="前言——主要内容 这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。 MDS MDS的分类 MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Met">
+<meta property="og:description" content="前言——主要内容这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。 MDSMDS的分类MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Metric Mul">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180626/I0JJiH2m9m.png?imageslim">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180626/hfJBB7E01k.png?imageslim">
@@ -124,7 +124,7 @@
 <meta property="og:updated_time" content="2018-07-07T13:11:54.670Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="StatQuest学习笔记15——MDS">
-<meta name="twitter:description" content="前言——主要内容 这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。 MDS MDS的分类 MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Met">
+<meta name="twitter:description" content="前言——主要内容这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。 MDSMDS的分类MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Metric Mul">
 <meta name="twitter:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180626/I0JJiH2m9m.png?imageslim">
 
 
@@ -373,7 +373,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,486
+                  3,452
                 </span>
               
 
@@ -410,175 +410,80 @@
       
 
       
-        <h2 id="前言主要内容">前言——主要内容</h2>
-<p>这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。</p>
-<h2 id="mds">MDS</h2>
-<h3 id="mds的分类">MDS的分类</h3>
-<p>MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Metric Multidimensional scaling）和非度量MDS（Non-metric Multidimensional scaling），其中非度量MDS也称为经典（Classical）MDS，也叫做主坐标分析（principal coordinate analysis,PCoA），如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/I0JJiH2m9m.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="mds的基本思想">MDS的基本思想</h3>
-<p>为了更方便地理解MDS，我们还是像介绍PCA那些，先讲一个比较简单的例子，例如，我们在下面的图形中，我们先看一群绿色的点，把它们当成是一群正常的细胞（当然了，如果你不是做生物的，你也可以把它们视为一群人，或一批汽车，或者城市等），如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/hfJBB7E01k.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+        <h2 id="前言——主要内容"><a href="#前言——主要内容" class="headerlink" title="前言——主要内容"></a>前言——主要内容</h2><p>这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。</p>
+<h2 id="MDS"><a href="#MDS" class="headerlink" title="MDS"></a>MDS</h2><h3 id="MDS的分类"><a href="#MDS的分类" class="headerlink" title="MDS的分类"></a>MDS的分类</h3><p>MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Metric Multidimensional scaling）和非度量MDS（Non-metric Multidimensional scaling），其中非度量MDS也称为经典（Classical）MDS，也叫做主坐标分析（principal coordinate analysis,PCoA），如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/I0JJiH2m9m.png?imageslim" alt="mark"></p>
+<h3 id="MDS的基本思想"><a href="#MDS的基本思想" class="headerlink" title="MDS的基本思想"></a>MDS的基本思想</h3><p>为了更方便地理解MDS，我们还是像介绍PCA那些，先讲一个比较简单的例子，例如，我们在下面的图形中，我们先看一群绿色的点，把它们当成是一群正常的细胞（当然了，如果你不是做生物的，你也可以把它们视为一群人，或一批汽车，或者城市等），如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/hfJBB7E01k.png?imageslim" alt="mark"></p>
 <p>虽然这群细胞看起来比较像，但实际上，它们有可能不同，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/eHbm8Em37b.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/eHbm8Em37b.png?imageslim" alt="mark"></p>
 <p>当然了，还有可能像这个样子，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/0lCjI2f6Lj.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/0lCjI2f6Lj.png?imageslim" alt="mark"></p>
 <p>但问题就在于，仅从直观的角度来看，我们不太容易区分它们，但我们可以通过类似RNA-Seq这样的手段来发现这些细胞有哪些基因是活跃的，这样就可以理解这些细胞的具体功能，如果这是一群人，我们可以测量他们的血压，身高等数据，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/FDeK8BdJHd.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/FDeK8BdJHd.png?imageslim" alt="mark"></p>
 <p>我们就当它们是细胞，这是测完RNA-seq的一些数据，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/jB1584cJhj.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/jB1584cJhj.png?imageslim" alt="mark"></p>
 <p>其中，第1行表示的是样本，第1列是基因名，其余的部分是不同样本某个基因的表达水平，此时，如果根据我们前面介绍的PCA法对这些数据进行分析，那么我们就能把不同样本之间的相互关系转换到一个二维的坐标图上，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/f4d0ahIb0G.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/f4d0ahIb0G.png?imageslim" alt="mark"></p>
 <p>那些高度相关的样本就会聚集成一块，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/g4jkaDBc2E.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/g4jkaDBc2E.png?imageslim" alt="mark"></p>
 <p>此时，我们再回到MDS和PCoA上来，这两种方法非常像PCA，只是它们不是把样本之间的相互关系转换成二维坐标，而是把不同样本之间的距离转换成二维坐标，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/mC7Gk6cjhe.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/mC7Gk6cjhe.png?imageslim" alt="mark"></p>
 <p>为了进行MDS和PCoA分析，我们可以计算两两样本之间的距离，就像下面的这个样子，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/Cge1Ee7eGE.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/Cge1Ee7eGE.png?imageslim" alt="mark"></p>
 <p>为了方便理解，我们此时就只计算一下Cell1和Cell2的距离，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/24Kh9L38dI.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="欧氏距离">欧氏距离</h3>
-<p>一种常见的计算两个样本之间距离的方法是欧氏距离(Euclidean Distance) 计算法，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/CgIJBkAlK0.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/24Kh9L38dI.png?imageslim" alt="mark"></p>
+<h3 id="欧氏距离"><a href="#欧氏距离" class="headerlink" title="欧氏距离"></a>欧氏距离</h3><p>一种常见的计算两个样本之间距离的方法是欧氏距离(Euclidean Distance) 计算法，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/CgIJBkAlK0.png?imageslim" alt="mark"></p>
 <p>如果此时我们只有两个基因，就像下面的这个样子，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/3i5k85mjCH.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/3i5k85mjCH.png?imageslim" alt="mark"></p>
 <p>为了计算这两个样本之间的欧氏距离，我们可以用线段来表示它们基因之间的距离，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/DhFbhicIB2.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/DhFbhicIB2.png?imageslim" alt="mark"></p>
 <p>然后通过勾股定理，计算出欧氏距离，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/IEekfl2k6k.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/IEekfl2k6k.png?imageslim" alt="mark"></p>
 <p>如果我们有更多的基因，那么就按照这种方法，求出两个样本中，相同基因的差值，再求其平方和的平方根，像下面的这个样子：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/F7CfmEd961.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/F7CfmEd961.png?imageslim" alt="mark"></p>
 <p>一旦我们计算好了不同样本之间的欧氏距离，那么我们就可以把这些样本绘制到一个二维坐标图上，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/IiLHe9K2C6.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/IiLHe9K2C6.png?imageslim" alt="mark"></p>
 <p>利用欧氏距离（Euclidean Distance）来进行的MDS和PCoA分析的一个局限就是，最终生成的二维坐标轴基本上与PCA生成的二维坐标图是一样的，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/ElAbHaGDm2.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/ElAbHaGDm2.png?imageslim" alt="mark"></p>
 <p>换句话讲，这种基于最小线性距离的聚类（clustering）与最大化线性相关是一样的，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/cFlFHDKgA4.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/cFlFHDKgA4.png?imageslim" alt="mark"></p>
 <p>不过，计算两两样本之间的距离并非只有欧氏距离（Euclidean Distance）一种方法，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180627/1HJLh9KccE.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="其他距离方法">其他距离方法</h3>
-<p>例如，另外一种计算两两样本之间的距离方法就是计算基因间差值的log转换的平均值，例如在下面的案例中，对于Cell1和Cell2的Gene1，它经过log转换后的数值就是<code>log(3/0.25)</code>，同理，Gene2和Gene 8的计算也同样如此，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/clhfD69k9l.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180627/1HJLh9KccE.png?imageslim" alt="mark"></p>
+<h3 id="其他距离方法"><a href="#其他距离方法" class="headerlink" title="其他距离方法"></a>其他距离方法</h3><p>例如，另外一种计算两两样本之间的距离方法就是计算基因间差值的log转换的平均值，例如在下面的案例中，对于Cell1和Cell2的Gene1，它经过log转换后的数值就是<code>log(3/0.25)</code>，同理，Gene2和Gene 8的计算也同样如此，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/clhfD69k9l.png?imageslim" alt="mark"></p>
 <p>经过计算，再取它们的绝对值，最终我们计算出这些数值的平均值，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/6H99LKLa7I.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/6H99LKLa7I.png?imageslim" alt="mark"></p>
 <p>最终我们看一下分别使用了欧氏距离的MDS图（左侧）和使用了差异倍数log转换的MDS图的坐标轴（右侧），如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/icHHd1gKJ9.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/icHHd1gKJ9.png?imageslim" alt="mark"></p>
 <p>不过，在生物学家眼中，通常会选择表达差异倍数的log转换值来计算两两样本之间的距离，因为他们研究的基因通常是成倍变化的，这样用表达差异倍数的log转换会比较合适，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/lA62j8Bdd8.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/lA62j8Bdd8.png?imageslim" alt="mark"></p>
 <p>我们常见的计算样本间距离的方法有：曼哈顿距离（Manhattan Distance）、汉明距离（Hamming Distance）、大圆距离（Great Circle Distance）等，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/baE8kdC9bK.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="总结">总结</h2>
-<p>PCA构建二维坐标图的方法基础是不同样本之间的相关性，而MDS和PCoA构建二维坐标图的方法基础则是基于不同样本之间的距离，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/30JEFaj9hb.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/baE8kdC9bK.png?imageslim" alt="mark"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>PCA构建二维坐标图的方法基础是不同样本之间的相关性，而MDS和PCoA构建二维坐标图的方法基础则是基于不同样本之间的距离，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/30JEFaj9hb.png?imageslim" alt="mark"></p>
 <p>PCA的计算流程为：计算样本间的相关性 -&gt; 复杂数学运算（主要是特征值分解） -&gt; 绘图、主成分变异，Loading Scores。</p>
 <p>而MDS和PCoA的计算流程与PCA的计算流程的不同之处就在于，第一步是计算样本间的距离，其余的部分与PCA的计算差异不大。</p>
-<h2 id="r与mdspcoa">R与MDS/PCoA</h2>
-<h3 id="生成模拟数据集">生成模拟数据集</h3>
-<p>在使用R进行MDS/PCoA分析之前，我们还需要使用R来生成一些随机数据，如下所示：</p>
+<h2 id="R与MDS-PCoA"><a href="#R与MDS-PCoA" class="headerlink" title="R与MDS/PCoA"></a>R与MDS/PCoA</h2><h3 id="生成模拟数据集"><a href="#生成模拟数据集" class="headerlink" title="生成模拟数据集"></a>生成模拟数据集</h3><p>在使用R进行MDS/PCoA分析之前，我们还需要使用R来生成一些随机数据，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line">data.matrix &lt;- matrix(nrow=<span class="number">100</span>, ncol=<span class="number">10</span>)</div><div class="line"><span class="comment"># generate some fake data</span></div><div class="line"><span class="comment"># This dataset consists of a matrix with 10 columns, corresponding to 10 samples</span></div><div class="line"><span class="comment"># and 100 rows, corresponding to measurements from 100 genes</span></div><div class="line"></div><div class="line">colnames(data.matrix) &lt;- c(</div><div class="line">  paste(<span class="string">"wt"</span>, <span class="number">1</span>:<span class="number">5</span>, sep=<span class="string">""</span>),</div><div class="line">  paste(<span class="string">"ko"</span>, <span class="number">1</span>:<span class="number">5</span>, sep=<span class="string">""</span>))</div><div class="line"></div><div class="line">rownames(data.matrix) &lt;- paste(<span class="string">"gene"</span>, <span class="number">1</span>:<span class="number">100</span>, sep=<span class="string">""</span>)</div><div class="line"></div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">100</span>)&#123;</div><div class="line">  wt.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size = <span class="number">1</span>))</div><div class="line">  ko.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size = <span class="number">1</span>))</div><div class="line"></div><div class="line">  data.matrix[i,] &lt;- c(wt.values, ko.values)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>最终生成的数据如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data.matrix)</div><div class="line">      wt1 wt2 wt3 wt4 wt5 ko1 ko2 ko3 ko4 ko5</div><div class="line">gene1 <span class="number">257</span> <span class="number">263</span> <span class="number">246</span> <span class="number">246</span> <span class="number">233</span> <span class="number">993</span> <span class="number">945</span> <span class="number">961</span> <span class="number">931</span> <span class="number">958</span></div><div class="line">gene2 <span class="number">822</span> <span class="number">888</span> <span class="number">866</span> <span class="number">845</span> <span class="number">855</span> <span class="number">232</span> <span class="number">210</span> <span class="number">217</span> <span class="number">209</span> <span class="number">225</span></div><div class="line">gene3 <span class="number">122</span> <span class="number">127</span> <span class="number">139</span> <span class="number">156</span> <span class="number">140</span> <span class="number">370</span> <span class="number">336</span> <span class="number">366</span> <span class="number">371</span> <span class="number">370</span></div><div class="line">gene4 <span class="number">812</span> <span class="number">806</span> <span class="number">874</span> <span class="number">860</span> <span class="number">896</span> <span class="number">918</span> <span class="number">934</span> <span class="number">963</span> <span class="number">939</span> <span class="number">982</span></div><div class="line">gene5 <span class="number">925</span> <span class="number">870</span> <span class="number">845</span> <span class="number">931</span> <span class="number">921</span> <span class="number">583</span> <span class="number">582</span> <span class="number">547</span> <span class="number">539</span> <span class="number">546</span></div><div class="line">gene6 <span class="number">646</span> <span class="number">611</span> <span class="number">644</span> <span class="number">676</span> <span class="number">644</span> <span class="number">535</span> <span class="number">590</span> <span class="number">530</span> <span class="number">537</span> <span class="number">551</span></div></pre></td></tr></table></figure>
-<h3 id="pca分析">PCA分析</h3>
-<p>为了比较MDS/PCoA分析和PCA分析的区别，在这里，我们先进行一下PCA的分析，代码跟上一篇笔记的PCA分析中的代码类似，如下所示：</p>
+<h3 id="PCA分析"><a href="#PCA分析" class="headerlink" title="PCA分析"></a>PCA分析</h3><p>为了比较MDS/PCoA分析和PCA分析的区别，在这里，我们先进行一下PCA的分析，代码跟上一篇笔记的PCA分析中的代码类似，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">pca &lt;- prcomp(t(data.matrix), scale = <span class="literal">TRUE</span>, center=<span class="literal">TRUE</span>)</div><div class="line">pca.var &lt;- pca$sdev^<span class="number">2</span></div><div class="line">pca.var.per &lt;- round(pca.var/sum(pca.var)*<span class="number">100</span>, <span class="number">1</span>)</div><div class="line">pca.var.per</div><div class="line">pca.data &lt;- data.frame(Sample=rownames(pca$x),</div><div class="line">                       X=pca$x[,<span class="number">1</span>],</div><div class="line">                       Y=pca$x[,<span class="number">2</span>])</div><div class="line">pca.data</div></pre></td></tr></table></figure>
 <p>结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt; pca.var.per</div><div class="line"> [<span class="number">1</span>] <span class="number">87.8</span>  <span class="number">3.3</span>  <span class="number">2.6</span>  <span class="number">1.5</span>  <span class="number">1.4</span>  <span class="number">1.2</span>  <span class="number">0.8</span>  <span class="number">0.8</span>  <span class="number">0.6</span>  <span class="number">0.0</span></div><div class="line">&gt; pca.data &lt;- data.frame(Sample=rownames(pca$x),</div><div class="line">+                        X=pca$x[,<span class="number">1</span>],</div><div class="line">+                        Y=pca$x[,<span class="number">2</span>])</div><div class="line">&gt; pca.data</div><div class="line">    Sample         X          Y</div><div class="line">wt1    wt1 -<span class="number">8.698916</span>  <span class="number">1.8065989</span></div><div class="line">wt2    wt2 -<span class="number">8.724745</span> -<span class="number">2.5129243</span></div><div class="line">wt3    wt3 -<span class="number">8.848156</span>  <span class="number">0.1415564</span></div><div class="line">wt4    wt4 -<span class="number">9.161110</span>  <span class="number">1.2735904</span></div><div class="line">wt5    wt5 -<span class="number">8.993328</span> -<span class="number">0.7037979</span></div><div class="line">ko1    ko1  <span class="number">9.387947</span>  <span class="number">0.9745217</span></div><div class="line">ko2    ko2  <span class="number">9.093852</span> -<span class="number">1.2375433</span></div><div class="line">ko3    ko3  <span class="number">8.764754</span>  <span class="number">1.6803429</span></div><div class="line">ko4    ko4  <span class="number">8.584933</span>  <span class="number">1.6705990</span></div><div class="line">ko5    ko5  <span class="number">8.594769</span> -<span class="number">3.0929438</span></div></pre></td></tr></table></figure>
 <p>绘制PCA图，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ggplot(data=pca.data, aes(x=X, y=Y, label=Sample))+</div><div class="line">  geom_text() +</div><div class="line">  xlab(paste(<span class="string">"PC1 - "</span>, pca.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"PC2 - "</span>, pca.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  theme_bw()+</div><div class="line">  ggtitle(<span class="string">"My PCA Graph"</span>)</div></pre></td></tr></table></figure>
 <p>最终图形如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/EBjkj14JCd.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/EBjkj14JCd.png?imageslim" alt="mark"></p>
 <p>其中PC1占据了总变异的87.7%，PC2占据了总变异的3.3%。另外，在图上我们可以看出，wt组都位于左侧，ko组都位于右侧，它们主要是被PC1区分了开来。</p>
-<h3 id="mdspcoa分析">MDS/PCoA分析</h3>
-<p>第一步，构建距离距离，使用<code>dist()</code>函数，如下所示：</p>
+<h3 id="MDS-PCoA分析"><a href="#MDS-PCoA分析" class="headerlink" title="MDS/PCoA分析"></a>MDS/PCoA分析</h3><p>第一步，构建距离距离，使用<code>dist()</code>函数，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">distance.matrix &lt;- dist(scale(t(data.matrix), center=<span class="literal">TRUE</span>, scale=<span class="literal">TRUE</span>),</div><div class="line">                        method=<span class="string">"euclidean"</span>)</div><div class="line"><span class="comment"># parameter of method has 6 types different distnace to choose</span></div></pre></td></tr></table></figure>
 <p>第二步：在距离矩阵的基础上进行多维尺度变换，这里使用<code>cmdscale()</code>函数，这个函数的名称比较奇怪，其实它是Classical Muti-Dimensional Scaling的缩写，代码如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.stuff &lt;- cmdscale(distance.matrix, eig=<span class="literal">TRUE</span>, x.ret=<span class="literal">TRUE</span>)</div><div class="line"><span class="comment"># eig=TRUE willl return eigen values</span></div></pre></td></tr></table></figure>
 <p>其中使用<code>eig=TRUE</code>会返回特征值，用这些特征来计算最终MDS图中的每个坐标占距离矩阵总变异的比例。<code>x.ret=TRUE</code>用于表示是否返回双中心对称的距离矩阵。如果使用<code>eigen()</code>函数替代<code>cmdscale()</code>函数来演示做MDS分析时，这就比较有用（不太理解这一段的意思），如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/LLdkJfEAhl.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/LLdkJfEAhl.png?imageslim" alt="mark"></p>
 <p>第三步：计算MDS图中的每个坐标占总变异的比例，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.var.per &lt;- round(mds.stuff$eig/sum(mds.stuff$eig)*<span class="number">100</span>,<span class="number">1</span>)</div><div class="line">mds.var.per</div></pre></td></tr></table></figure>
 <p>结果如下所示：</p>
@@ -586,23 +491,13 @@
 <p>第四步：绘图，代码如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">mds.values &lt;- mds.stuff$points</div><div class="line">mds.data &lt;- data.frame(Sample=rownames(mds.values),</div><div class="line">                       X=mds.values[,<span class="number">1</span>],</div><div class="line">                       Y=mds.values[,<span class="number">2</span>])</div><div class="line"></div><div class="line">ggplot(data=mds.data, aes(x=X, y=Y, label=Sample))+</div><div class="line">  geom_text() +</div><div class="line">  xlab(paste(<span class="string">"MDS1 - "</span>, mds.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"MDS2 - "</span>, mds.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  theme_bw()+</div><div class="line">  ggtitle(<span class="string">"MDS plot using Euclidean distance"</span>)</div></pre></td></tr></table></figure>
 <p>最终图形如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/JCL9LbbDKe.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/JCL9LbbDKe.png?imageslim" alt="mark"></p>
 <p>从MDS的这个图形中我们可以看出来，它的结果与PCA比较类似，都是wt组位于左侧，ko组位于右侧，其中MDS1所占总变异的87.8%，MDS2占总变异的3.3%。</p>
 <p>实地上，PCA的图与MDS的图不仅看上去相似，实际上它们是一样的，我们把PCA的图与MDS的图放一起来比较看一下：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/amK4Ik0c5H.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/amK4Ik0c5H.png?imageslim" alt="mark"></p>
 <p>我生成的图形与教程中不太一样，教程中的这两张图基本上是一样的，并且发现，貌似MDS中的点的位置正好与PCA中的相应点的位置正好相反，此时，还不清楚怎么解决，先放这里。</p>
-<h4 id="使用其它的距离">使用其它的距离</h4>
-<p>前面使用的欧氏距离，此时我们使用一下其它的距离，例如表达差异的log值转换，其实对于基因表达差异的常用分析，通常是用<code>edgeR</code>来完成的，此处我们使用<code>plotMDS()</code>函数进行表达差异的log值计算，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/3L3i4J7d75.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<h4 id="使用其它的距离"><a href="#使用其它的距离" class="headerlink" title="使用其它的距离"></a>使用其它的距离</h4><p>前面使用的欧氏距离，此时我们使用一下其它的距离，例如表达差异的log值转换，其实对于基因表达差异的常用分析，通常是用<code>edgeR</code>来完成的，此处我们使用<code>plotMDS()</code>函数进行表达差异的log值计算，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/3L3i4J7d75.png?imageslim" alt="mark"></p>
 <p>第一步：计算每个基因表达是不是的log2值，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">log2.data.matrix &lt;- log2(data.matrix)</div></pre></td></tr></table></figure>
 <p>由于差异倍数的log转换值的平均值并不是一种距离度量，无法直接被<code>dist()</code>函数调用，因此我们需要手动来计算距离，下面的代码是创建一个空矩阵，如下所示：</p>
@@ -610,10 +505,7 @@
 <p>log2.distance.matrix的这个矩阵如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; log2.distance.matrix</div><div class="line">    wt1 wt2 wt3 wt4 wt5 ko1 ko2 ko3 ko4 ko5</div><div class="line">wt1   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt2   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt3   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt4   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt5   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko1   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko2   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko3   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko4   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko5   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div></pre></td></tr></table></figure>
 <p>然后，向这个矩阵填表达差异倍数log转换值绝对值平均值，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/59l2GaGhBH.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/59l2GaGhBH.png?imageslim" alt="mark"></p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:ncol(log2.distance.matrix))&#123;</div><div class="line">  <span class="keyword">for</span>(j <span class="keyword">in</span> <span class="number">1</span>:i)&#123;</div><div class="line">    log2.distance.matrix[i,j]&lt;-</div><div class="line">      mean(abs(log2.data.matrix[,i] - log2.data.matrix[,j]))</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>填充后的矩阵如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; log2.distance.matrix</div><div class="line">           wt1       wt2        wt3        wt4      wt5        ko1        ko2</div><div class="line">wt1 <span class="number">0.00000000</span> <span class="number">0.0000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt2 <span class="number">0.11484382</span> <span class="number">0.0000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt3 <span class="number">0.09904503</span> <span class="number">0.1019653</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt4 <span class="number">0.09221168</span> <span class="number">0.1037076</span> <span class="number">0.09493001</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt5 <span class="number">0.09885778</span> <span class="number">0.1108717</span> <span class="number">0.09948529</span> <span class="number">0.09023129</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">ko1 <span class="number">1.31334287</span> <span class="number">1.2943370</span> <span class="number">1.29838285</span> <span class="number">1.29338723</span> <span class="number">1.282153</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">ko2 <span class="number">1.29918744</span> <span class="number">1.2802797</span> <span class="number">1.28559603</span> <span class="number">1.28138419</span> <span class="number">1.268754</span> <span class="number">0.09949390</span> <span class="number">0.00000000</span></div><div class="line">ko3 <span class="number">1.29038890</span> <span class="number">1.2721498</span> <span class="number">1.27904237</span> <span class="number">1.27301615</span> <span class="number">1.263254</span> <span class="number">0.09166573</span> <span class="number">0.09141794</span></div><div class="line">ko4 <span class="number">1.30741667</span> <span class="number">1.2850593</span> <span class="number">1.29054531</span> <span class="number">1.28755635</span> <span class="number">1.273766</span> <span class="number">0.09707109</span> <span class="number">0.09566890</span></div><div class="line">ko5 <span class="number">1.29516621</span> <span class="number">1.2726247</span> <span class="number">1.27697549</span> <span class="number">1.27384192</span> <span class="number">1.260347</span> <span class="number">0.10435400</span> <span class="number">0.10674809</span></div><div class="line">           ko3        ko4 ko5</div><div class="line">wt1 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt2 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt3 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt4 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt5 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko1 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko2 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko3 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko4 <span class="number">0.08960051</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko5 <span class="number">0.10106993</span> <span class="number">0.09935345</span>   <span class="number">0</span></div></pre></td></tr></table></figure>
@@ -630,15 +522,9 @@
 <p>此时，使用ggplot绘图，代码如下：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ggplot(data=mds.data, aes(x=X, y=Y, label=Sample)) +</div><div class="line">  geom_text()+</div><div class="line">  theme_bw()+</div><div class="line">  xlab(paste(<span class="string">"MDS1 - "</span>, mds.var.per[<span class="number">1</span>],<span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"MDS2 - "</span>, mds.var.per[<span class="number">2</span>],<span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ggtitle(<span class="string">"MDS plot using avg(logFC) as the distance"</span>)</div></pre></td></tr></table></figure>
 <p>图形如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/H581CBICC5.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/H581CBICC5.png?imageslim" alt="mark"></p>
 <p>此时，我们把利用欧氏距离绘制的MDS图和表达差异log转换后的MDS图比较一下，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/hL1BmlhhEj.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180626/hL1BmlhhEj.png?imageslim" alt="mark"></p>
 <p>从上图中可以发现，这两个图比较相似，但是不一样。我们看一下两张图的坐标轴，右侧MDS-1的是99.1%，左图是87.8%，也就是说使用了log转换后的表达倍数差异值所占总变异的比例更高。</p>
 
       
@@ -661,9 +547,9 @@
           
             <a href="/tags/统计基础/" <i class="fa fa-tag"></i> 统计基础</a>
           
-            <a href="/tags/聚类方法/" <i class="fa fa-tag"></i> 聚类方法</a>
-          
             <a href="/tags/MDS/" <i class="fa fa-tag"></i> MDS</a>
+          
+            <a href="/tags/聚类方法/" <i class="fa fa-tag"></i> 聚类方法</a>
           
         </div>
       
@@ -769,7 +655,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">125</span>
+                  <span class="site-state-item-count">126</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -780,7 +666,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -826,7 +712,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言主要内容"><span class="nav-number">1.</span> <span class="nav-text">前言——主要内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mds"><span class="nav-number">2.</span> <span class="nav-text">MDS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mds的分类"><span class="nav-number">2.1.</span> <span class="nav-text">MDS的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mds的基本思想"><span class="nav-number">2.2.</span> <span class="nav-text">MDS的基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#欧氏距离"><span class="nav-number">2.3.</span> <span class="nav-text">欧氏距离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他距离方法"><span class="nav-number">2.4.</span> <span class="nav-text">其他距离方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#r与mdspcoa"><span class="nav-number">4.</span> <span class="nav-text">R与MDS/PCoA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成模拟数据集"><span class="nav-number">4.1.</span> <span class="nav-text">生成模拟数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pca分析"><span class="nav-number">4.2.</span> <span class="nav-text">PCA分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mdspcoa分析"><span class="nav-number">4.3.</span> <span class="nav-text">MDS/PCoA分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用其它的距离"><span class="nav-number">4.3.1.</span> <span class="nav-text">使用其它的距离</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言——主要内容"><span class="nav-number">1.</span> <span class="nav-text">前言——主要内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MDS"><span class="nav-number">2.</span> <span class="nav-text">MDS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MDS的分类"><span class="nav-number">2.1.</span> <span class="nav-text">MDS的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MDS的基本思想"><span class="nav-number">2.2.</span> <span class="nav-text">MDS的基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#欧氏距离"><span class="nav-number">2.3.</span> <span class="nav-text">欧氏距离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他距离方法"><span class="nav-number">2.4.</span> <span class="nav-text">其他距离方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R与MDS-PCoA"><span class="nav-number">4.</span> <span class="nav-text">R与MDS/PCoA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成模拟数据集"><span class="nav-number">4.1.</span> <span class="nav-text">生成模拟数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PCA分析"><span class="nav-number">4.2.</span> <span class="nav-text">PCA分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MDS-PCoA分析"><span class="nav-number">4.3.</span> <span class="nav-text">MDS/PCoA分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用其它的距离"><span class="nav-number">4.3.1.</span> <span class="nav-text">使用其它的距离</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -881,7 +767,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共505.4k字</span>
+  <span class="post-count">博客全站共505.6k字</span>
 </div>
 
         
