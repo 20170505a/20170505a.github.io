@@ -259,6 +259,441 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/02/Linux/Linux-shell04-处理用户输入/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/02/Linux/Linux-shell04-处理用户输入/" itemprop="url">Shell学习笔记（4）——处理用户输入</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-02T12:12:54+08:00">
+                2018-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  7,003
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  30
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="命令行参数">命令行参数</h2>
+<p>脚本还可以接受一些参数。向shell脚本传递数据的最基本方法是使用命令行参数，命令行参数就像是一些常规的Linux命令一样，例如<code>head -20 file001.sh</code>，在一条命令上，head命令就能接收一个<code>-20</code>的参数，用户自己定义的脚本，也可以接收一定的参数。</p>
+<h3 id="读取参数">读取参数</h3>
+<h4 id="第1个案例读取1个参数">第1个案例：读取1个参数</h4>
+<p>bash shell会将一些称为位置参数（positional parameter）的特殊变量分配给输入到命令行中的所有参数，这也包括shell所执行的脚本名称，位于参数变量是标准的数据，其中，<code>$0</code>是程序名，<code>$1</code>是第1个参数，<code>$2</code>是第2个参数，直到第9个参数，即<code>$9</code>。下面的案例是shell脚本中使用单个命令行参数的例子。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using one command line parameter</div><div class="line"><span class="meta">#</span> </div><div class="line"></div><div class="line">factorial=1</div><div class="line"></div><div class="line">for (( number=1; number &lt;= $1;number++ )) </div><div class="line"><span class="meta">#</span> 这里的$1指的是脚本运行过程中输入的参数，在后面的运行过程中，输入5</div><div class="line"> do</div><div class="line">    factorial=$[ $factorial*$number ]</div><div class="line"> done</div><div class="line"> echo The factorial of $1 is $factorial</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test1.sh 5</div><div class="line">The factorial of 5 is 120</div></pre></td></tr></table></figure>
+<p>运行过程：第1次：factorial=1，number=1；第2次：n=2，f=2；第3次：n=3，f=6；第4次：n=4,f=24；第5次：n=5；f=120。</p>
+<h4 id="第2个案例读取2个及以上参数">第2个案例：读取2个及以上参数</h4>
+<p>如果要读取更多的参数，需要将每个参数用空格分开，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing two command line parameters</div><div class="line"><span class="meta">#</span></div><div class="line">total=$[ $1*$2 ]</div><div class="line">echo The first parameter is $1.</div><div class="line">echo The second parameter is $2.</div><div class="line">echo The total value is $total.</div></pre></td></tr></table></figure>
+<p>运行结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">The first parameter is 2.</div><div class="line">The second parameter is 5.</div><div class="line">The total value is 10.</div></pre></td></tr></table></figure></p>
+<h4 id="第3个案例使用字符串作为变量">第3个案例，使用字符串作为变量</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!bin/bash</div><div class="line"><span class="meta">#</span> testing string parameters</div><div class="line"><span class="meta">#</span></div><div class="line">echo Hello $1, glad to meet you.</div></pre></td></tr></table></figure>
+<p>运行结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test3.sh Zhang</div><div class="line">Hello Zhang, glad to meet you.</div></pre></td></tr></table></figure></p>
+<p>在这个案例中，使用了字符串作为脚本的参数，但是，如果参数中含有空格，则会出现问题，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test3.sh Zhang San</div><div class="line">Hello Zhang, glad to meet you.</div></pre></td></tr></table></figure></p>
+<p>脚本只识别了Zhang，没有识别出完整的Zhang San，因为shell脚本会把空格分隔开的字符串当成两个参数，如果要使含有空格的字符串当成一个，需要添加引号，如下所示；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test3.sh &apos;Zhang San&apos;</div><div class="line">Hello Zhang San, glad to meet you.</div></pre></td></tr></table></figure>
+<h4 id="第4个案例参数大于9个">第4个案例：参数大于9个</h4>
+<p>如果脚本需要的命令行参数大于9个，此时需要在变量数字周围加上花括号，例如<code>${``10``}</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> handling lots of paramerters</div><div class="line"><span class="meta">#</span></div><div class="line">total=$[ $&#123;10&#125;*$&#123;11&#125; ]</div><div class="line">echo The tenth parameter is $&#123;10&#125;</div><div class="line">echo The eleventh parameter is $&#123;11&#125;</div><div class="line">echo The total is $total</div></pre></td></tr></table></figure>
+<p>结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test4.sh 1 2 3 4 5 6 7 8 9 10 11 12</div><div class="line">The tenth parameter is 10</div><div class="line">The eleventh parameter is 11</div><div class="line">The total is 110</div></pre></td></tr></table></figure></p>
+<h4 id="第5个案例读取脚本名">第5个案例：读取脚本名</h4>
+<h5 id="参数的意义"><code>$0</code>参数的意义。</h5>
+<p><code>$0</code>参数用于获取shell在命令行启动的脚本，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing the $0 parameter</div><div class="line"><span class="meta">#</span></div><div class="line">echo The zero parameter is set to:$0</div></pre></td></tr></table></figure>
+<p>需要注意的是，如果使用完整路径运行脚本，则<code>$0</code>就是完整脚本，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash /home/biotest/userdata/test5.sh</div><div class="line">The zero parameter is set to:/home/biotest/userdata/test5.sh</div></pre></td></tr></table></figure>
+<h5 id="basename命令可以补充0参数的局限"><code>basename</code>命令可以补充<code>$0</code>参数的局限</h5>
+<p>如果要写一个根据脚本名来执行不同功能的脚本，则就需要注意把脚本的运行路径给剥离掉，shell中有一个命令可以考虑，即<code>basename</code>命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Using basename with the $0 parameter</div><div class="line"><span class="meta">#</span></div><div class="line">name=$(basename $0)</div><div class="line">echo</div><div class="line">echo The script name is: $name</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test5b.sh</div><div class="line">The script name is: test5b.sh</div><div class="line">biotest@ubuntu:~/userdata$ bash /home/biotest/userdata/test5b.sh</div><div class="line">The script name is: test5b.sh</div></pre></td></tr></table></figure>
+<p>从结果可以看出来，使用了<code>basename</code>命令后，即使运行脚本时输入全路径，<code>$0</code>也只是脚本的名称。</p>
+<h5 id="相对路径与绝对路径的案例">相对路径与绝对路径的案例</h5>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing a Multi-function script</div><div class="line"><span class="meta">#</span></div><div class="line">name=$(basename $0)</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $name = "addem" ]</div><div class="line">then</div><div class="line">    total=$[ $1 + $2 ]</div><div class="line"><span class="meta">#</span></div><div class="line">elif [ $name = "multem" ]</div><div class="line">then</div><div class="line">    total=$[ $1*$2 ]</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div><div class="line">echo</div><div class="line">echo The calculated value is $total</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ cp test6.sh addem</div><div class="line">biotest@ubuntu:~/userdata$ chmod u+x addem</div><div class="line">biotest@ubuntu:~/userdata$ ln -s test6.sh multem</div><div class="line">biotest@ubuntu:~/userdata$ ls -l *em</div><div class="line">-rwxrw-r-- 1 biotest biotest 224 May  1 10:48 addem</div><div class="line">lrwxrwxrwx 1 biotest biotest   8 May  1 10:48 multem -&gt; test6.sh</div><div class="line">biotest@ubuntu:~/userdata$ bash addem 2 5</div><div class="line">The calculated value is 7</div><div class="line">biotest@ubuntu:~/userdata$ sudo bash ./multem 2 5</div><div class="line">The calculated value is 10</div></pre></td></tr></table></figure>
+<p>结果解释：第一，<code>cp test6.sh addem</code>复制<code>test6.sh</code>脚本，新生成的文件命令为<code>addem</code>；第二，<code>chmod u+x addem</code>，将<code>addem</code>文件权限更改为可执行；第三，<code>ln -s test6.sh multem</code>，其中<code>ln</code>是为文件创建链接，<code>-s</code>表示软连接，可以理解为Linux的快捷方式；第四，当执行<code>addem 2 5</code>时，执行<code>total=$[ $1 + $2 ]</code>语句，如果是<code>bash ./multem 2 5</code>，则执行<code>total=$[ 41*$2 ]</code>语句。</p>
+<h4 id="测试参数">测试参数</h4>
+<p>当脚本认为参数变量中会有数据，而实际上没有时，脚本就有可能会产生错误消息。通常要避免这种脚本的写法，在使用参数前一定要检查其中是否存在为数据，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ cat test7.sh</div><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing parameters befoire user</div><div class="line"><span class="meta">#</span></div><div class="line"> if [ -n "$1" ]</div><div class="line">then</div><div class="line">    echo Hello $1, gload to meet you.</div><div class="line">else</div><div class="line">    echo "Sorry you did not identify yourself."</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test7.sh Zhang</div><div class="line">Hello Zhang, gload to meet you.</div><div class="line">biotest@ubuntu:~/userdata$ bash test7.sh</div><div class="line">Sorry you did not identify yourself.</div></pre></td></tr></table></figure>
+<p>代码解释：在<code>if</code>语句中使用了<code>if [ -n &quot;$1&quot; ]</code>语句，这里的<code>-n</code>是用于判断<code>$1</code>中是否有数据。</p>
+<h2 id="特殊参数变量">特殊参数变量</h2>
+<p>在bash shell中有一些变量，它们会记录命令行参数。</p>
+<h3 id="参数统计基本用法">参数统计基本用法</h3>
+<p>bash shell有一个特殊的变量，可以记录命令行中输入了多少个参数，其中这个特殊变量就是<code>$#</code>，哦可以肝脚本中任何地方使用这个特殊的变量，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> getting the number of parameters</div><div class="line"><span class="meta">#</span></div><div class="line">echo There were $# parameters supplied.</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test8.sh</div><div class="line">There were 0 parameters supplied.</div><div class="line">biotest@ubuntu:~/userdata$ bash test8.sh 1 2 3 4 5 6 7</div><div class="line">There were 7 parameters supplied.</div><div class="line">biotest@ubuntu:~/userdata$ bash test8.sh &quot;Zhang San&quot;</div><div class="line">There were 1 parameters supplied.</div></pre></td></tr></table></figure>
+<h3 id="参数统计案例">参数统计案例</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>/bin/bash</div><div class="line"><span class="meta">#</span> Testing parameters</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $# -ne 2 ] # -ne测试命令行参数的数量，-ne是检查$#是否不等于2，ne相当于non-equal</div><div class="line">then</div><div class="line">    echo</div><div class="line">    echo Usage: test9..sh a b</div><div class="line">    echo</div><div class="line">else</div><div class="line">    total=$[ $1 + $2 ]</div><div class="line">    echo</div><div class="line">    echo The total is $total</div><div class="line">    echo</div></pre></td></tr></table></figure>
+<p>结果运行如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test9.sh </div><div class="line">Usage: test9..sh a b</div><div class="line">biotest@ubuntu:~/userdata$ bash test9.sh 10</div><div class="line">Usage: test9..sh a b</div><div class="line">biotest@ubuntu:~/userdata$ bash test9.sh 10 10 15</div><div class="line">Usage: test9..sh a b</div></pre></td></tr></table></figure>
+<p>需要注意的是，如果认为<code>$#</code>变量含有参数的总数，而变量<code>$\{$#\}</code>代表了最后一个命令行参数变量，那就会出错，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing grabbing last parameter</div><div class="line"><span class="meta">#</span></div><div class="line">echo The last parameter was $&#123;$#&#125;</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash badtest1.sh 10</div><div class="line">The last parameter was 19343</div></pre></td></tr></table></figure>
+<p>结果是19343，这说明，在花括号内不能使用美元符号，除非按照下面的方式进行修改，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Grabbing the last parameter</div><div class="line"><span class="meta">#</span></div><div class="line">params=$#</div><div class="line">echo</div><div class="line">echo The last parameter is $params</div><div class="line">echo The last parameter is $&#123;!#&#125;</div><div class="line">echo</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test10.sh 1 2 3 4 5 6</div><div class="line">The last parameter is 6</div><div class="line">The last parameter is 6</div><div class="line"></div><div class="line">biotest@ubuntu:~/userdata$ bash test10.sh</div><div class="line">The last parameter is 0</div><div class="line">The last parameter is test10.sh</div></pre></td></tr></table></figure>
+<p>从结果来看，如果将<code>$#</code>变量的值赋给了变量<code>params</code>，然后也按特殊命令行参数变量的格式（即使用<code>$/{!#/}</code>）使用了该变量，结果就能正常显示。但是，当脚本没有参数时，<code>$#</code>的值为0，params变量的值也一样，但<code>$\{!#\}</code>变量的返回值则是脚本名本身。</p>
+<h3 id="抓取所有的数据">抓取所有的数据</h3>
+<p>有时候需要抓取命令行上提供的所有参数，这时候不需要先用<code>$#</code>变量来判断命令行上有多少参数，然后再进行遍历，可以使用其他的特殊变量来解决这个问题，其中<code>$*</code>和<code>$@</code>变量可以访问所有的参数，这两个变量都能够在单个变量中存储所有的命令行参数。</p>
+<p><code>$*</code>变量会将命令行上提供的所有参数当作一个单词保存，这个单词包含了命令行中出现的每一个参数，基本上<code>$*</code>变量会将这些参数视为一个整体，而不是单独的个体。而<code>$@</code>变量会将命令行上提供的所有参数当作同一字符串中多个独立的单词，这样可以遍历所有的参数值，得到每个参数，这通常使用for命令完成。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing $* and $@</div><div class="line"><span class="meta">#</span></div><div class="line">echo</div><div class="line">echo "Using the \$* method: $*"</div><div class="line">echo</div><div class="line">echo "Using the \$@ mehtods: $@"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biostudy@ubuntu18:~/script$ bash test11.sh Zhang Li Wang</div><div class="line">Using the $* method: Zhang Li Wang</div><div class="line">Using the $@ mehtods: Zhang Li Wang</div></pre></td></tr></table></figure>
+<p>从结果来看，<code>$*</code>和<code>$@</code>在形式上并没有区别。但是下面的例子则能看出区别：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing $* and $@</div><div class="line"><span class="meta">#</span></div><div class="line">echo</div><div class="line">count=1</div><div class="line"></div><div class="line">for param in "$*"</div><div class="line">do</div><div class="line">    echo "\$ Parameter # $count=$param"</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line"></div><div class="line">count=1</div><div class="line"></div><div class="line">for param in "$@"</div><div class="line">do</div><div class="line">    echo "\$@ Parameter # $count=$param"</div><div class="line">    ecount=$[ $count+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test12.sh Zhang Li Wang</div><div class="line"></div><div class="line">$ Parameter # 1=Zhang Li Wang</div><div class="line">$@ Parameter # 1=Zhang</div><div class="line">$@ Parameter # 1=Li</div><div class="line">$@ Parameter # 1=Wang</div></pre></td></tr></table></figure>
+<p>从结果可以看出来，使用for遍历这两个特殊的变量时，<code>$*</code>会将所有参数当成单个参数，而<code>$@</code>变量会单独处理所有的参数。</p>
+<h2 id="移动变量">移动变量</h2>
+<p>bash shell中的<code>shift</code>命令可以操作命令行参数，<code>shift</code>可以根据它们的相对位置来移动命令行参数。当使用该命令时，它会将每个参数变量向左移动一个位置。因此，变量<code>$3</code>的值会移到<code>$2</code>，变量<code>$2</code>的值会移到<code>$1</code>，而变量<code>$1</code>的值则会被删除（因为<code>$0</code>的值是程序名，不会改变）。这是遍历命令行参数的一个方法，当用户不矢科有多少个参数时，可以只操作第1个参数，移动参数，然后继续操作下一个参数。看一个案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> demonstrating the shift command</div><div class="line"></div><div class="line">echo</div><div class="line">count=1</div><div class="line">while [ -n "$1" ]</div><div class="line">do</div><div class="line">    echo "Parameter #$count=$1"</div><div class="line">    count=$[ $count+1 ]</div><div class="line">    shift</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[000.DESKTOP-FS88S5S] &gt; bash test13.sh Zhang Li Wang Tian</div><div class="line"></div><div class="line">Parameter #1=Zhang</div><div class="line">Parameter #2=Li</div><div class="line">Parameter #3=Wang</div><div class="line">Parameter #4=Tian</div></pre></td></tr></table></figure>
+<p>代码及结果解释： -n 测试来检查命令行参数<code>$1</code>中是否有数据。如果不是0，就执行，一直执行到<code>$1</code>参数为0为止。也可以为shift提供一个参数，指明要移动的位置数即可，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> demonstrating a multi-positon shift</div><div class="line"><span class="meta">#</span></div><div class="line">echo "The original parameters: $*"</div><div class="line">shift 2</div><div class="line">echo "Here's the new first parameter: $1"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[000.DESKTOP-FS88S5S] &gt; bash test14.sh 1 2 3 4 5</div><div class="line">The original parameters: 1 2 3 4 5</div><div class="line">Here&apos;s the new first parameter: 3</div></pre></td></tr></table></figure>
+<p>从上述案例可知，通过使用shfit的参数可以跳过不想要的参数。</p>
+<h2 id="处理选项">处理选项</h2>
+<p>选项指的是这样的一种情况，在命令后面的短横线的单个字母 ，例如 <code>ls -a</code>，其中<code>-a</code>就是选项。</p>
+<h3 id="查找选项">查找选项</h3>
+<p>在提取每个单独参数时用<code>case</code>语句来判断某个参数是否为选项。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> extracting command line options as parameters</div><div class="line"><span class="meta">#</span></div><div class="line">echo</div><div class="line">while [ -n "$1" ]</div><div class="line">do</div><div class="line">    case "$1" in </div><div class="line">        -a) echo "Found the -a option";;</div><div class="line">        -b) echo "Found the -b option";;</div><div class="line">        -c) echo "Found the -c option";;</div><div class="line">         *) echo "$1 is not an option";;</div><div class="line">    esac</div><div class="line">    shift</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test15.sh -a -b -c -d</div><div class="line">Found the -a option</div><div class="line">Found the -b option</div><div class="line">Found the -c option</div><div class="line">-d is not an option</div></pre></td></tr></table></figure>
+<p>case语句会检查每个参数是不是有效选项。如果是的话，就运行对应case语句中的命令，无论选项按什么顺序出现在命令行上，这种方法都适用，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test15.sh -d -c -a</div><div class="line">-d is not an option</div><div class="line">Found the -c option</div><div class="line">Found the -a option</div></pre></td></tr></table></figure>
+<p>case语句在命令行参数中找到一个选项，就处理一个选项，如果命令行上的还提供了其他参数，就可以在case语句的通用情况处理部分中处理。</p>
+<h3 id="分离参数和选项">分离参数和选项</h3>
+<p>在shell脚本中同时使用选项有参数时，Linux处理这种问题的标准方式是用特殊字符，也就是双破折号（<code>--</code>）将二者分开，该字符会告诉脚本何时选项结束以及普通参数何时开始。在双破折线之后，脚本可以将剩下的命令行参数当作参数，而不是选项，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> extracting options and parameters</div><div class="line">echo</div><div class="line">while [ -n "$1" ]</div><div class="line">do</div><div class="line">    case "$1" in</div><div class="line">        -a) echo "Found the -a option";;</div><div class="line">        -b) echo "Found the -b option";;</div><div class="line">        -c) echo "Found the -c option";;</div><div class="line">        --) shift</div><div class="line">            break;;</div><div class="line">         *) echo "$1 is not an option";;</div><div class="line">    esac</div><div class="line">    shift</div><div class="line">done</div><div class="line"></div><div class="line">count=1</div><div class="line">for param in $@</div><div class="line">do</div><div class="line">   echo "Parameter #$count: $param"</div><div class="line">   count=$[ $count+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test16.sh -c -a -b test1 test2 test3</div><div class="line">Found the -c option</div><div class="line">Found the -a option</div><div class="line">Found the -b option</div><div class="line">test1 is not an option</div><div class="line">test2 is not an option</div><div class="line">test3 is not an option</div></pre></td></tr></table></figure>
+<p>当脚本遇到双破折号时，它会停止处理选项，并将剩下的参数都当作命令行参数。</p>
+<h3 id="处理带值的选项">处理带值的选项</h3>
+<p>有些选项会带上额外的参数值，例如像这样的<code>bash testing.sh -a test1 -b -c -d test2</code>，如果例行选项中带有额外的参数，脚本必须要能检测到，并且进行处理，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> extracting command line options and values</div><div class="line">echo</div><div class="line">while [ -n "$1" ]</div><div class="line">do</div><div class="line">    case "$1" in </div><div class="line">        -a) echo "Found the -a option";;</div><div class="line">        -b) param="$2"</div><div class="line">            echo "Found the -b option, with parameter value $param"</div><div class="line">           shift;;</div><div class="line">        -c) echo "Found the -c option";;</div><div class="line">        --) shift</div><div class="line">            break;;</div><div class="line">         *) echo "$1 is not an option";;</div><div class="line">     esac</div><div class="line">     shift</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test17.sh -a -b test1 -d</div><div class="line"></div><div class="line">Found the -a option</div><div class="line">Found the -b option, with parameter value test1</div><div class="line">-d is not an option</div></pre></td></tr></table></figure>
+<p>代码及结果解释：在这案例中，<code>case</code>语句定义了3个安要处理的选项，其中<code>-b</code>选项还需要一个额外的参数值，由于要处理的参数是<code>$1</code>，额外的参数值就应该位于<code>$2</code>位置上（因为所有的参数在处理完后就会被移出），只要将参数值从<code>$2</code>变量中提取出来就行，因为这个选项占了2个参数位，因此还需要<code>shift</code>命令多移动一个位置。只用这些基本的特性，整个过程就能正常工作，不管按什么顺序放置选项（但要记住包含每个选项相应的选项参数）。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test17.sh -b test1 -a -d</div><div class="line">Found the -b option, with parameter value test1</div><div class="line">Found the -a option</div><div class="line">-d is not an option</div></pre></td></tr></table></figure>
+<p>此时，shell脚本就有了处理例行选项的基本能力，但还一些限制，例如，想要多个选项放一个参数时，就像<code>ls -lh</code>这个命令这样，脚本就无法正常工作，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test17.sh -ac</div><div class="line">-ac is not an option</div></pre></td></tr></table></figure>
+<p>此时需要<code>getopt</code>命令。</p>
+<h3 id="使用getopt命令">使用getopt命令</h3>
+<h4 id="getopt命令基本用法">getopt命令基本用法</h4>
+<p><code>getopt</code>命令是一个在处理命令行选项和参数时非常方便的工具，它能够识别命令行参数，从而在脚本中解析它们时更方便。<code>getopt</code>命令可以接受一系列任意形式的命令行选项和参数，并自动将它们转换为适当的格式，它的使用方法为<code>getopt optstring parameters</code>，其中，<code>optstring</code>定义了命令行有效的选项字符，不这它义了哪些选项字母需要参数值。首先在<code>optstring</code>中列出要在脚本中用到的每个命令行选项字母，然后在每个需要参数值的选项字母后面加一个冒号，<code>getopt</code>命令会基于定义的<code>optstring</code>解析提供的参数。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ getopt ab:cd -a -b test1 -cd test2 test3</div><div class="line"> -a -b test1 -c -d -- test2 test3</div></pre></td></tr></table></figure>
+<p>optstring定义了4个有效选项字母，a、b、c和d。冒号（<code>：</code>）被放到了字母b的后面，因为b选项需要一个参数值，当<code>getopt</code>命令运行时，它会检查提供的参数列表（-a -b test1 -cd test2 test3），并基于提供的<code>optstring</code>进行解析。此时，它会自动将<code>-cd</code>选项分成两个单独的选项，并插入双破折线来分隔行中的额外参数，如果指定了一个不在<code>optstring</code>中的选项，默认情况下，<code>getopt</code>会产生一条错误消息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ getopt ab:cd -a -b test1 -cde test2 test3</div><div class="line">getopt: invalid option -- 'e'</div><div class="line"> -a -b test1 -c -d -- test2 test3</div></pre></td></tr></table></figure>
+<p>如果需要忽略这条错误消息，可以在命令后加<code>-q</code>选项，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ getopt -q ab:cd -a -b test1 -cde test2 test3</div><div class="line"> -a -b 'test1' -c -d -- 'test2' 'test3'</div></pre></td></tr></table></figure>
+<p>注意：getopt命令选项必须出现在optstring之间。</p>
+<h4 id="在脚本中使用getopt">在脚本中使用getopt</h4>
+<p>在脚本中使用<code>getopt</code>来格式化脚本所携带的任何选项或参数时，方法就是使用<code>getopt</code>命令生成的格式化后的版本替换已有的命令行选项的参数。这其中要用到<code>set</code>命令。<code>set</code>命令的选项之一就是双破折线（<code>--</code>），它会将命令行参数值的成set命令的命令行值。该方法会将原始脚本的命令行参数传给<code>getopt</code>命令，之后再将<code>getopt</code>命令的输出传给<code>set</code>命令，用<code>getopt</code>格式化后的命令行参数来替换原始的命令行参数，看起来就像这样的<code>set --$(getopt -q ab:cd &quot;$@&quot;)</code>,此时，原始命令行参数变量的值会被<code>getopt</code>命令的输出替换，而<code>getopt</code>已经格式化好了命令行参数。看一个案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Extract command line options and values with getop</div><div class="line"><span class="meta">#</span> </div><div class="line">set --$(getopt -q ab:cd "$@")</div><div class="line"><span class="meta">#</span></div><div class="line">echo </div><div class="line">while [ -n "$1" ]</div><div class="line">do</div><div class="line">    case "$1" in</div><div class="line">    -a) echo "Found the -a option";;</div><div class="line">    -b) param="$2"</div><div class="line">        echo "Found the -b option, with paraeter value $param"</div><div class="line">        shift;;</div><div class="line">    -c) echo "Found the -c option";;</div><div class="line">    --) shift</div><div class="line">        break;;</div><div class="line">     *) echo "$1 is not an option";;</div><div class="line">     esac</div><div class="line">  shift</div><div class="line">done</div><div class="line"></div><div class="line">count=1</div><div class="line">for param in "$@"</div><div class="line">do</div><div class="line">    echo "Parameter $count: $param"</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test18.sh -ac</div><div class="line">Found the -a option</div><div class="line">Found the -c option</div><div class="line">biotest@ubuntu:~/userdata$ bash test18.sh -a -b test1 -cd test2 test3 test4</div><div class="line"></div><div class="line">Found the -a option</div><div class="line">Found the -b option, with paraeter value &apos;test1&apos;</div><div class="line">Found the -c option</div><div class="line">-d is not an option</div><div class="line">Parameter 1: &apos;test2&apos;</div><div class="line">Parameter 2: &apos;test3&apos;</div><div class="line">Parameter 3: &apos;test4&apos;</div><div class="line"></div><div class="line">biotest@ubuntu:~/userdata$ bash test18.sh -a -b test1 -cd &quot;test2 test3&quot; test4</div><div class="line">Found the -a option</div><div class="line">Found the -b option, with paraeter value &apos;test1&apos;</div><div class="line">Found the -c option</div><div class="line">-d is not an option</div><div class="line">Parameter 1: &apos;test2</div><div class="line">Parameter 2: test3&apos;</div><div class="line">Parameter 3: &apos;test4</div></pre></td></tr></table></figure>
+<p>从运行结果来看，第一个与第二个没有问题，第三个出现了问题，在第三个运行过程中，参数选项其中人有<code>&quot;test2 test3&quot;</code>，用了双引号，由于<code>getopt</code>命令不擅长处理带空格和引号的参数值，它会将空格当作参数分隔符，而不是根据双引号将二者当作一个参数。此时就需要另外一个命令，即<code>getopts</code>，这个命令是在<code>getopt</code>后面加了一个<code>s</code>。</p>
+<h3 id="使用getopts命令注意后面加了s">使用getopts命令（注意后面加了s）</h3>
+<p><code>getopts</code>命令能够与已有的shell参数变量进行配合。每调用它时，它一次只处理命令行上检测到的一个参数，处理完所有的参数后，它会退回一个大于0的退出状态码，因此这个命令很适合解析命令行所有参数的循环。它的用法为<code>getopts optstring variable</code>。<code>optstring</code>中储存的是有效的选项字母，如果选项字母要求有个参数值，就要加一个冒号，要去年错误消息的话，可以在<code>optstring</code>之前加一个冒号，<code>getopts</code>命令将当前参数保存在命令行中定义的<code>variable</code>中。<code>getopts</code>命令会用到两个环境变量，如果选项需要跟一个参数值，<code>OPTARG</code>环境变量会保存这个值，<code>OPTIND</code>环境变量保存了参数列表中<code>getopts</code>正在处理的参数位置。这样能够在处理完选项之后继续处理其他命令行参数。看一个案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> simple demonstration of the getopts command</div><div class="line"><span class="meta">#</span></div><div class="line">echo</div><div class="line">while getopts :ab:c opt</div><div class="line">do</div><div class="line">    case "$opt" in </div><div class="line">        a) echo "Found the -a option";;</div><div class="line">        b) echo "Found the -b option, with value $OPTARG";;</div><div class="line">        c) echo "Found the -c option";;</div><div class="line">        *) echoi "Unknown options:$opt";;</div><div class="line">    esac</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test19.sh -ab test1 -c</div><div class="line">Found the -a option</div><div class="line">Found the -b option, with value test1</div><div class="line">Found the -c option</div></pre></td></tr></table></figure>
+<p>while语句定义了<code>getopts</code>命令，指明了要查找哪些命令选项，以及每次迭代中储存它们的变量名（<code>opt</code>）。此时<code>case</code>语句的用法有些不同，getopts命令解析命令行选项时会移除开头的单破拆线，所以在case定义中不用单破折线。getopts命令的参数值中可以包含空格，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Found the -b option, with value test1 test2</div><div class="line">Found the -a option</div></pre></td></tr></table></figure>
+<p>还可以将选项字母和参数值放在一起使用，而不用加空格，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test19.sh -abtest1</div><div class="line"></div><div class="line">Found the -a option</div><div class="line">Found the -b option, with value test1</div></pre></td></tr></table></figure>
+<p><code>getopts</code>命令能够从<code>-b</code>选项中正确解析出<code>test1</code>值。除此之外，<code>getopts</code>还能够将命令行上找到的所有未定义的选项统一输出成问号，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test19.sh -d</div><div class="line"></div><div class="line">Unknown options:?</div><div class="line">biotest@ubuntu:~/userdata$ bash test19.sh -acde</div><div class="line"></div><div class="line">Found the -a option</div><div class="line">Found the -c option</div><div class="line">Unknown options:?</div><div class="line">Unknown options:?</div></pre></td></tr></table></figure>
+<p><code>optstring</code>中未定义的选项字母会以问号形式发给代码。<code>getopts</code>命令知道何时停止处理选项，并将参数留给用户处理，在使用<code>getopts</code>处理每个选项时，它会将<code>OPTIND</code>环境变量值增一。在<code>getopts</code>完成处理时，用户可以使用<code>shift</code>命令和<code>OPTIND</code>值来移动参数，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Processing options and parameters with getopts</div><div class="line"></div><div class="line">echo </div><div class="line">while getopts :ab:cd opt</div><div class="line">do</div><div class="line">    case "$opt" in </div><div class="line">    a) echo "Found the -a option";;</div><div class="line">    b) echo "Found the -b option, with value $OPTARG";;</div><div class="line">    c) echo "Found the -c option";;</div><div class="line">    c) echo "Found the 0d option";;</div><div class="line">    *) echo "Unknown option: $opt";;</div><div class="line">    esac</div><div class="line">done</div><div class="line"></div><div class="line">shift $[ $OPTIND - 1 ]</div><div class="line"></div><div class="line">echo</div><div class="line">count=1</div><div class="line">for param in "$@"</div><div class="line">do</div><div class="line">   echo "Parameter $count: $param"</div><div class="line">   coiunt=$[ $count+1 ]</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test20.sh -a -b test1 -d test2 test3 test4</div><div class="line"></div><div class="line">Found the -a option</div><div class="line">Found the -b option, with value test1</div><div class="line">Unknown option: d</div><div class="line"></div><div class="line">Parameter 1: test2</div><div class="line">Parameter 1: test3</div><div class="line">Parameter 1: test4</div></pre></td></tr></table></figure>
+<h2 id="选项标准化">选项标准化</h2>
+<p>在Linux系统中，一些字母选项已经拥有了某种程度的标准含义，因此在写bash shell脚本时，用户自己脚本中如果要使用一些选项参数的话，最好与Linux系统中的保持一致，一些常用的linux命令选项如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>-a</td>
+<td>显示所有对象</td>
+</tr>
+<tr class="even">
+<td>-c</td>
+<td>生成一个计数</td>
+</tr>
+<tr class="odd">
+<td>-d</td>
+<td>指定一个目录</td>
+</tr>
+<tr class="even">
+<td>-e</td>
+<td>扩展一个对象</td>
+</tr>
+<tr class="odd">
+<td>-f</td>
+<td>指定读入数据的文件</td>
+</tr>
+<tr class="even">
+<td>-h</td>
+<td>显示命令的帮助信息</td>
+</tr>
+<tr class="odd">
+<td>-i</td>
+<td>忽略文本大小写</td>
+</tr>
+<tr class="even">
+<td>-l</td>
+<td>产生输出的长格式版本</td>
+</tr>
+<tr class="odd">
+<td>-n</td>
+<td>使用非交互模式（批处理）</td>
+</tr>
+<tr class="even">
+<td>-o</td>
+<td>将所有输出重定向到的</td>
+</tr>
+<tr class="odd">
+<td>-q</td>
+<td>以安静模式运行</td>
+</tr>
+<tr class="even">
+<td>-r</td>
+<td>递归地处理目录和文件</td>
+</tr>
+<tr class="odd">
+<td>-s</td>
+<td>以安静模式运行</td>
+</tr>
+<tr class="even">
+<td>-v</td>
+<td>生成详细输出</td>
+</tr>
+<tr class="odd">
+<td>-x</td>
+<td>排除某个对象</td>
+</tr>
+<tr class="even">
+<td>-y</td>
+<td>对所有问题回答yes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="获得用户输入">获得用户输入</h3>
+<p>虽然命令行选项和参数可以从脚本用户处获得输入，但还有一种情况下，需要读取用户的一些信息，例如在运行某个脚本时，需要用户输入自己的用户名。bash shell为此提供了<code>read</code>命令。</p>
+<h3 id="read的基本用法"><code>read</code>的基本用法</h3>
+<p><code>read</code>命令从标准输入（键盘）或另一个文件描述符中接受输入，在收入输入后，<code>read</code>命令会将数据放进一个变量，下面是<code>read</code>命令的一个案例。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the read command</div><div class="line"><span class="meta">#</span></div><div class="line">echo -n "Enter your name: "</div><div class="line">read name</div><div class="line">echo "Hello, $name, welcome to my program."</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>运行后结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test21.sh</div><div class="line">Enter your name: Zhang San</div><div class="line">Hello, Zhang San, welcome to my program.</div></pre></td></tr></table></figure>
+<p>代码及结果解释：生成提示的echo使用了<code>-n</code>选项，该选项不会在字符串末尾输出换行符，允许脚本用户紧跟其后输入数据，而不是下一行。<code>read</code>命令还包含了<code>-p</code>选项，可以直接在<code>read</code>命令行指定指示符，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the read -p option</div><div class="line"><span class="meta">#</span></div><div class="line">read -p "Please enter your age: " age</div><div class="line">days=$[ $age*365 ]</div><div class="line">echo "That makes your over $days days old!"</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test22.sh</div><div class="line">Please enter your age: 20</div><div class="line">That makes your over 7300 days old!</div></pre></td></tr></table></figure>
+<p>代码及结果解释，在第一个例子中当有名字输入时，<code>read</code>命令会将姓和名保存在同一个变量中，<code>read</code>命令会将提示符后输入的所有数据分配给单个变量，要么用户指定多个变量。输入的每个数据值都会分配给变量列表中的下一个变量，如果变量数量不够，剩下的数据就全部分配给最后一个变量，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"></div><div class="line"><span class="meta">#</span> entering multiple varibales</div><div class="line">read -p "Enter your name:    " first last</div><div class="line">echo "Checking data for $last, $first..."</div></pre></td></tr></table></figure>
+<p>结果运行如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test23.sh</div><div class="line">Enter your name:    Zhang San</div><div class="line">Checking data for San, Zhang...</div></pre></td></tr></table></figure>
+<p>如果<code>read</code>命令行中不指定变量，<code>read</code>命令会将它收到的任何数据都放到特殊环境变量<code>REPLY</code>中。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing the REPLY Environemnt variable</div><div class="line"><span class="meta">#</span></div><div class="line">read -p "Enter uyuour name: "</div><div class="line">echo</div><div class="line">echo Hello $REPLY, welcome to my program.</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test24.sh</div><div class="line">Enter uyuour name: Zhang</div><div class="line"></div><div class="line">Hello Zhang, welcome to my program.</div></pre></td></tr></table></figure>
+<p><code>REPLY</code>环境变量会保存输入的所有数据，可以在shell脚本中像其他变量一样使用。</p>
+<h3 id="超时">超时</h3>
+<p>在使用<code>read</code>命令时需要注意，脚本很有可能会一直等着用户的输入，如果不管是否有数据输入，脚本都必须继续执行，可以使用<code>-t</code>选项来指定个计时器，<code>-t</code>选项指定了<code>read</code>命令等待输入的秒数，当计时器过期后，<code>read</code>命令会返回一个非零退出状态码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> timing the data entry</div><div class="line"><span class="meta">#</span> </div><div class="line">if read -t 5 -p "Please enter your name:  " name</div><div class="line">then</div><div class="line">    echo "Hello $name, welcome to my script"</div><div class="line">else</div><div class="line">    echo</div><div class="line">    echo "Sorry, too slow!"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test25.sh</div><div class="line">Please enter your name:  Zhang</div><div class="line">Hello Zhang, welcome to my script</div><div class="line">biotest@ubuntu:~/userdata$ bash test25.sh</div><div class="line">Please enter your name:  </div><div class="line">Sorry, too slow!</div></pre></td></tr></table></figure>
+<p>代码及结果解释：如果计时器过期，<code>read</code>命令会以非零退出状态码退出，可以使用如<code>if-then</code>语句或<code>while</code>循环这种标准的结构化语句所发生的具体情况，在这个例子中，<code>if</code>语句不成立，shell会执行else部分的命令。也可以不进行诸，让<code>read</code>命令来统计输入的字符数，当输入的字符数达到预设的字符数时，就自动退出，将输入的数据赋给变量，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> getting just one character of input</div><div class="line"><span class="meta">#</span></div><div class="line">read -n1 -p "Do you want to continue [Y/N]? " answer</div><div class="line">case $answer in </div><div class="line">Y|y) echo</div><div class="line">     echo "fine, continue on...";;</div><div class="line">N|n) echo</div><div class="line">     echo OK, goodbye</div><div class="line">     exit;;</div><div class="line">esac</div><div class="line">echo "This is the end of the script"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test26.sh</div><div class="line">Do you want to continue [Y/N]? Y</div><div class="line">fine, continue on...</div><div class="line">This is the end of the script</div><div class="line">biotest@ubuntu:~/userdata$ bash test26.sh</div><div class="line">Do you want to continue [Y/N]? n</div><div class="line">OK, goodbye</div></pre></td></tr></table></figure>
+<p>在这个案例中，将<code>-n选项</code>和值<code>1</code>一起使用，告诉<code>read</code>命令在接受单个字符后退出，只要按下单个字符回答后，<code>read</code>命令就会接受输入并将它传给变量，无需按回车键。</p>
+<h3 id="隐藏方式读取">隐藏方式读取</h3>
+<p>有时候需要从脚本用户处得到输入，在屏幕上显示输入信息。但有种例外，就是输入密码，需要隐藏输入的信息。在<code>read</code>命令使用时，使用<code>-s</code>选项可以避免在<code>read</code>命令中输入的数据出现在显示器上（其实数据是会显示的，只是<code>read</code>命令将文本的颜色设成了跟背景色一样），下面是一个案例。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> hiding input data from the monitor</div><div class="line"><span class="meta">#</span></div><div class="line">read -s -p "Enter your passwd:  " pass</div><div class="line">echo</div><div class="line">echo "Is your password really $pass?"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ bash test27.sh</div><div class="line">Enter your passwd:  </div><div class="line">Is your password really dsfdf?</div></pre></td></tr></table></figure>
+<p>输入提示符输入的数据不会出现在屏幕上，但会赋值给变量，以便在脚本中使用。</p>
+<h3 id="从文件中读取数据">从文件中读取数据</h3>
+<p><code>read</code>可以用于读取文件中的数据，每次调用<code>read</code>命令时，它就会从文件中读取一行文本。当文件中再没有内容时，<code>read</code>命令就会退出，并返回非零退出状态码。通常使用<code>cat</code>命令将数据中的文件传给含有<code>read</code>命令的<code>while</code>命令，看一个案例。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> reading data from a file</div><div class="line"></div><div class="line">count=1</div><div class="line">cat test|while read line</div><div class="line">do</div><div class="line">    echo "Line $count: $line"</div><div class="line">    count=$[ $count+1 ]</div><div class="line">done</div><div class="line">echo "Finished processing the file"</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/userdata$ cat test</div><div class="line">The quick brown dog jumps over the lazy fox.</div><div class="line">This is a test, this is only a test.</div><div class="line">O Romeo, Romeo! Wherefore art thou Romeo?</div></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/01/Linux/Linux-shell03-for、while和until语句/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4157,269 +4592,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/05/Python/Python学习笔记（5）-数据类型之集合/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/05/Python/Python学习笔记（5）-数据类型之集合/" itemprop="url">Python学习笔记（5）-数据类型之集合</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-05T12:00:00+08:00">
-                2018-04-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,004
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  9
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="集合的定义">集合的定义</h2>
-<p>集合是无序可变序列，使用一对大括号（这一点和字典比较类似）作为界定符，元素之间使用逗号分隔，同一个集合内的每个元素都是唯一的，元素之间不允许重复。</p>
-<p>集合的英文是set，其特点是：</p>
-<ol style="list-style-type: decimal">
-<li>有的可变，有的不可变；元素无次充，不可重复。</li>
-<li>元组(tuple）是列表（list）和字符串（str）的杂合，集合(set）是list和dict的杂合。</li>
-<li>集合用<code>{}</code>来定义 ，其中的元素没有序列，并且集合中的元素不可重利，类似于dict的键。</li>
-<li>集合可以在原处修改。</li>
-</ol>
-<h2 id="集合的创建">集合的创建</h2>
-<h3 id="使用set进行创建">使用set()进行创建</h3>
-<p>可以使用set()直接创建集合，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s1 = set(<span class="string">"qiwsir"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s1)</div><div class="line">&#123;<span class="string">'s'</span>, <span class="string">'i'</span>, <span class="string">'r'</span>, <span class="string">'q'</span>, <span class="string">'w'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(type(s1))</div><div class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">set</span>'&gt;</span></div></pre></td></tr></table></figure>
-<p>从结果可以看出，qiwsir中有两个i，但在s1中则只有一个i，即集合中的元素不能重复，如果原来的数据中存在重复的元素，则转换为集合时就只保留一个，再看一个案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s2 = set([<span class="number">123</span>,<span class="string">"google"</span>,<span class="string">"face"</span>,<span class="string">"book"</span>,<span class="string">"facebook"</span>,<span class="string">"book"</span>])</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s2)</div><div class="line">&#123;<span class="string">'google'</span>, <span class="number">123</span>, <span class="string">'book'</span>, <span class="string">'face'</span>, <span class="string">'facebook'</span>&#125;</div></pre></td></tr></table></figure>
-<p>从结果可以看出，创建集合的时候与显示集合的时候，元素的顺序不同，这说明集合中的元素没有顺序。再看一案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s1 = set(<span class="string">"qiwsir"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s1)</div><div class="line">&#123;<span class="string">'s'</span>, <span class="string">'i'</span>, <span class="string">'r'</span>, <span class="string">'q'</span>, <span class="string">'w'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s1[<span class="number">1</span>] = [<span class="string">"I"</span>]</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">TypeError: <span class="string">'set'</span> object does <span class="keyword">not</span> support item assignment</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s1)</div><div class="line">&#123;<span class="string">'s'</span>, <span class="string">'i'</span>, <span class="string">'r'</span>, <span class="string">'q'</span>, <span class="string">'w'</span>&#125;</div></pre></td></tr></table></figure>
-<p>这说明，集合不是序列类型，不能用索引方式对其进行修改。</p>
-<p>### 直接使用大括号创建集合</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>a = &#123;<span class="number">3</span>, <span class="number">5</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>a</div><div class="line">&#123;<span class="number">3</span>, <span class="number">5</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>type(a)</div><div class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">set</span>'&gt;</span></div></pre></td></tr></table></figure>
-<p>集合中只能包含数字、字符串、元组等不可变类型（或者说可哈希）的数据，而不能包括列表、字典、集合等可变类型的数据。python提供了一个内置函数hash()来计算对象的哈希值，凡是无法计算哈希值（调用hash()函数时抛出异常）的对象都不能作为集合的元素，也不能作为字典对象的“键”。</p>
-<h2 id="集合的转换">集合的转换</h2>
-<p>类型名称函数能够实现类型的转换，例如str()可以将对象转化为字符串，用list()和set()能够将集合和列表进行转换，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s1 = set(<span class="string">"qiwsir"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s1)</div><div class="line">&#123;<span class="string">'s'</span>, <span class="string">'i'</span>, <span class="string">'r'</span>, <span class="string">'q'</span>, <span class="string">'w'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>lst = list(s1)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(lst)</div><div class="line">[<span class="string">'s'</span>, <span class="string">'i'</span>, <span class="string">'r'</span>, <span class="string">'q'</span>, <span class="string">'w'</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>lst[<span class="number">1</span>] = <span class="string">"I"</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(lst)</div><div class="line">[<span class="string">'s'</span>, <span class="string">'I'</span>, <span class="string">'r'</span>, <span class="string">'q'</span>, <span class="string">'w'</span>]</div></pre></td></tr></table></figure>
-<h2 id="集合元素的添加">集合元素的添加</h2>
-<p>集合元素的添加使用<code>add()</code>方法，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>a_set = &#123;<span class="string">'a'</span>,<span class="string">"i"</span>,<span class="string">"1"</span>,<span class="number">1</span>&#125; <span class="comment">#创建集合</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(a_set)</div><div class="line">&#123;<span class="string">'i'</span>, <span class="string">'1'</span>, <span class="string">'a'</span>, <span class="number">1</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(type(a_set)) <span class="comment">#查看对象的类型</span></div><div class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">set</span>'&gt;</span></div><div class="line"><span class="class">&gt;&gt;&gt; <span class="title">a_set</span>.<span class="title">add</span><span class="params">(<span class="string">"qiwsir"</span>)</span> # 添加一个元素</span></div><div class="line"><span class="class">&gt;&gt;&gt; <span class="title">print</span><span class="params">(a_set)</span></span></div><div class="line">&#123;1, 'a', 'i', '1', 'qiwsir'&#125;</div><div class="line">&gt;&gt;&gt;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>b_set = set(<span class="string">"python"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(type(b_set))</div><div class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">set</span>'&gt;</span></div><div class="line"><span class="class">&gt;&gt;&gt; <span class="title">print</span><span class="params">(b_set)</span></span></div><div class="line">&#123;'h', 'o', 'y', 't', 'n', 'p'&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>b_set.add(<span class="string">"test"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(b_set)</div><div class="line">&#123;<span class="string">'h'</span>, <span class="string">'o'</span>, <span class="string">'y'</span>, <span class="string">'test'</span>, <span class="string">'t'</span>, <span class="string">'n'</span>, <span class="string">'p'</span>&#125;</div></pre></td></tr></table></figure>
-<h2 id="合并集合">合并集合</h2>
-<p>update()方法用于合并另外一个集合的元素到当前集合中，如下所示： <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s1 = &#123;<span class="string">'a'</span>,<span class="string">'b'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s1)</div><div class="line">&#123;<span class="string">'a'</span>, <span class="string">'b'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s2 = &#123;<span class="string">'github'</span>,<span class="string">'qiwsir'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s2)</div><div class="line">&#123;<span class="string">'qiwsir'</span>, <span class="string">'github'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s1.update(s2)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s1)</div><div class="line">&#123;<span class="string">'github'</span>, <span class="string">'qiwsir'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="集合的运行">集合的运行</h2>
-<p>字典和集合的in操作比列表快很多。因为python字典和集合使用hash表来存储元素，因此元素查找操作非常快，这就直接决定了关键字in作用于字典和集合时比作用于列表要快得多，看一个案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> random</div><div class="line"><span class="keyword">import</span> time</div><div class="line"></div><div class="line">x = list(range(<span class="number">10000</span>))</div><div class="line"><span class="comment"># 生成列表</span></div><div class="line"></div><div class="line">y = set(range(<span class="number">10000</span>))</div><div class="line"><span class="comment"># 生成集合</span></div><div class="line"></div><div class="line">z = dict(zip(range(<span class="number">1000</span>),range(<span class="number">10000</span>)))</div><div class="line"><span class="comment"># 生成字典</span></div><div class="line"></div><div class="line">r = random.randint(<span class="number">0</span>,<span class="number">9999</span>)</div><div class="line"><span class="comment"># 生成随机数</span></div><div class="line"></div><div class="line">start = time.time()</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">9999999</span>):</div><div class="line">    r <span class="keyword">in</span> x</div><div class="line">print(<span class="string">'list, time used: '</span>,time.time() - start)</div><div class="line"></div><div class="line">start = time.time()</div><div class="line"></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">9999999</span>):</div><div class="line">    r <span class="keyword">in</span> y </div><div class="line">print(<span class="string">'set, time used: '</span>,time.time() - start)</div><div class="line"></div><div class="line">start = time.time()</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">999999999</span>):</div><div class="line">     r <span class="keyword">in</span> z</div><div class="line">print(<span class="string">'dict, time used: '</span>,time.time() - start)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>&gt;python a.py</div><div class="line">list, time used:  <span class="number">1369.371190071106</span></div><div class="line">set, time used:  <span class="number">1.289543867111206</span></div><div class="line">dict, time used:  <span class="number">95.13067197799683</span></div></pre></td></tr></table></figure>
-<h2 id="删除set中的元素">删除set中的元素</h2>
-<h3 id="pop函数">pop()函数</h3>
-<p>pop()随机删除并返回集全中的一个元素，如果集合为空，则抛出异常，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.pop()</div><div class="line"><span class="string">'b'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div></pre></td></tr></table></figure>
-<h3 id="remove方法">remove()方法</h3>
-<p>remove()方法用于删除集合中的元素，如果指定元素不存在，就抛出异常，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.remove(<span class="string">"test"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>&#125;</div></pre></td></tr></table></figure>
-<h3 id="discard方法">discard()方法</h3>
-<p>discard()方法用于从集合中删除一个特定的元素，如果元素不在集合中，则忽略该操作，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.discard(<span class="string">"test"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>&#125;</div></pre></td></tr></table></figure>
-<h3 id="remove与discard的区别">remove()与discard()的区别</h3>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.discard(<span class="string">"test"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.discard(<span class="string">"test"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>&#125;</div></pre></td></tr></table></figure>
-<p>所实现的目的与remove一样，区别在于如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.discard(<span class="string">"5"</span>)</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
-<p>运行结果：无</p>
-<p>而remove()的结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.remove(<span class="string">"5"</span>)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">KeyError: <span class="string">'5'</span>&gt;&gt;&gt; s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.remove(<span class="string">"5"</span>)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">KeyError: <span class="string">'5'</span></div></pre></td></tr></table></figure>
-<p>remove与discard的区别在于，remove在删除指定的元素时，如果此元素不在set中，则就会出错，如果是discard删除，不存在此元素时，则不返回任何值。</p>
-<h3 id="clear清除所有元素">clear()清除所有元素</h3>
-<p>clear()方法清空集合中的所有元素，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3= &#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="number">123</span>,<span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">&#123;<span class="string">'b'</span>, <span class="number">123</span>, <span class="string">'a'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(bool(s3)) <span class="comment">#有元素，则返回True</span></div><div class="line"><span class="keyword">True</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s3.clear()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s3)</div><div class="line">set()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(bool(s3)) <span class="comment"># 无元素返回False</span></div><div class="line"><span class="keyword">False</span></div></pre></td></tr></table></figure>
-<h2 id="集合冻结">集合冻结</h2>
-<p>frozenset() 返回一个冻结的集合，冻结后集合不能再添加或删除任何元素。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s4 = frozenset(<span class="string">"test000"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s4)</div><div class="line">frozenset(&#123;<span class="string">'0'</span>, <span class="string">'s'</span>, <span class="string">'e'</span>, <span class="string">'t'</span>&#125;)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s4.add(<span class="string">"python"</span>)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">AttributeError: <span class="string">'frozenset'</span> object has no attribute <span class="string">'add'</span></div></pre></td></tr></table></figure>
-<h2 id="集合的运算">集合的运算</h2>
-<h3 id="判断两个集合的从属关系">判断两个集合的从属关系</h3>
-<p>in()：元素与集合的关系可以用in来进行判断，如下所示： <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s5 = &#123;<span class="string">"123"</span>,<span class="string">"678"</span>,<span class="number">432</span>,<span class="string">'123'</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5)</div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(<span class="string">"123"</span> <span class="keyword">in</span> s5) <span class="comment"># "123"是否在集合s5中</span></div><div class="line"><span class="keyword">True</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(<span class="string">"123--"</span> <span class="keyword">in</span> s5) <span class="comment"># "123---"是否在集合s5中</span></div><div class="line"><span class="keyword">False</span></div></pre></td></tr></table></figure></p>
-<h3 id="集合与集合的关系">集合与集合的关系</h3>
-<p>集合与集合的关系可以用<code>==,!=,&gt;,&lt;,issuperset,issubset</code>来表示，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s5 = &#123;<span class="string">"123"</span>,<span class="string">"678"</span>,<span class="number">432</span>,<span class="string">'123'</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5)</div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s6 = &#123;<span class="string">"543"</span>,<span class="number">123</span>,<span class="number">993</span>,<span class="string">"test001"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s6)</div><div class="line">&#123;<span class="string">'test001'</span>, <span class="number">993</span>, <span class="number">123</span>, <span class="string">'543'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s7 = &#123;<span class="string">"123"</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s7)</div><div class="line">&#123;<span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5 == s6) <span class="comment"># s5是否与s6等同</span></div><div class="line"><span class="keyword">False</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5 != s6) <span class="comment"># s5是否与s6等同</span></div><div class="line"><span class="keyword">True</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s7 &lt; s5) <span class="comment"># s7是否是s5的子集</span></div><div class="line"><span class="keyword">True</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s7.issubset(s5)) <span class="comment"># s7是否是s5的子集</span></div><div class="line"><span class="keyword">True</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5.issuperset(s7)) <span class="comment"># s5是否是s7的超集</span></div><div class="line"><span class="keyword">True</span></div></pre></td></tr></table></figure>
-<h3 id="集合求并集">集合求并集(<code>|</code>)</h3>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s5 = &#123;<span class="string">"123"</span>,<span class="string">"678"</span>,<span class="number">432</span>,<span class="string">'123'</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5)</div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s6 = &#123;<span class="string">"543"</span>,<span class="number">123</span>,<span class="number">993</span>,<span class="string">"test001"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s6)</div><div class="line">&#123;<span class="string">'test001'</span>, <span class="number">993</span>, <span class="number">123</span>, <span class="string">'543'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s7 = &#123;<span class="string">"123"</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s7)</div><div class="line">&#123;<span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5|s6) <span class="comment"># 求s5和s6的并集</span></div><div class="line">&#123;<span class="number">993</span>, <span class="string">'test001'</span>, <span class="string">'543'</span>, <span class="string">'123'</span>, <span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'test'</span>, <span class="number">123</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5.union(s7)) <span class="comment"># 求s5和s7的并集</span></div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'test'</span>, <span class="string">'123'</span>&#125;</div></pre></td></tr></table></figure>
-<h3 id="集合求交集">集合求交集(<code>&amp;</code>)</h3>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s5 = &#123;<span class="string">"123"</span>,<span class="string">"678"</span>,<span class="number">432</span>,<span class="string">'123'</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5)</div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s6 = &#123;<span class="string">"543"</span>,<span class="number">123</span>,<span class="number">993</span>,<span class="string">"test001"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s6)</div><div class="line">&#123;<span class="string">'test001'</span>, <span class="number">993</span>, <span class="number">123</span>, <span class="string">'543'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s7 = &#123;<span class="string">"123"</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s7)</div><div class="line">&#123;<span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5 &amp; s6) <span class="comment"># 求s5和s6的交集</span></div><div class="line">set()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5.intersection(s7)) <span class="comment"># 求s5和s7的交集</span></div><div class="line">&#123;<span class="string">'123'</span>, <span class="string">'test'</span>&#125;</div></pre></td></tr></table></figure>
-<h3 id="集合求差集-">集合求差集（<code>-</code>）</h3>
-<p>差集如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180519/kD5jhGlLG3.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>代码为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s5 = &#123;<span class="string">"123"</span>,<span class="string">"678"</span>,<span class="number">432</span>,<span class="string">'123'</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5)</div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'test'</span>, <span class="string">'123'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s6 = &#123;<span class="string">"543"</span>,<span class="number">123</span>,<span class="number">993</span>,<span class="string">"test001"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s6)</div><div class="line">&#123;<span class="number">993</span>, <span class="string">'test001'</span>, <span class="number">123</span>, <span class="string">'543'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s7 = &#123;<span class="string">"123"</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s7)</div><div class="line">&#123;<span class="string">'test'</span>, <span class="string">'123'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5 - s6) <span class="comment"># 求s5和s6的差集</span></div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>, <span class="string">'test'</span>, <span class="string">'123'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5.difference(s7)) <span class="comment"># 求s5和s7的差集</span></div><div class="line">&#123;<span class="number">432</span>, <span class="string">'678'</span>&#125;</div></pre></td></tr></table></figure>
-<h3 id="集合的对称差集">集合的对称差集（）</h3>
-<p>对称差集示意图如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180519/gcjJk5D08H.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>代码为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s5 = &#123;<span class="string">"123"</span>,<span class="string">"678"</span>,<span class="number">432</span>,<span class="string">'123'</span>,<span class="string">"test"</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>s8 = &#123;<span class="string">"123"</span>,<span class="string">"test"</span>,<span class="number">9999</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(s5.symmetric_difference(s8)) <span class="comment"># 求s5和s7的对称差集</span></div><div class="line">&#123;<span class="number">9999</span>, <span class="number">432</span>, <span class="string">'678'</span>&#125;</div></pre></td></tr></table></figure>
-<h2 id="集合推导式">集合推导式</h2>
-<p>Python支持集合推导式，集合推导式使用的是大括号，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>squared = &#123;x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>]&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(squared)</div><div class="line">&#123;<span class="number">1</span>, <span class="number">4</span>&#125;</div></pre></td></tr></table></figure>
-<p>再看另外一个案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>&#123;x.strip() <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="string">' he '</span>, <span class="string">'she '</span>, <span class="string">' I'</span>)&#125;</div><div class="line">&#123;<span class="string">'I'</span>, <span class="string">'he'</span>, <span class="string">'she'</span>&#125;</div><div class="line">&gt;&gt;&gt;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> random</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>x = &#123;random.randint(<span class="number">1</span>,<span class="number">500</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100</span>)&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="comment"># 生成随机数，自动去除重复元素</span></div><div class="line"><span class="meta">... </span>len(x)</div><div class="line"><span class="number">94</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>&#123;str(x) <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">10</span>)&#125;</div><div class="line">&#123;<span class="string">'2'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'0'</span>, <span class="string">'4'</span>, <span class="string">'7'</span>, <span class="string">'9'</span>, <span class="string">'8'</span>, <span class="string">'3'</span>, <span class="string">'1'</span>&#125;</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4470,7 +4642,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">139</span>
+                  <span class="site-state-item-count">140</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4566,7 +4738,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共532.5k字</span>
+  <span class="post-count">博客全站共533.9k字</span>
 </div>
 
         
