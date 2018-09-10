@@ -106,7 +106,7 @@
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180909/A22A6m3dA9.png?imageslim">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180909/gLK22c6lCJ.png?imageslim">
 <meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180909/ekdCeiBe9e.png?imageslim">
-<meta property="og:updated_time" content="2018-09-09T05:50:18.656Z">
+<meta property="og:updated_time" content="2018-09-09T10:25:51.061Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="20个R语言习题">
 <meta name="twitter:description" content="原题目 生信人的20个R语言习题。 题目代码 1. 安装R语言包 安装以下包： 1234数据包： ALL, CLL, pasilla, airway 软件包：limma，DESeq2，clusterProfiler 工具包：reshape2绘图包：ggplot2 代码如下所示： 123456789101112131415161718source(&quot;http://bioconducto">
@@ -335,8 +335,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
+                  <a href="/categories/R/" itemprop="url" rel="index">
+                    <span itemprop="name">R</span>
                   </a>
                 </span>
 
@@ -368,7 +368,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5,742
+                  5,749
                 </span>
               
 
@@ -628,7 +628,7 @@
 <h3 id="批量t检验">18.批量t检验</h3>
 <h1 id="注这里要补充一下统计学的相关知识">注：这里要补充一下统计学的相关知识。</h1>
 <p>代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">group_list</div><div class="line"><span class="comment"># [1] "progres." "stable"   "progres." "progres." "progres." "progres." "stable"  </span></div><div class="line"><span class="comment"># [8] "stable"   "progres." "stable"   "progres." "stable"   "progres." "stable"  </span></div><div class="line"><span class="comment"># [15] "stable"   "progres." "progres." "progres." "progres." "progres." "progres."</span></div><div class="line"><span class="comment"># [22] "stable"  </span></div><div class="line">gl=as.factor(group_list) </div><div class="line"><span class="comment">#将表型数据因子化</span></div><div class="line"></div><div class="line">group1 = which(group_list == levels(gl)[<span class="number">1</span>]) </div><div class="line"><span class="comment"># levels(group_list)[1]返回第一个因子progres</span></div><div class="line"><span class="comment"># 从group_list中选出progres的元素</span></div><div class="line"><span class="comment"># 用which来获取他们所在的索引</span></div><div class="line"></div><div class="line">group2 = which(group_list == levels(gl)[<span class="number">2</span>]) </div><div class="line"><span class="comment">#返回第二个因子stable</span></div><div class="line"></div><div class="line">data_t1 = data_expression[, group1] </div><div class="line"><span class="comment">#将表型为progres的样本选出来</span></div><div class="line">data_t2 = data_expression[, group2] </div><div class="line"><span class="comment">#将表型为stable的样本选出来</span></div><div class="line">data_t = cbind(data_t1, data_t2) </div><div class="line"></div><div class="line">pvals = apply(data_expression, <span class="number">1</span>, <span class="keyword">function</span>(x)&#123;</div><div class="line">  t.test(as.numeric(x)~group_list)$p.value</div><div class="line">&#125;)</div><div class="line"></div><div class="line">data_mean_1 = rowMeans(data_t1) </div><div class="line"><span class="comment">#progres是对照组</span></div><div class="line">data_means_2 = rowMeans(data_t2) </div><div class="line"><span class="comment">#stable是使用药物处理后的——处理组</span></div><div class="line">log2FC = data_means_2-data_mean_1</div><div class="line"></div><div class="line">DEG_t.test = cbind(data_mean_1, data_mean_2, log2FC, pvals, p.adj)</div><div class="line">DEG_t.test=DEG_t.test[order(DEG_t.test[,<span class="number">4</span>]),] <span class="comment">#从小到大排序</span></div><div class="line">DEG_t.test=as.data.frame(DEG_t.test)</div><div class="line">head(DEG_t.test)</div><div class="line"><span class="comment"># data_mean_1 data_mean_2     log2FC        pvals     p.adj</span></div><div class="line"><span class="comment"># 36129_at    7.875615    8.791753  0.9161377 1.629755e-05 0.2057566</span></div><div class="line"><span class="comment"># 37676_at    6.622749    7.965007  1.3422581 4.058944e-05 0.2436177</span></div><div class="line"><span class="comment"># 33791_at    7.616197    5.786041 -1.8301554 6.965416e-05 0.2436177</span></div><div class="line"><span class="comment"># 39967_at    4.456446    2.152471 -2.3039752 8.993339e-05 0.2436177</span></div><div class="line"><span class="comment"># 34594_at    5.988866    7.058738  1.0698718 9.648226e-05 0.2436177</span></div><div class="line"><span class="comment"># 32198_at    4.157971    3.407405 -0.7505660 2.454557e-04 0.3516678</span></div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">group_list</div><div class="line"><span class="comment"># [1] "progres." "stable"   "progres." "progres." "progres." "progres." "stable"  </span></div><div class="line"><span class="comment"># [8] "stable"   "progres." "stable"   "progres." "stable"   "progres." "stable"  </span></div><div class="line"><span class="comment"># [15] "stable"   "progres." "progres." "progres." "progres." "progres." "progres."</span></div><div class="line"><span class="comment"># [22] "stable"  </span></div><div class="line">gl=as.factor(group_list) </div><div class="line"><span class="comment">#将表型数据因子化</span></div><div class="line"></div><div class="line">group1 = which(group_list == levels(gl)[<span class="number">1</span>]) </div><div class="line"><span class="comment"># levels(group_list)[1]返回第一个因子progres</span></div><div class="line"><span class="comment"># 从group_list中选出progres的元素</span></div><div class="line"><span class="comment"># 用which来获取他们所在的索引</span></div><div class="line"></div><div class="line">group2 = which(group_list == levels(gl)[<span class="number">2</span>]) </div><div class="line"><span class="comment">#返回第二个因子stable</span></div><div class="line"></div><div class="line">data_t1 = data_expression[, group1] </div><div class="line"><span class="comment">#将表型为progres的样本选出来</span></div><div class="line">data_t2 = data_expression[, group2] </div><div class="line"><span class="comment">#将表型为stable的样本选出来</span></div><div class="line">data_t = cbind(data_t1, data_t2) </div><div class="line"></div><div class="line">pvals = apply(data_expression, <span class="number">1</span>, <span class="keyword">function</span>(x)&#123;</div><div class="line">  t.test(as.numeric(x)~group_list)$p.value</div><div class="line">&#125;)</div><div class="line">p.adj = p.adjust(pvals, method = <span class="string">"BH"</span>)  </div><div class="line"></div><div class="line">data_mean_1 = rowMeans(data_t1) </div><div class="line"><span class="comment">#progres是对照组</span></div><div class="line">data_mean_2 = rowMeans(data_t2) </div><div class="line"><span class="comment">#stable是使用药物处理后的——处理组</span></div><div class="line">logFC = data_mean_2-data_mean_1</div><div class="line"></div><div class="line">DEG_t.test = cbind(data_mean_1, data_mean_2, log2FC, pvals, p.adj)</div><div class="line">DEG_t.test=DEG_t.test[order(DEG_t.test[,<span class="number">4</span>]),] <span class="comment">#从小到大排序</span></div><div class="line">DEG_t.test=as.data.frame(DEG_t.test)</div><div class="line">head(DEG_t.test)</div><div class="line"><span class="comment"># data_mean_1 data_mean_2     log2FC        pvals     p.adj</span></div><div class="line"><span class="comment"># 36129_at    7.875615    8.791753  0.9161377 1.629755e-05 0.2057566</span></div><div class="line"><span class="comment"># 37676_at    6.622749    7.965007  1.3422581 4.058944e-05 0.2436177</span></div><div class="line"><span class="comment"># 33791_at    7.616197    5.786041 -1.8301554 6.965416e-05 0.2436177</span></div><div class="line"><span class="comment"># 39967_at    4.456446    2.152471 -2.3039752 8.993339e-05 0.2436177</span></div><div class="line"><span class="comment"># 34594_at    5.988866    7.058738  1.0698718 9.648226e-05 0.2436177</span></div><div class="line"><span class="comment"># 32198_at    4.157971    3.407405 -0.7505660 2.454557e-04 0.3516678</span></div></pre></td></tr></table></figure>
 <h3 id="limma">19.limma</h3>
 <p>原题描述：使用limma包对表达矩阵及样本分组信息进行差异分析，得到差异分析表格，重点看logFC和P值，画个火山图(就是logFC和-log10(P值)的散点图。)。</p>
 <h1 id="注这里需要补充一下基因芯片原理的相关知识">注：这里需要补充一下基因芯片原理的相关知识。</h1>
@@ -690,8 +690,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/09/03/Tools/热图/" rel="prev" title="热图">
-                热图 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/09/03/Tools/Venn图/" rel="prev" title="Venn图">
+                Venn图 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -773,7 +773,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">145</span>
+                  <span class="site-state-item-count">146</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -885,7 +885,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共548.3k字</span>
+  <span class="post-count">博客全站共550.2k字</span>
 </div>
 
         
