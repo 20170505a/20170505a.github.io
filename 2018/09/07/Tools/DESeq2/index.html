@@ -86,15 +86,15 @@
 <meta property="og:site_name" content="RVDSD的个人笔记本">
 <meta property="og:description" content="前言 本文参考了Jimmy的文章《用R语言的DESeq2包来对RNA-seq数据做差异分析》。使用DESeq2来做差异基因的分析，这个差异基因通常是测序公司给你的一个Excel表格。 第一步：加载包 进行差异分析需要以下的包，如果无法正常工作，需要根据系统提示下载相应的包，如下所示： 12345678910source(&quot;http://bioconductor.org/biocLite.R">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180907/B45blJIi1g.png?imageslim">
-<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180907/EE0kia2jm6.png?imageslim">
-<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180907/F2dCLl1G7d.png?imageslim">
-<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180907/Fm4gf9Bb7C.png?imageslim">
-<meta property="og:updated_time" content="2018-09-07T09:08:07.014Z">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143103.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143129.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143207.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143232.png">
+<meta property="og:updated_time" content="2019-03-02T10:25:03.371Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DESeq2">
 <meta name="twitter:description" content="前言 本文参考了Jimmy的文章《用R语言的DESeq2包来对RNA-seq数据做差异分析》。使用DESeq2来做差异基因的分析，这个差异基因通常是测序公司给你的一个Excel表格。 第一步：加载包 进行差异分析需要以下的包，如果无法正常工作，需要根据系统提示下载相应的包，如下所示： 12345678910source(&quot;http://bioconductor.org/biocLite.R">
-<meta name="twitter:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180907/B45blJIi1g.png?imageslim">
+<meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143103.png">
 
 
 
@@ -352,7 +352,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,277
+                  1,305
                 </span>
               
 
@@ -396,7 +396,7 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">source</span>(<span class="string">"http://bioconductor.org/biocLite.R"</span>) </div><div class="line">biocLite(<span class="string">"DESeq"</span>)</div><div class="line"></div><div class="line"><span class="keyword">library</span>(DESeq2)</div><div class="line"><span class="keyword">library</span>(limma)</div><div class="line"><span class="keyword">library</span>(pasilla)</div><div class="line"><span class="comment"># 需要使用到pasillaGenes这个数据集</span></div><div class="line"><span class="keyword">library</span>(DESeq)</div><div class="line"><span class="comment"># 根据系统提示，使用pasillaGenes这个数据集时需要安装DESeq包</span></div><div class="line">data(pasillaGenes)</div></pre></td></tr></table></figure>
 <h2 id="第二步提取原始表达数据">第二步：提取原始表达数据</h2>
 <p>这篇笔记使用pasillaGenes这个数据集进行演示，通过直接输入pasillaGenes，出现一系列信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">CountDataSet (storageMode: environment)</div><div class="line">assayData: <span class="number">14470</span> features, <span class="number">7</span> samples </div><div class="line">  element names: counts </div><div class="line">protocolData: none</div><div class="line">phenoData</div><div class="line">  sampleNames: treated1fb treated2fb <span class="keyword">...</span> untreated4fb (<span class="number">7</span> total)</div><div class="line">  varLabels: sizeFactor condition type</div><div class="line">  varMetadata: labelDescription</div><div class="line">featureData: none</div><div class="line">experimentData: use <span class="string">'experimentData(object)'</span></div><div class="line">  pubMedIds: <span class="number">20921232</span> </div><div class="line">Annotation:</div></pre></td></tr></table></figure>
 <p>从上面我们可以知道这些信息：</p>
 <ol style="list-style-type: decimal">
 <li>这貌似是一个储存了测序的reads数的数据集；</li>
@@ -407,8 +407,8 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># raw data</span></div><div class="line">exprSet=counts(pasillaGenes)  </div><div class="line"><span class="comment">## expression matrix</span></div><div class="line">str(exprSet)</div><div class="line">group_list=pasillaGenes$condition</div><div class="line"><span class="comment">##做好分组因子即可</span></div></pre></td></tr></table></figure>
 <p>现在查看一下这个表达矩阵的格式，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180907/B45blJIi1g.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143103.png">
+
 </div>
 <p>从上面可以看出来，列是样本分组情况，行是不同的基因的情况。</p>
 <h2 id="第三步构建dds对象">第三步：构建DDS对象</h2>
@@ -435,8 +435,8 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">resOrdered &lt;- res[order(res$padj),]</div><div class="line">resOrdered=as.data.frame(resOrdered)</div></pre></td></tr></table></figure>
 <p>结果如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180907/EE0kia2jm6.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143129.png">
+
 </div>
 <p>到此，计算过程结束。</p>
 <p>绘制热图。</p>
@@ -445,14 +445,14 @@
 <p>DESeq2软件可以对counts进行均一化，有关DESeq2均一化的原理，可以参考这篇笔记<a href="http://rvdsd.top/2018/07/08/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B025-%E5%B7%AE%E5%BC%82%E8%A1%A8%E8%BE%BE%E5%88%86%E6%9E%90/">《差异表达分析》</a>，下面是计算过程：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rld &lt;- rlogTransformation(dds2)</div></pre></td></tr></table></figure>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180907/F2dCLl1G7d.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143207.png">
+
 </div>
 <p>现在绘制均一化前与均一化后的表达值的图形，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">par(cex = <span class="number">0.7</span>)</div><div class="line">n.sample=ncol(exprSet)</div><div class="line">cols &lt;- rainbow(<span class="number">7</span>)</div><div class="line">boxplot(exprSet, col = cols,main=<span class="string">"expression value"</span>,las=<span class="number">2</span>)</div><div class="line">boxplot(exprSet_new, col = cols,main=<span class="string">"expression value"</span>,las=<span class="number">2</span>)</div><div class="line">hist(exprSet)</div><div class="line">hist(exprSet_new)</div></pre></td></tr></table></figure>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180907/Fm4gf9Bb7C.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143232.png">
+
 </div>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
@@ -576,7 +576,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">126</span>
+                  <span class="site-state-item-count">127</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -598,7 +598,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -688,7 +688,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共467.1k字</span>
+  <span class="post-count">博客全站共463.8k字</span>
 </div>
 
         

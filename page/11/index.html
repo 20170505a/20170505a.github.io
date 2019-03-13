@@ -259,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/05/BioStatistics/生物统计-07协方差分析/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/06/BioStatistics/生物统计-08卡方分析与卡方分布/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -278,7 +278,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/05/BioStatistics/生物统计-07协方差分析/" itemprop="url">协方差分析笔记</a></h1>
+                <a class="post-title-link" href="/2017/06/06/BioStatistics/生物统计-08卡方分析与卡方分布/" itemprop="url">卡方分布与卡方检验笔记</a></h1>
         
 
         <div class="post-meta">
@@ -290,8 +290,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-05T12:01:00+08:00">
-                2017-06-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-06T12:02:00+08:00">
+                2017-06-06
               </time>
             
 
@@ -346,7 +346,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4,804
+                  9,772
                 </span>
               
 
@@ -362,7 +362,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  19
+                  38
                 </span>
               
             </div>
@@ -385,183 +385,478 @@
       
         
           
-            <h2 id="前言">前言</h2>
-<p>以前我们介绍过，方差分析方法可以用于比较两组或多组均数，其处理因素一般是可以控制的。方差分析要求各比较组除了所施加的处理因素不同外，其它对观察指标有影响的因素应齐同或均衡，也就是说，我要研究某个药物的不同剂量对小鼠的体重影响时，我们要保证每组的小鼠体重在给药前都相同或接近。但是在实际工作中，有时候有些因素根本无法控制，或者由于实验设计的疏忽、实验条件的限制等原因造成对观察指标有影响的个别因素未加控制或难以它抑制。例如，在降压药物疗效考核的临床试验中，患者的初始血压水平对服药一段时间后的血压下降量有影响，但患者的初始血压水平是难以控制的。如果不考虑各组患者的初始血压水平的差异，直接用方差分析的方法比较不同处理组患者的平均血压下降量，以评价药物的降压效果是不恰当的。如何在比较两组或多组均数的同时扣除或均衡这些不可控制因素的影响，可以考虑协方差分析的方法。</p>
-<h2 id="斜方差矩阵">斜方差矩阵</h2>
-<p>举个例子，某个数据集有3列，分别为x，y和z，那么它的协方差矩阵如下所示：</p>
+            <h2 id="什么是卡方分析">什么是卡方分析</h2>
+<h3 id="第1个案例">第1个案例</h3>
+<p>先看一个案例，这个案例会告诉我们什么是卡方分析，这个案例源于《深入浅出统计学》。</p>
+<p>某个赌场遇到了一个问题，也就是赌场的老虎机总是出头奖，轮盘总是停在12位，这样赌客就很容易赢钱，如果再这么下赌下去，赌场撑不住，赌场的老板怀疑有人在老虎机上动了手脚，此时就来研究，老虎机是否被动了手脚。下面是某台老虎机的期望概率分布，其中X代表每一局游戏的净收益，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>x</th>
+<th>-2</th>
+<th>23</th>
+<th>48</th>
+<th>73</th>
+<th>98</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>P(X=x)</td>
+<td>0.977</td>
+<td>0.008</td>
+<td>0.008</td>
+<td>0.006</td>
+<td>0.001</td>
+</tr>
+</tbody>
+</table>
+<p>其中-2表示，每局的赌注是2美元，如果你没赢的话，你就损失2美元。现在赌场收集了一些统计数据，给出了人们获得某种收益的次数，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>x</th>
+<th>-2</th>
+<th>23</th>
+<th>48</th>
+<th>73</th>
+<th>98</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>频数</td>
+<td>965</td>
+<td>10</td>
+<td>9</td>
+<td>9</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>现在我们要将每个x值的实际频数与根据概率分布得出的期望频数进行比较，此时时我们定义观察的频数为1000，现在用1000分别乘以概率分布，得到期望频数，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>x</th>
+<th>观察频数</th>
+<th>期望频数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>-2</td>
+<td>965</td>
+<td>977</td>
+</tr>
+<tr class="even">
+<td>23</td>
+<td>10</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<td>48</td>
+<td>9</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>73</td>
+<td>9</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td>98</td>
+<td>7</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>从这个表中我们可以知道，观察频数与期望频数有差别，但是这种差异有多，我们并不清楚。因此我们需要进行某种假设检验，以检验观察频数和期望频数之间的差别，这样我们就能够判定：老虎机被人动过手脚。现在的问题就是，我们使用哪种分布进行这项假设检验？</p>
+<p>答案就是使用卡方检验来评估差异，卡方分布通过一个检验统计量来比较<strong>期望结果</strong>和<strong>实际结果</strong>之间的差别，然后得出观察频数极值的发生概率。</p>
+<p>现在我们先来求一下检验统计量，为此，首先画出一张表，填入相应问题的观察频数和期望频数，然后，用观察频数和期望频数计算下列统计量，其中O代表观察频数，E代表期望频数，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/IaGbcLhe9F.png?imageslim" alt="mark">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/jJKlBFh99K.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>其中红色方框的部分是每列的方差，蓝色表示的是两两组合后（也就是xy，xz，yz）的协方差，其中我们可以发现，左下角用蓝色圈起来的部分与右上的未圈部分是一样的。用红色圈起来的部分好理解，在R中直接使用<code>var(x)</code>或<code>sd(x)^2</code>就可以直接计算，现在讲一下协方差如何计算，它的公式如下所示：</p>
-<p><span class="math inline">\(cov(X,Y)=\frac{\sum_{i=1}^n (X_{i}-\bar{X})(Y_{i}-\bar{Y})}{n-1}\)</span></p>
-<p>这个公式如果不好理解的话，可以看一个案例，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(<span class="number">49</span>,<span class="number">8</span>,<span class="number">12</span>,<span class="number">19</span>,<span class="number">3</span>,<span class="number">34</span>,<span class="number">20</span>,<span class="number">49</span>,<span class="number">20</span>,<span class="number">31</span>)</div><div class="line">y &lt;- c(<span class="number">7</span>,<span class="number">19</span>,<span class="number">8</span>,<span class="number">37</span>,<span class="number">43</span>,<span class="number">17</span>,<span class="number">34</span>,<span class="number">14</span>,<span class="number">26</span>,<span class="number">41</span>)</div><div class="line">z &lt;- c(<span class="number">29</span>,<span class="number">16</span>,<span class="number">14</span>,<span class="number">22</span>,<span class="number">21</span>,<span class="number">17</span>,<span class="number">27</span>,<span class="number">37</span>,<span class="number">21</span>,<span class="number">21</span>)</div><div class="line">cov_data &lt;- matrix(c(x,y,z),ncol=<span class="number">3</span>)</div><div class="line">colnames(cov_data) &lt;- c(<span class="string">"x"</span>,<span class="string">"y"</span>,<span class="string">"z"</span>)</div><div class="line">cov_data</div><div class="line"><span class="comment"># x  y  z</span></div><div class="line"><span class="comment"># [1,] 49  7 29</span></div><div class="line"><span class="comment"># [2,]  8 19 16</span></div><div class="line"><span class="comment"># [3,] 12  8 14</span></div><div class="line"><span class="comment"># [4,] 19 37 22</span></div><div class="line"><span class="comment"># [5,]  3 43 21</span></div><div class="line"><span class="comment"># [6,] 34 17 17</span></div><div class="line"><span class="comment"># [7,] 20 34 27</span></div><div class="line"><span class="comment"># [8,] 49 14 37</span></div><div class="line"><span class="comment"># [9,] 20 26 21</span></div><div class="line"><span class="comment"># [10,] 31 41 21</span></div></pre></td></tr></table></figure>
-<p>以上面的这个矩阵为例说明一下<code>cov(X,Y)</code>是如何计算的，计算公式表示，x的值减去x的均值得到一个向量，y的值减去y的均值，得到一个向量，这两个向量相乘，并除以n-1（这里就是9了），就得到了<code>cov(X,Y)</code>，现在计算一下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sum((x-mean(x))*(y-mean(y))/(length(x)-<span class="number">1</span>))</div><div class="line">[<span class="number">1</span>] -<span class="number">96.55556</span></div></pre></td></tr></table></figure>
-<p>那么此时，<code>cov_data</code>协方差矩阵的第1列，第2行或第2列第1行的值就是-96.55556，也就是下面的黄色部分，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/9lkfGGFcJL.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>接着再计算<code>cov(z,x)</code>和<code>cov(z,y)</code>，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; sum((x-mean(x))*(z-mean(z))/(length(x)-<span class="number">1</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">76.38889</span></div><div class="line">&gt; sum((z-mean(z))*(y-mean(y))/(length(x)-<span class="number">1</span>))</div><div class="line">[<span class="number">1</span>] -<span class="number">7.444444</span></div></pre></td></tr></table></figure>
-<p>把它们填到这个矩阵中，就是下面的这个样子：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/cGaLIDmJ35.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>剩下的绿色部分就是每列的方差的，很好计算，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; var(x)</div><div class="line">[<span class="number">1</span>] <span class="number">254.9444</span></div><div class="line">&gt; <span class="comment"># 或sd(x)^x</span></div><div class="line">&gt; var(y)</div><div class="line">[<span class="number">1</span>] <span class="number">182.0444</span></div><div class="line">&gt; sd(z)^<span class="number">2</span></div><div class="line">[<span class="number">1</span>] <span class="number">47.16667</span></div></pre></td></tr></table></figure>
-<p>再补充好矩阵，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/a4kghcFa6f.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>上面只是过计算过程，在R中直接使用<code>cov()</code>函数即可，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; cov(cov_data)</div><div class="line">          x          y         z</div><div class="line">x <span class="number">254.94444</span> -<span class="number">96.555556</span> <span class="number">76.388889</span></div><div class="line">y -<span class="number">96.55556</span> <span class="number">182.044444</span> -<span class="number">7.444444</span></div><div class="line">z  <span class="number">76.38889</span>  -<span class="number">7.444444</span> <span class="number">47.166667</span></div></pre></td></tr></table></figure>
-<p>在R中协方差矩阵的计算原理就搞清楚了。</p>
-<h2 id="协方差分析基本思想">协方差分析基本思想</h2>
-<p>协方差分析(analysis of covariance)是将线性回归分析与方差分析结合起来的一种统计方法。在协方差分析中，影响观察指标Y（应变量）的往往是一些定性变量；而在线性回归分析中，影响Y的都是定量变量。协方差分析的基本思想就是将那些定量产变量X（指未加或难以控制的因素）对Y的影响看作协变量(covariate)，建立应变量Y随协变量X变化的线性回归关系，并利用这种回归关系把X值化为相等后再进行各级Y的修正均数(adjusted means)的比较，其实质是从Y的总平方和中扣除协变量X对Y的回归平方和，对残差平方和作进一步分解后再进行方差分析，以更好地评价处理因素的效应。</p>
-<p>按方差分析不同实验设计类型，相应有不同的协方差分析，如有完全随机设计、随机区组（配伍组）设计、拉丁方设计和析因设计等类型的协方差分析，而且协变量可以有一个、两个或多个，分析方法略有不同，但其解决问题的基本思想相同。</p>
-<h2 id="应用条件">应用条件</h2>
-<p>协方差分析有两个重要的应用条件：一是与方差分析的应用条件相同，即理论上要求观察变量服从正态分布，各观察变量相互独立，各样本的总体方差齐性；二是各总体客观存在应变量对协变量的线性回归关系且斜率相同（回归线平行），即要求各样本回归系数b本身有统计学意义而各样本回归系数b间的差别无统计学意义。因此，进行协方差分析时，必须先对样本资料进行方差齐性检验和回归系数的假设检验，若满足这两个条件或经变量变换后满足这两个条件，才可作协方差分析。</p>
-<p>协方差分析要求协变量是连续变量，而且不能是影响处理的变量，其取值应在研究之前被观察；或者虽在研究中被观察，但不能受到处理的影响。</p>
-<p>协方差分析中比较的修正均数，而修正均数实际上是假设协变量取值固定在其总均数时的观察变量的均数。修正均数间的差别与实际均数间的差别并不是一回事，只是用作合理比较。当各比较组的协变量相关悬殊时，协变量的总均数可能不落在各处理组协变量的实测范围内，这时的修正均数可能是对回归线的一种外推，但是这种外推是否仍满足线性和平等的条件无人知晓。因此，协方差分林的时最好先对协变量间的差别作假设检验，协方差分析应用于协变量均数间差别不大的资料较好，利于对分析结果作出较恰当的解释。</p>
-<p>如果在多因素研究中有一个或多个因素（协变量）不能或难以控制，而这个或这些协变量对观察变量可能有影响，解决这一类问题可以用多元协方差分析方法(analysis of multiple covariance)。</p>
-<h2 id="分析步骤">分析步骤</h2>
-<p>现在我们以完全随机资料为例，设有G组回归样本，每组有n对观察值，总观察值对数为N=nG（一般情况为各组有<span class="math inline">\(n_{j}\)</span>对观察值，总观察值对数为<span class="math inline">\(N=n_{1}+n_{2}+\cdots+n_{G})\)</span>，其基础数据与协方差分析计算模式如表13-1和表13-2。</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180827/i5D4G975JD.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180827/gg24L5fkFj.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<ol style="list-style-type: decimal">
-<li><p>计算各组<span class="math inline">\(\sum X_{j},\sum Y_{j},\sum X_{j}^2,\sum Y_{j}^2,\sum X_{j},\sum Y_{j},\bar{X_{j}},\bar{Y_{j}}\)</span></p></li>
-<li><p>利用合计项各数据计算较正数<span class="math inline">\(C_{1},C_{2},C_{3}\)</span>，以及总变异的离均差平方和<span class="math inline">\(l_{XX},l_{YY}\)</span>积和<span class="math inline">\(l_{XY}\)</span>及自由度<span class="math inline">\(\nu\)</span>，如下所示：</p></li>
-</ol>
-<p><span class="math inline">\(C_{1}=\frac{(\sum X)^2}{N},C_{2}=\frac{\sum Y)^2}{N},C_{3}=\frac{\sum X \cdot \sum Y}{N}\)</span></p>
-<p><span class="math inline">\(l_{XX}=\sum X^2=C_{1},l_{YY}=\sum Y^2=C_{2}\)</span></p>
-<p><span class="math inline">\(l_{XY}=\sum XY=C_{3}\)</span></p>
-<p><span class="math inline">\(\nu=N-1\)</span></p>
-<ol start="3" style="list-style-type: decimal">
-<li>计算各处理组间的离均差平方和<span class="math inline">\(l_{XX},l_{YY}\)</span>，积和<span class="math inline">\(l_{XY}\)</span>及自由度<span class="math inline">\(\nu\)</span>，如下所示：</li>
-</ol>
-<p><span class="math inline">\(l_{XX}=\sum \frac{(\sum X_{j})^2}{n_{j}}-C_{1}\)</span></p>
-<p><span class="math inline">\(l_{XX}=\sum \frac{(\sum Y_{j})^2}{n_{j}}-C_{2}\)</span></p>
-<p><span class="math inline">\(l_{XX}=\sum \frac{(\sum X_{j})\sum y_{j})}{n_{j}}-C_{3}\)</span></p>
-<p><span class="math inline">\(\nu=G-1\)</span></p>
-<ol start="4" style="list-style-type: decimal">
-<li><p>列出协方差分析计算表13-2，将上述第2步，第3步的计算结果列入表的左侧部分，再由总变量的<span class="math inline">\(l_{XX},l_{XY}\)</span>及<span class="math inline">\(\nu\)</span>减去与处理组（组间）相应的各值，得到组内的<span class="math inline">\(l_{XX},l_{XY}\)</span>及<span class="math inline">\(\nu\)</span>。</p></li>
-<li><p>计算回归估计估计误差平方和<span class="math inline">\(\sum(Y-\bar{Y})^2\)</span>及徙度，如表13-2右侧部分，其中总的平方和、组内平方和分别由下面的公式计算：</p></li>
-</ol>
-<p><span class="math inline">\(\sum(Y-\bar{Y})^2=l_{YY}-\frac{l_{XY}^2}{l_{XX}}\)</span></p>
-<p>总的平方和减去组内平方和即为“修正零数”的平方和，总的及组内的自由度分别为表13-2左侧相应部分的自由度减去1，再由总的自由度减去组内的自由度得修正均数的自由度。</p>
-<ol start="6" style="list-style-type: decimal">
-<li>以修正均数和组内的估计误差平方和分别除以相应的自由度得到修正均数和组内的估计误差均方，简称为修正均数均方和组内均方，再按下面公式计算F值：</li>
-</ol>
-<p><span class="math inline">\(F=\frac{修正均数均方}{组内均方}\)</span></p>
-<ol start="7" style="list-style-type: decimal">
-<li><p>以上述公式中的公子和分母两均方的自由度查表F表，得到P值，按所设立的检验水准α作出统计推断，若<span class="math inline">\(P\leq \alpha\)</span>，则可认为各总体修正均数问总的来说有差别，但空间哪两组间有差别，哪两组间没有差别，必要的时候还要做进一步的多重比较。</p></li>
-<li><p>若需要计算各修正均数，可先按下面的公式计算出公共回归系数(common regression coefficient)<span class="math inline">\(b_{c}\)</span>，再由下面的公式计算出各修正均数<span class="math inline">\(\bar{y_{j}}^*\)</span> <span class="math inline">\(b_{c}=\frac{组内l_{XY}}{组内l_{XX}},\quad \bar{Y_{j}}^*=\bar{Y_{j}}-b_{c}(\bar{X_{j}}-\bar{X})\)</span></p></li>
-<li><p>修正均数间的多重比较，使用q检验，公式如下所示：</p></li>
-</ol>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/f64H14EFIE.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>上式中<span class="math inline">\(\bar{Y_{A}}^*,\bar{Y_{B}}^*\)</span>为多重比较中任两个对比组的修正均数，分母为其差值的标准误，<span class="math inline">\(S_{Y \cdot X}^2\)</span>为组内估计误差的均方，<span class="math inline">\(n_{0}\)</span>为每组平均例数，a为将修正均数按大小顺序排列后两对比修正均数间所包含的组数，求得q之后，先按协方差分析表“估计误差”栏中组内自由度和a，查表得到p值，然后再按所设立的检验水准a作推断结论。</p>
-<h2 id="完全随机设计资料的协方差分析">完全随机设计资料的协方差分析</h2>
-<p>现在看一个案例A，如下所示： ### 案例A 为研究某降血糖药物的有效性及其合用盐酸二甲双胍片的有效性，选择收治90名2型糖尿病患者，并采用随机对照试验，分为三个治疗组，第一组为该降糖药组，第二组为盐酸二甲双胍片组，第三组为该降糖药+盐酸二甲双胍片组，每组30名患者，治疗3个月，主要有效性指标为糖化血红蛋白。测得每个患者入组前（X）和3个月后（Y）的糖化血红蛋白含量（％）见表13-3的上部，试分析三种治疗降糖化血红蛋白的效果是否不同（《医学统计学》（第四版，孙振球，例13-1，P204），数据如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/3bKglCCJ1A.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>各种计算结果如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/dfDflf2dJA.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>在此例中，给予何种药物治疗是人为可以控制的定性因素，称为定性变量；患者初始（入组前）的糖化血红蛋白含量是难以控制的定量因素，称为协变量X；试验的观察指标是患者治疗3个月后的糖化血红蛋白含量，称为应变量Y，如果不考虑3组患者初始糖化血红蛋白含量不同的影响，那么此例就是一个典型的完全随机设计类的方差分析问题。</p>
-<p>现在我们使用常规的方差分析来计算一下数据（这个案例不能用方差分析，这里使用方差分析只是为了说明一下为什么不能用方差分析），计算过程如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_anova)</div><div class="line">            Df Sum Sq Mean Sq <span class="literal">F</span> value   Pr(&gt;<span class="literal">F</span>)    </div><div class="line">data1$group  <span class="number">2</span>  <span class="number">18.63</span>   <span class="number">9.314</span>   <span class="number">18.11</span> <span class="number">2.65e-07</span> ***</div><div class="line">Residuals   <span class="number">87</span>  <span class="number">44.73</span>   <span class="number">0.514</span>                     </div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
-<p>由上面的结果我们可以认为这3种治疗组降糖化血红蛋白的效果不同，但是这样得出的结论是不恰当的。因为从前面的原始数据我们可以得知，3种治疗组患者的初始糖化血红蛋白含量均数不同，第一组最高（10），第三组最低（9.947）。</p>
-<p>仅对给药后的糖化血红蛋白进行方差分析，再经SNK-q的两两比较我们可以知道，除了第一组与第二组间的差异无统计学意义外（P&gt;0.05），第一组和第二组分别与第三组间的差异均有统计学意义(P&lt;0.01)，计算过程如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<p>结果如下所示（只截取了各组均分与两两比较的结果）：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$means</div><div class="line">         y       std  r Min  Max   Q25 Q50   Q75</div><div class="line"><span class="number">1</span> <span class="number">8.443333</span> <span class="number">0.7398431</span> <span class="number">30</span> <span class="number">7.2</span> <span class="number">10.0</span> <span class="number">8.000</span> <span class="number">8.5</span> <span class="number">8.800</span></div><div class="line"><span class="number">2</span> <span class="number">8.803333</span> <span class="number">0.7471709</span> <span class="number">30</span> <span class="number">7.1</span> <span class="number">10.2</span> <span class="number">8.200</span> <span class="number">8.9</span> <span class="number">9.150</span></div><div class="line"><span class="number">3</span> <span class="number">7.710000</span> <span class="number">0.6609032</span> <span class="number">30</span> <span class="number">6.1</span>  <span class="number">9.0</span> <span class="number">7.425</span> <span class="number">7.8</span> <span class="number">8.175</span></div><div class="line">$groups</div><div class="line">         y groups</div><div class="line"><span class="number">2</span> <span class="number">8.803333</span>      a</div><div class="line"><span class="number">1</span> <span class="number">8.443333</span>      a</div><div class="line"><span class="number">3</span> <span class="number">7.710000</span>      b</div></pre></td></tr></table></figure>
-<p>但是，这是在没有扣除X对Y影响的情况下的计算的结果，也就是说第二组降糖均数最低，第三组最高（看Q50），提示患者初始的糖化血红蛋白含量与治疗药物的效应混杂，即患者治疗3个月后的糖化血红蛋白含量的多少除了与治疗的药物有关外，还受其初始糖化血红蛋白含量的影响。对此，可以采用完全随机设计且有一个协变量的协方差分析方法，将三组患者初始的糖化血红蛋白含量化为相等，以扣除其影响，再比较三种治疗组的降糖效果，即检验三组修正均数间的差别有无统计学意义。具体的计算步骤如下：</p>
-<ol style="list-style-type: decimal">
-<li><span class="math inline">\(H_{0}:\)</span> 各组降糖的总体修正数相等，<span class="math inline">\(H_{1}\)</span>：各组降糖总体修正均数不全相等，<span class="math inline">\(\alpha=0.05\)</span></li>
-<li>列表，并计算初步结果，也就是下面的这一部分：</li>
-</ol>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/KA6ml5fjaj.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<ol start="3" style="list-style-type: decimal">
-<li>根据前面的公式，计算相应的校正数，总的，组间和组内的离均差平方和、积和自由度，计算结果如下所示：</li>
-</ol>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/5ffhbik7l4.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>其中，校正系数为：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/7agg5F9b14.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>总的离均差平方和、积和及自由度为：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/CAbfKG853F.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>组间离均差平方和、积和及自由度为：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/cmHL56iEh5.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>组内离均差平方和、积和及自由度：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/cC7LIC4Hk7.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<ol start="4" style="list-style-type: decimal">
-<li>根据前面的公式计算出总的、组内和修正均数的估计误差平方和、自由度、均方及F值，见前面表13-5右侧部分，如下所示：</li>
-</ol>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/LHkGL4aFd2.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<ol start="5" style="list-style-type: decimal">
-<li><p><span class="math inline">\(\nu_{1}=2,\nu_{2}=86\)</span>查表可得，Ｐ&lt;0.01,按α=0.05水准,拒绝H0，接受H1，可以认为在扣除初始糖化血红蛋白含量因素的影响后，3组患者的总体降糖均数有差别。</p></li>
-<li><p>根据前面的表13-3，表13-5及公式，求得公共回归系数<span class="math inline">\(b_{c}\)</span>及各组修正均数<span class="math inline">\(\bar{Y}^*\)</span>为</p></li>
-</ol>
-<p><span class="math inline">\(b_{c}=13.26/53.40=0.25\)</span></p>
-<p>第一组<span class="math inline">\(\bar{Y_{1}}^*=1.61-0.25(10.09-9.970)=1.61\)</span></p>
-<p>第一组<span class="math inline">\(\bar{Y_{2}}^*=1.07-0.25(9.88-9.970)=1.09\)</span></p>
-<p>第一组<span class="math inline">\(\bar{Y_{3}}^*=2.24-0.25(9.95-9.970)=2.24\)</span></p>
-<p>根据前面的q值公式，对这三个修正均数间差别进行两两比较的结果显示，第一组与第二组、第一组与第三组、第二组与第三组总体修正均数间均有差别(P&lt;0.01)，可以认为在扣除患者初始糖化血红蛋白含量因素的影响后，第三种治疗患者的平均降糖量最多，第一种治疗次之，第二种治疗最少。</p>
-<p>使用R进行协方差分析时，需要安装HH包，用这个包中的ancova()函数进行协方差分析。</p>
+<p>也就是说，对于概率分布中的每一个概率，取期望频数和实际频数的差，求差的平方数，再除以期望频数，最后将结果相加，现在我们求一下老虎机问题的检验统计量是多少。</p>
 <p>计算过程如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(HH)</div><div class="line">data.x &lt;- c(<span class="number">10.8</span>,<span class="number">11.6</span>,<span class="number">10.6</span>,<span class="number">9</span>,<span class="number">11.2</span>,<span class="number">9.9</span>,<span class="number">10.6</span>,<span class="number">10.4</span>,<span class="number">9.6</span>,<span class="number">10.5</span>,<span class="number">10.6</span>,<span class="number">9.9</span>,<span class="number">9.5</span>,<span class="number">9.7</span>,<span class="number">10.7</span>,<span class="number">9.2</span>,<span class="number">10.5</span>,<span class="number">11</span>,<span class="number">10.1</span>,<span class="number">10.7</span>,<span class="number">8.5</span>,<span class="number">10</span>,<span class="number">10.4</span>,<span class="number">9.7</span>,<span class="number">9.4</span>,<span class="number">9.2</span>,<span class="number">10.5</span>,<span class="number">11.2</span>,<span class="number">9.6</span>,<span class="number">8</span>,<span class="number">10.4</span>,<span class="number">9.7</span>,<span class="number">9.9</span>,<span class="number">9.8</span>,<span class="number">11.1</span>,<span class="number">8.2</span>,<span class="number">8.8</span>,<span class="number">10</span>,<span class="number">9</span>,<span class="number">9.4</span>,<span class="number">8.9</span>,<span class="number">10.3</span>,<span class="number">9.3</span>,<span class="number">9.2</span>,<span class="number">10.9</span>,<span class="number">9.2</span>,<span class="number">9.2</span>,<span class="number">10.4</span>,<span class="number">11.2</span>,<span class="number">11.1</span>,<span class="number">11</span>,<span class="number">8.6</span>,<span class="number">9.3</span>,<span class="number">10.3</span>,<span class="number">10.3</span>,<span class="number">9.8</span>,<span class="number">10.5</span>,<span class="number">10.7</span>,<span class="number">10.4</span>,<span class="number">9.4</span>,<span class="number">9.8</span>,<span class="number">11.2</span>,<span class="number">10.7</span>,<span class="number">9.6</span>,<span class="number">10.1</span>,<span class="number">9.8</span>,<span class="number">10.1</span>,<span class="number">10.3</span>,<span class="number">11</span>,<span class="number">10.5</span>,<span class="number">9.2</span>,<span class="number">10.1</span>,<span class="number">10.4</span>,<span class="number">10</span>,<span class="number">8.4</span>,<span class="number">10.1</span>,<span class="number">9.3</span>,<span class="number">10.5</span>,<span class="number">11.1</span>,<span class="number">10.5</span>,<span class="number">9.7</span>,<span class="number">9.2</span>,<span class="number">9.3</span>,<span class="number">10.4</span>,<span class="number">10</span>,<span class="number">10.3</span>,<span class="number">9.9</span>,<span class="number">9.4</span>,<span class="number">8.3</span>,<span class="number">9.2</span>)</div><div class="line">data.y &lt;- c(<span class="number">9.4</span>,<span class="number">9.7</span>,<span class="number">8.7</span>,<span class="number">7.2</span>,<span class="number">10</span>,<span class="number">8.5</span>,<span class="number">8.3</span>,<span class="number">8.1</span>,<span class="number">8.5</span>,<span class="number">9.1</span>,<span class="number">9.2</span>,<span class="number">8.4</span>,<span class="number">7.6</span>,<span class="number">7.9</span>,<span class="number">8.8</span>,<span class="number">7.4</span>,<span class="number">8.6</span>,<span class="number">9.2</span>,<span class="number">8</span>,<span class="number">8.5</span>,<span class="number">7.3</span>,<span class="number">8.3</span>,<span class="number">8.6</span>,<span class="number">8.7</span>,<span class="number">7.6</span>,<span class="number">8</span>,<span class="number">8.8</span>,<span class="number">9.5</span>,<span class="number">8.2</span>,<span class="number">7.2</span>,<span class="number">9.2</span>,<span class="number">9</span>,<span class="number">8.9</span>,<span class="number">8.6</span>,<span class="number">9.9</span>,<span class="number">7.1</span>,<span class="number">7.8</span>,<span class="number">7.9</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">7.9</span>,<span class="number">8.9</span>,<span class="number">8.9</span>,<span class="number">8.1</span>,<span class="number">10.2</span>,<span class="number">8.5</span>,<span class="number">9</span>,<span class="number">8.9</span>,<span class="number">9.8</span>,<span class="number">10.1</span>,<span class="number">8.5</span>,<span class="number">8.1</span>,<span class="number">8.6</span>,<span class="number">8.9</span>,<span class="number">9.6</span>,<span class="number">8.1</span>,<span class="number">9.9</span>,<span class="number">9.3</span>,<span class="number">8.7</span>,<span class="number">8.7</span>,<span class="number">7.6</span>,<span class="number">7.9</span>,<span class="number">9</span>,<span class="number">7.8</span>,<span class="number">8.5</span>,<span class="number">7.5</span>,<span class="number">8.3</span>,<span class="number">8.2</span>,<span class="number">8.4</span>,<span class="number">8.1</span>,<span class="number">7</span>,<span class="number">7.7</span>,<span class="number">8</span>,<span class="number">6.6</span>,<span class="number">6.1</span>,<span class="number">8.1</span>,<span class="number">7.8</span>,<span class="number">8.4</span>,<span class="number">8.2</span>,<span class="number">8</span>,<span class="number">7.6</span>,<span class="number">6.9</span>,<span class="number">6.7</span>,<span class="number">8.1</span>,<span class="number">7.4</span>,<span class="number">8.2</span>,<span class="number">7.6</span>,<span class="number">7.8</span>,<span class="number">6.6</span>,<span class="number">7.2</span>)</div><div class="line">group &lt;- factor(rep(<span class="number">1</span>:<span class="number">3</span>,each=<span class="number">30</span>))</div><div class="line">data1 &lt;-data.frame(group,data.x,data.y)</div><div class="line">result1 &lt;- ancova(data.y~group+data.x,data=data1)</div><div class="line">result1</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; result1</div><div class="line">Analysis of Variance Table</div><div class="line"></div><div class="line">Response: data.y</div><div class="line">          Df Sum Sq Mean Sq F value    Pr(&gt;F)    </div><div class="line">group      2 18.628  9.3138  55.161 3.852e-16 ***</div><div class="line">data.x     1 30.210 30.2096 178.917 &lt; 2.2e-16 ***</div><div class="line">Residuals 86 14.521  0.1688                      </div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div></pre></td></tr></table></figure>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180827/Ii7aJe63D5.png?imageslim" alt="mark">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/HF4mC0jL48.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>从这个协方差的最终结果图上我们可以知道，第三种疗法对血红蛋白的降低程度最大，第一种次之，第二种降低程度最弱。</p>
+<p>如果<span class="math inline">\(\chi^2\)</span>的值很小，说明观察频数和期望频数之间的差别不显著，卡方越大，差别越显著。</p>
+<p>再回到卡方分析的统计量上，检验统计量<span class="math inline">\(\chi^2\)</span>提供了一种对观察频数和期望频数之间的差异进行量度的办法，<span class="math inline">\(\chi^2\)</span>的数值越小，观察频数和期望频数之间的总差值越小。除数E为期望频数，于是所得的结果与期望频数成反比，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/9JeiIj8Hjk.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p><span class="math inline">\(\chi^2\)</span>大到什么程度才算得上显著呢？此处先不做解答，现在先了解一下卡方分布。</p>
+<h2 id="卡方分布简介">卡方分布简介</h2>
+<p>卡方分布是由正态分布推导出来的分布，它的定义为，n个独立标准正态变量的平方和称为有n个自由度的<span class="math inline">\(\chi^2\)</span>分布，记为<span class="math inline">\(\chi^2(n)\)</span>，<span class="math inline">\(\chi^2(n)\)</span>的总体均值为n，总体方差为2n（不知道这是如何推导出来的）。</p>
+<p>此外，若干个独立的卡方分布变量的和也能构成卡方方分布，其自由度等于那些卡方分布自由度之和，卡方分布也是一族分布，由该族成员的不同自由度来区分，由于上方分布是正态变量的平方和，因此，它不会取负值（《从数据到结论》吴喜之 ）。</p>
+<p>现在再看一下卡方分析的简介。</p>
+<h2 id="卡方分析简介">卡方分析简介</h2>
+<p>两个样本率的比较通常是使用<span class="math inline">\(\chi^2\)</span>检验（Chi-square test）。<span class="math inline">\(\chi^2\)</span>检验是以<span class="math inline">\(\chi^2\)</span>分布为理论依据，用途广泛的假设检验方法，卡方分析用于比较不同组之间的构成比，它的零假设是假定各组之间的构成是相同的，计算出理论每组的理论构成比，再计算理论值与实际值的差别，如果差别大的话，就拒绝零假设。它用于推断两个总体率或构成比之间有无差别、多个总体率或构成比之间有无差别、多个样品率间的多重比较、两个分类变量之间有无关联性、多维列联表的分析和频数分页拟合优度的<span class="math inline">\(\chi^2\)</span>检验，它的扩展分析方法有Fisher精确分析，Ridit分析，CMH分析。</p>
+<h2 id="卡方分布用途">卡方分布用途</h2>
+<p>卡方分布的两个主要用途。卡方概率分布主要用于检查实际结果与期望结果之间何时存在显著差别，该概率分布使用前前面讲到的检验统计量<span class="math inline">\(\chi^2\)</span>进行检验。卡方分布主要有两个用途。</p>
+<p>第一用于检验拟合优度，也就是可以检验一组给定的数据与指定分布的吻合程度。例如，可以用它检验老虎机收益的观察频率与我们所期望的分布的吻合程度。<span class="math inline">\(\chi^2\)</span>分布的另一个用途是检验两个变量的独立性，通过这个方法可以检查变量之间是否存在某种关联。<span class="math inline">\(\chi^2\)</span>分布用到一个参数，即希腊字母<span class="math inline">\(\nu\)</span>，读作“纽”，下面是可以看一下<span class="math inline">\(\nu\)</span>如何影响概率分布的形状。</p>
+<h2 id="卡方分布的概率密度曲线">卡方分布的概率密度曲线</h2>
+<p>卡方分布（Chi-square distribution）是一种连续型分布，<span class="math inline">\(\chi^2\)</span>分布只有一个参数，即自由度<span class="math inline">\(\nu\)</span>。按<span class="math inline">\(\chi^2\)</span>分布的密度函数<span class="math inline">\(f(\chi^2)\)</span>可以给出自由度<span class="math inline">\(\nu=1,2,3,\dots\)</span>的一簇<span class="math inline">\(\chi^2\)</span>分布曲线，由<span class="math inline">\(\chi^2\)</span>分布曲线可见，<span class="math inline">\(\chi^2\)</span>分布的形状依赖于自由度<span class="math inline">\(\nu\)</span>的大小：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(seq(0,15,length = 1000)) </div><div class="line">#生成从0到10之间的1000个数字</div><div class="line"></div><div class="line">y1 &lt;- dchisq(x,1) </div><div class="line"># 生成对x的卡方密度值，自由度为1</div><div class="line"></div><div class="line">y2 &lt;- dchisq(x,2) </div><div class="line"># 生成对x的卡方密度值，自由度为1</div><div class="line"></div><div class="line">y6 &lt;- dchisq(x,6) </div><div class="line"># 生成对x的卡方密度值，自由度为6</div><div class="line"></div><div class="line">y10 &lt;- dchisq(x,10) </div><div class="line"># 生成对x的卡方密度值，自由度为10</div><div class="line"></div><div class="line">plot(x,y1,type = &quot;l&quot;, ylim = c(0,0.5),xlim=c(0,15),xlab=&quot;&quot;, ylab=&quot;&quot;, lty = 1, main = expression(paste(chi^2,&quot;Distribution&quot;)))</div><div class="line"># type =&quot;l&quot;表示绘制线，如果是n则不绘线；lty=1表示绘制实线</div><div class="line"></div><div class="line">lines(x,y2, type = &quot;l&quot;, xlab = &quot;&quot;, ylab = &quot;&quot;, lty =2) </div><div class="line"></div><div class="line">lines(x,y6, type = &quot;l&quot;, xlab = &quot;&quot;, ylab = &quot;&quot;, lty =2) </div><div class="line"># lty=2表示绘制虚线lines(x,y10, type = &quot;l&quot;, xlab = &quot;&quot;, ylab = &quot;&quot;, lty= 3) # lty=3表示绘制点线</div><div class="line"></div><div class="line">lines(x,y10, type = &quot;l&quot;, xlab = &quot;&quot;, ylab = &quot;&quot;, lty= 3) # lty=3表示绘制点线</div><div class="line"></div><div class="line">text(0.2,0.3, c(expression(chi^2*(1))))</div><div class="line">text(1.9,0.3, c(expression(chi^2*(2))))</div><div class="line">text(4,0.15, c(expression(chi^2*(6))))</div><div class="line">text(8,0.11, c(expression(chi^2*(10))))</div></pre></td></tr></table></figure>
+<p>图片如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/E3EJ5Cc1lb.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<ol style="list-style-type: decimal">
+<li>当自由度<span class="math inline">\(\nu \leq 2\)</span>时，曲线呈L形，也就是一条先高后低的平滑曲线，检验统计量等于较小的数值的概率远远高于等于较大数值的概率，这就是说，观察频数有可能接近期望频数；</li>
+<li>当<span class="math inline">\(\nu&gt;2\)</span>时，卡方分布的曲线就会表现出先低后高，再低的特征，其外形沿着正向扭曲，但是当，随着<span class="math inline">\(\nu\)</span>的增加，曲线逐渐趋于对称；</li>
+<li>当自由度<span class="math inline">\(\nu \rightarrow \infty\)</span>时，<span class="math inline">\(\chi^2\)</span>分布趋于正态分布。</li>
+</ol>
+<p>卡方分布的一个基本性质是它的可加性；如果两个独立的随机变量<span class="math inline">\(X_{1}\)</span>和<span class="math inline">\(X_{2}\)</span>分别服从自由度<span class="math inline">\(\nu_{1}\)</span>和<span class="math inline">\(\nu_{2}\)</span>的<span class="math inline">\(\chi^2\)</span>分布，则它们的和<span class="math inline">\(X_{1}+X_{2}\)</span>服从自由度<span class="math inline">\(\nu_{1}\)</span>和<span class="math inline">\(nu_{2}\)</span>的<span class="math inline">\(\chi^2\)</span>分布，即<span class="math inline">\(X_{1}+X_{2}~\chi^2_{\nu1+\nu2}\)</span>.</p>
+<p>如果使用具有特定参数<span class="math inline">\(\nu\)</span>的<span class="math inline">\(\chi^2\)</span>分布以及检验统计量<span class="math inline">\({X}^2\)</span>，可以简单记为如下形式：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/331G7A5ABh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p><span class="math inline">\(\chi^2\)</span>分布的界值：当自由度<span class="math inline">\(\nu\)</span>确定后，<span class="math inline">\(\chi^2\)</span>分布曲线下右侧尾部的面积为<span class="math inline">\(\alpha\)</span>时，横轴上相应的<span class="math inline">\(\chi^2\)</span>值记为<span class="math inline">\(\chi^2_{\alpha,\nu}\)</span>，即<span class="math inline">\(\chi^2\)</span>分布的界值。<span class="math inline">\(\chi^2\)</span>值越大，p值越小，反之，<span class="math inline">\(\chi^2\)</span>值越小，界值越大。</p>
+<h2 id="卡方分析的显著性">卡方分析的显著性</h2>
+<p>现在回答前面的那个问题，即检验统计量<span class="math inline">\(\chi^2\)</span>大到什么程度才算得上显著呢？</p>
+<p>这要取决于显著性水平，用卡方分布进行的检验为单尾检验，右尾被称作拒绝域，于是，通过查看检验统计量是否位于右尾的拒绝域内，就可以判定根据期望分布得出目前结果的可能性，如果用显著性水平<span class="math inline">\(\alpha\)</span>进行检验，就写为<span class="math inline">\(\chi^2_{\alpha}(\nu)\)</span>，在以前没有计算机的时候，通常是使用卡方概率表来计算卡方分布的拒绝域，下面先讲一下如何使用卡方概率表，理解了这个，就方便理解软件的计算结果。</p>
+<p>为了求出临界值，首选找出自由度<span class="math inline">\(\nu\)</span>以及显著性水平<span class="math inline">\(\alpha\)</span>，在第一列查找<span class="math inline">\(\nu\)</span>，第一行查找<span class="math inline">\(\alpha\)</span>，交点即x值，从<span class="math inline">\(P(\chi^2\alpha(\nu) \geq(x)=\alpha\)</span>中得出临界值。</p>
+<p>以5%为显著性水平，8为自由度进行检验，若要得到临界值，那么在第一列查找8，第一行查找0.05，查出数值为15.51，因此只要统计量<span class="math inline">\(\chi^2\)</span>大于15.51，则在显著性水平为5%，自由度为8的情况下，检验统计量就位于拒绝域以内，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/5492jhlcga.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>我们在前面通过卡方分析计算过老虎机的理论期望频数与实际频数的卡方值是38.272，它的值大于15.51，也就是位于拒绝域内，因为我们可以判定，老虎机做了手脚，事实上，我们还在前面使用了R来计算这个卡方值，结论也是，p值远小于0.05，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">p &lt;- c(<span class="number">0.977</span>,<span class="number">0.008</span>,<span class="number">0.008</span>,<span class="number">0.006</span>,<span class="number">0.001</span>)  <span class="comment"># 期望概率</span></div><div class="line">x &lt;- c(<span class="number">965</span>,<span class="number">10</span>,<span class="number">9</span>,<span class="number">9</span>,<span class="number">7</span>) <span class="comment"># 实际的频数</span></div><div class="line">chisq.test(x,p=p)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; p &lt;- c(<span class="number">0.977</span>,<span class="number">0.008</span>,<span class="number">0.008</span>,<span class="number">0.006</span>,<span class="number">0.001</span>) </div><div class="line">&gt; x &lt;- c(<span class="number">965</span>,<span class="number">10</span>,<span class="number">9</span>,<span class="number">9</span>,<span class="number">7</span>) </div><div class="line">&gt; chisq.test(x,p=p)</div><div class="line"></div><div class="line">        Chi-squared test <span class="keyword">for</span> given probabilities</div><div class="line"></div><div class="line">data:  x</div><div class="line">X-squared = <span class="number">38.272</span>, df = <span class="number">4</span>, p-value = <span class="number">9.845e-08</span></div><div class="line"></div><div class="line">Warning message:</div><div class="line">In chisq.test(x, p = p) : Chi-squared近似算法有可能不准</div></pre></td></tr></table></figure>
+<p>结果显示，卡方值为38.272，自由度为4，p值远小于0.01。</p>
+<h2 id="卡方分析的假设检验步骤">卡方分析的假设检验步骤</h2>
+<p>利用卡方分布进行假设检验的步骤与其他方法进行假设检验的步骤基本上一样，包括哪下步好：</p>
+<ol style="list-style-type: decimal">
+<li>确定进行检验的假设及其备选假设；</li>
+<li>求出期望频数和自由度；</li>
+<li>确定用于决策的拒绝域；</li>
+<li>计算检验统计量<span class="math inline">\(\chi^2\)</span>；</li>
+<li>查看检验统计量是否位于拒绝域以内；</li>
+<li>作出决策。</li>
+</ol>
+<h3 id="第2个案例">第2个案例</h3>
+<p>再看一个案例，这个案例还是来源于《深入浅出统计学》，案例是这个样子的：</p>
+<p>赌场中的某个赌桌上的骰子有问题，赌场老板列出了这个股子的观察频数，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>数值</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>频数</td>
+<td>107</td>
+<td>198</td>
+<td>192</td>
+<td>125</td>
+<td>132</td>
+<td>248</td>
+</tr>
+</tbody>
+</table>
+<p>现在我们要计算一下，这个股子到底有没有问题，我们按照卡方检验的步骤来进行。</p>
+<p>第一步：决定要进行检验的假设和备选假设。</p>
+<p>H0（假设）：骰子没问题，每一面数值出现的概率都相同，也就是1/6。</p>
+<p>H1（备选假设）：骰子有问题。</p>
+<p>第二步：求出期望频数和自由度。</p>
+<p>根据上面的数据，我们知道，所有的观察频数相加为1002，现在我们计算一下理论上每个面出现的频数，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>x</th>
+<th>观察频数</th>
+<th>期望频数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>107</td>
+<td>167</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>198</td>
+<td>167</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>192</td>
+<td>167</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>125</td>
+<td>167</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>132</td>
+<td>167</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>248</td>
+<td>167</td>
+</tr>
+</tbody>
+</table>
+<p>自由度为5，这个很好理解，6个期望频数，总和为1002，即我们必须求出6个信息，同时受到1个限制，因此<span class="math inline">\(\nu\)</span>=6-1=5.</p>
+<p>第三：确定用于做决策的拒绝域。</p>
+<p>从概率表中可以查出<span class="math inline">\(\chi^2_{1\%}(5)=15.09\)</span>，那么拒绝域为<span class="math inline">\(\chi^2&gt;15.09\)</span>的范围。</p>
+<p>第四：计算检验统计量<span class="math inline">\(\chi^2\)</span>，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/IGJ82gdH3b.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第五：查提检验统计量是否位于拒绝域以内</p>
+<p>拒绝域由<span class="math inline">\(\chi^2&gt;15.09\)</span>决定，由于我们计算出来的<span class="math inline">\(\chi^2=88.24\)</span>，因此检验统计量位于拉拒绝域内。</p>
+<p>第六：做出决策。</p>
+<p>由于我们计算出来的检验统计量位于拒绝域内，因此说明在显著性水平为1%的情况下，有足够的证据拒绝原假设，于是我们接受备选假设，骰子有问题。</p>
+<p>现在用R来过计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; p &lt;- c(<span class="number">1</span>/<span class="number">6</span>,<span class="number">1</span>/<span class="number">6</span>,<span class="number">1</span>/<span class="number">6</span>,<span class="number">1</span>/<span class="number">6</span>,<span class="number">1</span>/<span class="number">6</span>,<span class="number">1</span>/<span class="number">6</span>) </div><div class="line">&gt; x &lt;- c(<span class="number">107</span>,<span class="number">198</span>,<span class="number">192</span>,<span class="number">125</span>,<span class="number">132</span>,<span class="number">248</span>) </div><div class="line">&gt; chisq.test(x,p=p)</div><div class="line"></div><div class="line">        Chi-squared test <span class="keyword">for</span> given probabilities</div><div class="line"></div><div class="line">data:  x</div><div class="line">X-squared = <span class="number">88.24</span>, df = <span class="number">5</span>, p-value &lt; <span class="number">2.2e-16</span></div></pre></td></tr></table></figure>
+<p>在这个案例中，我们可以发现，卡方分析不仅能够比较两个率的大小，还能计算出理论频数与实际频数的差异，实际上，这就是<code>拟合优度（Goodness of Fit）</code>的思想，即看实际值与理论值（预测值）的差异有多大，在不同的场合下，拟合优度有不同的用处，例如，在组间比较时，通过比较实际值与理论值的差异大小，做出是否有统计学差异的结论；在模型评价中，根据实际值与模型值的差异大小，判断模型是否很好地拟合了数据；在判断数据是否服从某一分布时，根据其理论分布与实际数据的差异做出判断，等等。</p>
+<p>以下是其他的一些案例练习。</p>
+<h2 id="四格表资料的chi2检验">四格表资料的<span class="math inline">\(\chi^2\)</span>检验</h2>
+<h3 id="案例1">案例1</h3>
+<p>某医院欲比较异梨醇口服液（试验组）和氢氯噻嗪+地塞米松（对照组）降低颅内压的疗效。将200例颅内压增高症患者随机分为两组，结果见表7-1。问两组降低颅内压的总体有效率有无差别？（《医学统计学》第四版，孙振球，第七章 卡方检验 例7-1，P96）</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/chi02.png"> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">data71&lt;-matrix(c(99,75,5,21),nr = 2,dimnames = list(c(&quot;试验组&quot;, &quot;对照组&quot;),c(&quot;有效&quot;, &quot;无效&quot;)))</div><div class="line">data71</div></pre></td></tr></table></figure></p>
+<p>数据的四格表如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi03.png"></p>
+<p>这张图里的四个数是该表的基本数据，其余的数据都是由这4个基本数据推算出来的，称为<code>四格表（fourfold table）</code>资料。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">chi &lt;- chisq.test(data71)</div><div class="line">chi$expected #　显示理论数</div></pre></td></tr></table></figure>
+<p>理论数如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi04.png"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">chisq.test(data71,correct=<span class="literal">F</span>) </div><div class="line"><span class="comment"># correct = F表示不进行Yates连续性校正</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi05.png">
+
+</div>
+<p>结果：卡方值为12.8571，p值= 0.0003362小于0.01，按sig = 0.01的水准，拒绝原假设，接受备用假设，可以认为异山梨醇口服液降低颅内压的有效率高于氢氯噻嗪+地塞米松的有效率。这个结果与SAS计算的结果相同。R语言中默认的卡方检验是进行Yates连续性校正，因此上题中进行检验时，要加入correct=F。</p>
+<h2 id="四格表资料的fisher确切概率法">四格表资料的Fisher确切概率法</h2>
+<p>四格表中的计数资料的实际频数都是分类资料，是不连续的，因此计算出的卡方值都是离散型分布，而卡方界值表的依据是卡方分布，卡方分布是连续分布，因此在实际工作中，对于四格表资料，需要进行Yates校正，其规则如下： 1. 当<span class="math inline">\(n\geq 40\)</span>，且所有的<span class="math inline">\(T\geq 5\)</span>时，用卡方检验的基本公式。 2. 当<span class="math inline">\(n\geq 40\)</span>，但有<span class="math inline">\(1\leq T \geq 5\)</span>时，用校正公式，或改用四格表资料的Fisher确切概率法。 3. 当<span class="math inline">\(n\leq 40\)</span>，或<span class="math inline">\(T \leq 1\)</span>时，用四格表资料的Fisher确切概率法。</p>
+<h3 id="案例2">案例2</h3>
+<p>某医师欲比较胞磷胆碱与神经节苷酯治疗脑血管疾病的疗效，将78例脑血管疾病患者随机分为两组，结果见表7-2。问两种药物治疗脑血管疾病的有效率是否有差别？（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-2）</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi06.png">
+
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">data72&lt;-matrix(c(<span class="number">46</span>,<span class="number">18</span>,<span class="number">6</span>,<span class="number">8</span>),</div><div class="line">               nr = <span class="number">2</span>,</div><div class="line">               dimnames = list(c(<span class="string">"胞磷胆碱"</span>,<span class="string">"神经节苷脂"</span>),c(<span class="string">"有效"</span>,<span class="string">"无效"</span>)))</div><div class="line">chisq.test(data72,correct=<span class="literal">F</span>) <span class="comment"># 不进行Yates校正的结果</span></div><div class="line"></div><div class="line">chisq.test(data72,correct=<span class="literal">T</span>) <span class="comment"># 进行Yates校正的结果</span></div><div class="line"></div><div class="line"><span class="comment"># 这个结果与下面的结果一样</span></div><div class="line"><span class="comment"># 因为R中进行卡方检验时是默认进行Yates连续性校正的</span></div><div class="line">chisq.test(data72)</div></pre></td></tr></table></figure>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi07.png"></p>
+<p>不校正的情况下，卡方值为4.35，p值为0.03695小于0.05，进行卡方连续性校正的情况下，卡方值为3.1448,p=0.07617。校正与不校正得出的结果在0.05附近，因此下结论要谨慎。</p>
+<h2 id="配对四格表卡方检验">配对四格表卡方检验</h2>
+<h3 id="案例3">案例3</h3>
+<p>某实验室分别用乳胶凝集法和免疫荧光法对58名可疑系统红斑狼疮患者血清中抗核抗体进行测定，结果见表7-3。问两种方法的检测结果有无差别？（《医学统计学》第三版，孙振球，第七章 卡方检验，例7-3）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">data73&lt;-matrix(c(11,2,12,33),</div><div class="line">               nr = 2,dimnames = list(c(&quot;+&quot;, &quot;-&quot;),c(&quot;+&quot;, &quot;-&quot;)))</div><div class="line"></div><div class="line">library(epiR) # 载入epiR包，使用其中的epi.kappa函数</div><div class="line"></div><div class="line">mcnemar.test(data73) # 配对检验</div><div class="line"></div><div class="line">chisq.test(data73)$expect</div><div class="line"></div><div class="line">epi.kappa(data73)$kappa </div><div class="line"># 一致性检验，即考察这两个方法在检验方面是否吻合</div><div class="line"></div><div class="line"># 或者使用vcd包中的Kappa</div><div class="line">library(vcd)</div><div class="line">Kappa(data73)</div></pre></td></tr></table></figure>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi08.png"></p>
+<p>结果分析：McNemar配对卡方检验的p值为0.01616,在0.05水平上，有显著性差异，免疫荧光法的总体阳性检出率要高于乳胶凝集法。</p>
+<p>Kappa检验结果的p值小于0.01，估计值为0.455，说明两种方法的吻合度有统计学意义，但吻合度一般。</p>
+<p>简单来说，McNemar检验是比较两种方法A与B对同一个对象的检验是否有差异，判断哪种方法比较好，比较容易检验出来结果。而Kappa检验就是比较A与B这两种方法检验出来的结果是不是一致的。在有些配对案例中可能会出现A的方法优于B，但A与B检验的结果不一致的情况。</p>
+<h2 id="四格表精确fisher检验">四格表精确Fisher检验</h2>
+<h3 id="案例4">案例4:</h3>
+<p>某医师为研究乙肝免疫球蛋白预防胎儿宫内感染HBV的效果，将33例HBsAg阳性孕妇随机分为预防注射组和非预防组，结果见表7-4。问两组新生儿的HBV总体感染率有无差别？（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-4)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">data74&lt;-matrix(c(4,5,18,6),nr = 2,</div><div class="line">               dimnames = list(c(&quot;预防注射组&quot;, </div><div class="line">                                 &quot;非预防组&quot;),c(&quot;阳性&quot;, &quot;阴性&quot;)))</div><div class="line">chi&lt;-chisq.test(data74) </div><div class="line"># 理论频数小于5的情况，这里用Yates连续校正，</div><div class="line"># 默认的就是，不用添加correct = T</div><div class="line"></div><div class="line">chi$expected </div><div class="line"># 查看理论频数，有小于5的情况</div><div class="line"></div><div class="line">fisher.test(data74)</div></pre></td></tr></table></figure>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi09.png"></p>
+<h3 id="案例5">案例5:</h3>
+<p>某单位研究胆囊腺癌、腺瘤的P53基因表达，对同期手术切除的胆囊腺癌、腺瘤标本各10份，用免疫组化法检测P53基因，资料见表7-6。问胆囊腺癌和胆囊腺瘤的P53基因表达阳性率有无差别？（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-5）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">data75&lt;-matrix(c(6,1,4,9),nr = 2,</div><div class="line">               dimnames = list(c(&quot;胆囊腺癌&quot;, &quot;胆囊腺瘤&quot;),</div><div class="line">                               c(&quot;阳性&quot;, &quot;阴性&quot;)))</div><div class="line"></div><div class="line">fisher.test(data75)</div></pre></td></tr></table></figure>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi10.png"></p>
+<h2 id="无序rc列表">无序R×C列表</h2>
+<h3 id="案例6列与行的数目都大于2">案例6:列与行的数目都大于2</h3>
+<p>无序R×C列表这种情况是行、列都无序，并且行与列的数目都大于2，例如： 某医师研究物理疗法、药物治疗和外用膏药三种疗法治疗周围性面神经麻痹的疗效，资料见表7-8。问三种疗法的有效率有无差别（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-6）？ 如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi11.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">data76&lt;-matrix(c(199,164,118,7,18,26),</div><div class="line">               nr = 3,dimnames = list(c(&quot;物理疗法组&quot;, &quot;药物治疗组&quot;,&quot;外用膏药组&quot;),</div><div class="line">                                      c(&quot;有效&quot;, &quot;无效&quot;)))</div><div class="line">chi.result &lt;- chisq.test(data76)</div><div class="line">chi.result # 查看卡方分析结果</div></pre></td></tr></table></figure>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi12.png"></p>
+<h2 id="双向无序rc列表的卡方检验">双向无序R×C列表的卡方检验</h2>
+<h3 id="案例7">案例7:</h3>
+<p>某医师在研究血管紧张素I转化酶(ACE)基因I/D多态与2型糖尿病肾病(DN)的关系时，将249例2型糖尿病患者按有无糖尿病肾病分为两组，资料见表7-9，问两组2型糖尿病患者的ACE基因型总体分布有无差别（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-7）？ <img src="http://ortxpw68f.bkt.clouddn.com/chi13.png"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">data77 &lt;- matrix(c(<span class="number">42</span>,<span class="number">30</span>,<span class="number">48</span>,<span class="number">72</span>,<span class="number">21</span>,<span class="number">36</span>),</div><div class="line">                 nrow=<span class="number">2</span>,dimnames=list(c(<span class="string">"DN组"</span>,<span class="string">"无DN组"</span>),</div><div class="line">                                      c(<span class="string">"DD"</span>,<span class="string">"ID"</span>,<span class="string">"II"</span>)))</div><div class="line">chi.result77 &lt;- chisq.test(data77)</div><div class="line">chi.result77$expected</div><div class="line">chi.result77</div></pre></td></tr></table></figure>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi14.png"></p>
+<h2 id="双向无序rc列表的关联性检验">双向无序R×C列表的关联性检验</h2>
+<h3 id="案例8">案例8</h3>
+<p>测得某地5801人的ABO血型和MN血型结果如表7-10，问两种血型系统之间是否有关联？（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-8）</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi15.png">
+
+</div>
+<p>没有找到关于Pearson列联系数的函数，手工计算如下： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">data78 &lt;- matrix(c(431,388,495,137,490,410,587,179,902,800,950,32),nrow=4,dimnames=list(c(&quot;O&quot;,&quot;A&quot;,&quot;B&quot;,&quot;AB&quot;),</div><div class="line">                                                                                        c(&quot;M&quot;,&quot;N&quot;,&quot;MN&quot;)))</div><div class="line">chi.result &lt;- chisq.test(data78)</div><div class="line">chi.result</div><div class="line"></div><div class="line">sqrt(chi.result$statistic/(sum(data78)+chi.result$statistic)) # 列联系数</div><div class="line"></div><div class="line"># 根据手工计算结果，可以构建一个计算Pearson列联系数的自定义函数，如下所示：</div><div class="line"></div><div class="line">Pearson_Continuity &lt;- function(x)&#123;</div><div class="line">  chisq_result &lt;- chisq.test(x)$statistic </div><div class="line">  # 提取计算的卡方值</div><div class="line">  Pcoc &lt;- sqrt(chisq_result/(sum(x)+chisq_result))</div><div class="line">  print.noquote(&quot;Persaon列联系数&quot;) </div><div class="line"># print.noquote的作用是显示字符，不带引号，</div><div class="line"># 而print则是带引号</div><div class="line">  return(as.numeric(Pcoc))&#125;</div><div class="line"></div><div class="line">Pearson_Continuity(data78)</div></pre></td></tr></table></figure></p>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi16.png"></p>
+<h2 id="两两比较所有组进行两两比较">两两比较——所有组进行两两比较</h2>
+<p>当对所有组进行两两比较时，通常采用的方法是Bonferroni法，此方法对原有的检验水平进行调整，即原有的检验水平α除以比较次数得到调整后的检验水平。书本（《医学统计学》第三版，孙振球，P122）中的公式在分母中加了1，不清楚为什么，没有提出采用的是Bonferroni法。而另外两本参考书，即《医学统计学》第6版，马斌荣，P91与《医学统计学》第6版，颜虹，2010年，P155这两本书中所用到的两两比较的方法是Bonferroni法，在下面的题目中使用Bonferroni法。</p>
+<h3 id="案例9">案例9</h3>
+<p>对例7-6中的资料进行两两比较，以推断是否任两种疗法治疗周围性面神经麻痹的有效率均有差别？（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-9）</p>
+<p>例7-6中共有三组疗法，需要两两比较的次数是3次，因此检验水平是0.05/3=0.0167。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">data76&lt;-matrix(c(199,164,118,7,18,26),</div><div class="line">               nr = 3,</div><div class="line">               dimnames = list(c(&quot;物理疗法组&quot;, &quot;药物治疗组&quot;,&quot;外用膏药组&quot;),</div><div class="line">                               c(&quot;有效&quot;, &quot;无效&quot;)))</div><div class="line">chisq.test(data76[1:2,],correct=F) </div><div class="line"># 比较物理疗法组与药物治疗组，</div><div class="line"># R中默认四格表进行了Yates校正，</div><div class="line"># 此处设为F，不进行校正，因为实际值与观测值都大于5</div></pre></td></tr></table></figure>
+<p>结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/chi17.png"></p>
+<p>从结果可以看出物理疗法组与药物治疗组有统计学差异。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">chisq.test(data76[2:3,], correct=F)</div><div class="line">#比较药物治疗组与外用膏药组</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/chi18.png"> 从结果来看，药物治疗组与外用膏药组无统计学上的差异。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">chisq.test(data76[-2,],correct=F)</div><div class="line"># 比较物理疗法组与外用膏药组</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi19.png">
+
+</div>
+<p>从结果来看，物理疗法组与外用膏药组有统计学上的差异。</p>
+<h2 id="两两比较各个实验组与一个对照组进行比较">两两比较——各个实验组与一个对照组进行比较</h2>
+<p>两两比较——各个实验组与一个对照组进行比较 当用各个实验组与一个对照组分别进行比较时，需要对检验水平α进行校正，即α/(k-1),其中k是组别。在此案例中，组别k=3,因此，调整后的检验水平=0.05/(3-2)=0.025。</p>
+<h3 id="案例10">案例10:</h3>
+<p>以表7-8资料中的药物治疗组为对照组，物理疗法组与外用膏药组为试验组，试分析两试验组与对照组的总体有效率有无差别？（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-10）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">chisq.test(data76[1:2,],correct=F) </div><div class="line">#比较物理疗法组与药物治疗组</div><div class="line"></div><div class="line">chisq.test(data76[2:3,], correct=F) </div><div class="line">#比较药物治疗组与外用膏药组</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi20.png">
+
+</div>
+<p>第一个结果显示，P=0.009343小于0.025，表明物理疗法组与药物治疗组有统计学意义 第二个结果显示，P=0.03214大于0.025，表明药物治疗组与外用膏药组无统计学意义。</p>
+<p>如果不使用校正p值的这种方法，可以使用其它的R包来进行两两比较，其中要用到的R包是<code>rcompanion</code>。现在使用这个包来进行两两比较，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"rcompanion"</span>)</div><div class="line"><span class="keyword">library</span>(rcompanion)</div><div class="line">data76&lt;-matrix(c(<span class="number">199</span>,<span class="number">164</span>,<span class="number">118</span>,<span class="number">7</span>,<span class="number">18</span>,<span class="number">26</span>),</div><div class="line">               nr = <span class="number">3</span>,</div><div class="line">               dimnames = list(c(<span class="string">"物理疗法组"</span>, <span class="string">"药物治疗组"</span>,<span class="string">"外用膏药组"</span>),</div><div class="line">                               c(<span class="string">"有效"</span>, <span class="string">"无效"</span>))</div><div class="line"></div><div class="line">pairwiseNominalIndependence(data76,</div><div class="line">                            fisher = <span class="literal">FALSE</span>,</div><div class="line">                            gtest  = <span class="literal">FALSE</span>,</div><div class="line">                            chisq  = <span class="literal">TRUE</span>,</div><div class="line">                            method = <span class="string">"fdr"</span>,)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">               Comparison  p.Chisq p.adj.Chisq</div><div class="line"><span class="number">1</span> 物理疗法组 : 药物治疗组 <span class="number">1.68e-02</span>    <span class="number">0.025200</span></div><div class="line"><span class="number">2</span> 物理疗法组 : 外用膏药组 <span class="number">9.34e-06</span>    <span class="number">0.000028</span></div><div class="line"><span class="number">3</span> 药物治疗组 : 外用膏药组 <span class="number">4.78e-02</span>    <span class="number">0.047800</span></div></pre></td></tr></table></figure>
+<h2 id="单向rc列联表分析列有序">单向R×C列联表分析——列有序</h2>
+<h3 id="案例11">案例11</h3>
+<p>某公司研制一种治疗风湿性关节炎的中药，选择试验组和对照组各60例，试验组服用新药，对照组服用常规药物。以中医证侯疗效为主要疗效指标，分为无效、有效、显效、痊愈四个等级。治疗两个疗程后，两组的疗效情况如表5.4所示（略，见代码），欲分析两种药物的疗效是否有差异（《医学案例统计分析与SAS应用》第五章例5.4，冯国双，北京大学医学出版社，2010:93）。</p>
+<h3 id="第一种方法ridit分析">第一种方法：Ridit分析</h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">data54 &lt;- c(33,18,24,31,1,9,2,2)</div><div class="line">data54m &lt;- matrix(data54,nrow=2,</div><div class="line">                  dimnames=list(c(&quot;对照组&quot;,&quot;实验组&quot;),</div><div class="line">                                c(&quot;无效&quot;,&quot;有效&quot;,&quot;显效&quot;,&quot;痊愈&quot;)))</div><div class="line">data54m</div><div class="line"></div><div class="line">#从数据来看，列变量，即无效、有效、显效、痊愈这四个等级是有序的，</div><div class="line"># 即越来越好，而行变量，对照组与实验组，这是无效的，适合采用Ridit分析：</div><div class="line"></div><div class="line">library(Ridit)</div><div class="line">ridit(data54m,1) </div><div class="line"># 函数ridit的参数中1表示分组信息是行，即行是无序的，列是有序的，</div><div class="line"># 如果是2，则表示分组信息在列，即列是无序的，行是有序的</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/chi21.png"> ### 第二种方法：CMH分析</p>
+<p>用CMH也能进行RC列联表的单向有序分析，CMHtest函数在vcdExtra包中，需要载入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(vcdExtra)</div><div class="line">CMHtest(data54m)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi22.png">
+
+</div>
+<p>CMH的单向有序分析参见第3行，即cmeans，这一行表示列有序，行无序的分析结果。</p>
+<h2 id="双向有序rc列联表分析-cmh检验">双向有序R×C列联表分析-CMH检验</h2>
+<p>对于双向有序的RC列联表进行分析，常用于CMH检验，卡方检验常用于分类变量资料的一种假设检验，该法主要用于两个或多个样本率的比较，也可以用于两变量间的关联分析、频属分析的拟合优度检验等。CMH检验是在1959年提出的mh统计方法的基础上提出来的，1988年才发展完善，现在习惯上称之为扩展的MH卡方检验。他们的主要区别在于，如果用同样的方法做同样的实验，由于实验的地点不同，若将这些不同地点的实验数据简单合并后有卡方检验，会参杂很多混杂因素，这会使检验结果产生很大的偏差—主要是由不同实验的点的软、硬条件不同造成的。采用CMH检验可以解决这类问题，采用的是多中心或分层分析方法，多用R×C列联表的分层统计处理1。此外，CMH还应用于双向有序的RC列联表的分析。如下所示：</p>
+<h3 id="案例12">案例12</h3>
+<p>某研究者欲研究年龄与冠状动脉粥样硬化等级之间的关系，将278例尸解资料整理成表7-13，问年龄与冠状动脉粥样硬化等级之间是否存在线性变化趋势？（《医学统计学》第四版，孙振球，第七章 卡方检验，例7-9）</p>
+<h4 id="第一种方法">第一种方法：</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">library(vcdExtra) </div><div class="line"># 载入vcdExtra包</div><div class="line">data711 &lt;- matrix(c(70,27,16,9,22,24,23,20,4,9,13,15,2,3,7,14),nrow=4)</div><div class="line">dimnames(data711) &lt;- list(age=c(&quot;20~&quot;,&quot;30~&quot;,&quot;40~&quot;,&quot;≥50&quot;),degree=c(&quot;-&quot;,&quot;+&quot;,&quot;++&quot;,&quot;+++&quot;))</div><div class="line">CMHtest(data711) # 分析数据</div><div class="line">chisq.test(data711)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi23.png">
+
+</div>
+<h4 id="第二种方法">第二种方法：</h4>
+<p>通过coin包中的lbl_test函数也能进行CMH双向有序表的计算：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">library(coin)</div><div class="line">data711t &lt;- as.table(data711)</div><div class="line">lbl_test(data711t,scores=list(age=c(1,2,3,4),degree=c(1,2,3,4)))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi24.png">
+
+</div>
+<p>其中，scores是各个有序变量的得分，与教材中相同。</p>
+<h4 id="第三种方法">第三种方法：</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">library(reshape2)</div><div class="line">datax &lt;- melt(data711)</div><div class="line">datax$age &lt;- factor(datax$age,order=T)</div><div class="line">datax$degree &lt;- factor(datax$degree,order=T)</div><div class="line">CMHtest(xtabs(value~age+degree,data=datax))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi25.png">
+
+</div>
+<p>结果解读：(1)第1行的cor指的是行与列都为有序变量时的结果，即教材中的线性回归分量，为63.389，这个与教材的结果不一致，但R计算的结果与教材附带的SAS程序计算出来的结果一致，教材可能是印刷错误；(2)第2行的rmeans表示行是有序变量时的结果；(3)第3行的cmeans表示列是有序变量时的结果；(4)general表示列与行都是无序变量时的结果。</p>
+<p>常规卡方计算的结果是71.4325。线性回归分量的结果是63.389，二者之差是教材中的偏离线性回归分量，即71.4325-63.389=8.0435，相应的P值为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">1-pchisq(8.0435,8)</div></pre></td></tr></table></figure>
+<p>p值结果为0.4292325，可以认为年龄与冠状动物粥样硬化之间不仅存在相关关系，并且为线性关系，从数据中可以看出来，冠状动脉粥样硬化的等级随着年龄的增加而增高。 注：pchisq(8.0435,8)表示，计算自由度为8，卡方值是8.0435的左侧卡方分布曲线下面积。</p>
+<h4 id="第4种方法">第4种方法：</h4>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"multiCA"</span>)</div><div class="line"><span class="keyword">library</span>(multiCA)</div><div class="line">multiCA.test(data711)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&gt; multiCA.test(data711)</div><div class="line">$overall</div><div class="line"></div><div class="line">	Multinomial Cochran-Armitage trend test</div><div class="line"></div><div class="line">data:  data711</div><div class="line">W = <span class="number">63.68</span>, df = <span class="number">3</span>, p-value = <span class="number">9.611e-14</span></div><div class="line">alternative hypothesis: true slope <span class="keyword">for</span> outcomes <span class="number">1</span>:nrow(x) is not equal to <span class="number">0</span></div><div class="line"></div><div class="line"></div><div class="line">$individual</div><div class="line">[<span class="number">1</span>] <span class="number">1.020527e-10</span> <span class="number">4.248539e-01</span> <span class="number">1.963178e-02</span> <span class="number">2.613094e-09</span></div><div class="line">attr(,<span class="string">"method"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"Holm-Shaffer"</span></div></pre></td></tr></table></figure>
+<h2 id="cmh检验对多层分类资料的分析">CMH检验对多层分类资料的分析</h2>
+<h3 id="案例13">案例13</h3>
+<p>某公司推出一种治疗颈椎病的治疗仪，为评价其疗效，进行多中心的随机对照试验。共选择两家医院，每家医院60例研究对象，试验组与对照组各30例。以颈痛疗效作为主要疗效指标，根据缓解程度分为有效和无效。治疗20天后，各中心每组的疗效情况如下所示（参见代码），欲分析两种治疗仪的疗效是否有差异（《医学案例统计分析与SAS应用》第五章例5.4，冯国双，北京大学医学出版社，2010:97）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">data56 &lt;- c(8,4,22,26,11,9,19,21)</div><div class="line">data56a &lt;- array(data56,dim=c(2,2,2))</div><div class="line">data56a</div><div class="line">dimnames(data56a) &lt;- list(</div><div class="line">  c(&quot;对照组&quot;,&quot;试验组&quot;),</div><div class="line">  c(&quot;无效&quot;,&quot;有效&quot;),</div><div class="line">  c(&quot;中心1&quot;,&quot;中心2&quot;))</div><div class="line"></div><div class="line">CMHtest(data56a,overall=TRUE)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi26.png">
+
+</div>
+<p>结果由三部分构成，第一部分是中心1的结果，第二部分是中心2 的结果，第三部分是控制了中心的影响后，两组疗效差异无统计学意义。</p>
+<h2 id="拟合优势的卡方检验">拟合优势的卡方检验</h2>
+<h3 id="案例14判断数据是否服从泊松分布">案例14：判断数据是否服从泊松分布</h3>
+<p>观察某克山病区克山病患者的空间分布情况，调查者将该地区划分为279个取样单位，统计各取样单位历年累计病例数，资料见表7-15的第（1）、（2）栏，问此资料是否服从Poisson分布？（《医学统计学》第三版，孙振球，第七章 卡方检验，例7-13）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">x&lt;-0:6</div><div class="line">y&lt;-c(26,51,75,63,38,17,9)</div><div class="line">mean&lt;-mean(rep(x,y))</div><div class="line">q&lt;-ppois(x,mean)</div><div class="line">n&lt;-length(y)</div><div class="line">p&lt;-c()</div><div class="line">p[1]&lt;-q[1]</div><div class="line">p[n]&lt;-1-q[n-1]</div><div class="line">for(i in 2:(n-1))</div><div class="line">  p[i]&lt;-q[i]-q[i-1]</div><div class="line"></div><div class="line">chisq.test(y, p=p,correct=F)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi27.png">
+
+</div>
+<h3 id="案例15-判断数据是否服从某一比例">案例15 ：判断数据是否服从某一比例</h3>
+<p>假设H0：总体具有某分布F 备择假设H1：总体不具有该分布。 我们将数轴分成若干个区间，所抽取的样本会分布在这些区间中。在原假设成立的条件下，我们便知道每个区间包含样本的个数的期望值。用实际值Ni 与期望值Npi可以构造统计量K 。皮尔森证明，n趋向于无穷时，k收敛于m-1的塔防分布。m为我们分组的个数。有了这个分布，我们就可以做假设检验。</p>
+<p>某消费者协会为了确定市场上消费者对5咎品牌啤酒的喜好情况，随机抽取了1000名啤酒爱好者作为样本进行如下试验：每个人得到5种品牌的啤酒各一瓶，但未标明牌子。这5种啤酒按分别写着A、B、C、D、E字母的5张纸片随机的顺序送给每一个人，下表是根据样本资料整理得的各种品牌啤酒爱好者的频数分页，试根据这些数据判断消费者对这5种品牌啤酒的爱好有无明显差异？ <img src="http://ortxpw68f.bkt.clouddn.com/chi28.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(210,312,170,85,223) </div><div class="line">n &lt;- sum(x); m &lt;- length(x) </div><div class="line">p &lt;- rep(1/m,m) </div><div class="line">K &lt;- sum((x-n*p)^2/(n*p)); K #计算出K值 </div><div class="line">p &lt;- 1-pchisq(K,m-1); p #计算出p值</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi29.png">
+
+</div>
+<p>在R语言中 chisq.test()，可以完成拟合优度检验。默认就是检验是否为均匀分布，如果是其他分布，需要自己分组，并在参数p中指出。上面题目的解法如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chisq(x)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi30.png">
+
+</div>
+<p>同样拒绝原假设。</p>
+<h3 id="案例16-判断数据是否服从正态分布">案例16 ：判断数据是否服从正态分布</h3>
+<p>抽取31名学生的成绩，检验是否为正态分布。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(25,45,50,54,55,61,64,68,72,75,75,78,79,81,83,84,84,84,85,86,86,86,87,89,89,89,90,91,91,92,100) </div><div class="line">A &lt;- table(cut(x,breaks=c(0,69,79,89,100))) ;A#对样本数据进行分组。 </div><div class="line">p &lt;- pnorm(c(70,80,90,100),mean(x),sd(x)) #获得理论分布的概率值 </div><div class="line">p &lt;- c(p[1],p[2]-p[1],p[3]-p[2],1-p[3]) </div><div class="line">chisq.test(A,p=p)</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/chi31.png"> 结果显示，其p值小于0.05，成绩不属于正态分布。</p>
+<p>再用shirpo.test()和qq图检验一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">shapiro.test(x)</div><div class="line">qqnorm(x);qqline(x, col = 2)</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/chi32.png"> <img src="http://ortxpw68f.bkt.clouddn.com/chi33.png"></p>
+<p>结果显示，p值小于0.05，不是正态分页，并且QQ图明显表示出成绩不符合正态分布。</p>
+<h3 id="案例17-判断数据是否符合原比例">案例17 ：判断数据是否符合原比例</h3>
+<p>大麦杂交后关于芒性的比例应该是 无芒：长芒：短芒=9:3:4 。我们的实际观测值是335：125：160 。请问观测值是否符合预期？ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">p &lt;- c(9/16,3/16,4/16) </div><div class="line">x &lt;- c(335,125,160) </div><div class="line">chisq.test(x,p=p)</div></pre></td></tr></table></figure></p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi34.png">
+
+</div>
+<p>在分组的时候要注意，每组的频数要大于等于5.如果理论分布依赖于多个未知参数，只能先由样本得到参数的估计量。然后构造统计量K，此时K的自由度减少位置参数的数量个。</p>
+<h2 id="ks检验">ks检验</h2>
+<p>R语言中提供了ks.test()函数，理论上可以检验任何分布。他既能够做单样本检验，也能做双样本检验。</p>
+<h3 id="案例18判断数据是否服从指数分布">案例18：判断数据是否服从指数分布</h3>
+<p>记录一台设备无故障工作时常，并从小到大排序420 500 920 1380 1510 1650 1760 2100 2300 2350。问这些时间是否服从拉姆达=1/1500的指数分布？ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(420,500,920,1380,1510,1650,1760,2100,2300,2350) </div><div class="line">ks.test(x,&quot;pexp&quot;,1/1500)</div></pre></td></tr></table></figure></p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi35.png">
+
+</div>
+<h3 id="案例19判断两批数据是否服从相同分布">案例19：判断两批数据是否服从相同分布</h3>
+<p>有两个分布，分别抽样了一些数据，问他们是否服从相同的分布。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">X&lt;-scan() </div><div class="line">0.61 0.29 0.06 0.59 -1.73 -0.74 0.51 -0.56 0.39 1.64 0.05 -0.06 0.64 -0.82 0.37 1.77 1.09 -1.28 2.36 1.31 1.05 -0.32 -0.40 1.06 -2.47</div><div class="line"></div><div class="line">Y&lt;-scan() </div><div class="line">2.20 1.66 1.38 0.20 0.36 0.00 0.96 1.56 0.44 1.50 -0.30 0.66 2.31 3.29 -0.27 -0.37 0.38 0.70 0.52 -0.71</div><div class="line"></div><div class="line">ks.test(X,Y)</div></pre></td></tr></table></figure></p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/chi36.png">
+
+</div>
+<h2 id="将频数表转换为原始数据">将频数表转换为原始数据</h2>
+<p>在做卡方分析时，我们经常使用频数表，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; rc &lt;- matrix(c(<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">2</span>),nrow=<span class="number">4</span>,byrow=<span class="literal">T</span>)</div><div class="line">&gt; rc &lt;- matrix(c(<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">2</span>),nrow=<span class="number">2</span>,byrow=<span class="literal">T</span>)</div><div class="line">&gt; colnames(rc) &lt;- c(<span class="string">"somker"</span>,<span class="string">"nonsmoker"</span>)</div><div class="line">&gt; rownames(rc) &lt;- c(<span class="string">"g1"</span>,<span class="string">"g2"</span>)</div><div class="line">&gt; rc</div><div class="line">   somker nonsmoker</div><div class="line">g1      <span class="number">3</span>         <span class="number">3</span></div><div class="line">g2      <span class="number">4</span>         <span class="number">2</span></div></pre></td></tr></table></figure>
+<p>但有时候我们需要把频数表转换为原始数据，此时可以使用<code>NCStats</code>这个包，这个包无法使用<code>install.packages</code>命令安装，但可以去它的官网进行安装，如下所示：</p>
+<p>http://www.rforge.net/NCStats/files</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/CJI9ABCjga.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>下载最新版的即可，安装，不过这个包还依赖于其它包的安装，根据R的提示安装即可，我在安装过程中，系统提示还要安装<code>FSA</code>和<code>plotrix</code>这两个包，安装后，加载此包，将<code>rc</code>这个数据还原于原始数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(NCStats)</div><div class="line">rc</div><div class="line">frc &lt;- expandTable(rc,c(<span class="string">"group"</span>,<span class="string">"somker status"</span>))</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; rc</div><div class="line">   somker nonsmoker</div><div class="line">g1      <span class="number">3</span>         <span class="number">3</span></div><div class="line">g2      <span class="number">4</span>         <span class="number">2</span></div><div class="line">&gt; frc &lt;- expandTable(rc,c(<span class="string">"group"</span>,<span class="string">"somker status"</span>))</div><div class="line">&gt; frc</div><div class="line">   group somker status</div><div class="line"><span class="number">1</span>     g1        somker</div><div class="line"><span class="number">2</span>     g1        somker</div><div class="line"><span class="number">3</span>     g1        somker</div><div class="line"><span class="number">4</span>     g2        somker</div><div class="line"><span class="number">5</span>     g2        somker</div><div class="line"><span class="number">6</span>     g2        somker</div><div class="line"><span class="number">7</span>     g2        somker</div><div class="line"><span class="number">8</span>     g1     nonsmoker</div><div class="line"><span class="number">9</span>     g1     nonsmoker</div><div class="line"><span class="number">10</span>    g1     nonsmoker</div><div class="line"><span class="number">11</span>    g2     nonsmoker</div><div class="line"><span class="number">12</span>    g2     nonsmoker</div></pre></td></tr></table></figure>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
-<li>孙振球. 医学统计学.第3版[M]. 人民卫生出版社, 2010.</li>
-<li><a href="http://www.cnblogs.com/chaosimple/p/3182157.html" target="_blank" rel="external">浅谈协方差矩阵</a></li>
-<li></li>
+<li>http://doctor.51daifu.com/2007/0305/1ADAD919C959T148648.shtml</li>
+<li>http://blog.sina.com.cn/s/blog_686dcf990100z9q3.html</li>
+<li>http://medstats.blog.163.com/blog/static/17974801620089108192736/</li>
+<li>http://blog.sina.com.cn/s/blog_4b361fe00100y222.html</li>
+<li>孙振球. 医学统计学[M]. 人民卫生出版社, 2010.</li>
+<li>徐俊晓. 统计学与R读书笔记(第六版)</li>
+<li>葛毅, 胡良平. 高维列联表资料的统计分析与 SAS 软件实现 (一)[J]. 中西医结合学报, 2009, 7(11): 1086-1089.</li>
+<li>http://bbs.pinggu.org/thread-521307-1-1.html↩</li>
+<li>白话统计.冯国双</li>
+<li>医学统计学与R语言（公众号）</li>
 </ol>
 
           
@@ -1250,6 +1545,358 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/05/BioStatistics/生物统计-07协方差分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/05/BioStatistics/生物统计-07协方差分析/" itemprop="url">协方差分析笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-05T12:01:00+08:00">
+                2017-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,804
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  19
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>以前我们介绍过，方差分析方法可以用于比较两组或多组均数，其处理因素一般是可以控制的。方差分析要求各比较组除了所施加的处理因素不同外，其它对观察指标有影响的因素应齐同或均衡，也就是说，我要研究某个药物的不同剂量对小鼠的体重影响时，我们要保证每组的小鼠体重在给药前都相同或接近。但是在实际工作中，有时候有些因素根本无法控制，或者由于实验设计的疏忽、实验条件的限制等原因造成对观察指标有影响的个别因素未加控制或难以它抑制。例如，在降压药物疗效考核的临床试验中，患者的初始血压水平对服药一段时间后的血压下降量有影响，但患者的初始血压水平是难以控制的。如果不考虑各组患者的初始血压水平的差异，直接用方差分析的方法比较不同处理组患者的平均血压下降量，以评价药物的降压效果是不恰当的。如何在比较两组或多组均数的同时扣除或均衡这些不可控制因素的影响，可以考虑协方差分析的方法。</p>
+<h2 id="斜方差矩阵">斜方差矩阵</h2>
+<p>举个例子，某个数据集有3列，分别为x，y和z，那么它的协方差矩阵如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/IaGbcLhe9F.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中红色方框的部分是每列的方差，蓝色表示的是两两组合后（也就是xy，xz，yz）的协方差，其中我们可以发现，左下角用蓝色圈起来的部分与右上的未圈部分是一样的。用红色圈起来的部分好理解，在R中直接使用<code>var(x)</code>或<code>sd(x)^2</code>就可以直接计算，现在讲一下协方差如何计算，它的公式如下所示：</p>
+<p><span class="math inline">\(cov(X,Y)=\frac{\sum_{i=1}^n (X_{i}-\bar{X})(Y_{i}-\bar{Y})}{n-1}\)</span></p>
+<p>这个公式如果不好理解的话，可以看一个案例，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(<span class="number">49</span>,<span class="number">8</span>,<span class="number">12</span>,<span class="number">19</span>,<span class="number">3</span>,<span class="number">34</span>,<span class="number">20</span>,<span class="number">49</span>,<span class="number">20</span>,<span class="number">31</span>)</div><div class="line">y &lt;- c(<span class="number">7</span>,<span class="number">19</span>,<span class="number">8</span>,<span class="number">37</span>,<span class="number">43</span>,<span class="number">17</span>,<span class="number">34</span>,<span class="number">14</span>,<span class="number">26</span>,<span class="number">41</span>)</div><div class="line">z &lt;- c(<span class="number">29</span>,<span class="number">16</span>,<span class="number">14</span>,<span class="number">22</span>,<span class="number">21</span>,<span class="number">17</span>,<span class="number">27</span>,<span class="number">37</span>,<span class="number">21</span>,<span class="number">21</span>)</div><div class="line">cov_data &lt;- matrix(c(x,y,z),ncol=<span class="number">3</span>)</div><div class="line">colnames(cov_data) &lt;- c(<span class="string">"x"</span>,<span class="string">"y"</span>,<span class="string">"z"</span>)</div><div class="line">cov_data</div><div class="line"><span class="comment"># x  y  z</span></div><div class="line"><span class="comment"># [1,] 49  7 29</span></div><div class="line"><span class="comment"># [2,]  8 19 16</span></div><div class="line"><span class="comment"># [3,] 12  8 14</span></div><div class="line"><span class="comment"># [4,] 19 37 22</span></div><div class="line"><span class="comment"># [5,]  3 43 21</span></div><div class="line"><span class="comment"># [6,] 34 17 17</span></div><div class="line"><span class="comment"># [7,] 20 34 27</span></div><div class="line"><span class="comment"># [8,] 49 14 37</span></div><div class="line"><span class="comment"># [9,] 20 26 21</span></div><div class="line"><span class="comment"># [10,] 31 41 21</span></div></pre></td></tr></table></figure>
+<p>以上面的这个矩阵为例说明一下<code>cov(X,Y)</code>是如何计算的，计算公式表示，x的值减去x的均值得到一个向量，y的值减去y的均值，得到一个向量，这两个向量相乘，并除以n-1（这里就是9了），就得到了<code>cov(X,Y)</code>，现在计算一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sum((x-mean(x))*(y-mean(y))/(length(x)-<span class="number">1</span>))</div><div class="line">[<span class="number">1</span>] -<span class="number">96.55556</span></div></pre></td></tr></table></figure>
+<p>那么此时，<code>cov_data</code>协方差矩阵的第1列，第2行或第2列第1行的值就是-96.55556，也就是下面的黄色部分，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/9lkfGGFcJL.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>接着再计算<code>cov(z,x)</code>和<code>cov(z,y)</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; sum((x-mean(x))*(z-mean(z))/(length(x)-<span class="number">1</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">76.38889</span></div><div class="line">&gt; sum((z-mean(z))*(y-mean(y))/(length(x)-<span class="number">1</span>))</div><div class="line">[<span class="number">1</span>] -<span class="number">7.444444</span></div></pre></td></tr></table></figure>
+<p>把它们填到这个矩阵中，就是下面的这个样子：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/cGaLIDmJ35.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>剩下的绿色部分就是每列的方差的，很好计算，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; var(x)</div><div class="line">[<span class="number">1</span>] <span class="number">254.9444</span></div><div class="line">&gt; <span class="comment"># 或sd(x)^x</span></div><div class="line">&gt; var(y)</div><div class="line">[<span class="number">1</span>] <span class="number">182.0444</span></div><div class="line">&gt; sd(z)^<span class="number">2</span></div><div class="line">[<span class="number">1</span>] <span class="number">47.16667</span></div></pre></td></tr></table></figure>
+<p>再补充好矩阵，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180918/a4kghcFa6f.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上面只是过计算过程，在R中直接使用<code>cov()</code>函数即可，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; cov(cov_data)</div><div class="line">          x          y         z</div><div class="line">x <span class="number">254.94444</span> -<span class="number">96.555556</span> <span class="number">76.388889</span></div><div class="line">y -<span class="number">96.55556</span> <span class="number">182.044444</span> -<span class="number">7.444444</span></div><div class="line">z  <span class="number">76.38889</span>  -<span class="number">7.444444</span> <span class="number">47.166667</span></div></pre></td></tr></table></figure>
+<p>在R中协方差矩阵的计算原理就搞清楚了。</p>
+<h2 id="协方差分析基本思想">协方差分析基本思想</h2>
+<p>协方差分析(analysis of covariance)是将线性回归分析与方差分析结合起来的一种统计方法。在协方差分析中，影响观察指标Y（应变量）的往往是一些定性变量；而在线性回归分析中，影响Y的都是定量变量。协方差分析的基本思想就是将那些定量产变量X（指未加或难以控制的因素）对Y的影响看作协变量(covariate)，建立应变量Y随协变量X变化的线性回归关系，并利用这种回归关系把X值化为相等后再进行各级Y的修正均数(adjusted means)的比较，其实质是从Y的总平方和中扣除协变量X对Y的回归平方和，对残差平方和作进一步分解后再进行方差分析，以更好地评价处理因素的效应。</p>
+<p>按方差分析不同实验设计类型，相应有不同的协方差分析，如有完全随机设计、随机区组（配伍组）设计、拉丁方设计和析因设计等类型的协方差分析，而且协变量可以有一个、两个或多个，分析方法略有不同，但其解决问题的基本思想相同。</p>
+<h2 id="应用条件">应用条件</h2>
+<p>协方差分析有两个重要的应用条件：一是与方差分析的应用条件相同，即理论上要求观察变量服从正态分布，各观察变量相互独立，各样本的总体方差齐性；二是各总体客观存在应变量对协变量的线性回归关系且斜率相同（回归线平行），即要求各样本回归系数b本身有统计学意义而各样本回归系数b间的差别无统计学意义。因此，进行协方差分析时，必须先对样本资料进行方差齐性检验和回归系数的假设检验，若满足这两个条件或经变量变换后满足这两个条件，才可作协方差分析。</p>
+<p>协方差分析要求协变量是连续变量，而且不能是影响处理的变量，其取值应在研究之前被观察；或者虽在研究中被观察，但不能受到处理的影响。</p>
+<p>协方差分析中比较的修正均数，而修正均数实际上是假设协变量取值固定在其总均数时的观察变量的均数。修正均数间的差别与实际均数间的差别并不是一回事，只是用作合理比较。当各比较组的协变量相关悬殊时，协变量的总均数可能不落在各处理组协变量的实测范围内，这时的修正均数可能是对回归线的一种外推，但是这种外推是否仍满足线性和平等的条件无人知晓。因此，协方差分林的时最好先对协变量间的差别作假设检验，协方差分析应用于协变量均数间差别不大的资料较好，利于对分析结果作出较恰当的解释。</p>
+<p>如果在多因素研究中有一个或多个因素（协变量）不能或难以控制，而这个或这些协变量对观察变量可能有影响，解决这一类问题可以用多元协方差分析方法(analysis of multiple covariance)。</p>
+<h2 id="分析步骤">分析步骤</h2>
+<p>现在我们以完全随机资料为例，设有G组回归样本，每组有n对观察值，总观察值对数为N=nG（一般情况为各组有<span class="math inline">\(n_{j}\)</span>对观察值，总观察值对数为<span class="math inline">\(N=n_{1}+n_{2}+\cdots+n_{G})\)</span>，其基础数据与协方差分析计算模式如表13-1和表13-2。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180827/i5D4G975JD.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180827/gg24L5fkFj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<ol style="list-style-type: decimal">
+<li><p>计算各组<span class="math inline">\(\sum X_{j},\sum Y_{j},\sum X_{j}^2,\sum Y_{j}^2,\sum X_{j},\sum Y_{j},\bar{X_{j}},\bar{Y_{j}}\)</span></p></li>
+<li><p>利用合计项各数据计算较正数<span class="math inline">\(C_{1},C_{2},C_{3}\)</span>，以及总变异的离均差平方和<span class="math inline">\(l_{XX},l_{YY}\)</span>积和<span class="math inline">\(l_{XY}\)</span>及自由度<span class="math inline">\(\nu\)</span>，如下所示：</p></li>
+</ol>
+<p><span class="math inline">\(C_{1}=\frac{(\sum X)^2}{N},C_{2}=\frac{\sum Y)^2}{N},C_{3}=\frac{\sum X \cdot \sum Y}{N}\)</span></p>
+<p><span class="math inline">\(l_{XX}=\sum X^2=C_{1},l_{YY}=\sum Y^2=C_{2}\)</span></p>
+<p><span class="math inline">\(l_{XY}=\sum XY=C_{3}\)</span></p>
+<p><span class="math inline">\(\nu=N-1\)</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>计算各处理组间的离均差平方和<span class="math inline">\(l_{XX},l_{YY}\)</span>，积和<span class="math inline">\(l_{XY}\)</span>及自由度<span class="math inline">\(\nu\)</span>，如下所示：</li>
+</ol>
+<p><span class="math inline">\(l_{XX}=\sum \frac{(\sum X_{j})^2}{n_{j}}-C_{1}\)</span></p>
+<p><span class="math inline">\(l_{XX}=\sum \frac{(\sum Y_{j})^2}{n_{j}}-C_{2}\)</span></p>
+<p><span class="math inline">\(l_{XX}=\sum \frac{(\sum X_{j})\sum y_{j})}{n_{j}}-C_{3}\)</span></p>
+<p><span class="math inline">\(\nu=G-1\)</span></p>
+<ol start="4" style="list-style-type: decimal">
+<li><p>列出协方差分析计算表13-2，将上述第2步，第3步的计算结果列入表的左侧部分，再由总变量的<span class="math inline">\(l_{XX},l_{XY}\)</span>及<span class="math inline">\(\nu\)</span>减去与处理组（组间）相应的各值，得到组内的<span class="math inline">\(l_{XX},l_{XY}\)</span>及<span class="math inline">\(\nu\)</span>。</p></li>
+<li><p>计算回归估计估计误差平方和<span class="math inline">\(\sum(Y-\bar{Y})^2\)</span>及徙度，如表13-2右侧部分，其中总的平方和、组内平方和分别由下面的公式计算：</p></li>
+</ol>
+<p><span class="math inline">\(\sum(Y-\bar{Y})^2=l_{YY}-\frac{l_{XY}^2}{l_{XX}}\)</span></p>
+<p>总的平方和减去组内平方和即为“修正零数”的平方和，总的及组内的自由度分别为表13-2左侧相应部分的自由度减去1，再由总的自由度减去组内的自由度得修正均数的自由度。</p>
+<ol start="6" style="list-style-type: decimal">
+<li>以修正均数和组内的估计误差平方和分别除以相应的自由度得到修正均数和组内的估计误差均方，简称为修正均数均方和组内均方，再按下面公式计算F值：</li>
+</ol>
+<p><span class="math inline">\(F=\frac{修正均数均方}{组内均方}\)</span></p>
+<ol start="7" style="list-style-type: decimal">
+<li><p>以上述公式中的公子和分母两均方的自由度查表F表，得到P值，按所设立的检验水准α作出统计推断，若<span class="math inline">\(P\leq \alpha\)</span>，则可认为各总体修正均数问总的来说有差别，但空间哪两组间有差别，哪两组间没有差别，必要的时候还要做进一步的多重比较。</p></li>
+<li><p>若需要计算各修正均数，可先按下面的公式计算出公共回归系数(common regression coefficient)<span class="math inline">\(b_{c}\)</span>，再由下面的公式计算出各修正均数<span class="math inline">\(\bar{y_{j}}^*\)</span> <span class="math inline">\(b_{c}=\frac{组内l_{XY}}{组内l_{XX}},\quad \bar{Y_{j}}^*=\bar{Y_{j}}-b_{c}(\bar{X_{j}}-\bar{X})\)</span></p></li>
+<li><p>修正均数间的多重比较，使用q检验，公式如下所示：</p></li>
+</ol>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/f64H14EFIE.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上式中<span class="math inline">\(\bar{Y_{A}}^*,\bar{Y_{B}}^*\)</span>为多重比较中任两个对比组的修正均数，分母为其差值的标准误，<span class="math inline">\(S_{Y \cdot X}^2\)</span>为组内估计误差的均方，<span class="math inline">\(n_{0}\)</span>为每组平均例数，a为将修正均数按大小顺序排列后两对比修正均数间所包含的组数，求得q之后，先按协方差分析表“估计误差”栏中组内自由度和a，查表得到p值，然后再按所设立的检验水准a作推断结论。</p>
+<h2 id="完全随机设计资料的协方差分析">完全随机设计资料的协方差分析</h2>
+<p>现在看一个案例A，如下所示： ### 案例A 为研究某降血糖药物的有效性及其合用盐酸二甲双胍片的有效性，选择收治90名2型糖尿病患者，并采用随机对照试验，分为三个治疗组，第一组为该降糖药组，第二组为盐酸二甲双胍片组，第三组为该降糖药+盐酸二甲双胍片组，每组30名患者，治疗3个月，主要有效性指标为糖化血红蛋白。测得每个患者入组前（X）和3个月后（Y）的糖化血红蛋白含量（％）见表13-3的上部，试分析三种治疗降糖化血红蛋白的效果是否不同（《医学统计学》（第四版，孙振球，例13-1，P204），数据如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/3bKglCCJ1A.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>各种计算结果如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/dfDflf2dJA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在此例中，给予何种药物治疗是人为可以控制的定性因素，称为定性变量；患者初始（入组前）的糖化血红蛋白含量是难以控制的定量因素，称为协变量X；试验的观察指标是患者治疗3个月后的糖化血红蛋白含量，称为应变量Y，如果不考虑3组患者初始糖化血红蛋白含量不同的影响，那么此例就是一个典型的完全随机设计类的方差分析问题。</p>
+<p>现在我们使用常规的方差分析来计算一下数据（这个案例不能用方差分析，这里使用方差分析只是为了说明一下为什么不能用方差分析），计算过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_anova)</div><div class="line">            Df Sum Sq Mean Sq <span class="literal">F</span> value   Pr(&gt;<span class="literal">F</span>)    </div><div class="line">data1$group  <span class="number">2</span>  <span class="number">18.63</span>   <span class="number">9.314</span>   <span class="number">18.11</span> <span class="number">2.65e-07</span> ***</div><div class="line">Residuals   <span class="number">87</span>  <span class="number">44.73</span>   <span class="number">0.514</span>                     </div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
+<p>由上面的结果我们可以认为这3种治疗组降糖化血红蛋白的效果不同，但是这样得出的结论是不恰当的。因为从前面的原始数据我们可以得知，3种治疗组患者的初始糖化血红蛋白含量均数不同，第一组最高（10），第三组最低（9.947）。</p>
+<p>仅对给药后的糖化血红蛋白进行方差分析，再经SNK-q的两两比较我们可以知道，除了第一组与第二组间的差异无统计学意义外（P&gt;0.05），第一组和第二组分别与第三组间的差异均有统计学意义(P&lt;0.01)，计算过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示（只截取了各组均分与两两比较的结果）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$means</div><div class="line">         y       std  r Min  Max   Q25 Q50   Q75</div><div class="line"><span class="number">1</span> <span class="number">8.443333</span> <span class="number">0.7398431</span> <span class="number">30</span> <span class="number">7.2</span> <span class="number">10.0</span> <span class="number">8.000</span> <span class="number">8.5</span> <span class="number">8.800</span></div><div class="line"><span class="number">2</span> <span class="number">8.803333</span> <span class="number">0.7471709</span> <span class="number">30</span> <span class="number">7.1</span> <span class="number">10.2</span> <span class="number">8.200</span> <span class="number">8.9</span> <span class="number">9.150</span></div><div class="line"><span class="number">3</span> <span class="number">7.710000</span> <span class="number">0.6609032</span> <span class="number">30</span> <span class="number">6.1</span>  <span class="number">9.0</span> <span class="number">7.425</span> <span class="number">7.8</span> <span class="number">8.175</span></div><div class="line">$groups</div><div class="line">         y groups</div><div class="line"><span class="number">2</span> <span class="number">8.803333</span>      a</div><div class="line"><span class="number">1</span> <span class="number">8.443333</span>      a</div><div class="line"><span class="number">3</span> <span class="number">7.710000</span>      b</div></pre></td></tr></table></figure>
+<p>但是，这是在没有扣除X对Y影响的情况下的计算的结果，也就是说第二组降糖均数最低，第三组最高（看Q50），提示患者初始的糖化血红蛋白含量与治疗药物的效应混杂，即患者治疗3个月后的糖化血红蛋白含量的多少除了与治疗的药物有关外，还受其初始糖化血红蛋白含量的影响。对此，可以采用完全随机设计且有一个协变量的协方差分析方法，将三组患者初始的糖化血红蛋白含量化为相等，以扣除其影响，再比较三种治疗组的降糖效果，即检验三组修正均数间的差别有无统计学意义。具体的计算步骤如下：</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(H_{0}:\)</span> 各组降糖的总体修正数相等，<span class="math inline">\(H_{1}\)</span>：各组降糖总体修正均数不全相等，<span class="math inline">\(\alpha=0.05\)</span></li>
+<li>列表，并计算初步结果，也就是下面的这一部分：</li>
+</ol>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/KA6ml5fjaj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<ol start="3" style="list-style-type: decimal">
+<li>根据前面的公式，计算相应的校正数，总的，组间和组内的离均差平方和、积和自由度，计算结果如下所示：</li>
+</ol>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/5ffhbik7l4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中，校正系数为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/7agg5F9b14.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>总的离均差平方和、积和及自由度为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/CAbfKG853F.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>组间离均差平方和、积和及自由度为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/cmHL56iEh5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>组内离均差平方和、积和及自由度：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/cC7LIC4Hk7.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<ol start="4" style="list-style-type: decimal">
+<li>根据前面的公式计算出总的、组内和修正均数的估计误差平方和、自由度、均方及F值，见前面表13-5右侧部分，如下所示：</li>
+</ol>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/LHkGL4aFd2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<ol start="5" style="list-style-type: decimal">
+<li><p><span class="math inline">\(\nu_{1}=2,\nu_{2}=86\)</span>查表可得，Ｐ&lt;0.01,按α=0.05水准,拒绝H0，接受H1，可以认为在扣除初始糖化血红蛋白含量因素的影响后，3组患者的总体降糖均数有差别。</p></li>
+<li><p>根据前面的表13-3，表13-5及公式，求得公共回归系数<span class="math inline">\(b_{c}\)</span>及各组修正均数<span class="math inline">\(\bar{Y}^*\)</span>为</p></li>
+</ol>
+<p><span class="math inline">\(b_{c}=13.26/53.40=0.25\)</span></p>
+<p>第一组<span class="math inline">\(\bar{Y_{1}}^*=1.61-0.25(10.09-9.970)=1.61\)</span></p>
+<p>第一组<span class="math inline">\(\bar{Y_{2}}^*=1.07-0.25(9.88-9.970)=1.09\)</span></p>
+<p>第一组<span class="math inline">\(\bar{Y_{3}}^*=2.24-0.25(9.95-9.970)=2.24\)</span></p>
+<p>根据前面的q值公式，对这三个修正均数间差别进行两两比较的结果显示，第一组与第二组、第一组与第三组、第二组与第三组总体修正均数间均有差别(P&lt;0.01)，可以认为在扣除患者初始糖化血红蛋白含量因素的影响后，第三种治疗患者的平均降糖量最多，第一种治疗次之，第二种治疗最少。</p>
+<p>使用R进行协方差分析时，需要安装HH包，用这个包中的ancova()函数进行协方差分析。</p>
+<p>计算过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(HH)</div><div class="line">data.x &lt;- c(<span class="number">10.8</span>,<span class="number">11.6</span>,<span class="number">10.6</span>,<span class="number">9</span>,<span class="number">11.2</span>,<span class="number">9.9</span>,<span class="number">10.6</span>,<span class="number">10.4</span>,<span class="number">9.6</span>,<span class="number">10.5</span>,<span class="number">10.6</span>,<span class="number">9.9</span>,<span class="number">9.5</span>,<span class="number">9.7</span>,<span class="number">10.7</span>,<span class="number">9.2</span>,<span class="number">10.5</span>,<span class="number">11</span>,<span class="number">10.1</span>,<span class="number">10.7</span>,<span class="number">8.5</span>,<span class="number">10</span>,<span class="number">10.4</span>,<span class="number">9.7</span>,<span class="number">9.4</span>,<span class="number">9.2</span>,<span class="number">10.5</span>,<span class="number">11.2</span>,<span class="number">9.6</span>,<span class="number">8</span>,<span class="number">10.4</span>,<span class="number">9.7</span>,<span class="number">9.9</span>,<span class="number">9.8</span>,<span class="number">11.1</span>,<span class="number">8.2</span>,<span class="number">8.8</span>,<span class="number">10</span>,<span class="number">9</span>,<span class="number">9.4</span>,<span class="number">8.9</span>,<span class="number">10.3</span>,<span class="number">9.3</span>,<span class="number">9.2</span>,<span class="number">10.9</span>,<span class="number">9.2</span>,<span class="number">9.2</span>,<span class="number">10.4</span>,<span class="number">11.2</span>,<span class="number">11.1</span>,<span class="number">11</span>,<span class="number">8.6</span>,<span class="number">9.3</span>,<span class="number">10.3</span>,<span class="number">10.3</span>,<span class="number">9.8</span>,<span class="number">10.5</span>,<span class="number">10.7</span>,<span class="number">10.4</span>,<span class="number">9.4</span>,<span class="number">9.8</span>,<span class="number">11.2</span>,<span class="number">10.7</span>,<span class="number">9.6</span>,<span class="number">10.1</span>,<span class="number">9.8</span>,<span class="number">10.1</span>,<span class="number">10.3</span>,<span class="number">11</span>,<span class="number">10.5</span>,<span class="number">9.2</span>,<span class="number">10.1</span>,<span class="number">10.4</span>,<span class="number">10</span>,<span class="number">8.4</span>,<span class="number">10.1</span>,<span class="number">9.3</span>,<span class="number">10.5</span>,<span class="number">11.1</span>,<span class="number">10.5</span>,<span class="number">9.7</span>,<span class="number">9.2</span>,<span class="number">9.3</span>,<span class="number">10.4</span>,<span class="number">10</span>,<span class="number">10.3</span>,<span class="number">9.9</span>,<span class="number">9.4</span>,<span class="number">8.3</span>,<span class="number">9.2</span>)</div><div class="line">data.y &lt;- c(<span class="number">9.4</span>,<span class="number">9.7</span>,<span class="number">8.7</span>,<span class="number">7.2</span>,<span class="number">10</span>,<span class="number">8.5</span>,<span class="number">8.3</span>,<span class="number">8.1</span>,<span class="number">8.5</span>,<span class="number">9.1</span>,<span class="number">9.2</span>,<span class="number">8.4</span>,<span class="number">7.6</span>,<span class="number">7.9</span>,<span class="number">8.8</span>,<span class="number">7.4</span>,<span class="number">8.6</span>,<span class="number">9.2</span>,<span class="number">8</span>,<span class="number">8.5</span>,<span class="number">7.3</span>,<span class="number">8.3</span>,<span class="number">8.6</span>,<span class="number">8.7</span>,<span class="number">7.6</span>,<span class="number">8</span>,<span class="number">8.8</span>,<span class="number">9.5</span>,<span class="number">8.2</span>,<span class="number">7.2</span>,<span class="number">9.2</span>,<span class="number">9</span>,<span class="number">8.9</span>,<span class="number">8.6</span>,<span class="number">9.9</span>,<span class="number">7.1</span>,<span class="number">7.8</span>,<span class="number">7.9</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">7.9</span>,<span class="number">8.9</span>,<span class="number">8.9</span>,<span class="number">8.1</span>,<span class="number">10.2</span>,<span class="number">8.5</span>,<span class="number">9</span>,<span class="number">8.9</span>,<span class="number">9.8</span>,<span class="number">10.1</span>,<span class="number">8.5</span>,<span class="number">8.1</span>,<span class="number">8.6</span>,<span class="number">8.9</span>,<span class="number">9.6</span>,<span class="number">8.1</span>,<span class="number">9.9</span>,<span class="number">9.3</span>,<span class="number">8.7</span>,<span class="number">8.7</span>,<span class="number">7.6</span>,<span class="number">7.9</span>,<span class="number">9</span>,<span class="number">7.8</span>,<span class="number">8.5</span>,<span class="number">7.5</span>,<span class="number">8.3</span>,<span class="number">8.2</span>,<span class="number">8.4</span>,<span class="number">8.1</span>,<span class="number">7</span>,<span class="number">7.7</span>,<span class="number">8</span>,<span class="number">6.6</span>,<span class="number">6.1</span>,<span class="number">8.1</span>,<span class="number">7.8</span>,<span class="number">8.4</span>,<span class="number">8.2</span>,<span class="number">8</span>,<span class="number">7.6</span>,<span class="number">6.9</span>,<span class="number">6.7</span>,<span class="number">8.1</span>,<span class="number">7.4</span>,<span class="number">8.2</span>,<span class="number">7.6</span>,<span class="number">7.8</span>,<span class="number">6.6</span>,<span class="number">7.2</span>)</div><div class="line">group &lt;- factor(rep(<span class="number">1</span>:<span class="number">3</span>,each=<span class="number">30</span>))</div><div class="line">data1 &lt;-data.frame(group,data.x,data.y)</div><div class="line">result1 &lt;- ancova(data.y~group+data.x,data=data1)</div><div class="line">result1</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; result1</div><div class="line">Analysis of Variance Table</div><div class="line"></div><div class="line">Response: data.y</div><div class="line">          Df Sum Sq Mean Sq F value    Pr(&gt;F)    </div><div class="line">group      2 18.628  9.3138  55.161 3.852e-16 ***</div><div class="line">data.x     1 30.210 30.2096 178.917 &lt; 2.2e-16 ***</div><div class="line">Residuals 86 14.521  0.1688                      </div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180827/Ii7aJe63D5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从这个协方差的最终结果图上我们可以知道，第三种疗法对血红蛋白的降低程度最大，第一种次之，第二种降低程度最弱。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>孙振球. 医学统计学.第3版[M]. 人民卫生出版社, 2010.</li>
+<li><a href="http://www.cnblogs.com/chaosimple/p/3182157.html" target="_blank" rel="external">浅谈协方差矩阵</a></li>
+<li></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/04/BioStatistics/生物统计-04常见概率分布/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1823,6 +2470,227 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/03/BioStatistics/生物统计-03假设检验笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/03/BioStatistics/生物统计-03假设检验笔记/" itemprop="url">假设检验笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-03T12:00:00+08:00">
+                2017-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,165
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  15
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="用小概率事件进行判断">用小概率事件进行判断</h2>
+<p>我们有时候会听到“意外发生了”这样的说法，这句话意味着我们相信某个事件发生的概率很小，也就是说它预期不会发生，但是它发生了，例如，没有人会对一个大城市某一天发生交通事故感到意外，因为这要瓣城市每天都发生大量的交通事故，但如果某一天没有发生交通事故，就真是意外了，即小概率事件发生了，另外，人们会觉得一个从来没有出过事故的老司机出事故的概率很小，如果这个司机发生事故了，人们会由于小概率事件发生了而觉得意外。</p>
+<p>在统计中，我们常用小概率事件对某项论述进行判断，假如我们对于某个说法表示怀疑，并且试图否定这个说法，那么，我们就要表示，这个说法成立的情况下，我们所观测的数据出现的概率很小。我们用下面的例子说明，人们如何计算用来否定某种说法的这种概率。比如，某大型百货商场说它的抽奖活动有10%的可能抽到奖，而有人注意到有70人抽奖，结果都未中奖，这样人们就会怀疑这个商场作假，在奖券很多的情况下，我们可以假定抽奖70次中成功的次数应该服从二项分布Bin(70,p)，按照商场的说法，每次中奖概率p=0.10，因此我们可以诈出70次抽奖没有人中奖的概率是0.0006265787</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; dbinom(<span class="number">0</span>,<span class="number">70</span>,<span class="number">0.1</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.0006265787</span></div></pre></td></tr></table></figure>
+<p>也就是说，按照商场的差距中奖概率的说法，70次抽奖都没有抽中的概率只有约万分之六，由此70交抽奖没有人中奖就是发生了小概率事件，这里的“小概率”事件是根据商场提供的参数p=0.1计算出来的，因此我们有理由怀疑商场中关于p=0.1说法的合理性。这里我们所做的就是按照某个假定（这里的商场的说法）来计算随机试验发生某结果的概率，如果小概率事件发生，那么我们有理由质疑那个假定。</p>
+<p>假设检验的原理也是如此。</p>
+<h2 id="假设检验的基本原理">假设检验的基本原理</h2>
+<p>在实际中我们会遇到这样的问题：某一样本均数是否来自于某已知均数的总体？两个不同样本均数是否来自均数不相等的总体等？要回答这类问题，经常使用统计推断的一个方法，即假设检验（hypothesis test）来解决。 假设检验过去称为显著性检验（significance test），它是利用小概率反证法的思想，从问题的对立面（<span class="math inline">\(H_{0}\)</span>）出发，间接判断要解决的问题（<span class="math inline">\(H_{0}\)</span>）是否成立。即在假设<span class="math inline">\(H_{1}\)</span>成立的条件下计算检验统计是不是，然后根据获得的P值来判断。其原理和步骤用以下实例说明。</p>
+<h3 id="案例">案例</h3>
+<p>例3-5 某医生测量了36名人事铅作用男性工人的血红蛋白含量，算得其均数为130.83g/L，标准差为25.74g/L，问：人事铅作用男性工人的血红蛋白含量均数(<span class="math inline">\(\mu\)</span>)是否不等于正常成年男性的无数140g/L（<span class="math inline">\(\mu_{0}\)</span>）？（医学统计学第四版，孙振球） 本例题可用下图表示： <img src="http://ortxpw68f.bkt.clouddn.com/hypothesis%20test.png"></p>
+<p>本题的目的是判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>，从所给的条件来看，样本均数<span class="math inline">\(\bar{X}\)</span>与已知总体均数<span class="math inline">\(\mu_{0}\)</span>不等，造成两者不等的原因有二：①从事铅作用工人的血红蛋白含量确实高于正常成年男性，即非同一总体（<span class="math inline">\(\mu \neq \mu_{0}\)</span>）；②因抽样误差导致两者不等，即为同一总体（<span class="math inline">\(\mu = \mu_{0}\)</span>）。 要直接证明是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>很难，但可以利用反证法的思想，从<span class="math inline">\(\mu \neq \mu_{0}\)</span>的对立面<span class="math inline">\(\mu = \mu_{0}\)</span>出发，间接判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>。 假设：<span class="math inline">\(\mu = \mu_{0}\)</span>，判断由于抽样误差造成不相等的可能性有多大？</p>
+<p>如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>接近，其差别可用抽样误差解释，可认为<span class="math inline">\(\bar{X}\)</span>来自<span class="math inline">\(\mu_{0}\)</span>总体；如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关甚远，不宜用抽样误差解释，则怀疑<span class="math inline">\(\bar{X}\)</span>不是来自<span class="math inline">\(\mu_{0}\)</span>总体，那么<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关多大算是由抽样误差造成的呢？若假设<span class="math inline">\(\mu = \mu_{0}\)</span>成立，则可用公式<span class="math inline">\(\frac{\bar{X}-\mu}{S/\sqrt{n}} =t\)</span>或<span class="math inline">\(\frac{\bar{X}-\mu}{\delta/ \sqrt{n}} =\mu\)</span>计算t值或<span class="math inline">\(\mu\)</span>值，然后由t值或<span class="math inline">\(\mu\)</span>值求得P值来判断。如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相差较过错，t或<span class="math inline">\(\mu\)</span>值就大，P值就小，当P小于或等于预先规定的概率值<span class="math inline">\(\alpha\)</span>，如0.05时，则为小概率事件。小概率事件在一次抽样中发生的可能性很小，如果它发生了，则有理由怀疑原假设<span class="math inline">\(\mu = \mu_{0}\)</span>可能不成立，认为其对立面<span class="math inline">\(\mu \neq \mu_{0}\)</span>成立，该结婚的正确性冒着5%的错误风险。</p>
+<p>从上面分析可以看出，假设检验可归纳为三大基本步骤。 1. 建立检验假设，确定检验水准，假设有两种： (1) <span class="math inline">\(\mu = \mu _{0}\)</span>，常称为无效假设或零假设，用<span class="math inline">\(H_{0}\)</span>表示。 (2) <span class="math inline">\(\mu \neq \mu _{0}\)</span>，常称为备选假设，用<span class="math inline">\(H_{1}\)</span>表示。</p>
+<p>对于假设检验，需要注意的是：</p>
+<ol style="list-style-type: decimal">
+<li>检验假设针对的是总体，而不是样本；</li>
+<li><span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>是相互关系、对立的假设，后面统计推断的结论是根据<span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>作出的，两者缺一不可；</li>
+<li><span class="math inline">\(H_{0}\)</span>为无效假设，其假定通常是：某两个（或多个）总体参数相等，或某两个总体参数之差为0，或某资料服从某一特定分布；</li>
+<li><span class="math inline">\(H_{1}\)</span>的内容直接反映了检验的单双侧，若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &gt; \mu_{0}\)</span>或<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &lt; \mu_{0}\)</span>，则此检验为单侧检验，它不仅考虑是否有差异，而且还考虑差异的方向，假如上述例3-5中医生只关心铅作业男性工人的血红蛋白含量均数是否低于正常男性的均数；若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu \neq \mu_{0}\)</span>，则此检验为双侧检验，例如上述例题中的问题，从事铅作业男性工人的血红蛋白含量均数是否不等于男性的均数140g/L，此时高于和低于正常男性这两种可能性都存在。单侧检验的确定，首先要根据专业知识，其次是根据所要解决的问题来确定。若从专业上看一种方法的结果不可能低于或高于另一种方法，尽量提问为：两种方法的测定结果是否相同？此时仍用单侧检验。一般认为，双侧检验比较保守和稳妥，探索性研究多用双侧检验；而证实性研究多用单侧检验。现在以单样本和两样本均数比较的t检验为例，用下面两张表说明单双侧检验的确定。 <img src="http://ortxpw68f.bkt.clouddn.com/hypothesis%20test2.png"></li>
+</ol>
+<p>(3)<span class="math inline">\(\alpha\)</span>：即检验水准，也称显著性水准，它属于I型错误的范畴，<span class="math inline">\(\alpha\)</span>是预先规定的概率值，它确定了小概率事件的标准，在实际工作中，常取<span class="math inline">\(\alpha=0.05\)</span>。除了I型错误外，还有II型错误。后面会详细说明第1类错误和第2类错误。</p>
+<h2 id="第一类错误和第二类错误">第一类错误和第二类错误</h2>
+<h3 id="第一类错误">第一类错误</h3>
+<p>第一类错误又称Ⅰ型错误、拒真错误，是指拒绝了实际上成立的、正确的假设，为“弃真”的错误，其概率通常用α表示。即“原假设是正确的，却拒绝了原假设”。我们平时遇到的文献里，基本上都是与第一类错误有关的假设检验，这就是我们常说的“假阳性”，即无中生有，本来实验结果是阳性，非常高兴，后来才发现这是假阳性，把本来不存在的事情，当作了存在。</p>
+<h3 id="第二类错误">第二类错误</h3>
+<p>第二类错误又称Ⅱ型错误，接受了实际上不成立的H0 ，也就是错误地判为无差别，这类取伪的错误称为第二类错误，其概率用β表示。即“原假设是错误的，却没有拒绝原假设”，这可以理解为“假阴性“，下面的一幅图可以很清楚地说明第一类错误与第二类错误： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180426/6caFFkhAaG.jpg?imageslim" alt="mark"></p>
+<h3 id="第一类错误和第二类错误的关系">第一类错误和第二类错误的关系</h3>
+<p>当样本例数固定时，α愈小，β愈大；反之，α愈大，β愈小。因而可通过选定α控制β大小。要同时减小α和β，唯有增加样本例数。统计上将1-β称为检验效能或把握度(power of a test)，即两个总体确有差别存在，而以α为检验水准，假设检验能发现它们有差别的能力。实际工作中应权衡两类错误中哪一个重要以选择检验水准的大小。</p>
+<h3 id="对第一类错误和第二类错误的简单理解">对第一类错误和第二类错误的简单理解</h3>
+<p>我们常把假设检验比作法庭判案，我们想知道被告是好人还是坏人。原假设是“被告是好人”，备择假设是“被告是坏人”。法庭判案会犯两种错误：如果被告真是好人，而你判他有罪，这是第一类错误(错杀好人)；如果被告真是坏人，而你判他无罪，这是第二类错误(放走坏人)。</p>
+<p>记忆方法：我们可以把第一类错误记为“以真为假”，把第二类错误记为“以假为真”。当然我们也可以将第一类错误记为“错杀好人”，把第二类错误记为“放走坏人”。</p>
+<p>在其他条件不变的情况下，如果要求犯第一类错误概率越小，那么犯第二类错误的概率就会越大。这个结论比较容易理解，当我们要求“错杀好人”的概率降低时，那么往往就会“放走坏人”。</p>
+<p>同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。</p>
+<h2 id="p值的理解">p值的理解</h2>
+<p>在假设检验中，拒绝零假设时所允许的最大的犯第一类错误的概率称为显著性水平(level of significance或significance level)，通常用α表示。显著性水平通常是由进行检验的根据实际目标确定的。最常用的显著性水平为0.05，0.01，0.005，0.001等。</p>
+<p>在假设检验中，我们通常使用样本的一个统计量作为证据来称量零假设的真伪，该统计量称为检验统计量(test statistic)，和检验统计量关联的一个概念是p值(p-value)，它是在零假设下，出现检验统计量的实现值以及（向备选假设方向）更极端的值的概率，有关p值的更好理解，可以参见这一篇文章<a href="https://mp.weixin.qq.com/s/4LmVdoQdxDlZ6xOgSfXRaA" target="_blank" rel="external">《p值详解》</a>。</p>
+<p>p值度量从样本数据得到的信息对零假设的支持程度。因此，p值越小，越有理由说明样本数据不支持零假设。如果p值小于显著性水平α，那么能够拒绝零假设，否则就不能拒绝零假设。因此p值常常被称为该检验的<strong>观测显著性水平(observed level of significance)</strong>。在统计软件的输出中，通常只输出p值，而由用户自己决定p值是多少时拒绝零假设。p值是由数据决定的，而显著性水平是由用户决定的。计算软件仅仅给出p值，而不给出α，例如我们计算得到的p值是0.0005，这时如果以α=0.05为显著性水平，那么此时就拒绝零假设，如果以α=0.001为显著性水平，那么就无法拒绝零假设。α=0.05表明，拒绝零假设时犯错误的概率是百分之五，α=0.001表明，拒绝零假设时犯错误的概率是千分之一。在统计软件的输出结果中，有的使用“p-value”，有的使用significance的缩写，即“Sig”来标明。</p>
+<p>根据数据产生的p值来减少α的值以展示结果的精确性总是没有害处的。这就好比一个身高180cm的男生，可能愿意被认为高于或等于180cm，而不愿意被说成高于或等于155cm，虽然第二种说法在数学上没有丝毫错误。</p>
+<h3 id="在实际情况中如何把握α与β错误">在实际情况中，如何把握α与β错误</h3>
+<p>举个例子，某研究者研究一个化合物A，原假设（H0）：化合物A对于改善糖尿病没有作用。而化合物A可能对改善糖尿病有作用，也可能没有作用。</p>
+<p>如果化合物A真的没有作用，而研究的数据支持A有作用，则是犯了第一类错误（即无中生有）。</p>
+<p>如果化合物A真的有作用，而数据支持A没有作用，则是犯了第二类错误（即有中生无）。 对于研究者来说，如何把握呢？如果把第一类错误标准定得过于宽松，很容易得到化合物A有作用的结论，把没有效果的东西当作是有效果的，他会把自己的研究结果报告，或者发布到学术界中。其他研究者便会去尝试重复实验，投入大量的人力和物力，去搞一个原本就不存在东西上，这就是极大的浪费，就像某医药公司看到了化合物A能够降改善糖尿病的论文，就投入大量资源去研究（事实上化合物A根本没有作用），这样就会造成浪费。因此宁可把第一类错误的标准定得高一些，这样即使犯了第二类错误，也不至于在本不存在的事情上浪费资源。</p>
+<h2 id="假设检验中的一些注意事项">假设检验中的一些注意事项</h2>
+<p>某些书中会提到，不能拒绝零假设就接受零假设的说法，而且没有给出犯第二类错误的概率，这是不恰当的。首选，你说“接受零假设”，那么就应该负责任地提供接受零假设时可能犯第二类错误的概率，这就要算出在备选假设正确的情况下，错误地接近零假设的概率。但是，这只有在备选假设仅仅是一个与零假设不同的确定值（而不是范围）时才有可能，多数初等统计教科书中的备选假设是一个范围，例如前面提到例题，在这个例题中，H0:μ=50，H1:μ&lt;50，在这种情况下，根本无法确定犯第二类错误的概率。</p>
+<p>在很多应用回归分析的方法中，也有不少书中往往把一系列不能拒绝零假设的检验当成接受这些假设的通行证。比如不能拒绝某样本的正态性就变成了证明该样本是正态的等。其实，不能拒绝这些零假设，仅仅说明，根据当前所使用的检验方法和当前的数据，没有足够证据拒绝这些假设而已。因此，在不能拒绝零假设时，只能够说，按照目前的证据和检验方法，不足以拒绝零假设。</p>
+<h2 id="参考资料">参考资料：</h2>
+<p><a href="https://www.zhihu.com/question/20993864/answer/81244176" target="_blank" rel="external">第一类错误和第二类错误的关系是什么？马志阳的回答</a> <a href="https://zhuanlan.zhihu.com/p/25734905" target="_blank" rel="external">假设检验之五：α风险 vs. β风险</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/03/BioStatistics/生物统计-06T分布与检验/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2009,227 +2877,6 @@
 <li>将t检验用于多组实验设计中的两两比较，增加假阳性错误（此时应该使用ANOVA）；</li>
 <li>不考虑资料是否独立，采用独立资料的t检验分析。</li>
 </ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/03/BioStatistics/生物统计-03假设检验笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/03/BioStatistics/生物统计-03假设检验笔记/" itemprop="url">假设检验笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-03T12:00:00+08:00">
-                2017-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,165
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  15
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="用小概率事件进行判断">用小概率事件进行判断</h2>
-<p>我们有时候会听到“意外发生了”这样的说法，这句话意味着我们相信某个事件发生的概率很小，也就是说它预期不会发生，但是它发生了，例如，没有人会对一个大城市某一天发生交通事故感到意外，因为这要瓣城市每天都发生大量的交通事故，但如果某一天没有发生交通事故，就真是意外了，即小概率事件发生了，另外，人们会觉得一个从来没有出过事故的老司机出事故的概率很小，如果这个司机发生事故了，人们会由于小概率事件发生了而觉得意外。</p>
-<p>在统计中，我们常用小概率事件对某项论述进行判断，假如我们对于某个说法表示怀疑，并且试图否定这个说法，那么，我们就要表示，这个说法成立的情况下，我们所观测的数据出现的概率很小。我们用下面的例子说明，人们如何计算用来否定某种说法的这种概率。比如，某大型百货商场说它的抽奖活动有10%的可能抽到奖，而有人注意到有70人抽奖，结果都未中奖，这样人们就会怀疑这个商场作假，在奖券很多的情况下，我们可以假定抽奖70次中成功的次数应该服从二项分布Bin(70,p)，按照商场的说法，每次中奖概率p=0.10，因此我们可以诈出70次抽奖没有人中奖的概率是0.0006265787</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; dbinom(<span class="number">0</span>,<span class="number">70</span>,<span class="number">0.1</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.0006265787</span></div></pre></td></tr></table></figure>
-<p>也就是说，按照商场的差距中奖概率的说法，70次抽奖都没有抽中的概率只有约万分之六，由此70交抽奖没有人中奖就是发生了小概率事件，这里的“小概率”事件是根据商场提供的参数p=0.1计算出来的，因此我们有理由怀疑商场中关于p=0.1说法的合理性。这里我们所做的就是按照某个假定（这里的商场的说法）来计算随机试验发生某结果的概率，如果小概率事件发生，那么我们有理由质疑那个假定。</p>
-<p>假设检验的原理也是如此。</p>
-<h2 id="假设检验的基本原理">假设检验的基本原理</h2>
-<p>在实际中我们会遇到这样的问题：某一样本均数是否来自于某已知均数的总体？两个不同样本均数是否来自均数不相等的总体等？要回答这类问题，经常使用统计推断的一个方法，即假设检验（hypothesis test）来解决。 假设检验过去称为显著性检验（significance test），它是利用小概率反证法的思想，从问题的对立面（<span class="math inline">\(H_{0}\)</span>）出发，间接判断要解决的问题（<span class="math inline">\(H_{0}\)</span>）是否成立。即在假设<span class="math inline">\(H_{1}\)</span>成立的条件下计算检验统计是不是，然后根据获得的P值来判断。其原理和步骤用以下实例说明。</p>
-<h3 id="案例">案例</h3>
-<p>例3-5 某医生测量了36名人事铅作用男性工人的血红蛋白含量，算得其均数为130.83g/L，标准差为25.74g/L，问：人事铅作用男性工人的血红蛋白含量均数(<span class="math inline">\(\mu\)</span>)是否不等于正常成年男性的无数140g/L（<span class="math inline">\(\mu_{0}\)</span>）？（医学统计学第四版，孙振球） 本例题可用下图表示： <img src="http://ortxpw68f.bkt.clouddn.com/hypothesis%20test.png"></p>
-<p>本题的目的是判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>，从所给的条件来看，样本均数<span class="math inline">\(\bar{X}\)</span>与已知总体均数<span class="math inline">\(\mu_{0}\)</span>不等，造成两者不等的原因有二：①从事铅作用工人的血红蛋白含量确实高于正常成年男性，即非同一总体（<span class="math inline">\(\mu \neq \mu_{0}\)</span>）；②因抽样误差导致两者不等，即为同一总体（<span class="math inline">\(\mu = \mu_{0}\)</span>）。 要直接证明是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>很难，但可以利用反证法的思想，从<span class="math inline">\(\mu \neq \mu_{0}\)</span>的对立面<span class="math inline">\(\mu = \mu_{0}\)</span>出发，间接判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>。 假设：<span class="math inline">\(\mu = \mu_{0}\)</span>，判断由于抽样误差造成不相等的可能性有多大？</p>
-<p>如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>接近，其差别可用抽样误差解释，可认为<span class="math inline">\(\bar{X}\)</span>来自<span class="math inline">\(\mu_{0}\)</span>总体；如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关甚远，不宜用抽样误差解释，则怀疑<span class="math inline">\(\bar{X}\)</span>不是来自<span class="math inline">\(\mu_{0}\)</span>总体，那么<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关多大算是由抽样误差造成的呢？若假设<span class="math inline">\(\mu = \mu_{0}\)</span>成立，则可用公式<span class="math inline">\(\frac{\bar{X}-\mu}{S/\sqrt{n}} =t\)</span>或<span class="math inline">\(\frac{\bar{X}-\mu}{\delta/ \sqrt{n}} =\mu\)</span>计算t值或<span class="math inline">\(\mu\)</span>值，然后由t值或<span class="math inline">\(\mu\)</span>值求得P值来判断。如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相差较过错，t或<span class="math inline">\(\mu\)</span>值就大，P值就小，当P小于或等于预先规定的概率值<span class="math inline">\(\alpha\)</span>，如0.05时，则为小概率事件。小概率事件在一次抽样中发生的可能性很小，如果它发生了，则有理由怀疑原假设<span class="math inline">\(\mu = \mu_{0}\)</span>可能不成立，认为其对立面<span class="math inline">\(\mu \neq \mu_{0}\)</span>成立，该结婚的正确性冒着5%的错误风险。</p>
-<p>从上面分析可以看出，假设检验可归纳为三大基本步骤。 1. 建立检验假设，确定检验水准，假设有两种： (1) <span class="math inline">\(\mu = \mu _{0}\)</span>，常称为无效假设或零假设，用<span class="math inline">\(H_{0}\)</span>表示。 (2) <span class="math inline">\(\mu \neq \mu _{0}\)</span>，常称为备选假设，用<span class="math inline">\(H_{1}\)</span>表示。</p>
-<p>对于假设检验，需要注意的是：</p>
-<ol style="list-style-type: decimal">
-<li>检验假设针对的是总体，而不是样本；</li>
-<li><span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>是相互关系、对立的假设，后面统计推断的结论是根据<span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>作出的，两者缺一不可；</li>
-<li><span class="math inline">\(H_{0}\)</span>为无效假设，其假定通常是：某两个（或多个）总体参数相等，或某两个总体参数之差为0，或某资料服从某一特定分布；</li>
-<li><span class="math inline">\(H_{1}\)</span>的内容直接反映了检验的单双侧，若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &gt; \mu_{0}\)</span>或<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &lt; \mu_{0}\)</span>，则此检验为单侧检验，它不仅考虑是否有差异，而且还考虑差异的方向，假如上述例3-5中医生只关心铅作业男性工人的血红蛋白含量均数是否低于正常男性的均数；若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu \neq \mu_{0}\)</span>，则此检验为双侧检验，例如上述例题中的问题，从事铅作业男性工人的血红蛋白含量均数是否不等于男性的均数140g/L，此时高于和低于正常男性这两种可能性都存在。单侧检验的确定，首先要根据专业知识，其次是根据所要解决的问题来确定。若从专业上看一种方法的结果不可能低于或高于另一种方法，尽量提问为：两种方法的测定结果是否相同？此时仍用单侧检验。一般认为，双侧检验比较保守和稳妥，探索性研究多用双侧检验；而证实性研究多用单侧检验。现在以单样本和两样本均数比较的t检验为例，用下面两张表说明单双侧检验的确定。 <img src="http://ortxpw68f.bkt.clouddn.com/hypothesis%20test2.png"></li>
-</ol>
-<p>(3)<span class="math inline">\(\alpha\)</span>：即检验水准，也称显著性水准，它属于I型错误的范畴，<span class="math inline">\(\alpha\)</span>是预先规定的概率值，它确定了小概率事件的标准，在实际工作中，常取<span class="math inline">\(\alpha=0.05\)</span>。除了I型错误外，还有II型错误。后面会详细说明第1类错误和第2类错误。</p>
-<h2 id="第一类错误和第二类错误">第一类错误和第二类错误</h2>
-<h3 id="第一类错误">第一类错误</h3>
-<p>第一类错误又称Ⅰ型错误、拒真错误，是指拒绝了实际上成立的、正确的假设，为“弃真”的错误，其概率通常用α表示。即“原假设是正确的，却拒绝了原假设”。我们平时遇到的文献里，基本上都是与第一类错误有关的假设检验，这就是我们常说的“假阳性”，即无中生有，本来实验结果是阳性，非常高兴，后来才发现这是假阳性，把本来不存在的事情，当作了存在。</p>
-<h3 id="第二类错误">第二类错误</h3>
-<p>第二类错误又称Ⅱ型错误，接受了实际上不成立的H0 ，也就是错误地判为无差别，这类取伪的错误称为第二类错误，其概率用β表示。即“原假设是错误的，却没有拒绝原假设”，这可以理解为“假阴性“，下面的一幅图可以很清楚地说明第一类错误与第二类错误： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180426/6caFFkhAaG.jpg?imageslim" alt="mark"></p>
-<h3 id="第一类错误和第二类错误的关系">第一类错误和第二类错误的关系</h3>
-<p>当样本例数固定时，α愈小，β愈大；反之，α愈大，β愈小。因而可通过选定α控制β大小。要同时减小α和β，唯有增加样本例数。统计上将1-β称为检验效能或把握度(power of a test)，即两个总体确有差别存在，而以α为检验水准，假设检验能发现它们有差别的能力。实际工作中应权衡两类错误中哪一个重要以选择检验水准的大小。</p>
-<h3 id="对第一类错误和第二类错误的简单理解">对第一类错误和第二类错误的简单理解</h3>
-<p>我们常把假设检验比作法庭判案，我们想知道被告是好人还是坏人。原假设是“被告是好人”，备择假设是“被告是坏人”。法庭判案会犯两种错误：如果被告真是好人，而你判他有罪，这是第一类错误(错杀好人)；如果被告真是坏人，而你判他无罪，这是第二类错误(放走坏人)。</p>
-<p>记忆方法：我们可以把第一类错误记为“以真为假”，把第二类错误记为“以假为真”。当然我们也可以将第一类错误记为“错杀好人”，把第二类错误记为“放走坏人”。</p>
-<p>在其他条件不变的情况下，如果要求犯第一类错误概率越小，那么犯第二类错误的概率就会越大。这个结论比较容易理解，当我们要求“错杀好人”的概率降低时，那么往往就会“放走坏人”。</p>
-<p>同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。</p>
-<h2 id="p值的理解">p值的理解</h2>
-<p>在假设检验中，拒绝零假设时所允许的最大的犯第一类错误的概率称为显著性水平(level of significance或significance level)，通常用α表示。显著性水平通常是由进行检验的根据实际目标确定的。最常用的显著性水平为0.05，0.01，0.005，0.001等。</p>
-<p>在假设检验中，我们通常使用样本的一个统计量作为证据来称量零假设的真伪，该统计量称为检验统计量(test statistic)，和检验统计量关联的一个概念是p值(p-value)，它是在零假设下，出现检验统计量的实现值以及（向备选假设方向）更极端的值的概率，有关p值的更好理解，可以参见这一篇文章<a href="https://mp.weixin.qq.com/s/4LmVdoQdxDlZ6xOgSfXRaA" target="_blank" rel="external">《p值详解》</a>。</p>
-<p>p值度量从样本数据得到的信息对零假设的支持程度。因此，p值越小，越有理由说明样本数据不支持零假设。如果p值小于显著性水平α，那么能够拒绝零假设，否则就不能拒绝零假设。因此p值常常被称为该检验的<strong>观测显著性水平(observed level of significance)</strong>。在统计软件的输出中，通常只输出p值，而由用户自己决定p值是多少时拒绝零假设。p值是由数据决定的，而显著性水平是由用户决定的。计算软件仅仅给出p值，而不给出α，例如我们计算得到的p值是0.0005，这时如果以α=0.05为显著性水平，那么此时就拒绝零假设，如果以α=0.001为显著性水平，那么就无法拒绝零假设。α=0.05表明，拒绝零假设时犯错误的概率是百分之五，α=0.001表明，拒绝零假设时犯错误的概率是千分之一。在统计软件的输出结果中，有的使用“p-value”，有的使用significance的缩写，即“Sig”来标明。</p>
-<p>根据数据产生的p值来减少α的值以展示结果的精确性总是没有害处的。这就好比一个身高180cm的男生，可能愿意被认为高于或等于180cm，而不愿意被说成高于或等于155cm，虽然第二种说法在数学上没有丝毫错误。</p>
-<h3 id="在实际情况中如何把握α与β错误">在实际情况中，如何把握α与β错误</h3>
-<p>举个例子，某研究者研究一个化合物A，原假设（H0）：化合物A对于改善糖尿病没有作用。而化合物A可能对改善糖尿病有作用，也可能没有作用。</p>
-<p>如果化合物A真的没有作用，而研究的数据支持A有作用，则是犯了第一类错误（即无中生有）。</p>
-<p>如果化合物A真的有作用，而数据支持A没有作用，则是犯了第二类错误（即有中生无）。 对于研究者来说，如何把握呢？如果把第一类错误标准定得过于宽松，很容易得到化合物A有作用的结论，把没有效果的东西当作是有效果的，他会把自己的研究结果报告，或者发布到学术界中。其他研究者便会去尝试重复实验，投入大量的人力和物力，去搞一个原本就不存在东西上，这就是极大的浪费，就像某医药公司看到了化合物A能够降改善糖尿病的论文，就投入大量资源去研究（事实上化合物A根本没有作用），这样就会造成浪费。因此宁可把第一类错误的标准定得高一些，这样即使犯了第二类错误，也不至于在本不存在的事情上浪费资源。</p>
-<h2 id="假设检验中的一些注意事项">假设检验中的一些注意事项</h2>
-<p>某些书中会提到，不能拒绝零假设就接受零假设的说法，而且没有给出犯第二类错误的概率，这是不恰当的。首选，你说“接受零假设”，那么就应该负责任地提供接受零假设时可能犯第二类错误的概率，这就要算出在备选假设正确的情况下，错误地接近零假设的概率。但是，这只有在备选假设仅仅是一个与零假设不同的确定值（而不是范围）时才有可能，多数初等统计教科书中的备选假设是一个范围，例如前面提到例题，在这个例题中，H0:μ=50，H1:μ&lt;50，在这种情况下，根本无法确定犯第二类错误的概率。</p>
-<p>在很多应用回归分析的方法中，也有不少书中往往把一系列不能拒绝零假设的检验当成接受这些假设的通行证。比如不能拒绝某样本的正态性就变成了证明该样本是正态的等。其实，不能拒绝这些零假设，仅仅说明，根据当前所使用的检验方法和当前的数据，没有足够证据拒绝这些假设而已。因此，在不能拒绝零假设时，只能够说，按照目前的证据和检验方法，不足以拒绝零假设。</p>
-<h2 id="参考资料">参考资料：</h2>
-<p><a href="https://www.zhihu.com/question/20993864/answer/81244176" target="_blank" rel="external">第一类错误和第二类错误的关系是什么？马志阳的回答</a> <a href="https://zhuanlan.zhihu.com/p/25734905" target="_blank" rel="external">假设检验之五：α风险 vs. β风险</a></p>
 
           
         
@@ -2708,7 +3355,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  10,197
+                  10,194
                 </span>
               
 
@@ -2768,13 +3415,13 @@
 <p>还看上面的案例，整个<code>iris</code>这个数据集中，除了第1行的变量名称外，剩下的内容则是与这些变量对应的数据(data)，可以把数据看成变量的观测值，或者是试验结果，例如，身高是一个变量，测量一个人的身高，就好比一次试验，可观测到一次试验结果，就是<code>观测值(observation)</code>。这里还要提一下，观测值(observation)在计算机/数据库领域也叫记录(record)、对象(object)、向量(vector)、模式(pattern)、事件(event)、例(case,instance)、样本(sample)、或项、实体(entity)等等。</p>
 <p>我们一般所说的数据是一个集合名词，每一个数字包含很多观测值，每个观测值也称为一个数据点(data point, point)或例(case)。就以这个<code>iris</code>的数据集为例，它的每1列代表一个变量，而每1行则为一个对象关于各个变量的观测值，簇也把这种数据方阵的每一行叫做一个观测（值），就像下面的样子，它就是一个观测：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180801/eDahJjI3Bk.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101801.png">
+
 </div>
 <p>这也是一个观测值，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180801/7ehl460k0I.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101825.png">
+
 </div>
 <h2 id="概率和随机变量">概率和随机变量</h2>
 <p>在统计学研究中，有很多对象都被认为具有随机性(randomness)，随机的事情也有规律的，例如我们抛一个硬币，在硬币落在地面之前，硬币朝哪面我们是不知道的，它是随机的，事先无法准确地预测。但是，只要这个硬币是正常的，没问题的，那么我们就知道，硬币朝上与朝下的概率基本上是相等的。</p>
@@ -2894,8 +3541,8 @@
 <p class="caption">mark</p>
 </div>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180716/Ig5jmaIg76.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101632.png">
+
 </div>
 <h3 id="样本标准差">样本标准差</h3>
 <p>样本标准差的公式如下所示： <span class="math display">\[ s=\sqrt{\frac{\sum(X-\bar{X})^2}{n-1}}  \]</span></p>
@@ -2931,10 +3578,18 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">raw_data &lt;- read.csv(&quot;https://raw.githubusercontent.com/20170505a/raw_data/master/data_szq_201.csv&quot;) </div><div class="line">#导入数据</div><div class="line"></div><div class="line">extract_data &lt;- raw_data[,1] </div><div class="line"># 提取第一列数据</div><div class="line"></div><div class="line">library(reshape2)</div><div class="line">breaks&lt;-seq(from = 3.07, to = 5.47, by = 0.2) </div><div class="line"># 产生各个组距</div><div class="line"></div><div class="line">data_table&lt;-cut(extract_data,breaks=breaks,right=FALSE) </div><div class="line">#分组,right=FALSE表示左闭右开</div><div class="line"></div><div class="line">library(reshape2) </div><div class="line">#载入reshape2包，使用其中的melt函数</div><div class="line"></div><div class="line">melt(table(data_table)) </div><div class="line">#查看频数分布</div><div class="line"></div><div class="line">middle_data&lt;-c() </div><div class="line">#求组中值，组中值从表中可以看出来就是区间两边的数的平均数</div><div class="line"></div><div class="line">for(i in seq(1,12))&#123;</div><div class="line">  middle &lt;- (breaks[i]+breaks[i+1])*0.5</div><div class="line">  middle_data&lt;-append(middle_data,middle)</div><div class="line">&#125;</div><div class="line"></div><div class="line"># 绘图表</div><div class="line">hist(extract_data,breaks,</div><div class="line">     right=FALSE,main=&quot;&quot;,</div><div class="line">     xlab=&quot;&quot;,ylab=&quot;频数&quot;,</div><div class="line">     axes=FALSE,</div><div class="line">     border=&quot;grey&quot;,</div><div class="line">     col=&quot;red&quot;,freq=F)</div><div class="line">#data为数据集，breaks则是分组依据，right=FALSE则是左开右闭,xlab，ylab控制坐标</div><div class="line"></div><div class="line">lines(density(extract_data)) </div><div class="line">#加入概率密度曲线</div><div class="line"></div><div class="line">title(xlab=&quot;红细胞数(×10e-12/L)&quot;,line=0.8)</div><div class="line">#加x轴的标题，往下超过x轴垂直距离为0.8个行距</div><div class="line"></div><div class="line">text(4.5,-2.8,&quot;-12&quot;,cex=0.5)</div><div class="line">mtext(&quot;138名正常成年女性红细胞数的频数分布&quot;,1,line=2.5,cex=1.2,font=2)</div><div class="line">#加主标题,1表示为下方</div><div class="line"># line=2.5表示超过x轴垂直距离为2.5个行距</div><div class="line"># cex为字体扩大倍数</div><div class="line"># font=2表示加粗</div><div class="line"></div><div class="line">abline(h=0)</div><div class="line">#绘制y=0的线段，用此线表示x轴</div><div class="line"></div><div class="line">axis(1,at=middle_data,tick=FALSE,pos=0.03)</div><div class="line"># 绘制x轴，坐标为middle_data</div><div class="line"># tick=FALSE表示坐标刻度不绘出,pos=1表示坐标轴在y=1处</div><div class="line"></div><div class="line">axis(2)</div><div class="line">#绘制y轴</div></pre></td></tr></table></figure>
 <p>频数分布如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&gt; melt(table(data_table)) #查看频数分布</div><div class="line">    data_table value</div><div class="line">1  [3.07,3.27)     2</div><div class="line">2  [3.27,3.47)     3</div><div class="line">3  [3.47,3.67)     9</div><div class="line">4  [3.67,3.87)    14</div><div class="line">5  [3.87,4.07)    22</div><div class="line">6  [4.07,4.27)    30</div><div class="line">7  [4.27,4.47)    21</div><div class="line">8  [4.47,4.67)    15</div><div class="line">9  [4.67,4.87)    10</div><div class="line">10 [4.87,5.07)     6</div><div class="line">11 [5.07,5.27)     4</div><div class="line">12 [5.27,5.47)     2</div></pre></td></tr></table></figure>
-<p>图表如下所示<img src="http://ortxpw68f.bkt.clouddn.com/fig21.png">：</p>
+<p>图表如下所示</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101705.png">
+
+</div>
 <p>对例2-1，例2-2和例2-14已计算出某医院随机抽查的138名成年女子的红细胞数均数 ，标准差 。试估计该医院所抽查成年女子的红细胞数：①在4.0 以下者占成年女子总人数的百分比；②在4.00~5.00 之间者占成年女子总人数的百分比；③在5.00 以上者占成年女子总人数的百分比。 计算过程如下： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">mean.data &lt;- mean(extract_data)</div><div class="line">sd.data &lt;- sd(extract_data)</div><div class="line">pnorm((4-mean.data)/sd.data) # 4.0以下的百分比</div><div class="line">pnorm((5-mean.data)/sd.data) #5.0以下的百分比</div><div class="line">1-pnorm((5-mean.data)/sd.data) #5.0以上的百分比</div><div class="line">pnorm((5-mean.data)/sd.data)-pnorm((4-mean.data)/sd.data) #在4.00~5.00 之间的百分比</div><div class="line"></div><div class="line">#或者是：</div><div class="line">pnorm(5,mean(data),sd(data))-pnorm(4,mean(data),sd(data))</div><div class="line"></div><div class="line"># 绘制数据集的正态分布图</div><div class="line">x &lt;- seq(min(extract_data)-0.52,max(extract_data)+0.52,length=1000)</div><div class="line">y &lt;- dnorm(x,mean(extract_data),sd(extract_data))</div><div class="line">r1 &lt;- 4</div><div class="line">r2 &lt;- 5</div><div class="line">x2 &lt;- c(r1,r1,x[x&lt;r2&amp;x&gt;r1],r2,r2)</div><div class="line">y2=c(0,dnorm(c(r1,x[x&lt;r2&amp;x&gt;r1],r2),mean(data),sd(data)),0)</div><div class="line">plot(x,y,type=&quot;l&quot;,xlab=&quot;&quot;,ylab=&quot;&quot;,lty=1)</div><div class="line">abline(0,0)</div><div class="line">polygon(x2,y2,col=&quot;grey&quot;)</div></pre></td></tr></table></figure></p>
 <p><strong>结果如下所示：</strong> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">[1] 0.3041459</div><div class="line">&gt; pnorm((5-mean.data)/sd.data) #5.0以下的百分比</div><div class="line">[1] 0.9578038</div><div class="line">&gt; 1-pnorm((5-mean.data)/sd.data) #5.0以上的百分比</div><div class="line">[1] 0.04219616</div><div class="line">&gt; pnorm((5-mean.data)/sd.data)-pnorm((4-mean.data)/sd.data) #在4.00~5.00 之间的百分比</div><div class="line">[1] 0.653658</div><div class="line">&gt; pnorm(5,mean(data),sd(data))-pnorm(4,mean(data),sd(data))</div><div class="line">[1] 0.6532998</div><div class="line">结果与书中的不太一样，但结果接近，我估计是因为书中是查表，用的是近似值，R中的比较精确</div></pre></td></tr></table></figure></p>
-<p>数据的正态分布图如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/fig22.png"></p>
+<p>数据的正态分布图如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101726.png">
+
+</div>
 <h3 id="例2-4几何均数">例2-4：几何均数</h3>
 <p>某地5例微丝蚴血症患者治疗7年后用间接荧光抗体试验没得某抗体满意度例数分别为10，20，40，40，160，求几何均数。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">data24&lt;-c(10,20,40,40,160)</div><div class="line">exp(mean(log(data24)))</div></pre></td></tr></table></figure>
@@ -3604,332 +4259,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/22/R/ggplot2(12) - 配色/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/04/22/R/ggplot2(12) - 配色/" itemprop="url">ggplot2(12)-配色</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-22T12:00:00+08:00">
-                2017-04-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index">
-                    <span itemprop="name">R</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,019
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="设置对象颜色">设置对象颜色</h2>
-<h3 id="将点设为红色">将点设为红色</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line">ggplot(mtcars,aes(x=wt,y=mpg)) + geom_point(colour=<span class="string">"red"</span>) <span class="comment"># 将点改为红色</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/8mmj1LlJ1f.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="条形图的填充与轮廓色">条形图的填充与轮廓色</h3>
-<p>用红色填充(fill=“red”)，轮廓为黑色(colour=“black”)’</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">ggplot(birthwt,aes(x=bwt)) + geom_histogram(fill=<span class="string">"red"</span>,colour=<span class="string">"black"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/6k9i342Dl5.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="将变量映射到颜色上">将变量映射到颜色上</h2>
-<p>下面的代码是将Cultivar变量映射到图形属性fill上。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line"></div><div class="line"><span class="comment">## Warning: package 'gcookbook' was built under R version 3.4.4</span></div><div class="line"></div><div class="line">ggplot(cabbage_exp,aes(x=Date,y=Weight,fill=Cultivar))+</div><div class="line">  geom_bar(stat=<span class="string">"identity"</span>,colour=<span class="string">"black"</span>,position=<span class="string">"dodge"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/k6FJkKFk08.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>下面的代码与上述代码相同：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(cabbage_exp,aes(x=Date,y=Weight)) +</div><div class="line">  geom_bar(stat=<span class="string">"identity"</span>,aes(fill=Cultivar),colour=<span class="string">"black"</span>,position=<span class="string">"dodge"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/el6J7b1a3h.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>将cyl映射到颜色属性上，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(mtcars,aes(x=wt,y=mpg,colour=cyl)) + geom_point()</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/lK743aLD5I.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>下面的代码等同于上述代码：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(mtcars,aes(x=wt,y=mpg)) + geom_point(aes(colour=cyl))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/ahKKJA7fg8.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>注：mtcars数据集中的cyl是连续型变量，因此图例中的颜色是渐变的，如果是因子型变量，则颜色是离散的，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mtcars1 &lt;- mtcars</div><div class="line">mtcars1$cyl &lt;- factor(mtcars1$cyl) <span class="comment"># 将cyl变量转化为因子型变量 </span></div><div class="line">ggplot(mtcars1,aes(x=wt,y=mpg)) + geom_point(aes(colour=cyl))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/i8A22K5GAA.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="对离散型变量使用不同的调节板">对离散型变量使用不同的调节板</h2>
-<h3 id="基础绘图">基础绘图</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">p &lt;- ggplot(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup)) + geom_area()</div><div class="line">p</div><div class="line"><span class="comment"># 或等同于</span></div><div class="line"><span class="comment"># p + scale_fill_discrete()</span></div><div class="line"><span class="comment"># p + scale_fill_hue()</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/bHGj0aaBKb.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="调节颜色深度">调节颜色深度</h3>
-<h3 id="基础绘图-1">基础绘图</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/IbheEeHah4.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="加深颜色">加深颜色</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">h + scale_colour_hue(l=<span class="number">45</span>)</div><div class="line"><span class="comment"># l表示亮度，越高颜色越浅</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/9AghfDDddl.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="调色板">调色板</h3>
-<p>可以用RColorBrewer来进行颜色设置，如下所示：</p>
-<h4 id="橘黄色颜色">橘黄色颜色</h4>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_fill_brewer(palette=<span class="string">"Oranges"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/13j80lLe1j.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="灰色颜色">灰色颜色</h4>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_fill_grey()</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/cD9igcI6HJ.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>上述代码的绘图区域与图例不匹配，现在进行反转：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_fill_grey(start=<span class="number">0.7</span>,end=<span class="number">0</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/FEK8g59ce4.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="使用颜色名称调色">使用颜色名称调色</h3>
-<p>scale_colour_manual()可以对颜色进行精确地设置，可以用颜色的名称，也可以用RGB值，下面是用颜色的名称来表示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">h &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn,colour=sex)) + geom_point()</div><div class="line">h + scale_colour_manual(values=c(<span class="string">"red"</span>,<span class="string">"blue"</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/jclil9L103.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="用颜色的rgb值调色">用颜色的RGB值调色</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">h + scale_colour_manual(values=c(<span class="string">"#CC6666"</span>,<span class="string">"#7777DD"</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/iHfm84Bc1e.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="直接用变量来设置颜色">直接用变量来设置颜色</h3>
-<p>可以直接指定m的颜色是蓝色(blue),f的颜色是红色(red)</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">h + scale_colour_manual(values=c(m=<span class="string">"blue"</span>,f=<span class="string">"red"</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/aH6ljb2jm5.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="使用色盲友好式的调色板">使用色盲友好式的调色板</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">p &lt;- ggplot(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup)) + geom_area()</div><div class="line">cb_palette &lt;- c(<span class="string">"#999999"</span>,<span class="string">"#E69F00"</span>,<span class="string">"#56B4E9"</span>,<span class="string">"#009E73"</span>,<span class="string">"#E0E442"</span>,<span class="string">"#0072B2"</span>,<span class="string">"#D55E00"</span>,<span class="string">"#CC79A7"</span>)</div><div class="line">p + scale_fill_manual(values=cb_palette)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/5E7C3d9bJi.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="对连续型变量使用自定义调色板">对连续型变量使用自定义调色板</h2>
-<h3 id="基础绘图-2">基础绘图</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">p &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn,colour=weightLb)) +</div><div class="line">  geom_point(size=<span class="number">3</span>)</div><div class="line">p</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/9eI3KE6kk6.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="使用两种颜色的渐变">使用两种颜色的渐变</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_colour_gradient(low=<span class="string">"black"</span>,high=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/BJgHa659Gg.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="渐变色中用白色划分">渐变色中用白色划分</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(scales)</div><div class="line"><span class="comment">## Warning: package 'scales' was built under R version 3.4.1</span></div><div class="line">p + scale_colour_gradient2(low=muted(<span class="string">"red"</span>),mid=<span class="string">"white"</span>,high=muted(<span class="string">"blue"</span>),midpoint=<span class="number">110</span>)</div><div class="line"><span class="comment"># muted()表示降低标准颜色</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/8DIj9IK0CL.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="n个颜色的渐变色">n个颜色的渐变色</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_colour_gradientn(colours=c(<span class="string">"darkred"</span>,<span class="string">"orange"</span>,<span class="string">"yellow"</span>,<span class="string">"white"</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/46g06fl1B9.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="根据数值设定阴影颜色">根据数值设定阴影颜色</h2>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">cb &lt;- subset(climate,Source == <span class="string">"Berkeley"</span>) <span class="comment"># 提取climate数据集中的Source为Berkeley的数据，将这些数据复制到cb中</span></div><div class="line">cb$valence[cb$Anomaly10y &gt;= <span class="number">0</span>] &lt;- <span class="string">"pos"</span> <span class="comment"># 将Anomaly10y大于等于0的数据的valence改为pos</span></div><div class="line">cb$valence[cb$Anomaly10y &lt; <span class="number">0</span>] &lt;- <span class="string">"neg"</span> <span class="comment"># 将Anomaly10y小于0的数据的valence改为neg</span></div><div class="line">head(cb)</div><div class="line"></div><div class="line"><span class="comment">##     Source Year Anomaly1y Anomaly5y Anomaly10y Unc10y valence</span></div><div class="line"><span class="comment">## 1 Berkeley 1800        NA        NA     -0.435  0.505     neg</span></div><div class="line"><span class="comment">## 2 Berkeley 1801        NA        NA     -0.453  0.493     neg</span></div><div class="line"><span class="comment">## 3 Berkeley 1802        NA        NA     -0.460  0.486     neg</span></div><div class="line"><span class="comment">## 4 Berkeley 1803        NA        NA     -0.493  0.489     neg</span></div><div class="line"><span class="comment">## 5 Berkeley 1804        NA        NA     -0.536  0.483     neg</span></div><div class="line"><span class="comment">## 6 Berkeley 1805        NA        NA     -0.541  0.475     neg</span></div><div class="line"></div><div class="line">ggplot(cb,aes(x=Year,y=Anomaly10y))+</div><div class="line">  geom_area(aes(fill=valence))+</div><div class="line">  geom_line()+</div><div class="line">  geom_hline(yintercept=<span class="number">0</span>) <span class="comment"># 加入一条水平线，水平线的截距为0</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/l1iF1glm82.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>从上图的绘图区域可以看出，在数据波动比较小的地方有重合，数据点并不在0上，可以用approx()将数据插值到1000个点左右，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">interp &lt;- approx(cb$Year,cb$Anomaly10y,n=<span class="number">1000</span>)</div><div class="line">cbi &lt;- data.frame(Year=interp$x,Anomaly10y=interp$y)</div><div class="line">cbi$valence[cbi$Anomaly10y &gt;=<span class="number">0</span>] &lt;- <span class="string">"pos"</span></div><div class="line">cbi$valence[cbi$Anomaly10y &lt; <span class="number">0</span>] &lt;- <span class="string">"neg"</span></div><div class="line"></div><div class="line">ggplot(cbi,aes(x=Year,y=Anomaly10y)) +</div><div class="line">  geom_area(aes(fill=valence),alpha=<span class="number">0.4</span>)+</div><div class="line">  geom_line()+</div><div class="line">  scale_fill_manual(values=c(<span class="string">"#CCEEFF"</span>,<span class="string">"#FFDDDD"</span>),guide=<span class="literal">FALSE</span>) +</div><div class="line">  scale_x_continuous(expand=c(<span class="number">0</span>,<span class="number">0</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180901/8I94k8J6A9.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>常肖楠, 邓一硕, 魏太云. R数据可视化手册[M]. 人民邮电出版社, 2014.</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3980,7 +4309,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">126</span>
+                  <span class="site-state-item-count">127</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4002,7 +4331,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -4076,7 +4405,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共467.1k字</span>
+  <span class="post-count">博客全站共463.8k字</span>
 </div>
 
         

@@ -259,6 +259,644 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-16决策树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-16决策树/" itemprop="url">决策树笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-19T12:02:00+08:00">
+                2018-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,377
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="决策树的原理">决策树的原理</h2>
+<p>决策树的原理可以参考这篇笔记<a href="http://rvdsd.top/2018/07/01/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B019-%E5%86%B3%E7%AD%96%E6%A0%91/">《StatQuest学习笔记19——决策树》</a>。</p>
+<h2 id="决策树的计算过程">决策树的计算过程</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)。这里我们先看一批数据，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Dh8fddjd9h.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>原始数据很多，有1000多行。这个数据来自于Flake and lawrence(2002)，可以在<a href="https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/mg" target="_blank" rel="external">网上下载</a>，这且数据是做什么的，我也不清楚。这个数据集有6个自变量和1个因变量，一共有1385个观测值。书上说之所以用这个数据是因为这里的所有变量都是数量变量，因此这个数据集也可以用经典线性回归来做，从而可以对各种方法进行比较。</p>
+<h3 id="线性回归">线性回归</h3>
+<p>现在先对全部数据做一个简单的 线性回归，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_dt &lt;- read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/mg.csv"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)</div><div class="line">result_dt &lt;- lm(y~.,raw_dt)</div><div class="line">summary(result_dt)</div><div class="line">pairs(raw_dt)<span class="comment">#查看不同变量之间的相关关系</span></div><div class="line"><span class="comment"># 或plot(raw_dt)</span></div><div class="line">cor(raw_dt)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_dt)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = y ~ ., data = raw_dt)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-0.40866 -0.09516  0.01098  0.09645  0.40011 </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)  0.95582    0.07142  13.384  &lt; 2e-16 ***</div><div class="line">x1           0.28512    0.02773  10.282  &lt; 2e-16 ***</div><div class="line">x2           0.17263    0.02655   6.502 1.10e-10 ***</div><div class="line">x3          -0.37956    0.02769 -13.709  &lt; 2e-16 ***</div><div class="line">x4          -0.36756    0.02764 -13.298  &lt; 2e-16 ***</div><div class="line">x5           0.07165    0.02656   2.697  0.00707 ** </div><div class="line">x6           0.19003    0.02778   6.841 1.18e-11 ***</div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class="line"></div><div class="line">Residual standard error: 0.1459 on 1378 degrees of freedom</div><div class="line">Multiple R-squared:  0.5868,	Adjusted R-squared:  0.585 </div><div class="line">F-statistic: 326.2 on 6 and 1378 DF,  p-value: &lt; 2.2e-16</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/egLil2EEmc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>mg数据各个变量之间的相关系数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; cor(raw_dt)</div><div class="line">            y         x1         x2         x3         x4         x5         x6</div><div class="line">y   <span class="number">1.0000000</span>  <span class="number">0.2620280</span>  <span class="number">0.5441721</span> -<span class="number">0.5006887</span> -<span class="number">0.4355964</span>  <span class="number">0.5510561</span>  <span class="number">0.1511016</span></div><div class="line">x1  <span class="number">0.2620280</span>  <span class="number">1.0000000</span> -<span class="number">0.1465800</span> -<span class="number">0.6543690</span>  <span class="number">0.4333849</span>  <span class="number">0.4543362</span> -<span class="number">0.6277910</span></div><div class="line">x2  <span class="number">0.5441721</span> -<span class="number">0.1465800</span>  <span class="number">1.0000000</span> -<span class="number">0.1475594</span> -<span class="number">0.6539043</span>  <span class="number">0.4367584</span>  <span class="number">0.4515753</span></div><div class="line">x3 -<span class="number">0.5006887</span> -<span class="number">0.6543690</span> -<span class="number">0.1475594</span>  <span class="number">1.0000000</span> -<span class="number">0.1471907</span> -<span class="number">0.6537680</span>  <span class="number">0.4397873</span></div><div class="line">x4 -<span class="number">0.4355964</span>  <span class="number">0.4333849</span> -<span class="number">0.6539043</span> -<span class="number">0.1471907</span>  <span class="number">1.0000000</span> -<span class="number">0.1494223</span> -<span class="number">0.6524989</span></div><div class="line">x5  <span class="number">0.5510561</span>  <span class="number">0.4543362</span>  <span class="number">0.4367584</span> -<span class="number">0.6537680</span> -<span class="number">0.1494223</span>  <span class="number">1.0000000</span> -<span class="number">0.1498846</span></div><div class="line">x6  <span class="number">0.1511016</span> -<span class="number">0.6277910</span>  <span class="number">0.4515753</span>  <span class="number">0.4397873</span> -<span class="number">0.6524989</span> -<span class="number">0.1498846</span>  <span class="number">1.0000000</span></div></pre></td></tr></table></figure>
+<p>从前面的线性回归结果可以看出来，<span class="math inline">\(R^2=0.5868\)</span>，这个数值并不太好，再加上两两散点图与相关系数的结果，我们看不出各个变量之间的任何模式。现在我们使用其它的几种算法建模方法，同时使用交叉验证（利用均方误差或标准化均方误差）对各种方法时行比较。</p>
+<p>下面我们对各种方法都用10折交叉验证的方法来判断其结果的可靠性（关于10折交叉验证的一些知识，可以看这笔记<a href="http://rvdsd.top/2018/07/05/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。对于每种方法，按照随机建立的10个训练集通过计算建立10个模型，对测试集分别得到10个标准化均方误差(NMSE)，再得出10次平均的NMSE。令<span class="math inline">\(\bar{y}\)</span>为因变量均值，<span class="math inline">\(\hat{y}\)</span>为从训练集得到的模型对一个测试数据集的预测值，这里NMSE的定义如下所示：</p>
+<p><span class="math inline">\(NMSE=\bar{(y-\hat{y})^2}/=\bar{(y-\bar{y})^2}=\sum(y-\hat{y})^2/\sum(y-\bar{y})^2\)</span></p>
+<p>显然，如果什么模型都不用，仅仅用均值来做预测，那么NMSE应该等于1.所以，如果在回归时得到NMSE大于1，这个模型就很糟糕了，还不如没有模型。仅仅对于训练集来说，其NMSE等于<span class="math inline">\(1-R^2\)</span>，这里的<span class="math inline">\(R^2\)</span>为回归的确定系数，但是对于测试集来说，其NMSE与测试集回归的<span class="math inline">\(R^2\)</span>没有什么关系，交叉验证主要关心测试集的NMSE。</p>
+<h3 id="构建训练集和测试集">构建训练集和测试集</h3>
+<p>现在构建为交叉验证服务的10个训练集和测试集，具体过程是：随机把下标分配给1,2,…10这10个数字，也就是把数据下标随机分成10份，然后每次提取一份作为测试集，其它9份放在一起作为训练集，用模型进行拟合，记下结果和误差，如此下去，一共做10次，最后把误差平均起来。这里所用的随机选Z折下标集的函数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">CV=<span class="keyword">function</span>(n,Z=<span class="number">10</span>,seed=<span class="number">1000</span>)&#123;</div><div class="line">  z=rep(<span class="number">1</span>:Z,ceiling(n/Z))[<span class="number">1</span>:n]</div><div class="line">  set.seed(seed)</div><div class="line">  z=sample(z,n)</div><div class="line">  mm=list()</div><div class="line">  <span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:Z)</div><div class="line">    mm[[i]]=(<span class="number">1</span>:n)[z==i]</div><div class="line">  <span class="keyword">return</span>(mm)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的<code>n</code>是样本量，<code>Z</code>为折的数目（也就是训练集加测试集的数目，这里默认是10），<code>seed</code>为随机种子，这里设为了1000，转出为<code>Z</code>个下标集，<code>mm[[i]]</code>为第i（i=1,2,…,Z)个下标集，根据这个函数对这个mg数据集求10个下标集的代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n&lt;-nrow(raw_dt)</div><div class="line">Z=<span class="number">10</span></div><div class="line">mm=CV(n,Z)</div><div class="line">D=<span class="number">1</span></div></pre></td></tr></table></figure>
+<p>在这段代码中，<code>mm</code>存储了10个下标集，而D说明因变量是第一个变量，这些值在后面对每种方法都要用。</p>
+<p>为了和其它方法进行地比较，先对数据mg求简单的线性回归的10折交叉验证的测试集的NMSE，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(MSE)</div><div class="line">[1] 0.4222689</div></pre></td></tr></table></figure>
+<p>结果表明，测试集的NMSE为0.4222689</p>
+<h2 id="决策树回归">决策树回归</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)，现在我们先用数据集mg做一棵回归树，然后解释其意义。这里要使用到<code>rpart</code>包中的<code>rpart()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rpart)</div><div class="line"><span class="keyword">library</span>(rpart.plot)</div><div class="line">a=rpart(y~.,raw_dt)</div><div class="line">rpart.plot(a,type=<span class="number">2</span>,faclen=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; a</div><div class="line">n= 1385 </div><div class="line"></div><div class="line">node), split, n, deviance, yval</div><div class="line">      * denotes terminal node</div><div class="line"></div><div class="line"> 1) root 1385 70.9545100 0.9301440  </div><div class="line">   2) x2&lt; 0.9894983 736 31.9699900 0.8017888  </div><div class="line">     4) x3&gt;=0.8423859 551 16.4573000 0.7288982  </div><div class="line">       8) x2&gt;=0.5178963 483 13.3868900 0.7068909  </div><div class="line">        16) x2&lt; 0.7999875 263  4.7064590 0.6422662  </div><div class="line">          32) x3&lt; 1.092533 185  3.3567710 0.6073434 *</div><div class="line">          33) x3&gt;=1.092533 78  0.5889238 0.7250958 *</div><div class="line">        17) x2&gt;=0.7999875 220  6.2689860 0.7841468 *</div><div class="line">       9) x2&lt; 0.5178963 68  1.1749050 0.8852150 *</div><div class="line">     5) x3&lt; 0.8423859 185  3.8660570 1.0188850  </div><div class="line">      10) x4&gt;=1.062353 71  1.8511830 0.9239636 *</div><div class="line">      11) x4&lt; 1.062353 114  0.9767496 1.0780020 *</div><div class="line">   3) x2&gt;=0.9894983 649 13.1077400 1.0757060  </div><div class="line">     6) x3&gt;=1.056185 206  3.5797200 0.9644841  </div><div class="line">      12) x4&gt;=0.9107852 23  0.5746155 0.7823564 *</div><div class="line">      13) x4&lt; 0.9107852 183  2.1462980 0.9873744 *</div><div class="line">     7) x3&lt; 1.056185 443  5.7947760 1.1274250 *</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hG48FgC33C.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>计算的结果有2个，一个是文本描述的结果，一个是图形结果，这两个结果是等价的，我们可以了解这个决策树的构造过程。现在解释一下这个决策树。</p>
+<p>决策树就像一棵倒长的树，有很多分叉，分叉点叫节点(node)，其中1号节点为根节点，也就是上图中最高的那个节点，输出的文本信息则是全部数据的信息，其中在1号节点上，n=1385，偏差(deviance)=70.9545100，在该节点的因变量的均值为0.9301440。</p>
+<p>这里的偏差是批在每个节点的偏差，它的定义为：在该节点的数据中的因变量与其均值之差的平方和，即<span class="math inline">\(\sum_{i}(y_{i}-\bar{y})^2\)</span>这里回归树用偏差大小来选择变量，当然也可以用其它诸如残差平方和作为选择变量的准则。</p>
+<p>上述的这些信息显示在上图中（不过只显示了均值），然后计算机程度在每个自变量中选择一个数值分割点，使得在该节点的整个数据在这个分割点比在其它分割点分成两部分之后的偏差之和都小，对每个自变量都选择这样的一个分割点，并对不同自变量的分割结果做比较，得到一个使得分割后总偏差最小的变量，这个变量就是该节点的分割变量（或称为拆分变量）。</p>
+<p>根据输出的文本信息，在这个案例中，根节点的分割变量为x2，其分割点为0.9894983，x2小于该值的观测值分到左边（节点2），大于该值的则分到右边（节点3）。在每个节点都展示出观测值数目、偏差及因变量均值这三项内容（不过决策树的图形中只有均值），这样数据就分成了两个部分。然后，对每一部分数据，选择分割变量及其分割点的程序重新开始。如此下去，根据一些按照拟合程度和避免决策树无限制长下去的准则，到一定节点就不再分割，这些节点就是终节点（也称为叶节点），也就是文本信息中带有星号(<code>*</code>)的为叶节点。</p>
+<h3 id="决策树的使用">决策树的使用</h3>
+<p>使用决策树很简单，如果有新的（只知道自变量的）观测值，就可以根据决策树以及各个变量大小，从根节点一直走到一个终节点，那里因变量的均值就是该观测值的因变量预测值。决策树本身受数据影响较大，但许多决策树结果起来就可以构成很好的方法，例如boosting，bagging以及随机森林等组合方法就是以决策树作为基本决策单元构造出来的。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>复杂数据统计方法：基于R的应用.第三版.吴喜之</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/18/BioStatistics/生物统计-15判别分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/18/BioStatistics/生物统计-15判别分析/" itemprop="url">判别分析笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-18T12:02:00+08:00">
+                2018-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,316
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>一般的回归是指因变量为定量变量的情况，而logistic回归主要处理因变量为只取两个值的定性变量情况。如果作为因变量的定性变量取多于两个值的时候，就需要使用线性判别分析(linear discriminant analysis)来处理。判别分析根据自变量来预测因变量的类型。</p>
+<h2 id="判别分析原理">判别分析原理</h2>
+<p>差别分析是利用部分已知类别的观测数据来建立模型，这样的数据称为训练集(training set)。我们这里介绍的线性判别分析所得到的模型是一组线性差别公式；每个公式是自变量的一个线性组合；公式的个数和类别数目一样。有了公式之后，就可以把每个未知类别的自变量观测值代入那些差别公式，算出和类别一样多的值；相应于哪一类的值最大，则把该观测值判为属于该类。</p>
+<p>判别分析的原理并不复杂，可以简单地描述如下。</p>
+<p>如果作为属性变量的因变量有k个预付（即观测值应该分成k个类），而自变量包含p个变量，那么每一个观测值就是p维空间的一个点。整个训练集的各个点（假定有n个点）就按照已知的类别在p维空间中形成共有n个点的k个点群。那么，对于一个未知类别的点，如果离哪一群近，就可以分到哪一集。关键的细节问题是如何定义“远近”或距离。关键是确定一些准则，使得每一个点群内部的点接近，而使各群之间尽量分开。不同的准则造就了不同的差别或分类方法。这里不讨论这些方法的数学细节，这里仅仅就是线性差别分析一种方法，介绍如何通过R得到结果及结果的解释。这里先把p维空间的点按照最能够分开各类的原则投影到二维空间，再根据二维空间这些点的分布得到判别函数。</p>
+<p>如何来确定判别分析模型的效果呢？最基本的就是用一个没有参加建模的已知观测值类别的数据来验证。这样的数据集称为测试集或检验集(test set)。把通过模型预测的这些观测值的类别和它们已知的类别比较，就知道有多少划分错了，由此可以计算出误差来。</p>
+<h2 id="案例分析">案例分析</h2>
+<p>R自带了一个数据集，即<code>iris</code>。这是一个鸢尾花(iris)的数据，该数据给出了150个鸢尾花的萼片长(sepal length)、萼片宽(sepal width)、花瓣长(petal length)、花瓣宽(petal width)以及这些花的种类(Species)这五个变量。萼片和花瓣的长宽是四个定量变量，而各类为分类变量（有3个值，为setosa、versicolour、virginica）。现在，我们建立一个模型，根据萼片和花瓣这四个度量来把鸢尾花进行分类，这里的鸢尾花一共有3种，每种都有50个观测值。</p>
+<p>现在我们在每种鸢尾花中也能耐选择一半，也就是25个作为测试集，另外25个用来建模。三种鸢尾花一起，训练集和测试集各有75个观测。由于选择测试集和训练集的过程是随机的，每次计算的结果也不相同，在R软件中，对于不同的成随机数种子，我们得到的结果也不尽相同。下面是对两个随机数种子得到的两个测试集判别结果，每个格子中的数目是相应的真实类的观测被划分到预测类的频数，如下所示：</p>
+<p>随机种子数：set.seed(5)</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">set.seed(<span class="number">5</span>)</div><div class="line">samp &lt;- c(sample(<span class="number">1</span>:<span class="number">50</span>,<span class="number">25</span>),sample(<span class="number">51</span>:<span class="number">100</span>,<span class="number">25</span>),sample(<span class="number">101</span>:<span class="number">150</span>,<span class="number">25</span>))</div><div class="line">a &lt;- lda(Species~.,data=iris,shuset=samp)</div><div class="line">summary(predict(a,iris[-samp,])$class)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; summary(predict(a,iris[-samp,])$class)</div><div class="line">    setosa versicolor  virginica </div><div class="line">        25         25         25</div></pre></td></tr></table></figure>
+<p>随机种子数：set.seed(4)</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">set.seed(<span class="number">4</span>)</div><div class="line">samp &lt;- c(sample(<span class="number">1</span>:<span class="number">50</span>,<span class="number">25</span>),sample(<span class="number">51</span>:<span class="number">100</span>,<span class="number">25</span>),sample(<span class="number">101</span>:<span class="number">150</span>,<span class="number">25</span>))</div><div class="line">a &lt;- lda(Species~.,data=iris,shuset=samp)</div><div class="line">summary(predict(a,iris[-samp,])$class)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; summary(predict(a,iris[-samp,])$class)</div><div class="line">    setosa versicolor  virginica </div><div class="line">        25         23         27</div></pre></td></tr></table></figure>
+<p>由这两个结果可知，在第一个随机种子下（set.seed(5)）下，测试集中的每个类别完全划分正确，在第二个随机种子下（set.seed(4)），错误地划分了4个类别，出错率为4/75。</p>
+<p>下图是在建立线性差别函数过程中，把75个训练集的四维空间点投影到二维空间的结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(mda)</div><div class="line">z&lt;-fda(Species~.,data=iris[samp,])$fit$fitted</div><div class="line">plot(z,pch=c(rep(<span class="number">19</span>,<span class="number">25</span>),rep(<span class="number">2</span>,<span class="number">25</span>),rep(<span class="number">8</span>,<span class="number">25</span>)),xlab=<span class="string">""</span>,ylab=<span class="string">""</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180819/HJDbc61Eim.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>可以看也，setosa（用实心圆点标记）离另外两种很远，而versicolor（用空心三角形标记）和virginica（用星号标记）这两类则离得比较近，容易划分错，我们从第二个随机种子（set.seed(4)）中也能看出来，出错的应时这两类。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/18/Linux/Linux命令收集/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/18/Linux/Linux命令收集/" itemprop="url">Linux命令收集</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-18T12:00:00+08:00">
+                2018-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  136
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="下载">下载</h3>
+<p><code>curl</code>，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff -o sc.gff</div></pre></td></tr></table></figure>
+<p>这个命令是将某个URL的信息下载下来，并通过<code>-o</code>参数，将其输出到<code>sc.gff</code>文件中，其中,<code>-progress</code>是显示进度条，这个是选用的。</p>
+<p><code>prefetch</code></p>
+<h3 id="查看文件">查看文件</h3>
+<p><code>ls</code></p>
+<h2 id="文本相关">文本相关</h2>
+<h3 id="文本统计">文本统计</h3>
+<p><code>wc</code></p>
+<h3 id="文本排序">文本排序</h3>
+<p><code>sort</code></p>
+<h3 id="去重">去重</h3>
+<p><code>unique</code></p>
+<h3 id="查看文本">查看文本</h3>
+<p><code>head</code></p>
+<p><code>tail</code></p>
+<p><code>less</code></p>
+<p><code>more</code></p>
+<p><code>cat</code></p>
+<h3 id="正则表达式">正则表达式</h3>
+<p><code>grep</code></p>
+<p><code>awk</code></p>
+<p><code>sed</code></p>
+<hr>
+<h2 id="文件操作">文件操作</h2>
+<h3 id="查找文件">查找文件</h3>
+<p><code>find</code></p>
+<p><code>locate</code></p>
+<h3 id="压缩">压缩</h3>
+<p><code>unzip</code></p>
+<hr>
+<h3 id="目录操作">目录操作</h3>
+<p>切换目录：<code>cd</code></p>
+<p>新建目录：<code>mkdir</code></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/17/Linux/Linux文档的查阅/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -799,7 +1437,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,010
+                  1,009
                 </span>
               
 
@@ -842,8 +1480,8 @@
 <p>不同的数据据中的对于一个基因的描述不同，例如p53，它又叫P53，又叫TP53，或BCC7，或ENSG00000141510或OTTHUMG00000162125。通常来说，对p53的描述使用的是Official Gene Symbol（例如TP53）。</p>
 <p>另外，在NCBI数据库中我们查找TP53，会出现下面这些信息：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180624/bCd0JaAJcB.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303173528.png">
+
 </div>
 <p>现在我们从第一行开始解释：</p>
 <ol style="list-style-type: decimal">
@@ -2247,877 +2885,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/19/Perl/Perl学习笔记（8）-文件与目录操作/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/19/Perl/Perl学习笔记（8）-文件与目录操作/" itemprop="url">Perl学习笔记（8）-文件与目录操作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-19T12:00:00+08:00">
-                2018-05-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Perl/" itemprop="url" rel="index">
-                    <span itemprop="name">Perl</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,582
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  16
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="perl文件操作概述">Perl文件操作概述</h2>
-<p>Perl使用一种叫做<code>文件句柄</code>类型的变量来操作文件。从文件读取或者写入数据需要使用文件句柄。文件句柄(file handle)是一个I/O连接的名称，可以简单地地理解为控制文件的某个东西。Perl提供了三种文件句柄:STDIN,STDOUT,STDERR，分别代表标准输入、标准输出和标准出错输出。</p>
-<p>Perl 中打开文件可以使用以下方式： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span> FILEHANDLE, EXPR</div><div class="line"><span class="keyword">open</span> FILEHANDLE</div><div class="line"><span class="keyword">sysopen</span> FILEHANDLE, FILENAME, MODE, PERMS</div><div class="line"><span class="keyword">sysopen</span> FILEHANDLE, FILENAME, MODE</div></pre></td></tr></table></figure></p>
-<p>参数说明: <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FILEHANDLE：文件句柄，用于存放一个文件唯一标识符，它就是一串数字，其实可以理解为文件编号。</div><div class="line">EXPR：文件名及文件访问类型组成的表达式。</div><div class="line">MODE：文件访问类型。</div><div class="line">PERMS：访问权限位(permission bits)。</div></pre></td></tr></table></figure></p>
-<h2 id="open函数">Open函数</h2>
-<h3 id="只读方式打开">只读方式打开</h3>
-<p>open是打开某个文件的函数，它的用法为<code>open(filevar,filenmae)</code>，其中，filevar是文件句柄，filename是文件名，路径可以是绝对路径，也可以是相对路径。<code>open(DATA,&quot;&lt;file.txt&quot;);</code>表示以只读的方式（只读的方式是<code>&lt;</code>号）打开文件<code>file.txt</code>。如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat open.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">open</span>(DATA,<span class="string">"&lt;file.txt"</span>) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"file.txt can not be opened,$!"</span>;</div><div class="line"></div><div class="line"><span class="keyword">while</span>(&lt;DATA&gt;)&#123;</div><div class="line">    <span class="keyword">print</span> <span class="string">"$_"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl open.pl </div><div class="line">This is a test file.</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat file.txt </div><div class="line">This is a test file.</div></pre></td></tr></table></figure>
-<h3 id="写入方式打开">写入方式打开</h3>
-<p>写入方式打开是用<code>&gt;</code>符号，使用格式为：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span>(DATA,<span class="string">"&gt;file.txt"</span>) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"file.txt can not be open, $!"</span>;</div></pre></td></tr></table></figure>
-<h3 id="读写方式打开">读写方式打开</h3>
-<p>如果要以读写方式打开文件，需要要<code>&gt;</code>或<code>&lt;</code>字符前添加<code>+</code>号，这种方式不会删除文件原来的内容，它的格式如下：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span>(DATA,<span class="string">"+&lt;file.txt"</span>); <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"file.txt can not be opened,$!"</span>;</div></pre></td></tr></table></figure>
-<h3 id="删除文件内容">删除文件内容</h3>
-<p>删除文件内容，需要在<code>+</code>号后面添加<code>&gt;</code>符号，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span> DATA, <span class="string">"+&gt;file.txt"</span> <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"file can not be opened, $!"</span>;</div></pre></td></tr></table></figure>
-<h3 id="追加数据">追加数据</h3>
-<p>追加数据使用双大于号（<code>&gt;&gt;</code>），如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span>(DATA,<span class="string">"&gt;&gt;file.txt"</span>)|| <span class="keyword">die</span> <span class="string">"file.txt can not be opened,$!"</span>;</div></pre></td></tr></table></figure>
-<h3 id="读取追加文件的内容">读取追加文件的内容</h3>
-<p>在追加符号前面加上<code>+</code>号即可，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span>(DATA,<span class="string">"+&gt;&gt;file.txt"</span>) || <span class="keyword">die</span> <span class="string">"file.txt can not be opened,$!"</span>;</div></pre></td></tr></table></figure>
-<h3 id="不同的访问模式汇总">不同的访问模式汇总</h3>
-<table>
-<thead>
-<tr class="header">
-<th>模式</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>&lt;</code>或<code>r</code></td>
-<td>只读方式打开，将文件指针指向文件头。</td>
-</tr>
-<tr class="even">
-<td><code>&gt;</code>或<code>w</code></td>
-<td>写入方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。</td>
-</tr>
-<tr class="odd">
-<td><code>&gt;&gt;</code>或<code>a</code></td>
-<td>写入方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。</td>
-</tr>
-<tr class="even">
-<td><code>+&lt;</code>或<code>r+</code></td>
-<td>读写方式打开，将文件指针指向文件头。</td>
-</tr>
-<tr class="odd">
-<td><code>+&gt;</code>或<code>w+</code></td>
-<td>读写方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。</td>
-</tr>
-<tr class="even">
-<td><code>+&gt;&gt;</code>或<code>a+</code></td>
-<td>读写方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="sysopen函数">Sysopen函数</h2>
-<p><code>sysopen</code>函数类似于<code>open</code>函数，它的使用格式如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">sysopen</span>(FH,$filename,O_RDWR|O_CREAT,<span class="number">0666</span>)（中间有一个竖线，是OR的意思）</div></pre></td></tr></table></figure>
-<p>参数解释：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="number">1</span>. FH:文件句柄，与<span class="keyword">open</span>函数的第<span class="number">1</span>个参数一样；</div><div class="line"><span class="number">2</span>. $filename：文件名；</div><div class="line"><span class="number">3</span>. O_RDWRIO_CREAT：模式值，tl模块提供的逻辑OR运算组合起来的常数构成；</div><div class="line"><span class="number">4</span>. 这个参数可先，是八进制值，<span class="number">0666</span>表示数据文件，<span class="number">0777</span>表示程序</div><div class="line">如果文件能够打开，则返回true，如果失败，返回false。</div></pre></td></tr></table></figure>
-<p>以读写(<code>+&lt;filename</code>)的方式打开文件的代码是<code>sysopen(DATA,&quot;file.txt&quot;,O_RDWR);</code>如果需要在更新文件前清空文件，代码是`sysopen(DATA,“file.txt”,O_RDWR|O_TRUNC);。所有的模式值如下表所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>模式</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>O_RDWR</td>
-<td>读写方式打开，将文件指针指向文件头。</td>
-</tr>
-<tr class="even">
-<td>O_RDONLY</td>
-<td>只读方式打开，将文件指针指向文件头。</td>
-</tr>
-<tr class="odd">
-<td>O_WRONLY</td>
-<td>写入方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。</td>
-</tr>
-<tr class="even">
-<td>O_CREAT</td>
-<td>创建文件</td>
-</tr>
-<tr class="odd">
-<td>O_APPEND</td>
-<td>追加文件</td>
-</tr>
-<tr class="even">
-<td>O_TRUNC</td>
-<td>将文件大小截为零</td>
-</tr>
-<tr class="odd">
-<td>O_EXCL</td>
-<td>如果使用O_CREAT时文件存在,就返回错误信息,它可以测试文件是否存在</td>
-</tr>
-<tr class="even">
-<td>O_NONBLOCK</td>
-<td>非阻塞I/O使我们的操作要么成功，要么立即返回错误，不被阻塞。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="close函数">Close函数</h2>
-<p>在文件使用完后，要关闭文件，以刷新与文件句柄相关联的输入输出缓冲区，关闭文件的语法如下：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">close</span> FILEHANDLE</div><div class="line"><span class="keyword">close</span></div></pre></td></tr></table></figure>
-<p>FILEHANDLE 为指定的文件句柄，如果成功关闭则返回 true，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">close</span>(DATA) || <span class="keyword">die</span> <span class="string">"can not close file"</span></div></pre></td></tr></table></figure>
-<h2 id="读写文件">读写文件</h2>
-<p>向文件读写信息有几种不同的方式。</p>
-<h3 id="第一种方式filehandle操作符">第一种方式：<code>&lt;FILEHANDLE&gt;操作符</code></h3>
-<p>从打开的文件句柄读取信息的主要方法是<code>&lt;FILEHANDLE&gt;操作符</code>。在标量上下文中，它从文件句柄返回单一行，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span> file<span class="string">";</span></div><div class="line"><span class="string">@lines=&lt;DATA&gt;;</span></div><div class="line"><span class="string">print @lines;</span></div><div class="line"><span class="string">close(DATA);</span></div><div class="line"><span class="string">biotest@ubuntu:~/perl/06file$ perl import.pl</span></div><div class="line"><span class="string">1</span></div><div class="line"><span class="string">2</span></div><div class="line"><span class="string">3</span></div></pre></td></tr></table></figure>
-<h3 id="getc-函数">getc 函数</h3>
-<p><code>xgetc</code>函数从指定的<code>FILEHANDLE</code>返回单一的字符，如果没指定返回 STDIN：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">getc</span> FILEHANDLE</div><div class="line"><span class="keyword">getc</span></div></pre></td></tr></table></figure>
-<p>如果发生错误，或在文件句柄在文件末尾，则返回 undef。</p>
-<h3 id="read函数">read函数</h3>
-<p>read函数用于从缓冲区的文件句柄读取信息。 这个函数用于从文件读取二进制数据，格式如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">read</span> FILEHANDLE,SCALAR,LENGTH,OFFSET</div><div class="line"><span class="keyword">read</span> FILEHANDLE,SCALAR,LENGTH</div></pre></td></tr></table></figure>
-<p>参数说明: <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="number">1</span>. FILEHANDLE：文件句柄，用于存放一个文件唯一标识符。 </div><div class="line"><span class="number">2</span>. SCALAR：存贮结果，如果没有指定OFFSET，数据将放在SCALAR的开头。否则数据放在SCALAR中的OFFSET字节之后。</div><div class="line"><span class="number">3</span>. LENGTH：读取的内容长度。</div><div class="line"><span class="number">4</span>. OFFSET：偏移量。</div><div class="line">如果读取成功返回读取的字节数，如果在文件结尾返回<span class="number">0</span>，如果发生错误返回<span class="keyword">undef</span>。</div></pre></td></tr></table></figure></p>
-<h3 id="print函数">print函数</h3>
-<p>对于所有从文件句柄中读取信息的函数，在后端主要的写入函数为 print： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> FILEHANDLE LIST</div><div class="line"><span class="keyword">print</span> LIST</div><div class="line"><span class="keyword">print</span></div></pre></td></tr></table></figure></p>
-<p>利用文件句柄和print函数可以把程序运行的结果发给输出设备(STDOUT：标准输出)，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> <span class="string">"Hello World!\n"</span>;</div></pre></td></tr></table></figure>
-<h2 id="文件操作实例">文件操作实例</h2>
-<h3 id="复制文件数据">复制文件数据</h3>
-<p>在下面的案例中，打开一个已经存在的文件<code>file1.txt</code>，并读取它的每一行，写入到文件<code>file2.txt</code>中，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat file1.txt</div><div class="line">This is line1 of file1.txt</div><div class="line">This is line2 of file1.txt</div><div class="line">This is line3 of file1.txt</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat operation.pl </div><div class="line"><span class="comment">#!/usr/bi/perl</span></div><div class="line"></div><div class="line"><span class="comment"># Open file1 with only-read</span></div><div class="line"><span class="keyword">open</span>(DATA1,<span class="string">"&lt;file1.txt"</span>);</div><div class="line"></div><div class="line"><span class="comment"># Open new file2</span></div><div class="line"><span class="keyword">open</span>(DATA2,<span class="string">"&gt;file2.txt"</span>);</div><div class="line"></div><div class="line"><span class="comment"># copy data</span></div><div class="line"><span class="keyword">while</span>(&lt;DATA1&gt;)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">print</span> DATA2 $_;</div><div class="line">&#125;</div><div class="line"><span class="keyword">close</span>(DATA1);</div><div class="line"><span class="keyword">close</span>(DATA2);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl operation.pl </div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat file2.txt </div><div class="line">This is line1 of file1.txt</div><div class="line">This is line2 of file1.txt</div><div class="line">This is line3 of file1.txt</div></pre></td></tr></table></figure>
-<h3 id="重命名文件">重命名文件</h3>
-<p>在下面的案例中，将<code>file1.txt</code>重命令为<code>new_file1.txt</code>，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ ls -lh *.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">81</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">13</span> file1.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">81</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">17</span> file2.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">21</span> May <span class="number">18</span> <span class="number">19</span>:<span class="number">44</span> file.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest  <span class="number">7</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">04</span> import.txt</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat rename.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">rename</span>(<span class="string">"/home/biotest/perl/06file/file1.txt"</span>,<span class="string">"/home/biotest/perl/06file/new_file1.txt"</span>);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl rename.pl </div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ ls -lh *.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">81</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">17</span> file2.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">21</span> May <span class="number">18</span> <span class="number">19</span>:<span class="number">44</span> file.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest  <span class="number">7</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">04</span> import.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">81</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">13</span> new_file1.txt</div></pre></td></tr></table></figure>
-<h3 id="删除文件">删除文件</h3>
-<p>现在删除当前目录下的<code>file2.txt</code>文件，使用的是<code>unlink</code>函数，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ ls -lh *.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">81</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">17</span> file2.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">21</span> May <span class="number">18</span> <span class="number">19</span>:<span class="number">44</span> file.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest  <span class="number">7</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">04</span> import.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">81</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">13</span> new_file1.txt</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ vim delete.pl</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat delete.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">unlink</span>(<span class="string">"/home/biotest/perl/06file/file2.txt"</span>);</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl delete.pl </div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ ls -lh *.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">21</span> May <span class="number">18</span> <span class="number">19</span>:<span class="number">44</span> file.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest  <span class="number">7</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">04</span> import.txt</div><div class="line">-rw-rw-r-- <span class="number">1</span> biotest biotest <span class="number">81</span> May <span class="number">18</span> <span class="number">20</span>:<span class="number">13</span> new_file1.txt</div></pre></td></tr></table></figure>
-<h2 id="指定文件位置">指定文件位置</h2>
-<p><code>tell</code>函数用于获取文件的位置，<code>seek</code>函数指定文件内的位置。</p>
-<h3 id="tell函数">tell函数</h3>
-<p>tell函数的使用如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">tell</span> FILEHANDLE</div><div class="line"><span class="keyword">tell</span></div></pre></td></tr></table></figure>
-<p>如果指定 FILEHANDLE 该函数返回文件指针的位置，以字节计。如果没有指定则返回默认选取的文件句柄。</p>
-<h3 id="seek函数">seek函数</h3>
-<p>seek()函数是通过文件句柄来移动文件读写指针的方式来读取或写入文件的，以字节为单位进行读取和写入，使用格式如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">seek</span> FILEHANDLE, POSITION, WHENCE</div></pre></td></tr></table></figure>
-<p>参数说明: <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="number">1</span>. FILEHANDLE：文件句柄，用于存放一个文件唯一标识符。</div><div class="line"><span class="number">2</span>. POSITION：表示文件句柄(读写位置指针)要移动的字节数。</div><div class="line"><span class="number">3</span>. WHENCE：表示文件句柄(读写位置指针)开始移动时的起始位置，可以取的值为<span class="number">0</span>、<span class="number">1</span>、<span class="number">2</span>；分别表示文件开头、当前位置和文件尾。</div></pre></td></tr></table></figure></p>
-<p>以下案例就是从文件开头读取256个字节： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">seek</span> DATA, <span class="number">256</span>, <span class="number">0</span>;</div></pre></td></tr></table></figure></p>
-<h3 id="使用案例">使用案例</h3>
-<p>以下代码用于判断这个文件是否𥇛，是否可读写，代码如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat file_info.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">my</span> $file=<span class="string">"/home/biotest/perl/06file/file.txt"</span>;</div><div class="line"><span class="keyword">my</span> (@description, $size);</div><div class="line"><span class="keyword">if</span> (-e $file)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">push</span> @description, <span class="string">'is a binary file'</span> <span class="keyword">if</span> (-B <span class="number">_</span>);</div><div class="line">    <span class="keyword">push</span> @description, <span class="string">'is a socket'</span> <span class="keyword">if</span> (-S <span class="number">_</span>);</div><div class="line">    <span class="keyword">push</span> @description, <span class="string">'is a text file'</span> <span class="keyword">if</span> (-T <span class="number">_</span>);</div><div class="line">    <span class="keyword">push</span> @description, <span class="string">'is a special file'</span> <span class="keyword">if</span> (-b <span class="number">_</span>);</div><div class="line">    <span class="keyword">push</span> @description, <span class="string">'is a special character file'</span> <span class="keyword">if</span> (-c <span class="number">_</span>);</div><div class="line">    <span class="keyword">push</span> @description, <span class="string">'is a dictionary'</span> <span class="keyword">if</span> (-d <span class="number">_</span>);</div><div class="line">    <span class="keyword">push</span> @description, <span class="string">'file exists'</span> <span class="keyword">if</span> (-<span class="keyword">x</span> <span class="number">_</span>);</div><div class="line">    <span class="keyword">push</span> @description, (($size=-<span class="keyword">s</span> <span class="number">_</span>))? <span class="string">"$size byte"</span>:<span class="string">'null'</span>;</div><div class="line">    <span class="keyword">print</span> <span class="string">"$file information: "</span>,<span class="keyword">join</span>(<span class="string">','</span>,@description),<span class="string">"\n"</span>;</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl file_info.pl </div><div class="line">/home/biotest/perl/<span class="number">06</span>file/file.txt information: is a text file,<span class="number">21</span> byte</div></pre></td></tr></table></figure>
-<p>文件测试操作符如下表所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>操作符</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>-A</code></td>
-<td>文件上一次被访问的时间(单位：天)</td>
-</tr>
-<tr class="even">
-<td><code>-B</code></td>
-<td>是否为二进制文件</td>
-</tr>
-<tr class="odd">
-<td><code>-C</code></td>
-<td>文件的(inode)索引节点修改时间(单位：天)</td>
-</tr>
-<tr class="even">
-<td><code>-M</code></td>
-<td>文件上一次被修改的时间(单位：天)</td>
-</tr>
-<tr class="odd">
-<td><code>-O</code></td>
-<td>文件被真实的UID所有</td>
-</tr>
-<tr class="even">
-<td><code>-R</code></td>
-<td>文件或目录可以被真实的UID/GID读取</td>
-</tr>
-<tr class="odd">
-<td><code>-S</code></td>
-<td>为socket(套接字)</td>
-</tr>
-<tr class="even">
-<td><code>-T</code></td>
-<td>是否为文本文件</td>
-</tr>
-<tr class="odd">
-<td><code>-W</code></td>
-<td>文件或目录可以被真实的UID/GID写入</td>
-</tr>
-<tr class="even">
-<td><code>-X</code></td>
-<td>文件或目录可以被真实的UID/GID执行</td>
-</tr>
-<tr class="odd">
-<td><code>-b</code></td>
-<td>为block-special (特殊块)文件(如挂载磁盘)</td>
-</tr>
-<tr class="even">
-<td><code>-c</code></td>
-<td>为character-special (特殊字符)文件(如I/O 设备)</td>
-</tr>
-<tr class="odd">
-<td><code>-d</code></td>
-<td>为目录</td>
-</tr>
-<tr class="even">
-<td><code>-e</code></td>
-<td>文件或目录名存在</td>
-</tr>
-<tr class="odd">
-<td><code>-f</code></td>
-<td>为普通文件</td>
-</tr>
-<tr class="even">
-<td><code>-g</code></td>
-<td>文件或目录具有setgid属性</td>
-</tr>
-<tr class="odd">
-<td><code>-k</code></td>
-<td>文件或目录设置了sticky位</td>
-</tr>
-<tr class="even">
-<td><code>-l</code></td>
-<td>为符号链接</td>
-</tr>
-<tr class="odd">
-<td><code>-o</code></td>
-<td>文件被有效UID所有</td>
-</tr>
-<tr class="even">
-<td><code>-p</code></td>
-<td>文件是命名管道(FIFO)</td>
-</tr>
-<tr class="odd">
-<td><code>-r</code></td>
-<td>文件可以被有效的UID/GID读取</td>
-</tr>
-<tr class="even">
-<td><code>-s</code></td>
-<td>文件或目录存在且不为0(返回字节数)</td>
-</tr>
-<tr class="odd">
-<td><code>-t</code></td>
-<td>文件句柄为TTY(系统函数isatty()的返回结果；不能对文件名使用这个测试)</td>
-</tr>
-<tr class="even">
-<td><code>-u</code></td>
-<td>文件或目录具有setuid属性</td>
-</tr>
-<tr class="odd">
-<td><code>-w</code></td>
-<td>文件可以被有效的UID/GID写入</td>
-</tr>
-<tr class="even">
-<td><code>-x</code></td>
-<td>文件可以被有效的UID/GID执行</td>
-</tr>
-<tr class="odd">
-<td><code>-z</code></td>
-<td>文件存在，大小为0(目录恒为false)，即是否为空文件，</td>
-</tr>
-</tbody>
-</table>
-<h2 id="perl目录操作">Perl目录操作</h2>
-<p>下面是Perl中常用的一些操作目录的函数：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">opendir</span> DIRHANDLE, EXPR  <span class="comment"># 打开目录</span></div><div class="line"><span class="keyword">readdir</span> DIRHANDLE        <span class="comment"># 读取目录</span></div><div class="line"><span class="keyword">rewinddir</span> DIRHANDLE      <span class="comment"># 定位指针到开头</span></div><div class="line"><span class="keyword">telldir</span> DIRHANDLE        <span class="comment"># 返回目录的当前位置</span></div><div class="line"><span class="keyword">seekdir</span> DIRHANDLE, POS   <span class="comment"># 定位指定到目录的 POS 位置</span></div><div class="line">closedir DIRHANDLE       <span class="comment"># 关闭目录</span></div></pre></td></tr></table></figure>
-<h3 id="显示所有文件">显示所有文件</h3>
-<p>在下面的案例中，可以显示所有的文件，使用了<code>glob</code>函数，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat glob.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="comment"># display /home/biotest/perl/06file/ all files</span></div><div class="line">$dir = <span class="string">"/home/biotest/perl/06file/*"</span>;</div><div class="line"><span class="keyword">my</span> @files=<span class="keyword">glob</span>($dir);</div><div class="line"></div><div class="line"><span class="keyword">foreach</span>(@files)&#123;</div><div class="line">    <span class="keyword">print</span> $_. <span class="string">"\n"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment"># display all files with .pl in /home/biotest/perl/06file/</span></div><div class="line">$dir=<span class="string">"/home/biotest/perl/06file/*.pl"</span>;</div><div class="line">@files=<span class="keyword">glob</span>($dir);</div><div class="line"></div><div class="line"><span class="keyword">foreach</span>(@files)&#123;</div><div class="line">    <span class="keyword">print</span> $_.<span class="string">"\n"</span>;</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl glob.pl </div><div class="line">/home/biotest/perl/<span class="number">06</span>file/delete.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/file.txt</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/file_info.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/glob.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/import.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/import.txt</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/m1.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/new_file1.txt</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/open.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/operation.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/rename.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/delete.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/file_info.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/glob.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/import.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/m1.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/open.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/operation.pl</div><div class="line">/home/biotest/perl/<span class="number">06</span>file/rename.pl</div></pre></td></tr></table></figure>
-<p>显示当前目录下所有文件，使用<code>opendir</code>函数，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat opendir.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">opendir</span>(DIR,<span class="string">'.'</span>) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"Can not open directory,$!"</span>;</div><div class="line"><span class="keyword">while</span>($file=<span class="keyword">readdir</span> DIR)&#123;</div><div class="line">    <span class="keyword">print</span> <span class="string">"$file\n"</span>;</div><div class="line">&#125;</div><div class="line">closedir DIR;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl opendir.pl </div><div class="line">open.pl</div><div class="line">file.txt</div><div class="line">..</div><div class="line">rename.pl</div><div class="line">glob.pl</div><div class="line">import.pl</div><div class="line">opendir.pl</div><div class="line">operation.pl</div><div class="line">new_file1.txt</div><div class="line">file_info.pl</div><div class="line">.</div><div class="line">m1.pl</div><div class="line">delete.pl</div><div class="line">import.txt</div></pre></td></tr></table></figure>
-<h3 id="显示当前目录下所有以.pl结尾的文件">显示当前目录下所有以<code>.pl</code>结尾的文件</h3>
-<p>如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat display_file_pl.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">opendir</span>(DIR,<span class="string">'.'</span>) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"can not open directionary, $!"</span>;</div><div class="line"><span class="keyword">foreach</span> (<span class="keyword">sort</span> <span class="keyword">grep</span>(<span class="regexp">/^.*\.pl$/</span>,<span class="keyword">readdir</span>(DIR)))&#123;</div><div class="line">     <span class="keyword">print</span> <span class="string">"$_\n"</span>;</div><div class="line">&#125;</div><div class="line">closedir DIR;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl display_file_pl.pl </div><div class="line">delete.pl</div><div class="line">display_file_pl.pl</div><div class="line">file_info.pl</div><div class="line">glob.pl</div><div class="line">import.pl</div><div class="line">m1.pl</div><div class="line">open.pl</div><div class="line">opendir.pl</div><div class="line">operation.pl</div><div class="line">rename.pl</div></pre></td></tr></table></figure>
-<h3 id="创建一个新目录">创建一个新目录</h3>
-<p>mkdir也是Perl中的一个函数，它用于创建一个新目录，但是使用之前，要有足够的权限，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat mkdir.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$dir=<span class="string">"/home/biotest/perl/06file/new"</span>;</div><div class="line"></div><div class="line"><span class="keyword">mkdir</span>($dir) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"Can not create $dir directionary, $!"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"Create a directionary!"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl mkdir.pl </div><div class="line">Create a directionary!</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ ls</div><div class="line">delete.pl           glob.pl     mkdir.pl       open.pl</div><div class="line">display_file_pl.pl  import.pl   new            operation.pl</div><div class="line">file_info.pl        import.txt  new_file1.txt  rename.pl</div><div class="line">file.txt            m1.pl       opendir.pl</div></pre></td></tr></table></figure>
-<h3 id="删除目录">删除目录</h3>
-<p>使用rmdir来删除目录，使用这个函数之前用户需要有足够的权限，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat del_dir.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$dir=<span class="string">"/home/biotest/perl/06file/new"</span>;</div><div class="line"></div><div class="line"><span class="keyword">rmdir</span>($dir) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"Can not delete $dir directionary, $!"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"Delete directionary successfully!\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl del_dir.pl </div><div class="line">Delete directionary successfully!</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ ls</div><div class="line">del_dir.pl          file.txt    m1.pl          open.pl</div><div class="line">delete.pl           glob.pl     mkdir.pl       operation.pl</div><div class="line">display_file_pl.pl  import.pl   new_file1.txt  rename.pl</div><div class="line">file_info.pl        import.txt  opendir.pl</div></pre></td></tr></table></figure>
-<h3 id="切换目录">切换目录</h3>
-<p>切换目录使用chdir函数，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ pwd</div><div class="line">/home/biotest/perl/<span class="number">06</span>file</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ cat chdir.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$dir=<span class="string">"/home/biotest"</span>;</div><div class="line"></div><div class="line"><span class="keyword">chdir</span>($dir) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"Can not change to $dir, $!"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"Your current directionary is $dir\n"</span>;</div><div class="line"></div><div class="line"><span class="keyword">opendir</span>(DIR,<span class="string">'.'</span>) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"Can not open $dir,$!"</span>;</div><div class="line"><span class="keyword">while</span>($file=<span class="keyword">readdir</span> DIR)&#123;</div><div class="line">    <span class="keyword">print</span> <span class="string">"$file\n"</span>;</div><div class="line">&#125;</div><div class="line">closedir DIR;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">06</span>file$ perl chdir.pl|head</div><div class="line">Your current directionary is /home/biotest</div><div class="line">Desktop</div><div class="line">Miniconda2-latest-Linux-x86_64.sh</div><div class="line">filename</div><div class="line">Pictures</div><div class="line">.dmrc</div><div class="line">Videos</div><div class="line">.xsession-errors.old</div><div class="line">.bash_history</div><div class="line">.cache</div></pre></td></tr></table></figure>
-<p>从结果来看，运行代码后，chdir并不会在shell中直接切换到<code>/home/biotest</code>目录，但是，我们后来使用了<code>opendir</code>函数后，显示的文件确实是<code>/home/biotest</code>目录下的文件，这一点需要注意：切换目录改变的只能是Perl程序运行中的目录，而不是Shell实际中的目录。</p>
-<h2 id="参考资料">参考资料</h2>
-<p><a href="http://www.runoob.com/perl/perl-tutorial.html" target="_blank" rel="external">Perl教程|菜鸟教程</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/18/Perl/Perl学习笔记（7）-引用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/18/Perl/Perl学习笔记（7）-引用/" itemprop="url">Perl学习笔记（7）-引用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-18T12:00:00+08:00">
-                2018-05-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Perl/" itemprop="url" rel="index">
-                    <span itemprop="name">Perl</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  724
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="perl-引用">Perl 引用</h2>
-<p>引用就是指针，Perl的引用是一个标量类型，它可以指向变量、数组、哈希表（也叫关联数组）和函数，可以应用在程序的任何地方。</p>
-<h2 id="创建引用">创建引用</h2>
-<p>定义变量的时候，在变量名前面加个，就得到了这个变量的一个引用，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$scalarref = \$foo;     <span class="comment"># 标量变量引用</span></div><div class="line">$arrayref  = \@ARGV;    <span class="comment"># 列表的引用</span></div><div class="line">$hashref   = \%ENV;     <span class="comment"># 哈希的引用</span></div><div class="line">$coderef   = \&amp;handler; <span class="comment"># 函数引用</span></div><div class="line">$globref   = \*foo;     <span class="comment"># GLOB句柄引用</span></div></pre></td></tr></table></figure>
-<p>在数组中我们可以用匿名数组引用，使用 [] 定义，在Perl中，匿名数组使用方括号（<code>[]</code>）来表示，而正常的数组，则是使用小括号来表示，例如<code>@ages=(25,30,40)</code>。当使用匿名数组引用时，使用方括号（<code>[]</code>），如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$aref= [ <span class="number">1</span>,<span class="string">"foo"</span>,<span class="keyword">undef</span>,<span class="number">13</span> ];</div></pre></td></tr></table></figure>
-<p>匿名数组的元素仍然可以是匿名数组，所以可以用这种方法构造数组的数组，可以构造任意维度的数组，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">my</span> $aref = [</div><div class="line">        [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">        [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],</div><div class="line">        [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>],</div><div class="line">]</div></pre></td></tr></table></figure>
-<p>在哈希中我们可以用匿名哈希引用，使用 {} 定义：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$href= &#123; <span class="string">APR =&gt;</span><span class="number">4</span>, <span class="string">AUG =&gt;</span><span class="number">8</span> &#125;;</div></pre></td></tr></table></figure>
-<p>也可以创建一个没有子程序名的匿名子程序引用:</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$coderef = <span class="function"><span class="keyword">sub</span> </span>&#123; <span class="keyword">print</span> <span class="string">"Runoob!\n"</span> &#125;;</div></pre></td></tr></table></figure>
-<h2 id="取消引用">取消引用</h2>
-<p>取消引用可以根据不同的类型使用<code>$</code>，<code>@</code>或<code>%</code>来消除，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat quote.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$var = <span class="number">10</span>;</div><div class="line">$r = \$var; <span class="comment"># $r 引用 $var 标量</span></div><div class="line"><span class="keyword">print</span> <span class="string">"$var is "</span>, $$r, <span class="string">"\n"</span>;  <span class="comment"># 输出本地存储的 $r 的变量值</span></div><div class="line"></div><div class="line">@var = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);<span class="comment"># $r 引用  @var 数组</span></div><div class="line">$r = \@var;</div><div class="line"><span class="keyword">print</span> <span class="string">"@var is "</span>, @$r, <span class="string">"\n"</span>;<span class="comment"># 输出本地存储的 $r 的变量值</span></div><div class="line"></div><div class="line">%var = (<span class="string">'key1'</span> =&gt; <span class="number">10</span>, <span class="string">'key2'</span> =&gt; <span class="number">20</span>);  <span class="comment"># $r 引用  %var 数组</span></div><div class="line">$r = \%var;</div><div class="line"><span class="keyword">print</span> <span class="string">"%var is :"</span>,%$r, <span class="string">"\n"</span>;<span class="comment"># 输出本地存储的 $r 的变量值</span></div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl quote.pl </div><div class="line"><span class="number">10</span> is <span class="number">10</span></div><div class="line"><span class="number">1</span> <span class="number">2</span> <span class="number">3</span> is <span class="number">123</span></div><div class="line">%var is :key110key22<span class="number">0</span></div></pre></td></tr></table></figure>
-<h2 id="判断引用类型">判断引用类型</h2>
-<p>如果你不能确定变量类型，你可以使用 ref 来判断，返回值列表如下，如果没有以下的值返回 false：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">SCALAR</div><div class="line">ARRAY</div><div class="line">HASH</div><div class="line">CODE</div><div class="line">GLOB</div><div class="line">REF</div></pre></td></tr></table></figure>
-<p>案例如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat determined.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$var = <span class="number">10</span>;</div><div class="line">$r = \$var;</div><div class="line"><span class="keyword">print</span> <span class="string">"Reference type of r is "</span>, <span class="keyword">ref</span>($r), <span class="string">"\n"</span>;</div><div class="line"></div><div class="line">@var = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line">$r = \@var;</div><div class="line"><span class="keyword">print</span> <span class="string">"Reference type of r is "</span>, <span class="keyword">ref</span>($r), <span class="string">"\n"</span>;</div><div class="line"></div><div class="line">%var = (<span class="string">'key'</span> =&gt; <span class="number">10</span>, <span class="string">'key2'</span> =&gt; <span class="number">20</span>);</div><div class="line">$r = \%var;</div><div class="line"><span class="keyword">print</span> <span class="string">"Reference type of r is "</span>,<span class="keyword">ref</span>($r), <span class="string">"\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl determined.pl </div><div class="line">Reference type of r is SCALAR</div><div class="line">Reference type of r is ARRAY</div><div class="line">Reference type of r is HASH</div></pre></td></tr></table></figure>
-<h2 id="循环引用">循环引用</h2>
-<p>循环引用在两个引用相互包含时出现。你需要小心使用，不然会导致内存泄露，如下实例：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat quote_loop.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">my</span> $foo = <span class="number">100</span>;</div><div class="line">$foo = \$foo;</div><div class="line"></div><div class="line"><span class="keyword">print</span> <span class="string">"Value of foo is "</span>, $foo, <span class="string">"\n"</span>;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl quote_loop.pl </div><div class="line">Value of foo is REF(<span class="number">0x1fb50f8</span>)</div></pre></td></tr></table></figure>
-<h2 id="引用函数">引用函数</h2>
-<p>函数引用格式: <code>\&amp;</code>，调用引用函数格式: <code>&amp; + 创建的引用名</code>，如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintHash</span></span>&#123;</div><div class="line">    <span class="keyword">my</span>(%hash) = @_;</div><div class="line">	</div><div class="line">	<span class="keyword">foreach</span> $item (%hash)&#123;</div><div class="line">	    <span class="keyword">print</span> <span class="string">"Element: $item\n"</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">%hash = (<span class="string">'name'</span> =&gt; <span class="string">'Baidu'</span>, <span class="string">'age'</span> =&gt; <span class="number">11</span>);</div><div class="line"></div><div class="line">$cref = \&amp;PrintHash;</div><div class="line"></div><div class="line">&amp;$cref(%hash);</div></pre></td></tr></table></figure>
-<h2 id="参考资料">参考资料</h2>
-<p><a href="http://www.runoob.com/perl/perl-tutorial.html" target="_blank" rel="external">Perl教程|菜鸟教程</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/17/Perl/Perl学习笔记（6）-函数设计/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/17/Perl/Perl学习笔记（6）-函数设计/" itemprop="url">Perl学习笔记（6）-函数设计</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-17T12:00:00+08:00">
-                2018-05-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Perl/" itemprop="url" rel="index">
-                    <span itemprop="name">Perl</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,457
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="perl的函数">Perl的函数</h2>
-<p>Perl函数也叫子程序，就是用户定义的函数。为了方便，我一律称为函数，不称子程序。Perl函数的语法格式如下所示：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">subroutine</span></span>&#123;</div><div class="line">statements;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>调用函数的语法格式为<code>subroutine( 参数列表 )</code>，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">Hello</span></span>&#123;</div><div class="line"><span class="keyword">print</span> <span class="string">"Hello, World!\n"</span>;</div><div class="line">&#125;</div><div class="line">Hello();</div></pre></td></tr></table></figure></p>
-<p>由于在设计<code>Hello</code>函数时，并没有设计相应的参数，因此在运行时就不需要加参数，但是还需要加上括号。</p>
-<h2 id="向函数传递参数">向函数传递参数</h2>
-<p>Perl 函数可以和其他编程语言一样接受多个参数，函数参数使用特殊数组<code>@_</code>标明。因此函数第一个参数为<code>_[0]</code>, 第二个参数为<code>_[1]</code>, 以此类推，用户可以通过改变<code>@_</code>数组中的值来改变相应实际参数的值。。不论参数是标量型还是数组型的，用户把参数传给函数时，perl默认按引用的方式调用它们，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat function_parameter.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">mean</span></span>&#123;</div><div class="line">    $n = <span class="keyword">scalar</span>(@_);</div><div class="line">    $sum = <span class="number">0</span>;</div><div class="line">    <span class="keyword">foreach</span> $item(@_)&#123;</div><div class="line">    $sum = $sum + $item;</div><div class="line">&#125;</div><div class="line">$average = $sum/$n;</div><div class="line"><span class="keyword">print</span> <span class="string">'Input parameter is : '</span>,<span class="string">"@_\n"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"The first parameter is $_[0]\n"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"The average of inputed parameters is $average\n"</span>;</div><div class="line">&#125;</div><div class="line">mean(<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl function_parameter.pl </div><div class="line">Input parameter is : <span class="number">10</span> <span class="number">20</span> <span class="number">30</span></div><div class="line">The first parameter is <span class="number">10</span></div><div class="line">The average of inputed parameters is <span class="number">20</span></div></pre></td></tr></table></figure></p>
-<p>代码解释：scalar不是求元素个数，它用来产生一个标量环境，对数组进行操作时，会返回元素个数。<code>$n = scalar(@_)</code>就是获取所有传入的参数的个数，在这段代码中，n值就是3。</p>
-<h2 id="向函数传递列表">向函数传递列表</h2>
-<p>由于<code>@_</code>变量是一个数组，所以它可以向函数中传递列表。但如果我们需要传入标量和数组参数，需要把列表放在最后一个参数上，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat print_list.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintList</span></span>&#123;</div><div class="line"><span class="keyword">my</span> @list = @_;</div><div class="line"><span class="keyword">print</span> <span class="string">"List is @list\n"</span>;</div><div class="line">&#125;</div><div class="line">$a = <span class="number">10</span>;</div><div class="line">@b = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>);</div><div class="line">PrintList($a, @b);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl print_list.pl </div><div class="line">List is <span class="number">10</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span></div></pre></td></tr></table></figure></p>
-<h2 id="向函数传递哈希">向函数传递哈希</h2>
-<p>当向函数传递哈希表时，它将复制到<code>@_</code>中，哈希表将被展开为键/值组合的列表，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat print_hash.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintHash</span></span>&#123;</div><div class="line">    <span class="keyword">my</span>(%hash) = @_;</div><div class="line">    <span class="keyword">foreach</span> <span class="keyword">my</span>$key (<span class="keyword">keys</span> %hash)&#123;</div><div class="line">    <span class="keyword">my</span> $value =$hash&#123;$key&#125;;</div><div class="line">    <span class="keyword">print</span> <span class="string">"$key:$value\n"</span>;</div><div class="line">   &#125;</div><div class="line">&#125;</div><div class="line">%hash = (<span class="string">'name'</span> =&gt; <span class="string">'Baidu'</span>, <span class="string">'age'</span> =&gt;<span class="number">11</span>);</div><div class="line">PrintHash(%hash);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl print_hash.pl </div><div class="line">name:Baidu</div><div class="line">age:<span class="number">11</span></div></pre></td></tr></table></figure></p>
-<h2 id="函数返回值">函数返回值</h2>
-<p>函数可以向其他编程语言一样使用<code>retur</code> 语句来返回函数值。如果没有使用<code>return</code>语句，则函数的最后一行语句将作为返回值，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat <span class="keyword">return</span>.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">add_a_b</span></span>&#123;</div><div class="line">    $_[<span class="number">0</span>] + $_[<span class="number">1</span>];</div><div class="line">&#125;</div><div class="line"><span class="keyword">print</span> add_a_b(<span class="number">1</span>,<span class="number">12</span>).<span class="string">"\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl <span class="keyword">return</span>.pl </div><div class="line"><span class="number">13</span></div></pre></td></tr></table></figure></p>
-<h2 id="函数的局部变量">函数的局部变量</h2>
-<p>默认情况下，Perl 中所有的变量都是全局变量，这就是说变量在程序的任何地方都可以调用。如果我们需要设置私有变量（私有变量其实与其他编程语言中的局部变量是一样的，后文一律称为局部变量），可以使 <code>my</code>操作符来设置。<code>my</code>操作符用于创建作用域变量，通过<code>my</code>创建的变量，存活于声明开始的地方，直到闭合作用域的结尾。<code>闭合作用域</code>指的可以是一对花括号中的区域，可以是一个文件，也可以是一个<code>if, while, for, foreach, eval</code>字符串。它的用法如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">somefunc</span> </span>&#123;</div><div class="line">   <span class="keyword">my</span> $variable; <span class="comment"># $variable在函数somefunc()之外不可见</span></div><div class="line">   <span class="keyword">my</span> ($another, @an_array, %a_hash); <span class="comment">#  同时声明多个变量</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>以下案例就演示了如何声明一个或多个局部变量： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat local_variable.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$variable_global = <span class="string">"Hello, World!\n"</span>;</div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintHello</span></span>&#123;</div><div class="line">    <span class="keyword">my</span> $variable_global;</div><div class="line">    $variable_global = <span class="string">"Hello, Learner!\n"</span>;</div><div class="line">    <span class="keyword">print</span> <span class="string">"Strings in function is :$variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line">PrintHello();</div><div class="line"><span class="keyword">print</span> <span class="string">"Strings beyond function is : $variable_global\n"</span>;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl local_variable.pl </div><div class="line">Strings in function is :Hello, Learner!</div><div class="line">Strings beyond function is : Hello, World!</div></pre></td></tr></table></figure></p>
-<h2 id="变量的临时赋值">变量的临时赋值</h2>
-<p>我们可以使用 local 为全局变量提供临时的值，在退出作用域后将原来的值还回去。local定义的变量不存在于主程序中，但存在于该函数和该函数调用的函数中。定义时可以给其赋值，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat local_temp.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$variable_global = <span class="string">"Hello, World!\n"</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintLocal</span></span>&#123;</div><div class="line"><span class="keyword">local</span> $variable_global;</div><div class="line">$variable_global = <span class="string">"Hello, Learner!\n"</span>; <span class="comment">#临时赋值</span></div><div class="line">PrintMe();</div><div class="line"><span class="keyword">print</span> <span class="string">"PrintLocal function has strings: $variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintMe</span></span>&#123;</div><div class="line"><span class="keyword">print</span> <span class="string">"PrintMe function has strings: $variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintHello</span></span>&#123;</div><div class="line"><span class="keyword">print</span> <span class="string">"PrintHello function has strings: $variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">PrintLocal();</div><div class="line">PrintHello();</div><div class="line"><span class="keyword">print</span> <span class="string">"Strings beyond function is : $variable_global\n"</span>;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl local_temp.pl </div><div class="line"></div><div class="line">PrintMe function has strings: Hello, Learner!</div><div class="line"></div><div class="line">PrintLocal function has strings: Hello, Learner!</div><div class="line"></div><div class="line">PrintHello function has strings: Hello, World!</div><div class="line"></div><div class="line">Strings beyond function is : Hello, World!</div></pre></td></tr></table></figure></p>
-<h2 id="静态变量">静态变量</h2>
-<p><code>state</code>关键字将局部变量永久存在。state也是词法变量，所以只在定义该变量的词法作用域中有效，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/perl/05function$ cat state.pl </div><div class="line">#!/usr/bin/perl</div><div class="line"></div><div class="line">use feature &apos;state&apos;;</div><div class="line">sub PrintCount&#123;</div><div class="line">state $count = 0;</div><div class="line">print &quot;counter value is : $count\n&quot;;</div><div class="line">$count++;</div><div class="line">&#125;</div><div class="line">for (1..5)&#123;</div><div class="line">PrintCount();</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~/perl/05function$ perl state.pl </div><div class="line">counter value is : 0</div><div class="line">counter value is : 1</div><div class="line">counter value is : 2</div><div class="line">counter value is : 3</div><div class="line">counter value is : 4</div></pre></td></tr></table></figure></p>
-<p>注1：state仅能创建闭合作用域为函数内部的变量。 注2：state是从Perl 5.9.4开始引入的，所以使用前必须加上 use。 注3：state可以声明标量、数组、哈希。但在声明数组和哈希时，不能对其初始化（至少Perl 5.14不支持）。</p>
-<h2 id="函数调用上下文">函数调用上下文</h2>
-<p>函数调用过程中，会根据上下文来返回不同类型的值，比如<code>localtime()</code>函数，在标量上下文返回字符串，在列表上下文返回列表，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat function_context.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">my</span> $variable = <span class="keyword">localtime</span>(<span class="keyword">time</span>);</div><div class="line"><span class="keyword">print</span> $variable;</div><div class="line"></div><div class="line"><span class="keyword">print</span> <span class="string">"\n"</span>;</div><div class="line"></div><div class="line">($sec,$min,$hour,$mday,$mon, $year,$wday,$yday,$isdst) = <span class="keyword">localtime</span>(<span class="keyword">time</span>);</div><div class="line"><span class="keyword">printf</span>(<span class="string">"%d-%d-%d %d:%d:%d\n"</span>,$year+<span class="number">1990</span>,$mon+<span class="number">1</span>,$mday,$hour,$min,$sec);</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl function_context.pl </div><div class="line">Fri May <span class="number">18</span> <span class="number">16</span>:<span class="number">53</span>:<span class="number">48</span> <span class="number">2018</span></div><div class="line"><span class="number">2108</span>-<span class="number">5</span>-<span class="number">18</span> <span class="number">16</span>:<span class="number">53</span>:<span class="number">48</span></div></pre></td></tr></table></figure></p>
-<h2 id="参考资料">参考资料</h2>
-<p><a href="http://www.runoob.com/perl/perl-tutorial.html" target="_blank" rel="external">Perl教程|菜鸟教程</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3168,7 +2935,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">126</span>
+                  <span class="site-state-item-count">127</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3190,7 +2957,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3264,7 +3031,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共467.1k字</span>
+  <span class="post-count">博客全站共463.8k字</span>
 </div>
 
         
