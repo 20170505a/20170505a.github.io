@@ -259,6 +259,235 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-16决策树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-16决策树/" itemprop="url">决策树笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-19T12:02:00+08:00">
+                2018-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,377
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="决策树的原理">决策树的原理</h2>
+<p>决策树的原理可以参考这篇笔记<a href="http://rvdsd.top/2018/07/01/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B019-%E5%86%B3%E7%AD%96%E6%A0%91/">《StatQuest学习笔记19——决策树》</a>。</p>
+<h2 id="决策树的计算过程">决策树的计算过程</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)。这里我们先看一批数据，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Dh8fddjd9h.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>原始数据很多，有1000多行。这个数据来自于Flake and lawrence(2002)，可以在<a href="https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/mg" target="_blank" rel="external">网上下载</a>，这且数据是做什么的，我也不清楚。这个数据集有6个自变量和1个因变量，一共有1385个观测值。书上说之所以用这个数据是因为这里的所有变量都是数量变量，因此这个数据集也可以用经典线性回归来做，从而可以对各种方法进行比较。</p>
+<h3 id="线性回归">线性回归</h3>
+<p>现在先对全部数据做一个简单的 线性回归，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_dt &lt;- read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/mg.csv"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)</div><div class="line">result_dt &lt;- lm(y~.,raw_dt)</div><div class="line">summary(result_dt)</div><div class="line">pairs(raw_dt)<span class="comment">#查看不同变量之间的相关关系</span></div><div class="line"><span class="comment"># 或plot(raw_dt)</span></div><div class="line">cor(raw_dt)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_dt)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = y ~ ., data = raw_dt)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-0.40866 -0.09516  0.01098  0.09645  0.40011 </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)  0.95582    0.07142  13.384  &lt; 2e-16 ***</div><div class="line">x1           0.28512    0.02773  10.282  &lt; 2e-16 ***</div><div class="line">x2           0.17263    0.02655   6.502 1.10e-10 ***</div><div class="line">x3          -0.37956    0.02769 -13.709  &lt; 2e-16 ***</div><div class="line">x4          -0.36756    0.02764 -13.298  &lt; 2e-16 ***</div><div class="line">x5           0.07165    0.02656   2.697  0.00707 ** </div><div class="line">x6           0.19003    0.02778   6.841 1.18e-11 ***</div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class="line"></div><div class="line">Residual standard error: 0.1459 on 1378 degrees of freedom</div><div class="line">Multiple R-squared:  0.5868,	Adjusted R-squared:  0.585 </div><div class="line">F-statistic: 326.2 on 6 and 1378 DF,  p-value: &lt; 2.2e-16</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/egLil2EEmc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>mg数据各个变量之间的相关系数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; cor(raw_dt)</div><div class="line">            y         x1         x2         x3         x4         x5         x6</div><div class="line">y   <span class="number">1.0000000</span>  <span class="number">0.2620280</span>  <span class="number">0.5441721</span> -<span class="number">0.5006887</span> -<span class="number">0.4355964</span>  <span class="number">0.5510561</span>  <span class="number">0.1511016</span></div><div class="line">x1  <span class="number">0.2620280</span>  <span class="number">1.0000000</span> -<span class="number">0.1465800</span> -<span class="number">0.6543690</span>  <span class="number">0.4333849</span>  <span class="number">0.4543362</span> -<span class="number">0.6277910</span></div><div class="line">x2  <span class="number">0.5441721</span> -<span class="number">0.1465800</span>  <span class="number">1.0000000</span> -<span class="number">0.1475594</span> -<span class="number">0.6539043</span>  <span class="number">0.4367584</span>  <span class="number">0.4515753</span></div><div class="line">x3 -<span class="number">0.5006887</span> -<span class="number">0.6543690</span> -<span class="number">0.1475594</span>  <span class="number">1.0000000</span> -<span class="number">0.1471907</span> -<span class="number">0.6537680</span>  <span class="number">0.4397873</span></div><div class="line">x4 -<span class="number">0.4355964</span>  <span class="number">0.4333849</span> -<span class="number">0.6539043</span> -<span class="number">0.1471907</span>  <span class="number">1.0000000</span> -<span class="number">0.1494223</span> -<span class="number">0.6524989</span></div><div class="line">x5  <span class="number">0.5510561</span>  <span class="number">0.4543362</span>  <span class="number">0.4367584</span> -<span class="number">0.6537680</span> -<span class="number">0.1494223</span>  <span class="number">1.0000000</span> -<span class="number">0.1498846</span></div><div class="line">x6  <span class="number">0.1511016</span> -<span class="number">0.6277910</span>  <span class="number">0.4515753</span>  <span class="number">0.4397873</span> -<span class="number">0.6524989</span> -<span class="number">0.1498846</span>  <span class="number">1.0000000</span></div></pre></td></tr></table></figure>
+<p>从前面的线性回归结果可以看出来，<span class="math inline">\(R^2=0.5868\)</span>，这个数值并不太好，再加上两两散点图与相关系数的结果，我们看不出各个变量之间的任何模式。现在我们使用其它的几种算法建模方法，同时使用交叉验证（利用均方误差或标准化均方误差）对各种方法时行比较。</p>
+<p>下面我们对各种方法都用10折交叉验证的方法来判断其结果的可靠性（关于10折交叉验证的一些知识，可以看这笔记<a href="http://rvdsd.top/2018/07/05/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。对于每种方法，按照随机建立的10个训练集通过计算建立10个模型，对测试集分别得到10个标准化均方误差(NMSE)，再得出10次平均的NMSE。令<span class="math inline">\(\bar{y}\)</span>为因变量均值，<span class="math inline">\(\hat{y}\)</span>为从训练集得到的模型对一个测试数据集的预测值，这里NMSE的定义如下所示：</p>
+<p><span class="math inline">\(NMSE=\bar{(y-\hat{y})^2}/=\bar{(y-\bar{y})^2}=\sum(y-\hat{y})^2/\sum(y-\bar{y})^2\)</span></p>
+<p>显然，如果什么模型都不用，仅仅用均值来做预测，那么NMSE应该等于1.所以，如果在回归时得到NMSE大于1，这个模型就很糟糕了，还不如没有模型。仅仅对于训练集来说，其NMSE等于<span class="math inline">\(1-R^2\)</span>，这里的<span class="math inline">\(R^2\)</span>为回归的确定系数，但是对于测试集来说，其NMSE与测试集回归的<span class="math inline">\(R^2\)</span>没有什么关系，交叉验证主要关心测试集的NMSE。</p>
+<h3 id="构建训练集和测试集">构建训练集和测试集</h3>
+<p>现在构建为交叉验证服务的10个训练集和测试集，具体过程是：随机把下标分配给1,2,…10这10个数字，也就是把数据下标随机分成10份，然后每次提取一份作为测试集，其它9份放在一起作为训练集，用模型进行拟合，记下结果和误差，如此下去，一共做10次，最后把误差平均起来。这里所用的随机选Z折下标集的函数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">CV=<span class="keyword">function</span>(n,Z=<span class="number">10</span>,seed=<span class="number">1000</span>)&#123;</div><div class="line">  z=rep(<span class="number">1</span>:Z,ceiling(n/Z))[<span class="number">1</span>:n]</div><div class="line">  set.seed(seed)</div><div class="line">  z=sample(z,n)</div><div class="line">  mm=list()</div><div class="line">  <span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:Z)</div><div class="line">    mm[[i]]=(<span class="number">1</span>:n)[z==i]</div><div class="line">  <span class="keyword">return</span>(mm)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的<code>n</code>是样本量，<code>Z</code>为折的数目（也就是训练集加测试集的数目，这里默认是10），<code>seed</code>为随机种子，这里设为了1000，转出为<code>Z</code>个下标集，<code>mm[[i]]</code>为第i（i=1,2,…,Z)个下标集，根据这个函数对这个mg数据集求10个下标集的代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n&lt;-nrow(raw_dt)</div><div class="line">Z=<span class="number">10</span></div><div class="line">mm=CV(n,Z)</div><div class="line">D=<span class="number">1</span></div></pre></td></tr></table></figure>
+<p>在这段代码中，<code>mm</code>存储了10个下标集，而D说明因变量是第一个变量，这些值在后面对每种方法都要用。</p>
+<p>为了和其它方法进行地比较，先对数据mg求简单的线性回归的10折交叉验证的测试集的NMSE，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(MSE)</div><div class="line">[1] 0.4222689</div></pre></td></tr></table></figure>
+<p>结果表明，测试集的NMSE为0.4222689</p>
+<h2 id="决策树回归">决策树回归</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)，现在我们先用数据集mg做一棵回归树，然后解释其意义。这里要使用到<code>rpart</code>包中的<code>rpart()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rpart)</div><div class="line"><span class="keyword">library</span>(rpart.plot)</div><div class="line">a=rpart(y~.,raw_dt)</div><div class="line">rpart.plot(a,type=<span class="number">2</span>,faclen=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; a</div><div class="line">n= 1385 </div><div class="line"></div><div class="line">node), split, n, deviance, yval</div><div class="line">      * denotes terminal node</div><div class="line"></div><div class="line"> 1) root 1385 70.9545100 0.9301440  </div><div class="line">   2) x2&lt; 0.9894983 736 31.9699900 0.8017888  </div><div class="line">     4) x3&gt;=0.8423859 551 16.4573000 0.7288982  </div><div class="line">       8) x2&gt;=0.5178963 483 13.3868900 0.7068909  </div><div class="line">        16) x2&lt; 0.7999875 263  4.7064590 0.6422662  </div><div class="line">          32) x3&lt; 1.092533 185  3.3567710 0.6073434 *</div><div class="line">          33) x3&gt;=1.092533 78  0.5889238 0.7250958 *</div><div class="line">        17) x2&gt;=0.7999875 220  6.2689860 0.7841468 *</div><div class="line">       9) x2&lt; 0.5178963 68  1.1749050 0.8852150 *</div><div class="line">     5) x3&lt; 0.8423859 185  3.8660570 1.0188850  </div><div class="line">      10) x4&gt;=1.062353 71  1.8511830 0.9239636 *</div><div class="line">      11) x4&lt; 1.062353 114  0.9767496 1.0780020 *</div><div class="line">   3) x2&gt;=0.9894983 649 13.1077400 1.0757060  </div><div class="line">     6) x3&gt;=1.056185 206  3.5797200 0.9644841  </div><div class="line">      12) x4&gt;=0.9107852 23  0.5746155 0.7823564 *</div><div class="line">      13) x4&lt; 0.9107852 183  2.1462980 0.9873744 *</div><div class="line">     7) x3&lt; 1.056185 443  5.7947760 1.1274250 *</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hG48FgC33C.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>计算的结果有2个，一个是文本描述的结果，一个是图形结果，这两个结果是等价的，我们可以了解这个决策树的构造过程。现在解释一下这个决策树。</p>
+<p>决策树就像一棵倒长的树，有很多分叉，分叉点叫节点(node)，其中1号节点为根节点，也就是上图中最高的那个节点，输出的文本信息则是全部数据的信息，其中在1号节点上，n=1385，偏差(deviance)=70.9545100，在该节点的因变量的均值为0.9301440。</p>
+<p>这里的偏差是批在每个节点的偏差，它的定义为：在该节点的数据中的因变量与其均值之差的平方和，即<span class="math inline">\(\sum_{i}(y_{i}-\bar{y})^2\)</span>这里回归树用偏差大小来选择变量，当然也可以用其它诸如残差平方和作为选择变量的准则。</p>
+<p>上述的这些信息显示在上图中（不过只显示了均值），然后计算机程度在每个自变量中选择一个数值分割点，使得在该节点的整个数据在这个分割点比在其它分割点分成两部分之后的偏差之和都小，对每个自变量都选择这样的一个分割点，并对不同自变量的分割结果做比较，得到一个使得分割后总偏差最小的变量，这个变量就是该节点的分割变量（或称为拆分变量）。</p>
+<p>根据输出的文本信息，在这个案例中，根节点的分割变量为x2，其分割点为0.9894983，x2小于该值的观测值分到左边（节点2），大于该值的则分到右边（节点3）。在每个节点都展示出观测值数目、偏差及因变量均值这三项内容（不过决策树的图形中只有均值），这样数据就分成了两个部分。然后，对每一部分数据，选择分割变量及其分割点的程序重新开始。如此下去，根据一些按照拟合程度和避免决策树无限制长下去的准则，到一定节点就不再分割，这些节点就是终节点（也称为叶节点），也就是文本信息中带有星号(<code>*</code>)的为叶节点。</p>
+<h3 id="决策树的使用">决策树的使用</h3>
+<p>使用决策树很简单，如果有新的（只知道自变量的）观测值，就可以根据决策树以及各个变量大小，从根节点一直走到一个终节点，那里因变量的均值就是该观测值的因变量预测值。决策树本身受数据影响较大，但许多决策树结果起来就可以构成很好的方法，例如boosting，bagging以及随机森林等组合方法就是以决策树作为基本决策单元构造出来的。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>复杂数据统计方法：基于R的应用.第三版.吴喜之</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-17聚类分析笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2129,6 +2358,224 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/13/Tools/高通量qPCR均一化方法总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/13/Tools/高通量qPCR均一化方法总结/" itemprop="url">高通量qPCR均一化方法总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-13T12:00:00+08:00">
+                2018-06-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  685
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>去年看到一篇讲miRNA的文献，这篇文献的信息如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Zhang, B. J., et al. (2016). &quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&quot; Immunity 44(3): 568-581.</div></pre></td></tr></table></figure>
+<p>这篇文章是杜克大学的李启靖教授于2016年发表在Immunity上的，这里只讲一下文章前面对miRNA高通量数据的筛选，常规的miRNA数据来源是芯片，测序，但这篇文献里面的miRNA数据表达谱是用RT-qPCR法做的（原理就是反转录部分采用了检测miRNA的加尾法，在qPCR部分使用了Labcyte的Echo550声波移液器与ABI ViiA7高通量qPCR仪)。一共做了300多个miRNA，文献附件中给出了每个样本的每个miRNA的相对表达值，与原始Ct值。在这里重复一下文献中的数据分析。</p>
+<p>先看一下文献中最终的数据（只列了前5行），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210137.png">
+
+</div>
+<p>再看一下相应的原始数据：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210208.png">
+
+</div>
+<p>从原始数据上大致可以猜出已经扣了内参（文献中提到了使用了4个内参，多内参均一化是采用几何平均数的方法来处理的）。</p>
+<p>现在描述一下如何计算。</p>
+<p>第一步，均一化原始数据，将原始数据导入R中，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">setwd(<span class="string">"D:\netdisk\bioinfo.notes\MicroRNA-23a Curbs Necrosis during Early T Cel"</span>)</div><div class="line">rawdata_miRNA &lt;- read.delim(<span class="string">"clipboard"</span>,header=<span class="literal">T</span>)</div><div class="line">str(rawdata_miRNA)</div><div class="line">raw_array &lt;- as.matrix(rawdata_miRNA[,<span class="number">2</span>:<span class="number">11</span>])</div><div class="line">raw_norm &lt;- t(apply(raw_array,<span class="number">1</span>,scale))</div><div class="line">colnames(raw_norm) &lt;- colnames(rawdata_miRNA)[-<span class="number">1</span>]</div><div class="line">dimnames(raw_norm)[<span class="number">1</span>] &lt;- rawdata_miRNA[<span class="number">1</span>]</div><div class="line">write.csv(raw_norm,<span class="string">"Literature_norm.csv"</span>)</div></pre></td></tr></table></figure>
+<p>第二步，打开导出的数据（这里只显示了前5行），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210416.png">
+
+</div>
+<p>将计算结果与文献附件中的计算结果对比，下面是文献附件中的均一化后的结果：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210451.png">
+
+</div>
+<p>可以发现，计算结果与文献中的结果基本上是一致的，现在计算每组样本中每个miRNA相对表达量。</p>
+<p>第三步，在计算每组样本中每个miRNA相对表达量的同时，要先求相同样本之间的平均数，例如第14天的有2个样本，第5天有2个样本，求它们平均数，有的只有1个样本，不用管（其中1个样本是3只小鼠的混合样本，具体的可以参考文献的Methods部分），计算结果如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210644.png">
+
+</div>
+<p>第四步，求相对表达量，直接以上面的数据的相反数为2的指数求幂即可，例如Naïve组的Let-7a是0.2983，则其相对表达量就是2^-0.2983=0.81321，再乘以100，同理，求出所有样本中miRNA的相对表达量，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210722.png">
+
+</div>
+<p>再看一下文献中的数据，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210743.png">
+
+</div>
+<p>可以发现两者的数据是一样的。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/12/Tools/分析miRNA时空表达的聚类工具/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2216,7 +2663,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,205
+                  1,192
                 </span>
               
 
@@ -2261,850 +2708,75 @@
 <p>这篇文献是2016年发在《Immunity》的，文献的主要内容是，当宿主细胞与抗原接触时，细胞内就会产生活性氧基团（ROS），参与T细胞受体（TCR）的信号转导，但是如果ROS的生成不受控制的话，ROS就会对组织造成损伤。作者研究的则是某个miRNA参与了这个过程，在筛选过程中，作者找到了一个miRNA，即miR-23a，它参与细胞的保护。从机理上讲，miR-23a的靶基因是PPIF，PPIF的作用是控制线粒体通透性转换孔，因此miR-23a作用于PPIF，能够阻止ROS的流入，从而维持线粒体的完整性。我们所关注的重点就是作者有关miRNA的筛选工作。为了寻找miRNA介导的抗原诱导CD4 T细胞的应答。作者研究了不同时间点，CD4 T细胞的miRNA表达谱。具体操作是，从转基因LLO118 TCR（LLO118-Thy1.2+）小鼠体内取出20万个naive CD4 T细胞，转移到野生型小鼠（Thy1.1+）体内，接着给野生型小鼠注射亚致死剂量的Listeria菌（LLO是Listeria菌的一个蛋白），然后在不同的时间点，收集小鼠的抗原特异性CD4 T细胞，用高通量qPCR的手段检测miRNA的表达谱（一共是361个miRNA），时间点是6个（分别是第0天，第3天，第5天，第7天，第14天，第28天。</p>
 <p>我们处理这些数据的常规方法就是做热图，热图虽然能够聚类，但是很难反应出miRNA不同的聚类随时间变化的趋势，作者在处理这些数据时，采用了一个工具，叫ExpressCluster，这个工具能将不同时间的表达谱进行聚类，并且将不同的聚类结果以时间的形式呈现出现，如文献中的fig.1a所示（文献中一共有9个聚类，作者选择了第3个聚类）的那样。因此，这个工具很适应用于研究不同时间点基因表达谱的变化。</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/jchJEKIHea.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213231.jpg">
+
 </div>
 <p>我们就介绍一下这个工具如何使用，首先去官网下载相应的工具，下载后解压即可，里面有3个文件，一个是ExpressCluster程序，一个是使用手册，另外一个不用管。如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/e2L5J9h0Ec.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213251.jpg">
+
 </div>
 <p>现在我们利用文献的原始数据重复一下文献中的图片生成过程。此过程包括：下载原始数据（文献的附件里中有原始文件，也有均一化后的数据），修改为GCT格式，导入ExpressCluster生成聚类图，前面均一化的过程比较简单，我们略去不讲，直接进入转换GCT文件这一步。</p>
 <p>GCT文件格式是一类制表符分隔的文件，它描述的是基因的表达数据，它的数据格式如下图所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/i4E8g6BE3E.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213311.jpg">
+
 </div>
 <p>后文的网址中有GCT的参考数据，下载下来，用Excel就可以打开，打开时，文献类型选择“所有文件”，</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/E7jakc5AKg.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213337.jpg">
+
 </div>
 <p>将其中的数据替换为文献中的数据：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/LE0hBc783I.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213356.jpg">
+
 </div>
 <p>需要注意的一点是，黄色标注的地方需要修改，361表示检测的基因是361个，6表示数据有6组，Description不用管。保存后，就可以用ExpressCluster打开了，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/51kc5IDIcf.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213414.jpg">
+
 </div>
 <p>AVAILABLE（红色方框）中的是每组数据的名称，选中它们，单击绿色箭头，转移到SELECTED中，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/Ejc7DELCBc.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213438.jpg">
+
 </div>
 <p>接着，单击APPLY绿色按钮（上图），过滤数据，再在下面的Clusters（K）（绿色方框）中输入聚类的数目，文献中是9组，我们这里输入9，随后，最下面的GENERATE（红色方框）会变成蓝色，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/eldfCJlfcm.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213457.jpg">
+
 </div>
 <p>单击后，开始生成聚类图，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/KF7D8lgAE3.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213517.jpg">
+
 </div>
 <p>在右上角的查询框（红色方框）中输入miR-23a，查询miR-23a的位置，发现miR-23a在cluster3中，此时再单击右侧中的f(x)（红色方框），可以在相对值与实际值之间进行转换，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/hHEhfd48Fh.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213530.jpg">
+
 </div>
 <p>保存图片（绿色方框），生成的图片如下：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/EeaE8kgGEe.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213543.png">
+
 </div>
 <p>此外，该工具还能生成热图，单击下图中的红色方框，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/JjL0I80De7.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213602.png">
+
 </div>
 <p>生成的热图如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180612/g9cFE8GmFD.png?imageslim" alt="mark">
-<p class="caption">mark</p>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213616.png">
+
 </div>
 <p>ExpressCLuster中还有许多高级功能，此篇教程只是简单地入门，重复了一下文献中的图形，具体的其他操作可以参照操作手册。</p>
 <p><strong>参考资料；</strong></p>
 <ol style="list-style-type: decimal">
 <li><p>GCT文件格式：http://software.broadinstitute.org/cancer/software/genepattern/file-formats-guide#GCT</p></li>
 <li><p>ExpressCluster下载地址：http://cbdm.hms.harvard.edu/LabMembersPges/SD.html</p></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/02/BioStatistics/生物统计-05正态分布/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/02/BioStatistics/生物统计-05正态分布/" itemprop="url">正态分布笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-02T12:00:00+08:00">
-                2018-06-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,775
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  23
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="连续型变量的分布">连续型变量的分布</h2>
-<p>连续型变量是在连续区间取值，例如质量、长度、面积、体积、寿命、距离等就是连续型变量，现在试想一下连续变量观测值的直方图；如想其纵坐标为相对频数，那么所有这些矩形条的<strong>高度</strong>和为1，那么完全可以重新设置量纲，例这些矩形条的<strong>面积</strong>为1，如果不断增加观测值，并不断增加直方图的矩形条的数目，这些直方图就会越来越像一条光滑曲线，其下面的面积和为1，这种曲线就是<strong>概率密度函数(probability density function, pdf)</strong>，简称为密度函数或密度，下图就展示了逐渐增加矩形条数的直方图和一个形状类型的密度曲线：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">par(mfrow=c(<span class="number">2</span>,<span class="number">2</span>))</div><div class="line">x=rnorm(<span class="number">10000</span>)</div><div class="line">z&lt;-seq(-<span class="number">4</span>,<span class="number">4</span>,length=<span class="number">10000</span>)</div><div class="line">hist(x,<span class="number">20</span>,probability=<span class="literal">T</span>,col=<span class="number">2</span>)</div><div class="line">hist(x,<span class="number">50</span>,probability=<span class="literal">T</span>,col=<span class="number">2</span>)</div><div class="line">hist(x,<span class="number">100</span>,probability=<span class="literal">T</span>,col=<span class="number">2</span>)</div><div class="line">plot(z,dnorm(z),type=<span class="string">"l"</span>,</div><div class="line">     xlab=<span class="string">"x"</span>,ylab=<span class="string">"Density Function"</span>,</div><div class="line">     bty=<span class="string">"n"</span>,</div><div class="line">     main=<span class="string">"Dencity Function of x"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180814/lc436IHfHE.jpeg?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="什么是密度">什么是密度？</h4>
-<p>这里说一下密度，密度是描述变量分布的一个重要概率，简单地说，它描述变量取各个值的可能性大小，变量在密度曲线高的位置取值的可能性比在低的位置取值的可能性大。在概率密度曲线中，纵坐标就是密度(Density)。</p>
-<p>而密度曲线(density curve)是分布的一个数字模型，按照定义，任何密度曲线下的总面积都是1，在一个区间的密度曲线下的面积为出现在这个区间中的观测值占所有观测值的比例。</p>
-<p>在矩形面积和为1的直方图中，连续变量落入某个矩阵的概率为该矩形的面积，类似地，连续变量落入一个区间的<strong>概率</strong>就是<strong>概率密度函数曲线</strong>在这个区间上所覆盖的面积，也就是密度函数在这个区间上的积分，根据初等微积分，连续函数在一个点的积分是0（因为曲线下面的面积退化成一条垂直于x轴，平行于y轴的直线），因此对于连续变量，取任何一个单独特定值的概率都是0，而只有变量取值于某个（或若干个）区间的概率才有可能大于0。连续变量和离散变量类似，它的密度函数（这时用f表示随机变量X的密度函数）必须满足<span class="math inline">\(f(x) \geq 0\)</span>，而且密度曲线下面覆盖的总面积为1，即：</p>
-<p><span class="math inline">\(\int_{-\infty} ^{ \infty }{f(x)}\,{\rm d}x=1\)</span></p>
-<p>而X落入区间(a,b)的概率则为： <span class="math inline">\(P(a\leq X \leq b)=\int_a^b{f(x)\,{\rm d}x}\)</span></p>
-<p>连续变量也有累积分布函数(cumulative distribution function, CDF)，定义为：</p>
-<p><span class="math inline">\(F(x)=P(X\leq x)=\int_{-\infty} ^{x }{f(x)}\,{\rm d}x\)</span></p>
-<p>这样，和离散变量一样，如果要求P(a<x≦b)的值，就可以通过两个累积分布f(b)和f(a)之间在用公式获得，如下所示： $p(a\leq="" x="" \leq="" b)="P(X\leq" b)-p(x\leq="" a)="F(b)-F(a)$" 而不用根据密度函数求积分了。="" 连续随机变量也有描述变量“位置”的总体均数、总体中位数、总体百分位数以及描述变量分布（集中）程度的总体标准差和总体方差等概念，对于连续分布随机变量x，它的总体均值（通常用μ表示）定义为：="" $\mu="E(X)=\int_{-\infty}" ^{="" \infty="" }{xf(x)}\,{\rm="" d}x$="" 这也称为x的数学期望，变量x的总体方差（通常用$\delta^2$表示），定义为：="" $\delta^2="Var(X)=\int_{-\infty}" }{(x-\mu)f(x)}\,{\rm="" 总体标准差定义为总体方差的平方根，如下所示：="" $\delta="\sqrt{Var(X)}=\sqrt{\int_{-\infty}" d}x}$="" ##="" 正态分布="" 下图是四个二项分布图，这四个二项分布有共同的p="0.1，但是有不同的n，分别为5，20，50，500，可以看出，当n较小时，分布很不对称，当n增加时，分布变得对称，实际上，当n充分大时，二项分布趋向于一个连续型对称分布，这就是正态分布(normal" distribution)，如下所示：="" <figure="" class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">n&lt;-c(<span class="number">5</span>,<span class="number">20</span>,<span class="number">50</span>,<span class="number">500</span>)</div><div class="line">p&lt;-<span class="number">0.1</span></div><div class="line">par(mfrow=c(<span class="number">2</span>,<span class="number">2</span>))</div><div class="line">barplot(dbinom(<span class="number">0</span>:n[<span class="number">1</span>],n[<span class="number">1</span>],p),main=<span class="string">"Binomial(5,0.1)"</span>)</div><div class="line">barplot(dbinom(<span class="number">0</span>:(<span class="number">2</span>*floor(<span class="number">2</span>*n[<span class="number">2</span>]/<span class="number">5</span>)),n[<span class="number">2</span>],p),main=<span class="string">"Binomial(20,0.1)"</span>)</div><div class="line">barplot(dbinom(<span class="number">0</span>:(floor(n[<span class="number">3</span>]/<span class="number">3</span>)),n[<span class="number">3</span>],p),main=<span class="string">"Binomial(50,0.1)"</span>)</div><div class="line">barplot(dbinom(<span class="number">25</span>:<span class="number">75</span>,n[<span class="number">4</span>],p),main=<span class="string">"Binomial(500,0.1)"</span>)</div></pre></td></tr></table></x≦b)的值，就可以通过两个累积分布f(b)和f(a)之间在用公式获得，如下所示：></p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180814/J2GhBlFFml.jpeg?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>在实际生活中，近似地服从正态分布的变量也很常见，例如测量误差，商品的重量或尺寸，某特定人群的身高和体重等，此外，在一定条件下，许多不是正态分布的样本均值在样本量很大时，也可用正态分布来近似估计。</p>
-<p>正态分布也是一族分布，不同的正态分布根据它们的均值和标准差不同而有所区别，因此一个正态分布用<span class="math inline">\(N(\mu,\delta)\)</span>表示，其中<span class="math inline">\(\mu\)</span>是总体均值，而<span class="math inline">\(\delta\)</span>是总体标准差，正态分布也常用<span class="math inline">\(N(\nu,\delta^2)\)</span>来表示，这里的<span class="math inline">\(\delta^2\)</span>为总体方差，这些总体参数在实际问题中是未知的，但可以估计，例如用样本均值和样本标准差来估计总体均值和总体标准差，正态分布的密度曲线是一个对称的钟形曲线（最高点在均值处），正态分布<span class="math inline">\(N(\mu,\delta)\)</span>的密度函数如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180814/45hm76GKm2.png?imageslim" alt="mark"></p>
-<h3 id="正态分布的推导">正态分布的推导</h3>
-<p>在理解正态分布的时候，如果知道它的推导过程，以及曲线下面积是如何求的，就会对正态分布的理解更深入，但是这涉及到一定的数学知识，包括大数定量，微积分等，目前我没有能力理解这些，具体的可以看陈希孺的《概率论与数理统计》等资料。不过真正用这个函数来计算正态变量概率数值的情况不多，多数直接采用累积分布函数来计算的。</p>
-<h2 id="正态分布密度曲线">正态分布密度曲线</h2>
-<p>下面分别绘制均值（以下用m表示）为0，标准差（以下用sd表示）为1，m=0，sd=0.5，m=0，sd=2，m=-2，sd=1的正态分布密度曲线（密度曲线下面的积分面积对应的就是相应范围内的概率），可以看出不同的均值与标准差，正态分布的密度曲线形状就不一样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">set.seed(1000)</div><div class="line">x &lt;- seq(-5,5,length.out=100)</div><div class="line">y &lt;- dnorm(x,0,1)</div><div class="line">plot(x,y,col=&quot;red&quot;,xlim=c(-5,5),ylim=c(0,1),type=&quot;l&quot;,</div><div class="line">xaxs=&quot;i&quot;,yaxs=&quot;i&quot;,ylab=&quot;density&quot;,xlab=&quot;&quot;,</div><div class="line">main=&quot;The Normal Density Distribution&quot;)</div><div class="line">lines(x,dnorm(x,0,0.5),col=&quot;green&quot;)</div><div class="line">lines(x,dnorm(x,0,2),col=&quot;blue&quot;)</div><div class="line">lines(x,dnorm(x,-2,1),col=&quot;orange&quot;)</div><div class="line">legend(&quot;topright&quot;,legend=paste(&quot;m=&quot;,c(0,0,0,-2),&quot;sd=&quot;,c(1,0.5,2,1)),lwd=1,col=c(&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;,&quot;orange&quot;))</div></pre></td></tr></table></figure>
-<p>结果如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/normaldistribution.png"></p>
-<h2 id="正态分布的概率计算">正态分布的概率计算</h2>
-<p>作为一个连续变量，正态变量落在某区间的概率不是等于在这个区间上，密度曲线下面的面积，下图的阴影面积等于标准正态分布变量落在区间(-1.5,1.5)中的概率，如果密度函数为<span class="math inline">\(\phi(x)\)</span>，那么这个面积就等于以下的积分，如下所示： <span class="math inline">\(\int_{-1.5}^{1.5}{\phi(x)}\,{\rm d}x=\Phi(1.5)-\Phi(-1.5)\)</span></p>
-<p>在计算机未广泛应用之前，为了方便计算，数学家们就编制了标准正态分布表，而在计算机广泛使用之后，则很容易计算出服从正态分布的数据的某个范围的概率，但为了理解正态分布的原理，还是先看一下如何使用标准正态分布表来计算一下标准正态分布变量落在区间(-1.5,1.5)中的概率。</p>
-<p>在使用标准正态表之前，我们知道这些信息：</p>
-<ol style="list-style-type: decimal">
-<li>标准正态分布是关于y轴对称的；</li>
-<li>标准正态分布的概率是落在-1.5到1.5这个区间内的曲线下面积；</li>
-</ol>
-<p>现在查表，可以知道1.5对应的这个数值是0.9332，它表示小于1.5的曲线下面积是0.9332，-1.5没法查，但是可以查-1.5对称的曲线下面积，-1.5关于y轴对称的直线是0.5，它的曲线下面积为0.6915，也就是说小于0.5的曲线下面积为0.6915，那么大于0.5的曲线下面积为1-0.6915=0.3085，这个0.3085其实就是小于-1.5的曲线下面积，那么标准正态分布变量落在区间(-1.5,1.5)中的概率就是0.9332-0.3085=0.6247</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180814/dIKJmdh26g.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>也就是这下面的这个灰色面积，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">x&lt;-c(seq(-<span class="number">4</span>,<span class="number">4</span>,length=<span class="number">1000</span>))</div><div class="line">y&lt;-dnorm(x)</div><div class="line">r1&lt;-<span class="number">0.5</span></div><div class="line">r2&lt;-<span class="number">1.5</span></div><div class="line">x2&lt;-c(r1,r1,x[x&lt;r2&amp;x&gt;r1],r2,r2)</div><div class="line">y2&lt;-c(<span class="number">0</span>,dnorm(c(r1,x[x&lt;r2&amp;x&gt;r1],r2)),<span class="number">0</span>)</div><div class="line">plot(x,y,type=<span class="string">"l"</span>,main=<span class="string">"P(-0.5&lt;Z&lt;1.5)=0.6246553"</span>,xlab=<span class="string">"z"</span>,ylab=expression(phi(z)))</div><div class="line">abline(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">polygon(x2,y2,col=<span class="string">"grey"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180814/b406a008fK.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>不过，现在一般不用查表，使用软件计算即可，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pnorm(<span class="number">1.5</span>)-pnorm(-<span class="number">0.5</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.6246553</span></div></pre></td></tr></table></figure>
-<h2 id="正态分布累积曲线">正态分布累积曲线</h2>
-<p>代码如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">set.seed(1000)</div><div class="line">x &lt;- seq(-5,5,length.out=100)</div><div class="line">y &lt;- pnorm(x,0,1)</div><div class="line">plot(x,y,col=&quot;red&quot;,xlim=c(-5,5),ylim=c(0,1),type=&quot;l&quot;,</div><div class="line">xaxs=&quot;i&quot;,yaxs=&quot;i&quot;,ylab=&quot;density&quot;,xlab=&quot;&quot;,</div><div class="line">main=&quot;The Normal Cumulative Distribution&quot;)</div><div class="line">lines(x,pnorm(x,0,0.5),col=&quot;green&quot;)</div><div class="line">lines(x,pnorm(x,0,2),col=&quot;blue&quot;)</div><div class="line">lines(x,pnorm(x,-2,1),col=&quot;orange&quot;)</div><div class="line">legend(&quot;bottomright&quot;,legend=paste(&quot;m=&quot;,c(0,0,0,-2),&quot;sd=&quot;,c(1,0.5,2,1)),lwd=1,col=c(&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;,&quot;orange&quot;))</div></pre></td></tr></table></figure>
-<p>结果如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/normalcumulative.png"></p>
-<h2 id="总体分位数和尾概率">总体分位数和尾概率</h2>
-<p>对于连续型随机变量X，<strong>α下侧分位数</strong>（又称<strong>α分位数</strong>，<strong>α-quantil</strong>e）定义为满足关系<span class="math inline">\(P(X\leq x)=\alpha\)</span>的数x，这里的α称为下（左）侧尾概率(lower/left tail probability)。</p>
-<p><strong>α上侧分位数</strong>（又称<strong>α上分位数</strong>，<strong>α-upper quantile</strong>）定义为它满足<span class="math inline">\(P(X\geq x)=\alpha\)</span>的数x，这里的α称为上（右）侧尾概率(upper/right tail probability)。</p>
-<p>对于连续分布，α上侧分位数等于(1-α)下侧分位数，而(1-α)下侧分位数等于α上侧分位数，通常用<span class="math inline">\(z_{\alpha}\)</span>表示标准正态分布α的上侧分位数，即对于标准正态分布变量Z，有<span class="math inline">\(P(Z&gt;z_{\alpha})=\alpha\)</span>，有些文献用符号<span class="math inline">\(z_{1-\alpha}\)</span>而不是<span class="math inline">\(z_{\alpha}\)</span>来表示α上侧分位数。</p>
-<p>下图表示的就是标准正态分布0.05上侧分位数<span class="math inline">\(z_{\alpha}=z_{0.05}(=1.645)\)</span>，图形右边在区间<span class="math inline">\((z_{0.05},+\infty)\)</span>曲线下的面积等于相应的尾概率(α=0.05)：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">x&lt;-c(seq(-<span class="number">4</span>,<span class="number">4</span>,length=<span class="number">1000</span>))</div><div class="line">y&lt;-dnorm(x)</div><div class="line">plot(x,y,type=<span class="string">"l"</span>,xlab=<span class="string">"z"</span>,ylab=expression(phi(z)))</div><div class="line">abline(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">r&lt;-qnorm(<span class="number">0.05</span>,low=<span class="literal">F</span>)</div><div class="line">polygon(c(r,r,x[x&gt;r]),c(<span class="number">0</span>,dnorm(c(r,x[x&gt;r]))),col=<span class="string">"red"</span>)</div><div class="line">text(<span class="number">0</span>,<span class="number">0.2</span>,expression(P(Z&lt;z[<span class="number">0.05</span>])==<span class="number">0.95</span>))</div><div class="line">text(<span class="number">2.5</span>,<span class="number">0.08</span>,expression(P(Z&gt;z[<span class="number">0.05</span>])==<span class="number">0.05</span>))</div><div class="line">text(<span class="number">1.5</span>,<span class="number">0.02</span>,expression(P(z[<span class="number">0.05</span>])==<span class="number">1.645</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180814/EDjF9l72Le.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>随后要介绍的<span class="math inline">\(\chi^2\)</span>分布，t分布和F分布都是由正态分布变量导出的三种分布。</p>
-<h2 id="正态分布案例之一">正态分布案例之一</h2>
-<p>再看一个案例：</p>
-<p>B县的全体高一学生参加某补习班的数学测验，计算分数后得知“数学测验结果”可视为平均值为45，标准差为10的正态分布，那么这些数据就可以表示为这个样子：</p>
-<p>绘制出平均值为45，标准差为10的正态分布表示，下图斜线部分的面积是0.5，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180604/cGaHI75934.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>还可以得到出这些信息：</p>
-<p>第一：得分在45分以上的考生比例，占全体考生总数的0.5（50%）；</p>
-<p>第二：从全体考生中，随机抽出一个人，其得分在45分以上的概率为0.5（50%）；</p>
-<p>第三，将这些数学成绩标准化后（也就是常说的Z转换），0以上的考比例，占全体考生总数的0.5（50%），如下所示（看红线，不要看0.29）：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180604/hd4Fc52cIA.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>再继续这个案例，由于它是符合平均数为45，标准差为10的正态分布，那么，如果我要求某一个分数以上的考生比例，例如63分以上的考生比例，它的计算过程就是先把这个数字转换到标准正态分布上，过程如下所示（这就是Z转换）：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180604/kFdbi5EiEg.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>然后从标准正态分布表查1.8，它对应的数字是0.4641，这个数字表示的是小于63这个数字的概率，那么大于63的概率就是：0.5-0.4641=0.0359（3.59%）。它对应的面积就是下面的这个样子：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180604/ibjJ1Dlk2c.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>将它转换为标准正态分布，则是这个样子：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180604/1iCjJefj5l.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>不过现在过计算正态分布并不需要查表，查表只是了解一下这个计算原理，现在都用计算机计算了。</p>
-<h2 id="r语言正态分布函数">R语言正态分布函数</h2>
-<p>R语言中与正态分布有关的函数如下所示：</p>
-<ol style="list-style-type: decimal">
-<li>密度函数： dnorm(x, mean = 0, sd = 1, log = FALSE)</li>
-<li>分布函数： pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)</li>
-<li>分位数函数：qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)</li>
-<li>随机函数： rnorm(n, mean = 0, sd = 1) 其余的分布函数与正态分布的前缀相同。</li>
-</ol>
-<h3 id="正态分布相应的概率计算">正态分布相应的概率计算</h3>
-<p>求正态N(3.1.5)变量X在区间(2,4)中的概率p，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pnorm(4,3,1.5)-pnorm(2,3,1.5)</div></pre></td></tr></table></figure>
-<blockquote>
-<p>pnorm(4,3,1.5)-pnorm(2,3,1.5) [1] 0.4950149</p>
-</blockquote>
-<h2 id="正态分布的检验">正态分布的检验</h2>
-<p>判断数据是否符合正态分布通常用的是非参数检验方法（因为总体分布未知）</p>
-<h3 id="shapiro.test函数">shapiro.test()函数</h3>
-<p>Shapiro-Wilk正态分布检验: 用来检验是否数据符合正态分布，类似于线性回归的方法一样，是检验其于回归曲线的残差。该方法推荐在样本量很小的时候使用，样本在3到5000之间。该检验原假设为H0:数据集符合正态分布，统计量W 最大值是1，越接近1，表示样本与正态分布匹配。如果p-value小于显著性水平α(0.05)，则拒绝H0，表示样本不符合正态分布，如果p-value在大于显著性水平，则接受H0，表示样本符合正态分布。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">set.seed(1)</div><div class="line">s &lt;- rnorm(1000)</div><div class="line">shapiro.test(s)</div></pre></td></tr></table></figure>
-<p>其结果为： Shapiro-Wilk normality test</p>
-<p>data: s W = 0.9988, p-value = 0.7256</p>
-<p>结论: W接近1，p-value&gt;0.05，不能拒绝原假设，所以数据集s符合正态分布。</p>
-<h3 id="kolmogorov-smirnov连续分布检验">Kolmogorov-Smirnov连续分布检验</h3>
-<p>Kolmogorov-Smirnov连续分布检验:检验单一样本是不是服从某一预先假设的特定分布的方法。以样本数据的累计频数分布与特定理论分布比较，若两者间的差距很小，则推论该样本取自某特定分布族。 该检验原假设为H0:数据集符合正态分布，H1:样本所来自的总体分布不符合正态分布。令F0(x)表示预先假设的理论分布，Fn(x)表示随机样本的累计概率(频率)函数. 统计量D为: D=max|F0(x) - Fn(x)|，D值越小，越接近0，表示样本数据越接近正态分布，如果p-value小于显著性水平α(0.05)，则拒绝H0。</p>
-<p>Kolmogorov-Smirnov 检验,用法如下： ks.test(x, y, …, alternative = c(“two.sided”, “less”, “greater”), exact = NULL) R语言中ks.test有四个参数，第一个参数x为观测值向量，第二个参数y为第二观测值向量或者累计分布函数或者一个真正的累积分布函数如pnorm，只对连续CDF有效。第三个参数为指明是单侧检验还是双侧检验，exact参数为NULL或者一个逻辑值，表明是否需要计算精确的P值。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">set.seed(1)</div><div class="line">s &lt;- rnorm(1000)</div><div class="line">ks.test(s,&quot;pnorm&quot;)</div></pre></td></tr></table></figure>
-<p>结果如下： One-sample Kolmogorov-Smirnov test</p>
-<p>data: s D = 0.0211, p-value = 0.7673 alternative hypothesis: two-sided</p>
-<p>D值很小, p-value&gt;0.05，不能拒绝原假设，所以数据集s符合正态分布。</p>
-<h3 id="ks的第二案例应用">KS的第二案例应用</h3>
-<h4 id="比较两组数据的分布是否相同">比较两组数据的分布是否相同</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ks.test(rnorm(100),rnorm(50))</div></pre></td></tr></table></figure>
-<blockquote>
-<p>Two-sample Kolmogorov-Smirnov test</p>
-</blockquote>
-<blockquote>
-<p>data: rnorm(100) and rnorm(50) D = 0.14, p-value = 0.5185 alternative hypothesis: two-sided</p>
-</blockquote>
-<p>在这一案例中，我们比较了两个均值和方差一样的观测值，他们D值很小，p值大于0.05，所以我们不能拒绝两个观测值分布相同的假设。</p>
-<h4 id="ks比较某一数据符合某一分布">KS比较某一数据符合某一分布</h4>
-<p>检验一组数据是否符合均匀分布（生成均匀分布的函数为runif))，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ks.test(rnorm(100),&quot;punif&quot;)</div></pre></td></tr></table></figure>
-<p>结果中p-value为2.2e-16，我们用rnorm(100)生成的是正态分布的数据，因此它不符合均匀分布（参数为punif）。如果参数设为pnorm，再看一下。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ks.test(rnorm(100),&quot;pnorm&quot;)</div></pre></td></tr></table></figure>
-<p>结果的p值为0.6722，符合正态分布。</p>
-<h3 id="pearson-拟合优度chi-square检验">Pearson 拟合优度chi-square检验</h3>
-<p>（略）</p>
-<h3 id="qq图">QQ图</h3>
-<p>正态概率图用于检查一组数据是否服从正态分布。是实数与正态分布数据之间函数关系的散点图。如果这组实数服从正态分布，正态概率图将是一条直线。通常，概率图也可以用于确定一组数据是否服从任一已知分布，如二项分布或泊松分布。</p>
-<p>QQ图是quantile—quantile的简写，一个根据正态分布的分位数，一个是样本分位数；如果两者在一条直线上，说明样本符合状态分布的分位数，即服从正态分布。QQ图是一种散点图,对应于正态分布的QQ图,就是由标准正态分布的分位数为横坐标,样本值为纵坐标的散点图. 要利用QQ图鉴别样本数据是否近似于正态分布,只需看QQ图上的点是否近似地在一条直线附近,而且该直线的斜率为标准差,截距为均值. 用QQ图还可获得样本偏度和峰度的粗略信息。</p>
-<p>另外，还有一种PP图。P-P图是根据变量的累积比例与指定分布的累积比例之间的关系所绘制的图形。通过P-P图可以检验数据是否符合指定的分布。当数据符合指定分布时，P-P图中各点近似呈一条直线。如果P-P图中各点不呈直线，但有一定规律，可以对变量数据进行转换，使转换后的数据更接近指定分布。 Q-Q图同样可以用于检验数据的分布，所不同的是，Q-Q图是用变量数据分布的分位数与所指定分布的分位数之间的关系曲线来进行检验的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">set.seed(1)</div><div class="line">s &lt;- rnorm(1000)</div><div class="line">qqnorm(s)</div><div class="line">qqline(s,col=&quot;red&quot;)</div></pre></td></tr></table></figure>
-<p>结果如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/qqpic.png"></p>
-<p>解释：纵轴是数据的实际分位数，横轴是正态分布的理论分位数，红线是45度的参考线，如果数据是正态分布，则散点应该落在直线上。即实际分位数与理论分位数偏差不大。说明来自正态总体。</p>
-<h3 id="峰度与偏度">峰度与偏度</h3>
-<h4 id="峰度kurtosis">峰度（Kurtosis）</h4>
-<p>峰度是描述某变量所有取值分布形态陡缓程度的统计量，它是和正态分布相比较的。 公式如下所示： <span class="math display">\[Kurtosis=\frac{\sum(X-\mu)^{4}}{\delta^{4}} -3\]</span> 正态分布的Kurtosis为K=3,为了描述方便，有时候需要减3（上述公式就减了3），有的公式没有，但原理是相同的。 <img src="http://ortxpw68f.bkt.clouddn.com/Kurtosis.png"> Kurtosis=0 与正态分布的陡缓程度相同。 Kurtosis&gt;0 比正态分布的高峰更加陡峭——尖顶峰 Kurtosis&lt;0 比正态分布的高峰来得平台——平顶峰</p>
-<h4 id="偏度skewness">偏度（Skewness）</h4>
-<p>偏度是描述某变量取值分布对称性的统计量。公式如下 <span class="math display">\[Skewness=\sum[(\frac{X-\mu}{\delta})^3]\]</span> <img src="http://ortxpw68f.bkt.clouddn.com/Skewness.png"> Skewness=0 分布形态与正态分布偏度相同 Skewness&gt;0 正偏差数值较大，为正偏或右偏。长尾巴拖在右边。 Skewness&lt;0 负偏差数值较大，为负偏或左偏。长尾巴拖在左边。</p>
-<h3 id="正态分布检验补充案例">正态分布检验补充案例</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">words1 = rnorm(100)</div><div class="line">words2 = rt(100, df=3)</div><div class="line"></div><div class="line">plot(density(words1))</div><div class="line">lines(density(words2))</div><div class="line">shapiro.test(words1)</div><div class="line">shapiro.test(words2)</div><div class="line"></div><div class="line">par(mfrow=c(2,1))</div><div class="line">qqnorm(words1);qqline(words1, col = 2)</div><div class="line">qqnorm(words2);qqline(words2, col = 2)</div></pre></td></tr></table></figure>
-<p>words1与words2密度图如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution.png"></p>
-<p>从图上大致可以看出来words1与标准正态图比较接近。</p>
-<p>用shapiro检验后的结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution2.png"></p>
-<p>从计算结果来看，words1是p值为0.09861，大于0.05，不能否定原假定，因此words1符合正态分布。同理,words2不符合正态分布。</p>
-<p>QQ图的结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution3.png"></p>
-<p>从QQ图中可以看出，words1符合正态分布，而words2不符合正态分布。</p>
-<h2 id="r语言中进行正态分布检验的其它包">R语言中进行正态分布检验的其它包</h2>
-<h3 id="nortest包">nortest包</h3>
-<p>lillie.test()可以实行更精确的Kolmogorov-Smirnov检验。</p>
-<p>ad.test()进行Anderson-Darling正态性检验。</p>
-<p>cvm.test()进行Cramer-von Mises正态性检验。</p>
-<p>pearson.test()进行Pearson卡方正态性检验。</p>
-<p>sf.test()进行Shapiro-Francia正态性检验。</p>
-<h3 id="fbasics包">fBasics包</h3>
-<p>ksnormTest() 进行Kolmogorov-Smirnov正态性检验。</p>
-<p>shapiroTest() 进行Shapiro-Wilk正态性检验。</p>
-<p>jarqueberaTest() 进行jarque-Bera正态性检验。</p>
-<p>dagoTest() 进行D’Agostino正态性检验。</p>
-<p>adTest() 进行Anderson-Darling正态性检验。</p>
-<p>cvmTest() 进行Cramer-von Mises正态性检验。</p>
-<p>lillieTest() 进行Lilliefors(KS)正态性检验。</p>
-<p>pchiTest() 进行Pearson chi-square正态性检验。</p>
-<p>sfTest() 进行Shapiro-Francia正态性检验。</p>
-<p>jbTest() Finite sample adjusted JB LM and ALM test。</p>
-<p>normalTest() 进行Kolmogorov-Smirnov正态性检验。</p>
-<h3 id="jarque-bera-test检验正态分布">Jarque-Bera Test检验正态分布</h3>
-<p>Jarque-Bera检验是用于总体分布的正态性检验的一种方式。该检验基于数据样本的偏度和峰度，评价给定数据服从未知均值和方差正态分布的假设是否成立，正态分布的偏度（三阶矩）S=0，峰度（四阶矩）K=3，若样本来自正态总体，则他们分别在0，3附近。基于此构造一个包含x2(卡方)统计量：n为样本容量,k为自由度。代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"tseries"</span>)</div><div class="line"><span class="keyword">library</span>(tseries)</div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">x &lt;- rnorm(<span class="number">150</span>)</div><div class="line">res &lt;- jarque.bera.test(x)</div><div class="line">names(res)</div><div class="line">res$p.value</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; set.seed(<span class="number">1</span>)</div><div class="line">&gt; x &lt;- rnorm(<span class="number">150</span>)</div><div class="line">&gt; res &lt;- jarque.bera.test(x)</div><div class="line">&gt; names(res)</div><div class="line">[<span class="number">1</span>] <span class="string">"statistic"</span> <span class="string">"parameter"</span> <span class="string">"p.value"</span>   <span class="string">"method"</span>    <span class="string">"data.name"</span></div><div class="line">&gt; res$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">0.8601533</span></div></pre></td></tr></table></figure>
-<p>p值大于0.05，可以视为符合正态分布。</p>
-<h2 id="案例第二用jarque-bera-test检验正态分布">案例第二：用Jarque-Bera Test检验正态分布</h2>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"Ecdat"</span>)</div><div class="line"><span class="keyword">library</span>(Ecdat)</div><div class="line">data(SP500)</div><div class="line">class(SP500)</div><div class="line">SPreturn &lt;- SP500$r500</div><div class="line">res &lt;- jarque.bera.test(SPreturn)</div><div class="line">names(res)</div><div class="line">res$p.value</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; class(SP500)</div><div class="line">[<span class="number">1</span>] <span class="string">"data.frame"</span></div><div class="line">&gt; <span class="keyword">library</span>(Ecdat)</div><div class="line">&gt; data(SP500)</div><div class="line">&gt; class(SP500)</div><div class="line">[<span class="number">1</span>] <span class="string">"data.frame"</span></div><div class="line">&gt; SPreturn &lt;- SP500$r500</div><div class="line">&gt; res &lt;- jarque.bera.test(SPreturn)</div><div class="line">&gt; names(res)</div><div class="line">[<span class="number">1</span>] <span class="string">"statistic"</span> <span class="string">"parameter"</span> <span class="string">"p.value"</span>   <span class="string">"method"</span>    <span class="string">"data.name"</span></div><div class="line">&gt; res$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">0</span></div></pre></td></tr></table></figure>
-<h3 id="正态分布检验补充案例-1">正态分布检验补充案例</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">words1 = rnorm(100)</div><div class="line">words2 = rt(100, df=3)</div><div class="line"></div><div class="line">plot(density(words1))</div><div class="line">lines(density(words2))</div><div class="line">shapiro.test(words1)</div><div class="line">shapiro.test(words2)</div><div class="line"></div><div class="line">par(mfrow=c(2,1))</div><div class="line">qqnorm(words1);qqline(words1, col = 2)</div><div class="line">qqnorm(words2);qqline(words2, col = 2)</div></pre></td></tr></table></figure>
-<p>words1与words2密度图如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution.png"></p>
-<p>从图上大致可以看出来words1与标准正态图比较接近。</p>
-<p>用shapiro检验后的结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution2.png"></p>
-<p>从计算结果来看，words1是p值为0.09861，大于0.05，不能否定原假定，因此words1符合正态分布。同理,words2不符合正态分布。</p>
-<p>QQ图的结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/test%20normalDistribution3.png"></p>
-<p>从QQ图中可以看出，words1符合正态分布，而words2不符合正态分布。</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="http://blog.sina.com.cn/s/blog_670445240101m4z3.html" target="_blank" rel="external">每日一生信–富集分析（超几何分布）（Fisher’s Exact Test）</a></li>
-<li><a href="http://blog.sina.com.cn/s/blog_5d1edf6a0100ujcv.html" target="_blank" rel="external">R 超几何分布</a></li>
-<li><a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution" target="_blank" rel="external">Wikipedia:Hypergeometric distribution</a></li>
-<li>DawnGriffiths. 深入浅出统计学[M]. 电子工业出版社, 2012.</li>
-<li>高桥信陈刚. 漫画统计学[M]. 科学出版社, 2009.</li>
-<li>拉里·戈尼克, 沃尔科特·史密斯. 漫画统计学入门[M]. 辽宁教育出版社, 2002.</li>
-<li>陈希孺.概率论与数理统计[M].中国科学技术大学出版社,1992.</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/28/Experiment/实验笔记-miRNA的qPCR方法笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/28/Experiment/实验笔记-miRNA的qPCR方法笔记/" itemprop="url">miRNA的qPCR方法笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-28T12:00:00+08:00">
-                2018-05-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,295
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  9
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>microRNA（后方简称miRNA）的长度比较短，通常是20nt到24nt长度，因此用常规的qPCR法很难对其直接定量。现在常用的对miRNA的定量方法主要有三种，分别为加尾法，茎环引物法，探针法。这篇笔记主要以mmu-miR-30d-50为例总结一下这前两种方法，因为探针法的原理与实验步骤我以前总结过。就我自己的看法，这三种方法最根本的原理就是延长miRNA。</p>
-<h2 id="茎环引物法">茎环引物法</h2>
-<h3 id="原理">原理</h3>
-<p>茎环引物是一种能够自身环化的长引物，它的长度约为45bp。下面是茎环引物的示意图：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180524/Dh99I4kDc3.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>茎环引物的使用流程：</p>
-<p>第一步：在反转录过程中，茎环逆转录引物（需要自己设计）与miRNA结合，反转录为cDNA；</p>
-<p>第二步：在qPCR过程中，茎环结构打开，两条引物与打开茎环结构结合，其中一条引物与茎环引物上的公共序列结合，另外一条与相应的miRNA序列结合（需要自己设计），其他的miRNA也可以使用公共引物。</p>
-<h3 id="mmu-mir-30d-5p的茎环引物设计">mmu-miR-30d-5p的茎环引物设计</h3>
-<p>第一步，在www.mirbase.org数据库中查询<a href="http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=MI0000549" target="_blank" rel="external">mmu-miR-30d-5p的成熟体序列</a>（5’-&gt;3’）如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UGUAAACAUCCCCGACUGGAAG</div></pre></td></tr></table></figure>
-<p>将U转换为T，就如下所示： <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TGTAAACATCCCCGACTGGAAG</div></pre></td></tr></table></figure></p>
-<p>第二步，设计茎环引物，茎环引物由两部分构成，一部分是通用的序列（通用序列有很多种，这里只列举一种），如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CTCAACTGGTGTCGTGGAGTCGGCAATTCAGTTGAGC</div></pre></td></tr></table></figure>
-<p>另外一部分是针对某个miRNA特定序列，这一部分的序列是6个碱基，我们设计的是miR-30d-5p，从它的3‘端，开始数取6-8个序列，即<code>GAAGGTCA</code>，取它的互补序列，即为<code>CTTCCAGT</code>，将这段序列与茎环引物的通用序列，结合，就成了miR-30d-5p的反转录引物，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CTCAACTGGTGTCGTGGAGTCGGCAATTCAGTTGAGCCTTCCAGT</div></pre></td></tr></table></figure>
-<p>这个引物是在反转录的时候使用，它在反转录过程中的示意图如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180528/e54eA3ACjl.jpg?imageslim" alt="mark"></p>
-<p>第三步，设计qPCR引物，正向引物，每个正向引物包括5’端通用序列和3‘端miRNA特异序列，5’端通用序列为：<code>5’-GCCGAG-3’</code>或<code>5’-TCGGCAGG-3’</code>，用于延伸实时定量PCR产物的长度；3’端为跟据成熟miRNA自身碱基组成及GC含量适当删减几个碱基所得的寡核苷酸或完整的成熟miRNA。即：上游引物为5‘- 通用引物+NNNNNNNNNNNNNNNNN-3’ ，自miRNA5’端抄起，14-16个或13-14个，这里就抄14个碱基。 通俗的说就是：保护性碱基（用来调GC含量的）+miRNA 5 端的13-16个碱基（不要抄到最后那6-8个上去了，意思就是不要与RT那段重叠了），因此miR-30d-5p的qPCR正向引物序列就是： <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TCGGCAGGTGTAAACATCCCCG</div></pre></td></tr></table></figure></p>
-<p>反向引物，就是茎环引物上的一段序列，这里直接写为<code>5'-CTCAACTGGTGTCGTGGA-3'</code>（就是茎环引物上的一段序列）。这两条引物在qPCR中的反应过程如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180528/ad22mEl3fa.jpg?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="rna提取的实验材料">RNA提取的实验材料</h3>
-<p>Trizol（Thermo Fisher Scientific）</p>
-<p>RNAase-Free水</p>
-<p>无水乙醇（重庆川东化工有限公司）</p>
-<p>氯仿（成都市科龙化工试剂厂）</p>
-<p>异丙醇（成都市科龙化工试剂厂）</p>
-<p>qPCR试剂盒（Takara，货号：RR820A）</p>
-<p>反转录试剂盒（Takara，货号：RR037A）</p>
-<h3 id="qpcr实验过程">qPCR实验过程</h3>
-<h3 id="提取rna">1.提取RNA</h3>
-<p>提取RNA，按照常规的Trizol法提取即可，最终提取并测完浓度后，将RNA样本稀释到300ng/uL的浓度，并分装到3个EP管中，并取一部分出来，进行质控。质控的内容包括：1.2%的琼脂糖电泳，电压120V，40分钟，上样量200ng。</p>
-<h3 id="反转录">2. 反转录</h3>
-<ol style="list-style-type: decimal">
-<li>反转录采用Takara的反转录试剂盒，这个试剂盒是常规的反转录试剂盒，在反转录miRNA的时候，不需要试剂盒里面的2个引物，即成分3（Oligo dT primer）和成分4（Random 6 mers），使用自己设计的茎环引物进行反转，反转体系如下所示（20μL体系）：</li>
-</ol>
-<table>
-<thead>
-<tr class="header">
-<th>成分</th>
-<th>体积</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>5XPrimeScript Buffer</td>
-<td>4</td>
-</tr>
-<tr class="even">
-<td>PrimeScript RT Enzyme Mix I</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td>茎环引物</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>总RNA</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td>无RNAase水</td>
-<td>20μL</td>
-</tr>
-</tbody>
-</table>
-<p>PCR程序为：</p>
-<ol style="list-style-type: decimal">
-<li>Step 1：37℃, 15min</li>
-<li>Step 2：85 ℃, 5 sec</li>
-<li>Step 3：4 ℃, 5min</li>
-</ol>
-<h3 id="qpcr反应">3. qPCR反应</h3>
-<p>反应体系如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>组分</th>
-<th>体积(μL)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>2×SsoAdvanced SYBR Green Supermix</td>
-<td>10</td>
-</tr>
-<tr class="even">
-<td>Forward Primer(10μM)</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td>Reverse Primer(10μM)</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>cDNA Template</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td>ddH2O</td>
-<td>To 20μL</td>
-</tr>
-</tbody>
-</table>
-<p>(2)PCR反应条件：</p>
-<p>第一步：预变性条件95℃/10s；1 cycle；</p>
-<p>第二步：PCR反应条件95℃/5s，60℃/30s，70℃/20s；40 cycles；</p>
-<p>第三步：融解曲线分析95℃ 0s，20℃/s，65℃ 15s，20℃/s ，95℃ 0s ，0.1℃/s。</p>
-<p>分析数据即可。</p>
-<h3 id="茎环引物法的优缺点">茎环引物法的优缺点</h3>
-<p>茎环引物法的优点就在于特异性强，成本低。缺点就是一次只能针对一种特定的miRNA进行检测，而加尾法则能够对miRNA进行批量筛选。</p>
-<h2 id="加尾法">加尾法</h2>
-<h3 id="原理-1">原理</h3>
-<p>加尾法的根本原理也是延长miRNA，然后再用上下游引物来进行qPCR。</p>
-<p>在这里，还以miR-30d-5p为例，以及Takara的一个miRNA试剂盒为例说明一下加尾法的原理，参考资料主要是该试剂盒的说明书，即Mir-X™ miRNA First-Strand Synthesis and SYBR® qRT-PCR User Manual。这个试剂盒里面有这些成分：①mRQ Enzyme Mix；②mRQ Buffer (2X)；③mRQ 3’ Primer (10 μM) ；④U6 Forward Primer (10 μM)；⑤U6 Reverse Primer (10 μM)。</p>
-<p>其中，①mRQ Enzyme Mix中含有poly(A)聚合酶，该酶向miRNA的3’末端添加poly(A)尾，此外还含有SMART MMLV逆转录酶，这个酶主要用于将加了poly(A)的RNA反转录为cDNA。②mRQ buffer是缓冲液，很好理解；③mRA 3‘ Primer这个我猜测可能是进行qPCR反应时的公共引物；④与⑤是U6的内参，这个也好理解。</p>
-<p>整个反转录过程如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180528/BBk2j7KAjd.jpg?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>以上就是加尾法对miRNA进行检测的原理。这里只是以mmu-miR-30d-5p为例说明了一下，其实它也可以是miR-770-5p，也可以是miR-21-3p等，一次反转录几乎能够把细胞内的所有miRNA都给反转录成cDNA。因此，如果批量对miRNA进行qPCR筛选的话，加尾法是一种比较合适的方法，它只需要设计针对某个miRNA的特异引物即可，这样一次反转录生成的cDNA就可以重复做多个miRNA的检测。</p>
-<h3 id="加尾法的上游引物设计">加尾法的上游引物设计</h3>
-<p>从原理图上可以知，例如针对miR-30d-5p的引物其实就是miR-30d-5p序列本身，只是把U变成了T。例如miR-30d-5p的成熟体序列为<code>UGUAAACAUCCCCGACUGGAAG</code>，那么它的加尾法上游引物就是<code>TGTAAACATCCCCGACTGGAAG</code>。</p>
-<h3 id="qpcr反应-1">qPCR反应</h3>
-<p>加尾法的qPCR反应体系跟普通的qPCR体系一样，程序也类似（如果一次筛选大量的miRNA，则需要优化一下退火温度）。</p>
-<h2 id="加尾引物的优化">加尾引物的优化</h2>
-<p>前面的加尾法只是一种非常粗糙的引物设计方法，因为不是所有的miRNA序列，用T替换U后，就可以直接当作引物的，加尾法的引物必须要经过优化。</p>
-<h3 id="引物的设计基本原则">引物的设计基本原则</h3>
-<p>加尾法上流引物的设计原则也要遵循普通的PCR引物设计标准，如下所示：</p>
-<ol style="list-style-type: decimal">
-<li>引物长度：与miRNA长度相似，20-25mer；</li>
-<li>Tm值，约为60摄氏度，可以用Oligo软件分析，也可以使用一些在线的软件进行分析；</li>
-<li>GC含量：40~60%。</li>
-</ol>
-<p>现在设计一个mmu-miR-21-5p的引物，在mibase数据库中查询，它的序列如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UAGCUUAUCAGACUGAUGUUGA</div></pre></td></tr></table></figure>
-<p>用T替换为U，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TAGCTTATCAGACTGATGTTGA</div></pre></td></tr></table></figure>
-<p>把这条序列放到Oligo中评估一下：</p>
-<p>第一，先评估一下是否构成二聚体，操作为Analyaze-&gt;Duplex Formation-&gt;Current Oligo，结果如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/dbccaJaClc.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>第二，评估一下引物的构成与Tm值，Analyaze-&gt;Composition&amp;Tm-&gt;Current Oligo，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/cFBmkI79hI.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>从这个结果来看，Tm值属于正常，但GC含量过低，有38.1%，此时需要进行调整，在5’端添加GC，调整后的序列如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GCTAGCTTATCAGACTGATGTTGA</div></pre></td></tr></table></figure>
-<p>调整后的Tm值与GC含量如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/g9ehFL55hK.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>再看一个案例，has-ｍiR-615-5ｐ，它的序列如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GGGGGUCCCCGGUGCUCGGAUC</div></pre></td></tr></table></figure>
-<p>用T替换U，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GGGGGTCCCCGGTGCTCGGATC</div></pre></td></tr></table></figure>
-<p>查看一下自身结合的发卡结构，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/gi9cGGd7Hj.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/flGHmljfm5.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>查看一下Tm值与GC含量，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/E2jJ99DB1G.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/keA6eCifE1.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>此时需要对引物进行调整，在5’端删除GGGGG，在3‘端添加AAA，调整后的序列如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TCCCCGGTGCTCGGATCAAA</div></pre></td></tr></table></figure>
-<p>再查看一下发卡结构，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/jG9GK16h93.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/gbC5L6edG2.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>查看一下Tm值与GC含量，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/G91L3FfFAJ.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180717/ldel7Gl7cJ.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>已经调整到正常范围。</p>
-<p>总结：</p>
-<ol style="list-style-type: decimal">
-<li>加尾法的上流引物设计方法为：找到原始序列-&gt;使用T替换为U</li>
-<li>在Oligo中评估这个序列，主要查看自身的发卡结构，引物二聚体形成，Tm值与GC含量</li>
-<li>GC含量的调整要在引物的5’端与3’端进行。</li>
-</ol>
-<h2 id="tm值计算器">Tm值计算器</h2>
-<ol style="list-style-type: decimal">
-<li>ThermoFisher的Tm值计算器：https://www.thermofisher.com/cn/zh/home/brands/thermo-scientific/molecular-biology/molecular-biology-learning-center/molecular-biology-resource-library/thermo-scientific-web-tools/tm-calculator.html</li>
-<li></li>
 </ol>
 
           
@@ -3191,7 +2863,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">127</span>
+                  <span class="site-state-item-count">129</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3287,7 +2959,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共468.6k字</span>
+  <span class="post-count">博客全站共473.9k字</span>
 </div>
 
         
