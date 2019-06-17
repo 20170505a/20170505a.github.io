@@ -259,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-17聚类分析笔记/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-16决策树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -278,7 +278,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-17聚类分析笔记/" itemprop="url">聚类分析笔记</a></h1>
+                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-16决策树/" itemprop="url">决策树笔记</a></h1>
         
 
         <div class="post-meta">
@@ -346,7 +346,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4,942
+                  2,377
                 </span>
               
 
@@ -362,7 +362,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  19
+                  10
                 </span>
               
             </div>
@@ -385,316 +385,60 @@
       
         
           
-            <h2 id="前言">前言</h2>
-<p>以前看过StatQuest的聚类分析笔记，可以参考这篇笔记<a href="http://rvdsd.top/2018/06/29/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B017-%E8%81%9A%E7%B1%BB/">《StatQuest学习笔记17——聚类》</a>。</p>
-<h2 id="聚类的概率与类型">聚类的概率与类型</h2>
-<h3 id="聚类分析法的概念">聚类分析法的概念</h3>
-<p>聚类分析法(cluster analysis)是研究“物以类聚”的一种现代统计分析方法，聚类的目的是把分类对象按照一定的规则分成若干类，这些类不是事先给定的，而是根据数据的特征确定的，在同一类中这些对象在某种意义上趋向于彼此相似，而在不同类中对象趋于不相似。</p>
-<h3 id="聚类分析法的类型">聚类分析法的类型</h3>
-<p>在实际问题中，经常要对一些东西进行分类，例如在古生物研究中，通过挖掘出来的一些骨髓的形状和大小对它们进行科学的分类，在这里，骨髓的形状和大小是我们用来分类的依据，称为指标或变量，用<span class="math inline">\(X_{1},X_{2},\cdots,X_{p}\)</span>表示，其中，p是变量的个数，需要进行分类的骨髓为样品，用1,2,3,…n表示，其中n是样本的个数，聚类分析的数据结果见下表：</p>
+            <h2 id="决策树的原理">决策树的原理</h2>
+<p>决策树的原理可以参考这篇笔记<a href="http://rvdsd.top/2018/07/01/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B019-%E5%86%B3%E7%AD%96%E6%A0%91/">《StatQuest学习笔记19——决策树》</a>。</p>
+<h2 id="决策树的计算过程">决策树的计算过程</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)。这里我们先看一批数据，如下所示：</p>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/1F0eg5gCJd.png?imageslim" alt="mark">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Dh8fddjd9h.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>在聚类分析中，基本的思想是认为所研究的样本或变量存在着程度不同的相似性（亲疏关系）。于是，根据一批样品中的多个观测指标，具体找出一些能够度量样本之间相似程度的统计量，以这些统计量为划分类型的依据，把一些相似程度较大的样本聚合为一类，把另外一些彼此之间相似程度较大的样品又聚合为另一类，关系密切的聚合到一个小的分类单位，关系疏远的聚合到一个大的分类单位，直到把所有的样本都又聚合完毕，把不同类型一一划分出来，形成一个由小到大的分类系统，最后把整个分类系统画成一张聚类图，用它把所有样本间的亲疏关系表示出来。</p>
-<p>通常根据分类对象的不同，可以将聚类分为两类：一类是对样品进行分类处理，叫Q型；一类是对变量进行分类处理，叫R型。Q型聚类又叫样品分类，就是对观测对象进行聚类，是根据被观测的对象各种特征进行分类。在生物信息学中，经常使用的是R型，例如有对照组1，2，3三个样本，实验组1，2，3这三个样本，把这6个样本把基因表达谱的数据进行聚类。</p>
-<h3 id="聚类统计量">聚类统计量</h3>
-<p>聚类分手析的基本原则是将有较大相似性的对象归为同一类，而将差异较大的个体归入不同的类。为了将样本聚类，就需要研究样品之间的关系，一种方法是将每一个样本看做p维空间的一个点，并在空间定义距离，距离较近的点归为一类，距离较远的点属于不同的类。对变量通常计算它们的相似系数，性质越接近的变量，它们的相似系数越接近于1或-1，彼此无关的变量的相似系数越接近于0。可进行聚类的统计量有距离和相似系数。距离有欧氏距离，马氏距离，兰氏距离，相似系数有夹角余弦，相关系数。</p>
-<p>对样品进行聚类时，我们将把样品间的“靠近”程度用某种距离来刻画对指标的聚类，往往用某种相似系数来刻画。当选用n个样本，p个指标时，就可以得到一个<span class="math inline">\(n\times p\)</span>的数据矩阵，即<span class="math inline">\(X=(x_{ij})n \times p\)</span>，该距离的元素<span class="math inline">\(x_{ij}\)</span>表示第i个样本的第j个变量值。</p>
-<h4 id="距离和相似系数">距离和相似系数</h4>
-<p>对样品或变量进行分类时，我们常用距离和相似系数对样品或变量之间的相似性进行度量。距离常用来度量样本之间的相似性，而相似系数常用来度量变量间的相似性。</p>
-<p>距离多用于样品的分类，信<span class="math inline">\(d_{ij}\)</span>表示样本<span class="math inline">\(x_{i}\)</span>和<span class="math inline">\(x_{j}\)</span>的距离，一般要求<span class="math inline">\(d_{ij}\)</span>满足以下四个条件，如下所示：</p>
+<p>原始数据很多，有1000多行。这个数据来自于Flake and lawrence(2002)，可以在<a href="https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/mg" target="_blank" rel="external">网上下载</a>，这且数据是做什么的，我也不清楚。这个数据集有6个自变量和1个因变量，一共有1385个观测值。书上说之所以用这个数据是因为这里的所有变量都是数量变量，因此这个数据集也可以用经典线性回归来做，从而可以对各种方法进行比较。</p>
+<h3 id="线性回归">线性回归</h3>
+<p>现在先对全部数据做一个简单的 线性回归，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_dt &lt;- read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/mg.csv"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)</div><div class="line">result_dt &lt;- lm(y~.,raw_dt)</div><div class="line">summary(result_dt)</div><div class="line">pairs(raw_dt)<span class="comment">#查看不同变量之间的相关关系</span></div><div class="line"><span class="comment"># 或plot(raw_dt)</span></div><div class="line">cor(raw_dt)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_dt)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = y ~ ., data = raw_dt)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-0.40866 -0.09516  0.01098  0.09645  0.40011 </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)  0.95582    0.07142  13.384  &lt; 2e-16 ***</div><div class="line">x1           0.28512    0.02773  10.282  &lt; 2e-16 ***</div><div class="line">x2           0.17263    0.02655   6.502 1.10e-10 ***</div><div class="line">x3          -0.37956    0.02769 -13.709  &lt; 2e-16 ***</div><div class="line">x4          -0.36756    0.02764 -13.298  &lt; 2e-16 ***</div><div class="line">x5           0.07165    0.02656   2.697  0.00707 ** </div><div class="line">x6           0.19003    0.02778   6.841 1.18e-11 ***</div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class="line"></div><div class="line">Residual standard error: 0.1459 on 1378 degrees of freedom</div><div class="line">Multiple R-squared:  0.5868,	Adjusted R-squared:  0.585 </div><div class="line">F-statistic: 326.2 on 6 and 1378 DF,  p-value: &lt; 2.2e-16</div></pre></td></tr></table></figure>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/fDEh2L8bCJ.png?imageslim" alt="mark">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/egLil2EEmc.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>在聚类分析中并不严格要求定义的距离都满足这四条，一般来说前三条大部分是能满足的，一些不能满足(4)，但是在广义的角度上也称其为距离。</p>
-<p>设<span class="math inline">\(x_{ij}(i=1,2,\cdots,n;j=1,2,\cdots,p)\)</span>为第i个样本的第j个指标的观测数据。即若每个样本有p个变量，则每个样本都可以看成p维空间中的一个点，n个样品就是p维空间中的n个点，定义<span class="math inline">\(d_{ij}\)</span>为样本xj和xj的距离，于是得到一个<span class="math inline">\(n\times n\)</span>的距离矩阵，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hmL6biif2K.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>样品聚类都是基于此距离矩阵进行的，现在我们看一个简单的案例：</p>
-<h4 id="距离案例a样本聚类">距离：案例A：样本聚类</h4>
-<p>以下列举5个观察值，2个变量数据的平面散点图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">x1 &lt;- c(<span class="number">5</span>,<span class="number">7</span>,<span class="number">3</span>,<span class="number">6</span>,<span class="number">6</span>)</div><div class="line">x2 &lt;- c(<span class="number">7</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">6</span>)</div><div class="line">plot(x1,x2)</div><div class="line">text(x1,x2,labels=c(<span class="number">1</span>:<span class="number">5</span>),adj=-<span class="number">.5</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/6G46d2cDj3.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>由于只有2个变量，所以从散点图上就可以直观地将这5个样本分为几类，但当变量较多时，这种方法显著是不行的。为了计算平面上各点之间的距离<span class="math inline">\(d_{ij}\)</span>，在聚类分析中对连续型变量常用的距离有以下3种，如下所示：</p>
-<h5 id="明氏距离minkowski">明氏距离(Minkowski):</h5>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/FE2B6E29Jk.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h5 id="马氏距离mahalanobi">马氏距离(Mahalanobi)</h5>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/egafd7I0j7.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h5 id="兰氏距离canberra">兰氏距离(Canberra)</h5>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/L8854g7kKJ.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>下面我们使用<code>dist()</code>函数计算一下案例A的欧氏距离与马氏距离，用法如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">dist(x,mdehtod=<span class="string">"euclidean"</span>,diag=<span class="literal">FALSE</span>,upper=<span class="literal">FALSE</span>,p=<span class="number">2</span>)</div><div class="line"><span class="comment"># x是数据矩阵</span></div><div class="line"><span class="comment"># method是计算方法，包括euclidean,maximum,manhattan,canberra,binary,minkowski</span></div><div class="line"><span class="comment"># diag为是否包含对角线元素</span></div><div class="line"><span class="comment"># upper为是否需要上三角</span></div><div class="line"><span class="comment"># p为Minkowski距离的幂次</span></div></pre></td></tr></table></figure>
-<p>案例A的计算结果：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">&gt; X&lt;-as.matrix(data.frame(x1,x2))</div><div class="line">&gt; dist(X) <span class="comment"># 默认情况下是欧氏距离</span></div><div class="line">         <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span></div><div class="line"><span class="number">2</span> <span class="number">6.324555</span>                           </div><div class="line"><span class="number">3</span> <span class="number">5.385165</span> <span class="number">4.123106</span>                  </div><div class="line"><span class="number">4</span> <span class="number">2.236068</span> <span class="number">4.123106</span> <span class="number">4.242641</span>         </div><div class="line"><span class="number">5</span> <span class="number">1.414214</span> <span class="number">5.099020</span> <span class="number">5.000000</span> <span class="number">1.000000</span></div><div class="line">&gt; dist(X,diag=<span class="literal">T</span>,upper=<span class="literal">T</span>) <span class="comment"># 默认情况下是欧氏距离</span></div><div class="line">         <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span>        <span class="number">5</span></div><div class="line"><span class="number">1</span> <span class="number">0.000000</span> <span class="number">6.324555</span> <span class="number">5.385165</span> <span class="number">2.236068</span> <span class="number">1.414214</span></div><div class="line"><span class="number">2</span> <span class="number">6.324555</span> <span class="number">0.000000</span> <span class="number">4.123106</span> <span class="number">4.123106</span> <span class="number">5.099020</span></div><div class="line"><span class="number">3</span> <span class="number">5.385165</span> <span class="number">4.123106</span> <span class="number">0.000000</span> <span class="number">4.242641</span> <span class="number">5.000000</span></div><div class="line"><span class="number">4</span> <span class="number">2.236068</span> <span class="number">4.123106</span> <span class="number">4.242641</span> <span class="number">0.000000</span> <span class="number">1.000000</span></div><div class="line"><span class="number">5</span> <span class="number">1.414214</span> <span class="number">5.099020</span> <span class="number">5.000000</span> <span class="number">1.000000</span> <span class="number">0.000000</span></div><div class="line">&gt; dist(X,method=<span class="string">"manhattan"</span>,diag=<span class="literal">T</span>,upper=<span class="literal">T</span>) <span class="comment">#马氏距离</span></div><div class="line">  <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span></div><div class="line"><span class="number">1</span> <span class="number">0</span> <span class="number">8</span> <span class="number">7</span> <span class="number">3</span> <span class="number">2</span></div><div class="line"><span class="number">2</span> <span class="number">8</span> <span class="number">0</span> <span class="number">5</span> <span class="number">5</span> <span class="number">6</span></div><div class="line"><span class="number">3</span> <span class="number">7</span> <span class="number">5</span> <span class="number">0</span> <span class="number">6</span> <span class="number">7</span></div><div class="line"><span class="number">4</span> <span class="number">3</span> <span class="number">5</span> <span class="number">6</span> <span class="number">0</span> <span class="number">1</span></div><div class="line"><span class="number">5</span> <span class="number">2</span> <span class="number">6</span> <span class="number">7</span> <span class="number">1</span> <span class="number">0</span></div><div class="line">&gt; dist(X,method=<span class="string">"minkowski"</span>,diag=<span class="literal">T</span>,upper=<span class="literal">T</span>,p=<span class="number">2</span>)</div><div class="line">         <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span>        <span class="number">5</span></div><div class="line"><span class="number">1</span> <span class="number">0.000000</span> <span class="number">6.324555</span> <span class="number">5.385165</span> <span class="number">2.236068</span> <span class="number">1.414214</span></div><div class="line"><span class="number">2</span> <span class="number">6.324555</span> <span class="number">0.000000</span> <span class="number">4.123106</span> <span class="number">4.123106</span> <span class="number">5.099020</span></div><div class="line"><span class="number">3</span> <span class="number">5.385165</span> <span class="number">4.123106</span> <span class="number">0.000000</span> <span class="number">4.242641</span> <span class="number">5.000000</span></div><div class="line"><span class="number">4</span> <span class="number">2.236068</span> <span class="number">4.123106</span> <span class="number">4.242641</span> <span class="number">0.000000</span> <span class="number">1.000000</span></div><div class="line"><span class="number">5</span> <span class="number">1.414214</span> <span class="number">5.099020</span> <span class="number">5.000000</span> <span class="number">1.000000</span> <span class="number">0.000000</span></div></pre></td></tr></table></figure>
-<h4 id="相似系数">相似系数</h4>
-<p>对两个变量之间的相似程度可以用相似系数来刻画，用<span class="math inline">\(C_{ij}\)</span>表示第i个变量与第j个变量之间的相似系数，<span class="math inline">\(C_{ij}\)</span>的绝对值越接近1，表示指标i与指标j的关系越密切，<span class="math inline">\(C_{ij}\)</span>的绝对值越接近于0，表示指标i与指标j的关系越疏远，常用的相似系数有夹角余弦和相关系数，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/15HbGggiJm.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>距离和相似系数之间的转换，一般来说，距离越小，两样本之间关系越密切，而相似系数越大，两变量之间的关系越密切，为了聚类分析方便起见，可以用下面的通用公式得到变量间的距离，即<span class="math inline">\(d_{ij}^2=1-C_{ij}^2\)</span>。</p>
-<h2 id="系统聚类法">系统聚类法</h2>
-<h3 id="系数聚类法的基本思想">系数聚类法的基本思想</h3>
-<p>确定了距离和相似系数后就要进行分类。分类有许多种方法，最常用的一种方法是在样品距离的基础上定义类与类之间的距离。首选将n个样品分成n类，每个样品自成成一类，然后每将将具有最小距离的两类合并，合并后重新计算类与类之间的距离，这个过程一直持续到将所有的样品归为一类为止，并把这个过程画成一张聚类图，由聚类图可以方便地进行分类。因为聚类图很像一张系统图，所以这种方法就叫层次聚类法(hierachical clustering method)。层次聚类方法是目前应用最多的一种方法。从上面的分析可以看出，虽然已经给出了计算样品之间的距离，但在实际计算过程中还要定义类与类之间的距离。如何定义类与类之间的距离，也有很多方法，不同的方法就产生了不同的层次聚类，常用的方法有六种：</p>
-<ol style="list-style-type: decimal">
-<li>最短距离法：类与类之间的距离等于两类最近样品之间的距离；</li>
-<li>最长距离法：类与类之间的距离等于两类最远样品之间的距离；</li>
-<li>类平均法：类与类之间的距离等于各类元素两两之间平方距离的平均；</li>
-<li>重心法：类与类之间的距离定义为对应这两类重心之间的距离。对样品分类来说，每一类的类重心就是该类样品的均值。</li>
-<li>中间距离法：最长距离夸大了类间距离，最短距离低估了类间距离，介于两者之间的距离法即为中间距离法，中间距离法则是采用了介于最远和最近之间的距离。</li>
-<li>离差平方和法（Ward法）：基于方差分析的思想，如果类分得正确，同样样品之间的离差平方和应当较小，类与类之间的离差平方和应该较大。</li>
-</ol>
-<h3 id="层次聚类法的计算公式">层次聚类法的计算公式</h3>
-<h4 id="最短距离法">最短距离法</h4>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/GjJ89mm9ak.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="最长距离法">最长距离法</h4>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/EllAL3e95K.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="重心法">重心法</h4>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/mi72GAm1Eh.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="中间距离法">中间距离法</h4>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/j94bFkD3Gb.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="类平均法">类平均法</h4>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/ikKEd47fIh.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="离差平方和法ward法">离差平方和法(Ward法)</h4>
-<p>这种方法是Ward提出来的，因此称为Ward法，该方法的基本思想来自于方差分析，如果分类正确，同样样品的离差平方和应当较小，类与类的离差平方和应当较大。具体做法是先将n个样品各自归为一类，然后每次缩小一类，每缩小一类，离差平方和就要增大，选择使方差增加最小的两类合并，直接所有的样本都归为一类为止。计算过程如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/AHHeFa9cI9.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/0iaFhF3HA3.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>这六种层次聚类法的并类原则和过程完全相同，不同之处在于类与类之间的距离定义。当采用欧氏距离时，Lance和Williams于19678年将这些方法统一成如下的递推公式，即：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/HDddlmkB4d.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/df257DGccL.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h4 id="层次聚类法的基本步骤">层次聚类法的基本步骤</h4>
-<ol style="list-style-type: decimal">
-<li>计算n个样本两两的距离<span class="math inline">\(\{d_{ij}\}\)</span>，记作D；</li>
-<li>构造n个类，每个类只包含一个样品；</li>
-<li>合并距离最近的两类为一个新类；</li>
-<li>计算新类与当前各类的距离，若类个数为1，进行第5步，否则回到第3步；</li>
-<li>画聚类图；</li>
-<li>决定类的个数和类。</li>
-</ol>
-<h4 id="层次聚类的函数">层次聚类的函数</h4>
-<p>R中进行层次聚类的函数是<code>hclust()</code>，用法如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">hclust(d,mehtod=<span class="string">"complete"</span>,<span class="keyword">...</span>)</div><div class="line"><span class="comment"># d为相似矩阵</span></div><div class="line"><span class="comment"># method是层次聚类方法，包括ward,single,complete,average,mcquitty,median,centroid</span></div></pre></td></tr></table></figure>
-<p>现在使用案例A中的数据进行层次聚类。开始有5类，即每个样品自成一类，即<span class="math inline">\(\{G_{1},G_{2},G_{3},G_{4},G_{5}\}\)</span>，这5类之间的距离就等于5个样品之间的距离，距离矩阵记为<span class="math inline">\(D_{0}\)</span>，其中最小的元素为<span class="math inline">\(D_{0}(4,5)=1\)</span>，因此将<span class="math inline">\(G_{4}\)</span>和<span class="math inline">\(G_{5}\)</span>聚合并成一个新类，即<span class="math inline">\(G_{6}=\{G_{4},G_{5}\}\)</span>，然后再过计算<span class="math inline">\(G_{6}\)</span>与$G_{1},G_{2},G_{3}#之间的距离。</p>
-<p>应用公式<span class="math inline">\(G_{1}(6,i)=min{D_{0}(4,i),D_{0}(5,i)}\)</span>，求其最近相邻的距离，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/Jf1chaHL76.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>同理可知，其它类与类之间的距离如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/kHk4C3Bm8j.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>现在绘制层次聚类图，如下所示；</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; hc &lt;-hclust(dist(X),<span class="string">"single"</span>)</div><div class="line">&gt; cbind(hc$merge,hc$height)</div><div class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]     [,<span class="number">3</span>]</div><div class="line">[<span class="number">1</span>,]   -<span class="number">4</span>   -<span class="number">5</span> <span class="number">1.000000</span></div><div class="line">[<span class="number">2</span>,]   -<span class="number">1</span>    <span class="number">1</span> <span class="number">1.414214</span></div><div class="line">[<span class="number">3</span>,]   -<span class="number">2</span>    <span class="number">2</span> <span class="number">4.123106</span></div><div class="line">[<span class="number">4</span>,]   -<span class="number">3</span>    <span class="number">3</span> <span class="number">4.123106</span></div><div class="line">&gt; plot(hc)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/06aFAJl8CA.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>ward法（采用欧氏距离），如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">hc2 &lt;-hclust(dist(X),<span class="string">"ward"</span>)</div><div class="line">cbind(hc2$merge,hc$height)</div><div class="line">&gt; cbind(hc2$merge,hc$height)</div><div class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]     [,<span class="number">3</span>]</div><div class="line">[<span class="number">1</span>,]   -<span class="number">4</span>   -<span class="number">5</span> <span class="number">1.000000</span></div><div class="line">[<span class="number">2</span>,]   -<span class="number">1</span>    <span class="number">1</span> <span class="number">1.414214</span></div><div class="line">[<span class="number">3</span>,]   -<span class="number">2</span>   -<span class="number">3</span> <span class="number">4.123106</span></div><div class="line">[<span class="number">4</span>,]    <span class="number">2</span>    <span class="number">3</span> <span class="number">4.123106</span></div><div class="line">plot(hc2)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/6lm49eiDef.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h3 id="案例分析">案例分析</h3>
-<p>为了研究我们31个省、市、自治区2001年城镇居民生活消费的分布规律，根据调查资料作区域消费类型划分，其中变量如下所示：</p>
-<p>X1：人均食品支出；</p>
-<p>X2：人均衣着商品支出</p>
-<p>X3：人均家庭设备用品及服务支出</p>
-<p>X4：人均医疗保健支出</p>
-<p>X5：人均交通和通信支出</p>
-<p>X6：人均娱乐教育文化服务支出</p>
-<p>X7：人均居住支出</p>
-<p>X8：人均杂项商品中和服务支出</p>
-<p>表格如下所示（完整的数据在github上）：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/JekccFJc4j.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>现在使用六种聚类方法进行聚类，如下所示：</p>
-<p>第1种：欧氏距离，euclidean</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">x_raw&lt;-read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/wbh_cluster_072.txt"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)<span class="comment"># 完整数据</span></div><div class="line">rownames(x_raw)&lt;-as.vector(x_raw$X)</div><div class="line">x_raw&lt;-x_raw[,-<span class="number">1</span>]</div><div class="line"></div><div class="line">x_dist1&lt;-dist(x_raw,method=<span class="string">"euclidean"</span>)</div><div class="line">hc1 &lt;-hclust(x_dist1,<span class="string">"single"</span>)</div><div class="line">fviz_dend(hc1) <span class="comment">#factoextra包</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/1CGDL9cH1I.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>还可以对分成几类进行颜色区分，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">fviz_dend(hc1, k = <span class="number">4</span>, </div><div class="line">          cex = <span class="number">0.5</span>, </div><div class="line">          k_colors = c(<span class="string">"#2E9FDF"</span>, <span class="string">"#00AFBB"</span>, <span class="string">"#E7B800"</span>, <span class="string">"#FC4E07"</span>),</div><div class="line">          color_labels_by_k = <span class="literal">TRUE</span>, </div><div class="line">          rect = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/lHbiGFIeEi.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>第二种：欧氏距离，complete</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc2 &lt;-hclust(x_dist1,<span class="string">"complete"</span>)</div><div class="line">fviz_dend(hc2)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/46LK4cfLKm.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>第三种：欧氏距离,euclidean,median，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc3 &lt;-hclust(x_dist1,<span class="string">"median"</span>)</div><div class="line">fviz_dend(hc3)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/bLH7a7Hk3e.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>第四种：欧氏距离，euclidean，average，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc4 &lt;-hclust(x_dist1,<span class="string">"average"</span>)</div><div class="line">fviz_dend(hc4)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/h0dFL4DH7a.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>第五种：欧氏距离，centroid，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc5 &lt;-hclust(x_dist1,<span class="string">"centroid"</span>)</div><div class="line">fviz_dend(hc5)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/2m74EhedAA.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>第六种：欧氏距离，ward，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc6 &lt;-hclust(x_dist1,<span class="string">"ward"</span>)</div><div class="line">fviz_dend(hc6)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/fGbleIfG2c.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>划分类别，如下所示：：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">fviz_dend(hc6, k = <span class="number">3</span>, </div><div class="line">          cex = <span class="number">0.5</span>, </div><div class="line">          k_colors = c(<span class="string">"#2E9FDF"</span>, <span class="string">"#00AFBB"</span>, <span class="string">"#E7B800"</span>),</div><div class="line">          color_labels_by_k = <span class="literal">TRUE</span>, </div><div class="line">          rect = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/03fegDE3Ig.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="kmeans聚类法">kmeans聚类法</h2>
-<h3 id="kmeans聚类法的概念">kmeans聚类法的概念</h3>
-<p>层级聚类法需要计算出不同样本或变量的距离，还要在聚类的每一步计算出类间距离，相应的计算量比较大，尤其是当样本量比较大的时候，非常消耗计算机资源。而kmeans是一类快速聚类法。kmeans法（K均值法）的具体算法至少包括以下三个步骤：</p>
-<ol style="list-style-type: decimal">
-<li>将所有的样本分成k个初始类；</li>
-<li>通过欧氏距离将某个样本划入离中心最近的类中，并对获得的样本与失去样品的类重新计算中心坐标</li>
-<li>重复步骤2，直到所有的样品都不能再分配为止。</li>
-</ol>
-<p>kmeans法和层级聚类法一样，都是以距离的远近亲疏为标准进行聚类的。但两者的不同之处在于：层级聚类对没的类数产生一系列的聚类结果，而K均值法只能产生指定类数的聚类结果。具体类数的确定，离不开实践经验的积累。有时候也要借助层级聚类法，以一部分样本为对象进行聚类，其结果为Kmeans法提供参考。</p>
-<h3 id="kemans聚类的原理与计算">kemans聚类的原理与计算</h3>
-<p>kmeans算法以k为参数，把n个对象分为k个聚类，以使聚类内具有较高的相似度，而聚类间的相似度较低。相似度的计算是根据一个聚类中对象的均值来进行的。kmeans算法的处理流程如下所示：</p>
-<ol style="list-style-type: decimal">
-<li>随机地选择k个对象，每个对象初始地代表了一个簇的平均值或中心，对剩余的每个对象，根据其与各个聚类中心的距离将其赋给最近的簇；</li>
-<li>重新过计算每个簇的平均值作为聚类中心进行聚类。</li>
-</ol>
-<p>这个过程不断重复，直到准则函数收敛，通常，采用平方误差准则，其定义如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/6mcbdGI5m2.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>其中，E为数据中所有对象与相应聚类中心的均方差之和，p为代表对象空间中的一个点，<span class="math inline">\(m_{i}\)</span>为类<span class="math inline">\(C_{i}\)</span>的均值（p和<span class="math inline">\(m_{i}\)</span>都是多维的）。该式所示聚类的标准旨在使所有获得的聚类有以下特点：</p>
-<p>各本身尽可能地紧凑，而各类之间尽可能地分开，kmean迭代图例如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/39JJc44BHe.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>根据聚类中的均值进行聚类划分的kmeans算法如下：</p>
-<ol style="list-style-type: decimal">
-<li>从n个数据对象中取任意k个对象作为初始簇中心；</li>
-<li>循环下述流程3到4，直到每个聚类不再发生变化为止；</li>
-<li>根据每个簇中对象的均值（中心对象），计算每个对象与这些中心对象的距离，并根据最小距离重新对相应对象进行划分；</li>
-<li>重新计算每个（有变化）簇的均值。</li>
-</ol>
-<h3 id="kmeans">kmeans()</h3>
-<p>R中的kmeans()函数用于进行kmeans聚类，用法为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">kmeans(x,centers,..)</div><div class="line">其中，x为数据矩阵或数据框</div><div class="line">centers为聚类数或初始聚类中心</div></pre></td></tr></table></figure>
-<h3 id="案例分析-1">案例分析</h3>
-<p>kmeans算法的R语言实现及模拟。本例模拟正态随机变量<span class="math inline">\(x~N(\mu,\delta^2)\)</span>。</p>
-<ol style="list-style-type: decimal">
-<li>用R模拟1000个均值为0，标准差为0.3的正态分布随机数据，再把这些随机数转换为10个变量、100个对象的矩阵；</li>
-<li>用同样的方法模拟1000个均值为1，标准差为0.3的正态分布随机数，再转化为10个变量、100个对象的矩阵；</li>
-<li>把这两个矩阵合并为10个变量、200个样本的数据矩阵；</li>
-<li>利用kmeans聚类法将其聚成两类，观察其效果，如下所示：</li>
-</ol>
-<p>先看一下层级聚类：</p>
+<p>mg数据各个变量之间的相关系数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; cor(raw_dt)</div><div class="line">            y         x1         x2         x3         x4         x5         x6</div><div class="line">y   <span class="number">1.0000000</span>  <span class="number">0.2620280</span>  <span class="number">0.5441721</span> -<span class="number">0.5006887</span> -<span class="number">0.4355964</span>  <span class="number">0.5510561</span>  <span class="number">0.1511016</span></div><div class="line">x1  <span class="number">0.2620280</span>  <span class="number">1.0000000</span> -<span class="number">0.1465800</span> -<span class="number">0.6543690</span>  <span class="number">0.4333849</span>  <span class="number">0.4543362</span> -<span class="number">0.6277910</span></div><div class="line">x2  <span class="number">0.5441721</span> -<span class="number">0.1465800</span>  <span class="number">1.0000000</span> -<span class="number">0.1475594</span> -<span class="number">0.6539043</span>  <span class="number">0.4367584</span>  <span class="number">0.4515753</span></div><div class="line">x3 -<span class="number">0.5006887</span> -<span class="number">0.6543690</span> -<span class="number">0.1475594</span>  <span class="number">1.0000000</span> -<span class="number">0.1471907</span> -<span class="number">0.6537680</span>  <span class="number">0.4397873</span></div><div class="line">x4 -<span class="number">0.4355964</span>  <span class="number">0.4333849</span> -<span class="number">0.6539043</span> -<span class="number">0.1471907</span>  <span class="number">1.0000000</span> -<span class="number">0.1494223</span> -<span class="number">0.6524989</span></div><div class="line">x5  <span class="number">0.5510561</span>  <span class="number">0.4543362</span>  <span class="number">0.4367584</span> -<span class="number">0.6537680</span> -<span class="number">0.1494223</span>  <span class="number">1.0000000</span> -<span class="number">0.1498846</span></div><div class="line">x6  <span class="number">0.1511016</span> -<span class="number">0.6277910</span>  <span class="number">0.4515753</span>  <span class="number">0.4397873</span> -<span class="number">0.6524989</span> -<span class="number">0.1498846</span>  <span class="number">1.0000000</span></div></pre></td></tr></table></figure>
+<p>从前面的线性回归结果可以看出来，<span class="math inline">\(R^2=0.5868\)</span>，这个数值并不太好，再加上两两散点图与相关系数的结果，我们看不出各个变量之间的任何模式。现在我们使用其它的几种算法建模方法，同时使用交叉验证（利用均方误差或标准化均方误差）对各种方法时行比较。</p>
+<p>下面我们对各种方法都用10折交叉验证的方法来判断其结果的可靠性（关于10折交叉验证的一些知识，可以看这笔记<a href="http://rvdsd.top/2018/07/05/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。对于每种方法，按照随机建立的10个训练集通过计算建立10个模型，对测试集分别得到10个标准化均方误差(NMSE)，再得出10次平均的NMSE。令<span class="math inline">\(\bar{y}\)</span>为因变量均值，<span class="math inline">\(\hat{y}\)</span>为从训练集得到的模型对一个测试数据集的预测值，这里NMSE的定义如下所示：</p>
+<p><span class="math inline">\(NMSE=\bar{(y-\hat{y})^2}/=\bar{(y-\bar{y})^2}=\sum(y-\hat{y})^2/\sum(y-\bar{y})^2\)</span></p>
+<p>显然，如果什么模型都不用，仅仅用均值来做预测，那么NMSE应该等于1.所以，如果在回归时得到NMSE大于1，这个模型就很糟糕了，还不如没有模型。仅仅对于训练集来说，其NMSE等于<span class="math inline">\(1-R^2\)</span>，这里的<span class="math inline">\(R^2\)</span>为回归的确定系数，但是对于测试集来说，其NMSE与测试集回归的<span class="math inline">\(R^2\)</span>没有什么关系，交叉验证主要关心测试集的NMSE。</p>
+<h3 id="构建训练集和测试集">构建训练集和测试集</h3>
+<p>现在构建为交叉验证服务的10个训练集和测试集，具体过程是：随机把下标分配给1,2,…10这10个数字，也就是把数据下标随机分成10份，然后每次提取一份作为测试集，其它9份放在一起作为训练集，用模型进行拟合，记下结果和误差，如此下去，一共做10次，最后把误差平均起来。这里所用的随机选Z折下标集的函数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">CV=<span class="keyword">function</span>(n,Z=<span class="number">10</span>,seed=<span class="number">1000</span>)&#123;</div><div class="line">  z=rep(<span class="number">1</span>:Z,ceiling(n/Z))[<span class="number">1</span>:n]</div><div class="line">  set.seed(seed)</div><div class="line">  z=sample(z,n)</div><div class="line">  mm=list()</div><div class="line">  <span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:Z)</div><div class="line">    mm[[i]]=(<span class="number">1</span>:n)[z==i]</div><div class="line">  <span class="keyword">return</span>(mm)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的<code>n</code>是样本量，<code>Z</code>为折的数目（也就是训练集加测试集的数目，这里默认是10），<code>seed</code>为随机种子，这里设为了1000，转出为<code>Z</code>个下标集，<code>mm[[i]]</code>为第i（i=1,2,…,Z)个下标集，根据这个函数对这个mg数据集求10个下标集的代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n&lt;-nrow(raw_dt)</div><div class="line">Z=<span class="number">10</span></div><div class="line">mm=CV(n,Z)</div><div class="line">D=<span class="number">1</span></div></pre></td></tr></table></figure>
+<p>在这段代码中，<code>mm</code>存储了10个下标集，而D说明因变量是第一个变量，这些值在后面对每种方法都要用。</p>
+<p>为了和其它方法进行地比较，先对数据mg求简单的线性回归的10折交叉验证的测试集的NMSE，代码如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(MSE)</div><div class="line">[1] 0.4222689</div></pre></td></tr></table></figure>
+<p>结果表明，测试集的NMSE为0.4222689</p>
+<h2 id="决策树回归">决策树回归</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)，现在我们先用数据集mg做一棵回归树，然后解释其意义。这里要使用到<code>rpart</code>包中的<code>rpart()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rpart)</div><div class="line"><span class="keyword">library</span>(rpart.plot)</div><div class="line">a=rpart(y~.,raw_dt)</div><div class="line">rpart.plot(a,type=<span class="number">2</span>,faclen=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; a</div><div class="line">n= 1385 </div><div class="line"></div><div class="line">node), split, n, deviance, yval</div><div class="line">      * denotes terminal node</div><div class="line"></div><div class="line"> 1) root 1385 70.9545100 0.9301440  </div><div class="line">   2) x2&lt; 0.9894983 736 31.9699900 0.8017888  </div><div class="line">     4) x3&gt;=0.8423859 551 16.4573000 0.7288982  </div><div class="line">       8) x2&gt;=0.5178963 483 13.3868900 0.7068909  </div><div class="line">        16) x2&lt; 0.7999875 263  4.7064590 0.6422662  </div><div class="line">          32) x3&lt; 1.092533 185  3.3567710 0.6073434 *</div><div class="line">          33) x3&gt;=1.092533 78  0.5889238 0.7250958 *</div><div class="line">        17) x2&gt;=0.7999875 220  6.2689860 0.7841468 *</div><div class="line">       9) x2&lt; 0.5178963 68  1.1749050 0.8852150 *</div><div class="line">     5) x3&lt; 0.8423859 185  3.8660570 1.0188850  </div><div class="line">      10) x4&gt;=1.062353 71  1.8511830 0.9239636 *</div><div class="line">      11) x4&lt; 1.062353 114  0.9767496 1.0780020 *</div><div class="line">   3) x2&gt;=0.9894983 649 13.1077400 1.0757060  </div><div class="line">     6) x3&gt;=1.056185 206  3.5797200 0.9644841  </div><div class="line">      12) x4&gt;=0.9107852 23  0.5746155 0.7823564 *</div><div class="line">      13) x4&lt; 0.9107852 183  2.1462980 0.9873744 *</div><div class="line">     7) x3&lt; 1.056185 443  5.7947760 1.1274250 *</div></pre></td></tr></table></figure>
 <div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/gl6f4DCm0c.png?imageslim" alt="mark">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hG48FgC33C.png?imageslim" alt="mark">
 <p class="caption">mark</p>
 </div>
-<p>再看一下kmeans聚类：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(factoextra)</div><div class="line">cl&lt;-kmeans(x_norm,<span class="number">2</span>)</div><div class="line">fviz_cluster(cl,data=x_norm)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Id6A8cAl0I.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>我们通过<code>fviz_nbclust</code>函数查看一下聚成几类比较好，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_norm2&lt;-scale(x_norm)</div><div class="line">fviz_nbclust(x_norm2, kmeans, method = <span class="string">"wss"</span>) + geom_vline(xintercept = <span class="number">4</span>, linetype = <span class="number">2</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/jKBHBmKiJg.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>从图上可以看出，聚成2类比较好，因为1到2变化幅度最大，2之后的变化幅度就非常小了。</p>
-<p>可视化二：可以将不同的聚类呈现出来：</p>
-<p>使用<code>silhouette</code>函数来计算一下要绘图的轮廓。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">x.res &lt;- kmeans(x_norm, <span class="number">2</span>)</div><div class="line">sil &lt;- silhouette(km.res$cluster, dist(x_norm))</div><div class="line">fviz_silhouette(sil)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/icH4baljaI.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<h2 id="其它r语言聚类函数">其它R语言聚类函数</h2>
-<p>eclust()是另外的一个聚类函数，此函数简化了聚类分析的工作流程，可以用于计算层次聚类和分区聚类，eclust()自动计算最佳聚类簇数。 自动提供Silhouette plot，可以结合ggplot2绘制图形，使用eclust()的K均值聚类如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_eclust &lt;- eclust(x_norm,<span class="string">"hclust"</span>)</div><div class="line">fviz_dend(x_eclust,rect=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/Dc1mFb1KEi.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>现在计算一下前面的那个案例，也就是各个省市的聚类，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_eclust2 &lt;-eclust(x_raw,<span class="string">"hclust"</span>,k=<span class="number">4</span>)</div><div class="line">fviz_dend(x_eclust2,rect=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/5cG9k0918F.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>各省市的Kmean聚类图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<h2 id="代码汇总">代码汇总</h2>
+<p>计算的结果有2个，一个是文本描述的结果，一个是图形结果，这两个结果是等价的，我们可以了解这个决策树的构造过程。现在解释一下这个决策树。</p>
+<p>决策树就像一棵倒长的树，有很多分叉，分叉点叫节点(node)，其中1号节点为根节点，也就是上图中最高的那个节点，输出的文本信息则是全部数据的信息，其中在1号节点上，n=1385，偏差(deviance)=70.9545100，在该节点的因变量的均值为0.9301440。</p>
+<p>这里的偏差是批在每个节点的偏差，它的定义为：在该节点的数据中的因变量与其均值之差的平方和，即<span class="math inline">\(\sum_{i}(y_{i}-\bar{y})^2\)</span>这里回归树用偏差大小来选择变量，当然也可以用其它诸如残差平方和作为选择变量的准则。</p>
+<p>上述的这些信息显示在上图中（不过只显示了均值），然后计算机程度在每个自变量中选择一个数值分割点，使得在该节点的整个数据在这个分割点比在其它分割点分成两部分之后的偏差之和都小，对每个自变量都选择这样的一个分割点，并对不同自变量的分割结果做比较，得到一个使得分割后总偏差最小的变量，这个变量就是该节点的分割变量（或称为拆分变量）。</p>
+<p>根据输出的文本信息，在这个案例中，根节点的分割变量为x2，其分割点为0.9894983，x2小于该值的观测值分到左边（节点2），大于该值的则分到右边（节点3）。在每个节点都展示出观测值数目、偏差及因变量均值这三项内容（不过决策树的图形中只有均值），这样数据就分成了两个部分。然后，对每一部分数据，选择分割变量及其分割点的程序重新开始。如此下去，根据一些按照拟合程度和避免决策树无限制长下去的准则，到一定节点就不再分割，这些节点就是终节点（也称为叶节点），也就是文本信息中带有星号(<code>*</code>)的为叶节点。</p>
+<h3 id="决策树的使用">决策树的使用</h3>
+<p>使用决策树很简单，如果有新的（只知道自变量的）观测值，就可以根据决策树以及各个变量大小，从根节点一直走到一个终节点，那里因变量的均值就是该观测值的因变量预测值。决策树本身受数据影响较大，但许多决策树结果起来就可以构成很好的方法，例如boosting，bagging以及随机森林等组合方法就是以决策树作为基本决策单元构造出来的。</p>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
-<li><p>多元统计分析及R语言建模.王斌会</p></li>
-<li><p><a href="https://blog.csdn.net/Anna_datahummingbird/article/details/79912348" target="_blank" rel="external">R语言聚类分析-kmeans聚类分析实战</a></p></li>
-<li><p><a href="https://mp.weixin.qq.com/s/M_rJqcHz6HUlGIHVeN4RkQ" target="_blank" rel="external">R语言学习笔记之聚类分析</a></p></li>
+<li>复杂数据统计方法：基于R的应用.第三版.吴喜之</li>
 </ol>
 
           
@@ -3101,7 +2845,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
