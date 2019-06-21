@@ -88,7 +88,8 @@
 <meta property="og:description" content="1. 计算氨基酸数目 统计胰岛素中各种氨基酸的数目？ 胰岛素的氨基酸序列为GIVEQCCTSICSLYQLENYCNFVNQHLCGSHLVEALYLVCGERGFFYTPKT，代码如下所示： 1234567# insulin [Homo sapiens] GI:386828# extracted 51 amino acids of A + B chaininsulin = &quot;GIVEQCC">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190616175147.png">
-<meta property="og:updated_time" content="2019-06-16T09:52:14.184Z">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190618154323.png">
+<meta property="og:updated_time" content="2019-06-19T04:18:32.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python学习笔记（19）-Python与生物信息学">
 <meta name="twitter:description" content="1. 计算氨基酸数目 统计胰岛素中各种氨基酸的数目？ 胰岛素的氨基酸序列为GIVEQCCTSICSLYQLENYCNFVNQHLCGSHLVEALYLVCGERGFFYTPKT，代码如下所示： 1234567# insulin [Homo sapiens] GI:386828# extracted 51 amino acids of A + B chaininsulin = &quot;GIVEQCC">
@@ -350,7 +351,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2,278
+                  2,589
                 </span>
               
 
@@ -366,7 +367,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  11
+                  12
                 </span>
               
             </div>
@@ -504,8 +505,16 @@
 <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190616175147.png">
 
 </div>
-<p>Python实现代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>由于蛋白浓度的过计算只需要一组<code>x/y</code>值，因此我们只需要一个两列的表，，需要单独的<code>蛋白质浓度</code>-<code>消光值</code>这种一一对应的列表，就像下面的这个样子：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190618154323.png">
+
+</div>
+<p>转换代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">table = [</div><div class="line">    [<span class="string">'protein'</span>, <span class="string">'ext1'</span>, <span class="string">'ext2'</span>, <span class="string">'ext3'</span>],</div><div class="line">    [<span class="number">0.16</span>, <span class="number">0.038</span>, <span class="number">0.044</span>, <span class="number">0.040</span>],</div><div class="line">    [<span class="number">0.33</span>, <span class="number">0.089</span>, <span class="number">0.095</span>, <span class="number">0.091</span>],</div><div class="line">    [<span class="number">0.66</span>, <span class="number">0.184</span>, <span class="number">0.191</span>, <span class="number">0.191</span>],</div><div class="line">    [<span class="number">1.00</span>, <span class="number">0.280</span>, <span class="number">0.292</span>, <span class="number">0.283</span>],</div><div class="line">    [<span class="number">1.32</span>, <span class="number">0.365</span>, <span class="number">0.367</span>, <span class="number">0.365</span>],</div><div class="line">    [<span class="number">1.66</span>, <span class="number">0.441</span>, <span class="number">0.443</span>, <span class="number">0.444</span>]</div><div class="line">    ]</div><div class="line"></div><div class="line">table = table[<span class="number">1</span>:]</div><div class="line"><span class="comment"># 删除标签行，这里取的是第1行（python中还有第0行）到最后的数据，也就是删除['protein', 'ext1', 'ext2', 'ext3']这一行</span></div><div class="line"></div><div class="line">protein, ext1, ext2, ext3 = zip(*table)</div><div class="line"><span class="comment"># 创建4个元组，这里需要注意zip()函数</span></div><div class="line"></div><div class="line">protein = protein * <span class="number">3</span></div><div class="line"><span class="comment"># 生成3列相同的protein数据</span></div><div class="line"></div><div class="line">extinction = ext1 + ext2 + ext3</div><div class="line"><span class="comment"># 将3组消光度整合成一个大的元组</span></div><div class="line"></div><div class="line">table = zip(protein, extinction)</div><div class="line"></div><div class="line"><span class="keyword">for</span> prot, ext <span class="keyword">in</span> table:</div><div class="line">    print(prot,ext)</div></pre></td></tr></table></figure>
+<p>注：变量<code>ext</code>是<code>extinction</code>（消光度值，其实就是我们平时检测蛋白BCA法的吸光度值）的缩写。</p>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="number">0.16</span> <span class="number">0.038</span></div><div class="line"><span class="number">0.33</span> <span class="number">0.089</span></div><div class="line"><span class="number">0.66</span> <span class="number">0.184</span></div><div class="line"><span class="number">1.0</span> <span class="number">0.28</span></div><div class="line"><span class="number">1.32</span> <span class="number">0.365</span></div><div class="line"><span class="number">1.66</span> <span class="number">0.441</span></div><div class="line"><span class="number">0.16</span> <span class="number">0.044</span></div><div class="line"><span class="number">0.33</span> <span class="number">0.095</span></div><div class="line"><span class="number">0.66</span> <span class="number">0.191</span></div><div class="line"><span class="number">1.0</span> <span class="number">0.292</span></div><div class="line"><span class="number">1.32</span> <span class="number">0.367</span></div><div class="line"><span class="number">1.66</span> <span class="number">0.443</span></div><div class="line"><span class="number">0.16</span> <span class="number">0.04</span></div><div class="line"><span class="number">0.33</span> <span class="number">0.091</span></div><div class="line"><span class="number">0.66</span> <span class="number">0.191</span></div><div class="line"><span class="number">1.0</span> <span class="number">0.283</span></div><div class="line"><span class="number">1.32</span> <span class="number">0.365</span></div><div class="line"><span class="number">1.66</span> <span class="number">0.444</span></div></pre></td></tr></table></figure>
 
       
     </div>
@@ -536,8 +545,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/06/05/R/R笔记-apply系列函数/" rel="next" title="R笔记-apply系列函数">
-                <i class="fa fa-chevron-left"></i> R笔记-apply系列函数
+              <a href="/2019/05/28/Experiment/siRNA干扰实验流程/" rel="next" title="siRNA干扰实验流程">
+                <i class="fa fa-chevron-left"></i> siRNA干扰实验流程
               </a>
             
           </div>
@@ -629,7 +638,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">143</span>
+                  <span class="site-state-item-count">146</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -741,7 +750,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共548.0k字</span>
+  <span class="post-count">博客全站共548.6k字</span>
 </div>
 
         
