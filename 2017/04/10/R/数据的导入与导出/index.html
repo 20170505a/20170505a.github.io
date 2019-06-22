@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="数据的导入所用到的函数与包如下：read.table()read.csv()head()xlsx包read.xlsx()RODBC包odbcConnect()sqlQuery()sqlSave()RMySQL包dbConnect()dbSentQuery()fetch() 从csv文件导入此方法可以用以导入Excel数据，将Excel数据转化为csv格式。CSV是（逗号分隔值）的英文缩写，通常都是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言笔记之数据的导入与导出">
+<meta property="og:url" content="http://rvdsd.top/2017/04/10/R/数据的导入与导出/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="数据的导入所用到的函数与包如下：read.table()read.csv()head()xlsx包read.xlsx()RODBC包odbcConnect()sqlQuery()sqlSave()RMySQL包dbConnect()dbSentQuery()fetch() 从csv文件导入此方法可以用以导入Excel数据，将Excel数据转化为csv格式。CSV是（逗号分隔值）的英文缩写，通常都是">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/i0ad21J31d.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/3IJki27BL8.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/bIFEDBjmC9.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/KImJBHK7hf.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/GJj9jHELEj.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/Fd8204g0EC.png?imageslim">
+<meta property="og:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/7I89J18DJG.png?imageslim">
+<meta property="og:updated_time" content="2019-06-21T00:30:55.371Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="R语言笔记之数据的导入与导出">
+<meta name="twitter:description" content="数据的导入所用到的函数与包如下：read.table()read.csv()head()xlsx包read.xlsx()RODBC包odbcConnect()sqlQuery()sqlSave()RMySQL包dbConnect()dbSentQuery()fetch() 从csv文件导入此方法可以用以导入Excel数据，将Excel数据转化为csv格式。CSV是（逗号分隔值）的英文缩写，通常都是">
+<meta name="twitter:image" content="http://ortxpw68f.bkt.clouddn.com/professional/180821/i0ad21J31d.png?imageslim">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2017/04/10/R/数据的导入与导出/"/>
+
+
+
+
+
+  <title>R语言笔记之数据的导入与导出 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">学习过程中的输出</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/10/R/数据的导入与导出/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">R语言笔记之数据的导入与导出</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-10T12:00:00+08:00">
+                2017-04-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index">
+                    <span itemprop="name">R</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,703
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="数据的导入"><a href="#数据的导入" class="headerlink" title="数据的导入"></a>数据的导入</h2><p>所用到的函数与包如下：<br>read.table()<br>read.csv()<br>head()<br>xlsx包<br>read.xlsx()<br>RODBC包<br>odbcConnect()<br>sqlQuery()<br>sqlSave()<br>RMySQL包<br>dbConnect()<br>dbSentQuery()<br>fetch()</p>
+<h2 id="从csv文件导入"><a href="#从csv文件导入" class="headerlink" title="从csv文件导入"></a>从csv文件导入</h2><p>此方法可以用以导入Excel数据，将Excel数据转化为csv格式。<br>CSV是（逗号分隔值）的英文缩写，通常都是纯文本文件。其打开格式为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mydataframe&lt;-read.table(file,header=logical_value,ep=<span class="string">"delimiter"</span>,row.names=<span class="string">"name"</span>)</div><div class="line">fiel:csv文件</div><div class="line">header:逻辑值，首先是否包括变量名</div><div class="line">sep:分隔符</div><div class="line">row.names:指定一个或多个表示行标识符的变量</div><div class="line">grades&lt;-read.table(<span class="string">"studentgrades.csv"</span>,header=<span class="literal">TRUE</span>,sep=<span class="string">","</span>,row.names=<span class="string">"STUDENTID"</span>)</div></pre></td></tr></table></figure>
+<p>表示从当前目录中读取一个名为studentgrades.csv的逗号分隔文件，从文件的第一行取得变量名字，将STUDENTID指定为行标识符，整个结果保存到grades的数据框中。</p>
+<h2 id="从剪切板导入"><a href="#从剪切板导入" class="headerlink" title="从剪切板导入"></a>从剪切板导入</h2><p>通常情况下就是在Excel中复制，接着输入以下命令就可以导入数据。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">data &lt;- read.table(<span class="string">"clipboard"</span>, header = <span class="literal">T</span>, sep=<span class="string">"\t"</span>)</div></pre></td></tr></table></figure>
+<h2 id="导入文本文件"><a href="#导入文本文件" class="headerlink" title="导入文本文件"></a>导入文本文件</h2><p>一般采用read.table()函数和read.csv()函数实现文本文件数据的读取，对于这两个函数有几个重要的参数：</p>
+<ol>
+<li>file指定外部文件的路径和文件名；</li>
+<li>header指定是否将原数据的第一行最为字段名，read.table()函数默认设置为FALSE，而read.csv()函数默认设置为TRUE；</li>
+<li>sep指定字段之间的分割符，read.table()函数默认设置为空格””，而read.csv()函数默认设置为逗号；</li>
+<li>除此，read.table()函数还可以设置读入数据集的行名、列名、字符串是否转换为因子、缺失值的形式等，详细可查看read.table()函数的帮助文档。</li>
+</ol>
+<p>我的电脑桌面中有两个文本文件，即iris.csv和iris.txt。文件打开如下图：<br><img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/i0ad21J31d.png?imageslim" alt="mark"></p>
+<p>现在通过read.table()函数和read.csv()函数读取这两个文件：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iris1 &lt;- read.table(file = <span class="string">'C:\\Users\\admin\\Desktop\\iris.txt'</span>, col.names = c(<span class="string">'x1'</span>,<span class="string">'x2'</span>,<span class="string">'x3'</span>,<span class="string">'x4'</span>,<span class="string">'y'</span>))</div><div class="line">head(iris1)</div></pre></td></tr></table></figure>
+<p>备注：<code>read.csv</code>, <code>read.csv2</code>,<code>read.delim</code>这三个函数都是<code>read.table()</code>函数的特化。</p>
+<h2 id="read-csv"><a href="#read-csv" class="headerlink" title="read.csv()"></a>read.csv()</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iris3 &lt;- read.csv(file = file.choose())</div><div class="line">head(iris3)</div></pre></td></tr></table></figure>
+<h2 id="从scan导入数据"><a href="#从scan导入数据" class="headerlink" title="从scan导入数据"></a>从scan导入数据</h2><p>主要用于键盘输入数据，详细使用方法：</p>
+<h3 id="scan-函数"><a href="#scan-函数" class="headerlink" title="scan() 函数"></a>scan() 函数</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">scan(file = <span class="string">""</span>, what = double(<span class="number">0</span>), nmax = -<span class="number">1</span>, n = -<span class="number">1</span>, sep = <span class="string">""</span>,</div><div class="line">     quote = <span class="keyword">if</span>(identical(sep, <span class="string">"\n"</span>)) <span class="string">""</span> <span class="keyword">else</span> <span class="string">"'\""</span>, dec = <span class="string">"."</span>,</div><div class="line">     skip = <span class="number">0</span>, nlines = <span class="number">0</span>, na.strings = <span class="string">"NA"</span>,</div><div class="line">     flush = <span class="literal">FALSE</span>, fill = <span class="literal">FALSE</span>, strip.white = <span class="literal">FALSE</span>,</div><div class="line">     quiet = <span class="literal">FALSE</span>, blank.lines.skip = <span class="literal">TRUE</span>, multi.line = <span class="literal">TRUE</span>,</div><div class="line">     comment.char = <span class="string">""</span>, allowEscapes = <span class="literal">FALSE</span>, encoding = <span class="string">"unknown"</span>)</div></pre></td></tr></table></figure>
+<p><strong>参数使用如下所示：</strong></p>
+<ol>
+<li>what:声明读入为字符类型数据，可能指定读入的精度/类型，例如：what=integer(0)；what=numeric(0)；what=character(0)；<br>如果SCAN()读入有字符与数字，用what=””来进行声明，则会把读入的数字隐式的都转变成字符；</li>
+<li>sep：指定各个读入的数据之间的分隔符；默认情况下分隔符：空格、tab；如果不是其它分隔符，例如“：/”通过SEP来指定；</li>
+<li>可以通过list指定读入变量的变量名，同时生成的对象为列表，则可以同时读入字符与数字；</li>
+<li>Skip 从第几行开始读入数据；</li>
+<li>Nlines 指定最大读入行数；</li>
+<li>如果通过键盘输入的时候，不希望出现下标提示，则可以使用：quiet=TRUE；</li>
+<li>encoding =””指定的编码格式，有时候读入的中文可能会出现乱码的时候，可能通过这个参数来指定：Latin-1 或者 UTF-8</li>
+</ol>
+<h2 id="使用表格输入数据"><a href="#使用表格输入数据" class="headerlink" title="使用表格输入数据"></a>使用表格输入数据</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mydata&lt;-data.frame(age=numeric(<span class="number">0</span>),</div><div class="line">                   gender=character(<span class="number">0</span>),</div><div class="line">                   weight=numeric(<span class="number">0</span>))</div><div class="line">mydata&lt;-edit(mydata)</div></pre></td></tr></table></figure>
+<p>创建一个名为mydata的数据框，含三个变量，age为数据型，gender为字符型，weight为数值型。edit调用文本编辑器，键入数据。其中numeric(0)创建一个指定模型但不含实际数据的变量。如果再次调用mydata&lt;-edit(mydata)能够用来修改数据，或者使用fix(mydata)也行。</p>
+<h2 id="利用xlsx包来读取Excel"><a href="#利用xlsx包来读取Excel" class="headerlink" title="利用xlsx包来读取Excel"></a>利用xlsx包来读取Excel</h2><p>读取xls或xlsx格式时，需要将数据转换为csv，用read.csv()函数读取；要么直接使用xlsx软件包中的read.xlsx()函数直接读取电子表格数据，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(xlsx)</div><div class="line">iris4 &lt;- read.xlsx(file = file.choose(), sheetIndex = <span class="number">1</span>)</div><div class="line">head(iris4)</div></pre></td></tr></table></figure>
+<h3 id="利用RODBC包来读取Excel"><a href="#利用RODBC包来读取Excel" class="headerlink" title="利用RODBC包来读取Excel"></a>利用RODBC包来读取Excel</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; install.packages(<span class="string">"RODBC"</span>) <span class="comment">#安装RODBC包</span></div><div class="line">&gt; channel&lt;-odbcConnectExcel(<span class="string">"excel2003.xls"</span>)<span class="comment">#excel2003为一个Excel文件</span></div><div class="line">&gt; mydataframe&lt;-sqlFetch(channel,<span class="string">"sheet1"</span>) <span class="comment">#sqlFetch从channel中读入数据到mydataframe中，将sheet1表格导入</span></div><div class="line">&gt; mydataframe</div><div class="line"> </div><div class="line">install.packages(<span class="string">"xlsx"</span>) <span class="comment">#安装xlsx包</span></div><div class="line"><span class="keyword">library</span>(xlsx)</div><div class="line">workbook&lt;-<span class="string">"d:/r/excel2007.xlsx"</span></div><div class="line">mydataframe2&lt;-read.xlsx(workbook,<span class="number">1</span>)<span class="comment">#1表示导入的第1张表</span></div></pre></td></tr></table></figure>
+<h3 id="利用XLConnectJars包的XLConnect函数来读取Excel"><a href="#利用XLConnectJars包的XLConnect函数来读取Excel" class="headerlink" title="利用XLConnectJars包的XLConnect函数来读取Excel"></a>利用XLConnectJars包的XLConnect函数来读取Excel</h3><p>在利用XLConnect来读取Excel时，经常会出现错误，这是因为需要安装jdk环境（版本大于1.6），因此需要安装，安装后再安装XLConnectjars包与XLConnect包，安装完Jdk后，输入以下代码<br><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Sys.setenv(JAVA_HOME=<span class="string">'C:\\Program Files\\Java\\jdk1.7.0_75\\jre'</span>)</div></pre></td></tr></table></figure></p>
+<p>直接读取excel文件，就是这个包依赖于XLConnectJars包，比较大(15.7M)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; install.packages(&quot;XLConnect&quot;)</div><div class="line">&gt; library(&quot;XLConnect&quot;)</div><div class="line">&gt; df = readWorksheetFromFile(&quot;c:/r-workspace/contacts.xls&quot;, sheet=1, header=TRUE)</div><div class="line">&gt; df</div><div class="line">  name gender address</div><div class="line">1 张三     男    北京</div><div class="line">2 李四     男    上海</div><div class="line">3 王五     女    广州</div><div class="line">4 赵六     女    深圳</div><div class="line">5 田七     男    南京</div></pre></td></tr></table></figure>
+<h2 id="使用readxl包来读取excel文件"><a href="#使用readxl包来读取excel文件" class="headerlink" title="使用readxl包来读取excel文件"></a>使用<code>readxl</code>包来读取excel文件</h2><p><code>readxl</code>包中的几个函数可以读取excel文件，主要有<code>read_excel</code>，<code>read_xls</code>，<code>read_xlsx</code>。其中各个函数的参数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">read_excel(path, sheet = <span class="literal">NULL</span>, range = <span class="literal">NULL</span>, col_names = <span class="literal">TRUE</span>,</div><div class="line">  col_types = <span class="literal">NULL</span>, na = <span class="string">""</span>, trim_ws = <span class="literal">TRUE</span>, skip = <span class="number">0</span>,</div><div class="line">  n_max = <span class="literal">Inf</span>, guess_max = min(<span class="number">1000</span>, n_max),</div><div class="line">  progress = readxl_progress(), .name_repair = <span class="string">"unique"</span>)</div><div class="line"></div><div class="line">read_xls(path, sheet = <span class="literal">NULL</span>, range = <span class="literal">NULL</span>, col_names = <span class="literal">TRUE</span>,</div><div class="line">  col_types = <span class="literal">NULL</span>, na = <span class="string">""</span>, trim_ws = <span class="literal">TRUE</span>, skip = <span class="number">0</span>,</div><div class="line">  n_max = <span class="literal">Inf</span>, guess_max = min(<span class="number">1000</span>, n_max),</div><div class="line">  progress = readxl_progress(), .name_repair = <span class="string">"unique"</span>)</div><div class="line"></div><div class="line">read_xlsx(path, sheet = <span class="literal">NULL</span>, range = <span class="literal">NULL</span>, col_names = <span class="literal">TRUE</span>,</div><div class="line">  col_types = <span class="literal">NULL</span>, na = <span class="string">""</span>, trim_ws = <span class="literal">TRUE</span>, skip = <span class="number">0</span>,</div><div class="line">  n_max = <span class="literal">Inf</span>, guess_max = min(<span class="number">1000</span>, n_max),</div><div class="line">  progress = readxl_progress(), .name_repair = <span class="string">"unique"</span>)</div></pre></td></tr></table></figure>
+<p>参数意义如下所示：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:right">参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">path</td>
+<td>xls/xlsx文件的路径</td>
+</tr>
+<tr>
+<td style="text-align:right">sheet</td>
+<td>Excel文件中Sheet的参数，可以是一个字符串，也就是sheet的名称，可以是一个整数，它表示sheet的位置。如果不输入这个参数，默认输入第1个sheet的数据。</td>
+</tr>
+<tr>
+<td style="text-align:right">range</td>
+<td>sheet中单元格的范围，例如可以输入<code>range=B2:G14</code>。也可以指定某个sheet，例如<code>range=&quot;mtcars!B1:D5&quot;</code>。</td>
+</tr>
+<tr>
+<td style="text-align:right">col_names</td>
+<td><code>TRUE</code> 使用第一行作为行名， <code>FALSE</code> 使用默认的名字，或者是使用一个字符串或字符串向量来表示第一行的名称。</td>
+</tr>
+<tr>
+<td style="text-align:right">col_types</td>
+<td>Either <code>NULL</code> to guess all from the spreadsheet or a character vector containing one entry per column from these options: “skip”, “guess”, “logical”, “numeric”, “date”, “text” or “list”. If exactly one <code>col_type</code> is specified, it will be recycled. The content of a cell in a skipped column is never read and that column will not appear in the data frame output. A list cell loads a column as a list of length 1 vectors, which are typed using the type guessing logic from <code>col_types = NULL</code>, but on a cell-by-cell basis.</td>
+</tr>
+<tr>
+<td style="text-align:right">na</td>
+<td>Character vector of strings to interpret as missing values. By default, readxl treats blank cells as missing data.</td>
+</tr>
+<tr>
+<td style="text-align:right">trim_ws</td>
+<td>Should leading and trailing whitespace be trimmed?</td>
+</tr>
+<tr>
+<td style="text-align:right">skip</td>
+<td>Minimum number of rows to skip before reading anything, be it column names or data. Leading empty rows are automatically skipped, so this is a lower bound. Ignored if <code>range</code> is given.</td>
+</tr>
+<tr>
+<td style="text-align:right">n_max</td>
+<td>Maximum number of data rows to read. Trailing empty rows are automatically skipped, so this is an upper bound on the number of rows in the returned tibble. Ignored if <code>range</code> is given.</td>
+</tr>
+<tr>
+<td style="text-align:right">guess_max</td>
+<td>Maximum number of data rows to use for guessing column types.</td>
+</tr>
+<tr>
+<td style="text-align:right">progress</td>
+<td>Display a progress spinner? By default, the spinner appears only in an interactive session, outside the context of knitting a document, and when the call is likely to run for several seconds or more. See <code>readxl_progress()</code> for more details.</td>
+</tr>
+<tr>
+<td style="text-align:right">.name_repair</td>
+<td>Handling of column names. By default, readxl ensures column names are not empty and are unique. If the tibble package version is recent enough, there is full support for <code>.name_repair</code> as documented in <code>tibble::tibble()</code>. If an older version of tibble is present, readxl falls back to name repair in the style of tibble v1.4.2.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>具体的可以参考<a href="https://readxl.tidyverse.org/reference/read_excel.html" target="_blank" rel="external">readxl资料</a>。</p>
+<h2 id="批量读取数据"><a href="#批量读取数据" class="headerlink" title="批量读取数据"></a>批量读取数据</h2><p>读取N个Excel文件，并将这N个Excel文件进行合并，分为四种情况，代码如下所示，其中read_excel函数所在的包为readxl。</p>
+<p>对于文件名有规律的情况，如下图所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/3IJki27BL8.png?imageslim" alt="mark"></p>
+<p>解决方案如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">setwd(<span class="string">'D:\\data file\\data1'</span>) </div><div class="line"><span class="comment"># 设置R的工作空间</span></div><div class="line"><span class="comment">#res &lt;- NULL</span></div><div class="line"></div><div class="line">data1 &lt;- data.frame()</div><div class="line"><span class="comment"># 初始化数据框，用于后面的数据合并</span></div><div class="line"><span class="comment">#通过循环完成数据合并</span></div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">4</span>)&#123;</div><div class="line">path &lt;- paste0(getwd(),<span class="string">'\\'</span>,<span class="string">'test'</span>,i,<span class="string">'.xlsx'</span>)   <span class="comment"># 构造数据路径</span></div><div class="line">res &lt;- c(res,path)</div><div class="line">data1 &lt;- rbind(data1,read_excel(path = path))   <span class="comment"># 读取并合并数据</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>对于文件没有规律的情况，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">setwd(<span class="string">'D:\\data file\\data2'</span>)  <span class="comment"># 设置工作空间</span></div><div class="line">filenames &lt;- dir()   <span class="comment"># 读取该工作空间下的所有文件名</span></div><div class="line">data2 &lt;- data.frame()   <span class="comment"># 初始化数据框，用于后面的数据合并</span></div><div class="line"></div><div class="line"><span class="comment">#通过循环完成数据合并</span></div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> filenames)&#123;</div><div class="line"><span class="comment"># 构造数据路径</span></div><div class="line">path &lt;- paste0(getwd(),<span class="string">'\\'</span>,i)</div><div class="line"><span class="comment">#res &lt;- c(res,path)</span></div><div class="line"><span class="comment"># 读取并合并数据</span></div><div class="line">data2 &lt;- rbind(data2,read_excel(path = path))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>对于文件名没有规律的情况，并且只读取某做后缀的文件，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/bIFEDBjmC9.png?imageslim" alt="mark"></p>
+<p>文件内容结构不一致,但变量名称一致，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/KImJBHK7hf.png?imageslim" alt="mark"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 加载第三方扩展包，用于编写SQL语句</span></div><div class="line"> <span class="keyword">library</span>(sqldf)</div><div class="line"> <span class="comment"># 设置工作空间</span></div><div class="line"> setwd(<span class="string">'D:\\data file\\data4'</span>)</div><div class="line"> <span class="comment"># 读取该工作空间下的所有文件名</span></div><div class="line"> filenames &lt;- dir()</div><div class="line"> <span class="comment"># 通过正则，获取所有xlsx结尾的文件名</span></div><div class="line"> filenames2 &lt;- grep(<span class="string">'\\.xlsx'</span>, filenames, value = <span class="literal">TRUE</span>)</div><div class="line"> <span class="comment"># 初始化数据框，用于后面的数据合并</span></div><div class="line"> data4 &lt;- data.frame()</div><div class="line"> <span class="comment">#通过循环完成数据合并</span></div><div class="line"> <span class="keyword">for</span> (i <span class="keyword">in</span> filenames2)&#123;</div><div class="line"> <span class="comment"># 构造数据路径</span></div><div class="line"> path &lt;- paste0(getwd(),<span class="string">'\\'</span>,i)</div><div class="line"> <span class="comment">#res &lt;- c(res,path)</span></div><div class="line"> <span class="comment"># 使用read_excel函数读取xlsx文件</span></div><div class="line"> data &lt;- read_excel(path = path)</div><div class="line"> <span class="comment"># 使用sqldf函数编写SQL语句，并把结果合并起来</span></div><div class="line"> data4 &lt;- rbind(data4, sqldf(<span class="string">"select id,name,gender,age from data"</span>))</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h2 id="导出数据"><a href="#导出数据" class="headerlink" title="导出数据"></a>导出数据</h2><h3 id="导出的路径"><a href="#导出的路径" class="headerlink" title="导出的路径"></a>导出的路径</h3><p>为了避免在导出路径中使用转义字符，可以使用file.path()函数来构建正确的路径，这个函数的工作原理类似于paste()，如下所示：<br><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file.path(<span class="string">"d:"</span>,<span class="string">"download"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"d:/download"</span></div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>file.path(“d:”,”download”)<br>[1] “d:/download”</p>
+</blockquote>
+<h3 id="导出为txt格式"><a href="#导出为txt格式" class="headerlink" title="导出为txt格式"></a>导出为txt格式</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"> a</div><div class="line">[<span class="number">1</span>]  <span class="number">1</span>  <span class="number">2</span>  <span class="number">4</span> <span class="literal">NA</span>  <span class="number">5</span>  <span class="number">4</span></div><div class="line">&gt; b</div><div class="line">[<span class="number">1</span>] <span class="string">"a"</span> <span class="string">"b"</span> <span class="string">"c"</span> <span class="string">"d"</span> <span class="literal">NA</span>  <span class="string">"4"</span></div><div class="line"> c &lt;- data.frame(a,b)</div><div class="line"> c</div><div class="line">   a    b</div><div class="line"><span class="number">1</span>  <span class="number">1</span>    a</div><div class="line"><span class="number">2</span>  <span class="number">2</span>    b</div><div class="line"><span class="number">3</span>  <span class="number">4</span>    c</div><div class="line"><span class="number">4</span> <span class="literal">NA</span>    d</div><div class="line"><span class="number">5</span>  <span class="number">5</span> &lt;<span class="literal">NA</span>&gt;</div><div class="line"><span class="number">6</span>  <span class="number">4</span>    <span class="number">4</span></div><div class="line"> write.table(c,file = <span class="string">"c:\\data.txt"</span>,sep = <span class="string">","</span>,quote = <span class="literal">FALSE</span>, append = <span class="literal">FALSE</span>, na = <span class="string">"NA"</span>)</div></pre></td></tr></table></figure>
+<p>c为导出的数据，file为导出的路径，sep = “,”表示用逗号隔开数据，quote = FALSE表示消除字符串的引号标志，append = FALSE打开一个新文件，如果为TRUE则表示将此数据追加到已经存在的文件中，na=”NA”表示用NA来代表na值。</p>
+<h2 id="读取错误"><a href="#读取错误" class="headerlink" title="读取错误"></a>读取错误</h2><p>R语言读取Excel文件有时会出错，如果要读取以下的Excel表格文件，</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/GJj9jHELEj.png?imageslim" alt="mark"></p>
+<p>  操作如下所示：</p>
+<ol>
+<li>用鼠标选中据，然后Ctrl+C复制；</li>
+<li>在Rstudio中输入：read.table(“clipboard”,header=T)-&gt;x1，显示以下结果：</li>
+</ol>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/Fd8204g0EC.png?imageslim" alt="mark"></p>
+<p>Error in scan(file, what, nmax, sep, dec, quote, skip, nlines, na.strings,  :<br>  line 2 did not have 8 elements</p>
+<p>大概意思是，有两行数据的元素不满足8个（即第No.2不满足8个元素），无法读取，因此需要改变一下代码，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">x &lt;- read.table(<span class="string">"clipboard"</span>,sep=<span class="string">"\t"</span>,header=<span class="literal">T</span>)</div></pre></td></tr></table></figure>
+<p>  如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/professional/180821/7I89J18DJG.png?imageslim" alt="mark"></p>
+<p>这样就能正常读取了，因为Excel的文件中，每个单元格就是以制表符将它们分开的，而sep=“\t”的意思就是，读取数据的时候，以制表符进行分割来读取。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/09/R/函数构建与循环/" rel="next" title="R语言笔记之函数构建与循环">
+                <i class="fa fa-chevron-left"></i> R语言笔记之函数构建与循环
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/12/R/dplyr笔记/" rel="prev" title="R语言笔记之dplyr">
+                R语言笔记之dplyr <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">148</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据的导入"><span class="nav-number">1.</span> <span class="nav-text">数据的导入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从csv文件导入"><span class="nav-number">2.</span> <span class="nav-text">从csv文件导入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从剪切板导入"><span class="nav-number">3.</span> <span class="nav-text">从剪切板导入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导入文本文件"><span class="nav-number">4.</span> <span class="nav-text">导入文本文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#read-csv"><span class="nav-number">5.</span> <span class="nav-text">read.csv()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从scan导入数据"><span class="nav-number">6.</span> <span class="nav-text">从scan导入数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#scan-函数"><span class="nav-number">6.1.</span> <span class="nav-text">scan() 函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用表格输入数据"><span class="nav-number">7.</span> <span class="nav-text">使用表格输入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用xlsx包来读取Excel"><span class="nav-number">8.</span> <span class="nav-text">利用xlsx包来读取Excel</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#利用RODBC包来读取Excel"><span class="nav-number">8.1.</span> <span class="nav-text">利用RODBC包来读取Excel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用XLConnectJars包的XLConnect函数来读取Excel"><span class="nav-number">8.2.</span> <span class="nav-text">利用XLConnectJars包的XLConnect函数来读取Excel</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用readxl包来读取excel文件"><span class="nav-number">9.</span> <span class="nav-text">使用readxl包来读取excel文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量读取数据"><span class="nav-number">10.</span> <span class="nav-text">批量读取数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出数据"><span class="nav-number">11.</span> <span class="nav-text">导出数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导出的路径"><span class="nav-number">11.1.</span> <span class="nav-text">导出的路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#导出为txt格式"><span class="nav-number">11.2.</span> <span class="nav-text">导出为txt格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取错误"><span class="nav-number">12.</span> <span class="nav-text">读取错误</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共555.2k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
