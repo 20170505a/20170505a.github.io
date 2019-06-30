@@ -259,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/02/BioItem/TCGA数据挖掘/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/02/Python/Python数据处理笔记02-Excel文件处理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -278,7 +278,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/02/BioItem/TCGA数据挖掘/" itemprop="url">TCGA数据挖掘</a></h1>
+                <a class="post-title-link" href="/2019/07/02/Python/Python数据处理笔记02-Excel文件处理/" itemprop="url">Python数据分析02-Excel文件处理</a></h1>
         
 
         <div class="post-meta">
@@ -313,8 +313,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
-                    <span itemprop="name">生信实战项目</span>
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
                   </a>
                 </span>
 
@@ -346,7 +346,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  0
+                  1,190
                 </span>
               
 
@@ -362,7 +362,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  5
                 </span>
               
             </div>
@@ -385,7 +385,56 @@
       
         
           
-            
+            <h2 id="python处理excel的包">Python处理Excel的包</h2>
+<p>在PYthon中处理Excel文件（扩展名为<code>.xls</code>和<code>.xlsx</code>的文件）的扩展包为<code>xlrd</code>和<code>xlwt</code>，这两个包对Excel中的日期型数据支持非常好。而在Anaconda Python中，已经含有了这两个包，不用额外安装。如果是最原始版本的Python，则需要下载这两个包。</p>
+<p>书中关于这两个包的介绍并不多，因此一些参数只是告诉你了要么用，至于这个参数具体是做什么的，这个包的某些函数还有没有其它的参数，作者并没有多讲，因此可以检索一下<code>xlrd</code>和<code>xlwt</code>这两个包的文档。</p>
+<p><a href="https://xlrd.readthedocs.io/en/latest/index.html" target="_blank" rel="external">xlrd文档</a></p>
+<p><a href="https://xlwt.readthedocs.io/en/latest/" target="_blank" rel="external">xlwt文档</a></p>
+<h2 id="练习数据下载">练习数据下载</h2>
+<p>《Python数据分析基础》这本书中的<a href="https://github.com/cbrownley/foundations-for-analytics-with-python" target="_blank" rel="external">源数据和源代码</a>已经上传至Github上，自己可以下载下来。</p>
+<p>下载后的Excel练习数据一共是3个，名称分别为：<code>sales_2013</code>，<code>sales_2014</code>和<code>sales_2015</code>。其中以<code>sales_2013</code>为例说明一下，这个文件中一共有3个Excel表格，名称分别为<code>january_2013</code>，<code>february_2013</code>和<code>march_2013</code>。</p>
+<p>Excel与csv文件的不同之处在于，一个Excel文件（后文称为一个Exce工作薄）含有多个工作表（sheet）。通过工作簿的内省可以获取工作表的信息：</p>
+<blockquote>
+<p>Python的内省（Introspection）是一种自我检查行为。在编程过程中，自省能够获取对象的类型与属性。</p>
+</blockquote>
+<p>注：在这篇笔记中，工作簿是指一个Excel文件，而一个工作簿中则中含有多个工作表。</p>
+<h2 id="获取工作表的信息">获取工作表的信息</h2>
+<p>下面的代码命名为<code>1excel_introspect_workbook.py</code>，它的功能在于获取一个Excel文件中工作表的数量、名称和每个工作表中行与列的数量，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">workbook = open_workbook(input_file)</div><div class="line">print(<span class="string">'Number of worksheets:'</span>, workbook.nsheets)</div><div class="line"><span class="keyword">for</span> worksheet <span class="keyword">in</span> workbook.sheets():</div><div class="line">    print(<span class="string">"Worksheet name:"</span>, worksheet.name, <span class="string">'\tRows:'</span>, \</div><div class="line">          worksheet.nrows, <span class="string">'\tColumns:'</span>, worksheet.ncols)</div></pre></td></tr></table></figure>
+<p>运行如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">1</span>excel_introspect_workbook.py sales_2013.xlsx</div><div class="line">Number of worksheets: <span class="number">3</span></div><div class="line">Worksheet name: january_2013    Rows: <span class="number">7</span>         Columns: <span class="number">5</span></div><div class="line">Worksheet name: february_2013   Rows: <span class="number">7</span>         Columns: <span class="number">5</span></div><div class="line">Worksheet name: march_2013      Rows: <span class="number">7</span>         Columns: <span class="number">5</span></div></pre></td></tr></table></figure>
+<p>解释代码：</p>
+<ol style="list-style-type: decimal">
+<li>使用<code>open_workbook</code>函数打开了一个Excel主文件，并赋给了一个名为<code>workbook</code>的对象，这个对象中包含了工作簿中的所有可用的信息，可以查看一下，如下所示：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>dir(workbook)</div><div class="line">[<span class="string">'__class__'</span>, <span class="string">'__delattr__'</span>, <span class="string">'__dict__'</span>, <span class="string">'__dir__'</span>, <span class="string">'__doc__'</span>, <span class="string">'__enter__'</span>, <span class="string">'__eq__'</span>, <span class="string">'__exit__'</span>, <span class="string">'__format__'</span>, <span class="string">'__ge__'</span>, <span class="string">'__getattribute__'</span>, <span class="string">'__gt__'</span>, <span class="string">'__hash__'</span>, <span class="string">'__init__'</span>, <span class="string">'__init_subclass__'</span>, <span class="string">'__le__'</span>, <span class="string">'__lt__'</span>, <span class="string">'__module__'</span>, <span class="string">'__ne__'</span>, <span class="string">'__new__'</span>, <span class="string">'__reduce__'</span>, <span class="string">'__reduce_ex__'</span>, <span class="string">'__repr__'</span>, <span class="string">'__setattr__'</span>, <span class="string">'__sizeof__'</span>, <span class="string">'__str__'</span>, <span class="string">'__subclasshook__'</span>, <span class="string">'__weakref__'</span>, <span class="string">'_all_sheets_count'</span>, <span class="string">'_all_sheets_map'</span>, <span class="string">'_externsheet_info'</span>, <span class="string">'_externsheet_type_b57'</span>, <span class="string">'_extnsht_count'</span>, <span class="string">'_extnsht_name_from_num'</span>, <span class="string">'_repr_these'</span>, <span class="string">'_resources_released'</span>, <span class="string">'_rich_text_runlist_map'</span>, <span class="string">'_sh_abs_posn'</span>, <span class="string">'_sharedstrings'</span>, <span class="string">'_sheet_list'</span>, <span class="string">'_sheet_names'</span>, <span class="string">'_sheet_num_from_name'</span>, <span class="string">'_sheet_visibility'</span>, <span class="string">'_sheethdr_count'</span>, <span class="string">'_supbook_addins_inx'</span>, <span class="string">'_supbook_count'</span>, <span class="string">'_supbook_locals_inx'</span>, <span class="string">'_supbook_types'</span>, <span class="string">'_xf_epilogue_done'</span>, <span class="string">'_xf_index_to_xl_type_map'</span>, <span class="string">'actualfmtcount'</span>, <span class="string">'addin_func_names'</span>, <span class="string">'biff2_8_load'</span>, <span class="string">'biff_version'</span>, <span class="string">'builtinfmtcount'</span>, <span class="string">'codepage'</span>, <span class="string">'colour_map'</span>, <span class="string">'countries'</span>, <span class="string">'datemode'</span>, <span class="string">'derive_encoding'</span>, <span class="string">'dump'</span>, <span class="string">'encoding'</span>, <span class="string">'fake_globals_get_sheet'</span>, <span class="string">'filestr'</span>, <span class="string">'font_list'</span>, <span class="string">'format_list'</span>, <span class="string">'format_map'</span>, <span class="string">'formatting_info'</span>, <span class="string">'get2bytes'</span>, <span class="string">'get_record_parts'</span>, <span class="string">'get_record_parts_conditional'</span>, <span class="string">'get_sheet'</span>, <span class="string">'get_sheets'</span>, <span class="string">'getbof'</span>, <span class="string">'handle_boundsheet'</span>, <span class="string">'handle_builtinfmtcount'</span>, <span class="string">'handle_codepage'</span>, <span class="string">'handle_country'</span>, <span class="string">'handle_datemode'</span>, <span class="string">'handle_externname'</span>, <span class="string">'handle_externsheet'</span>, <span class="string">'handle_filepass'</span>, <span class="string">'handle_name'</span>, <span class="string">'handle_obj'</span>, <span class="string">'handle_sheethdr'</span>, <span class="string">'handle_sheetsoffset'</span>, <span class="string">'handle_sst'</span>, <span class="string">'handle_supbook'</span>, <span class="string">'handle_writeaccess'</span>, <span class="string">'initialise_format_info'</span>, <span class="string">'load_time_stage_1'</span>, <span class="string">'load_time_stage_2'</span>, <span class="string">'logfile'</span>, <span class="string">'mem'</span>, <span class="string">'name_and_scope_map'</span>, <span class="string">'name_map'</span>, <span class="string">'name_obj_list'</span>, <span class="string">'names_epilogue'</span>, <span class="string">'nsheets'</span>, <span class="string">'on_demand'</span>, <span class="string">'palette_record'</span>, <span class="string">'parse_globals'</span>, <span class="string">'props'</span>, <span class="string">'ragged_rows'</span>, <span class="string">'raw_user_name'</span>, <span class="string">'read'</span>, <span class="string">'release_resources'</span>, <span class="string">'sheet_by_index'</span>, <span class="string">'sheet_by_name'</span>, <span class="string">'sheet_loaded'</span>, <span class="string">'sheet_names'</span>, <span class="string">'sheets'</span>, <span class="string">'style_name_map'</span>, <span class="string">'unload_sheet'</span>, <span class="string">'use_mmap'</span>, <span class="string">'user_name'</span>, <span class="string">'verbosity'</span>, <span class="string">'xf_list'</span>, <span class="string">'xfcount'</span>]</div></pre></td></tr></table></figure>
+<ol start="2" style="list-style-type: decimal">
+<li><code>name</code>属性则是获取每个sheet的名称，<code>nrow</code>与<code>ncol</code>则是获取每个sheet的行与列的数目</li>
+</ol>
+<h2 id="处理单个sheet">处理单个sheet</h2>
+<h3 id="读写excel文件">读写Excel文件</h3>
+<p>下面的代码功能在于读取一个excel文件，名称为<code>2excel_parsing_and_write.py</code>，代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook</div><div class="line"><span class="keyword">from</span> xlwt <span class="keyword">import</span> Workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">output_workbook = Workbook()</div><div class="line"><span class="comment"># Create an Workbook object</span></div><div class="line"><span class="comment"># Workbook object is intended for output</span></div><div class="line"></div><div class="line">output_worksheet = output_workbook.add_sheet(<span class="string">'jan_2013_output'</span>)</div><div class="line"><span class="comment"># add_sheet function is adding an sheet</span></div><div class="line"><span class="keyword">with</span> open_workbook(input_file) <span class="keyword">as</span> workbook:</div><div class="line">    worksheet = workbook.sheet_by_name(<span class="string">'january_2013'</span>)</div><div class="line">    <span class="keyword">for</span> row_index <span class="keyword">in</span> range(worksheet.nrows):</div><div class="line">        <span class="keyword">for</span> column_index <span class="keyword">in</span> range(worksheet.ncols):</div><div class="line">            output_worksheet.write(row_index, column_index, \</div><div class="line">                                   worksheet.cell_value(row_index, column_index))</div><div class="line">            <span class="comment"># write function is use for writing data into output files</span></div><div class="line">output_workbook.save(output_file)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">2</span>excel_parsing_and_write.py sales_2013.xlsx <span class="number">2</span>output.xls</div></pre></td></tr></table></figure>
+<p>打开<code>2output.xls</code>后如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630141416.png">
+
+</div>
+<p>其中第5列，也就是<code>Purchase Date</code>这一列是数字，而不是日期。Excel会将日期和时间保存为浮点数，这个浮点数代表从1900年1月0日起经过的日期数，加上一个24小时的小数部分。例如数值1表示1900年1月1日，因为从1900年1月0日是过去了1天，因此这一列中的数值代表日期，只是这是没有经过格式化的日期数据。</p>
+<p><code>xlrd</code>能够格式化这种日期。</p>
+<h2 id="格式化日期">格式化日期</h2>
+<h3 id="常规方法">常规方法</h3>
+<p>格式化日期的Python代码保存为<code>3excel_parsing_and_write_keep_dates.py</code>，代码内容如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> date</div><div class="line"><span class="comment"># date function is used to format date data</span></div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook, xldate_as_tuple</div><div class="line"><span class="comment"># xldate_as_tuple is to transform data representing date, time into tuple</span></div><div class="line"><span class="keyword">from</span> xlwt <span class="keyword">import</span> Workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">output_workbook = Workbook()</div><div class="line">output_worksheet = output_workbook.add_sheet(<span class="string">'jan_2013_output'</span>)</div><div class="line"></div><div class="line"><span class="keyword">with</span> open_workbook(input_file) <span class="keyword">as</span> workbook:</div><div class="line">    worksheet = workbook.sheet_by_name(<span class="string">'january_2013'</span>)</div><div class="line">    <span class="keyword">for</span> row_index <span class="keyword">in</span> range(worksheet.nrows):</div><div class="line">        row_list_output = []</div><div class="line">        <span class="keyword">for</span> col_index <span class="keyword">in</span> range(worksheet.ncols):</div><div class="line">            <span class="keyword">if</span> worksheet.cell_type(row_index, col_index) == <span class="number">3</span>:</div><div class="line">                <span class="comment"># value 3 represents cell that include date data</span></div><div class="line">                date_cell = xldate_as_tuple(worksheet.cell_value\</div><div class="line">                                                (row_index, col_index), workbook.datemode)</div><div class="line">                <span class="comment"># datemode determine date is based on 1900 or 1904 </span></div><div class="line">                date_cell = date(*date_cell[<span class="number">0</span>:<span class="number">3</span>]).strftime\</div><div class="line">                    (<span class="string">'%m/%d/%Y'</span>)</div><div class="line">                row_list_output.append(date_cell)</div><div class="line">                output_worksheet.write(row_index, col_index, date_cell)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                non_date_cell = worksheet.cell_value\</div><div class="line">                    (row_index, col_index)</div><div class="line">                row_list_output.append(non_date_cell)</div><div class="line">                output_worksheet.write(row_index, col_index, \</div><div class="line">                                       non_date_cell)</div><div class="line">output_workbook.save(output_file)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">3</span>excel_parsing_and_write_keep_dates.py sales_2013.xlsx date_output.xls</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630150632.png">
+
+</div>
+<h2 id="使用pandas读取excel文件">使用<code>pandas</code>读取Excel文件</h2>
 
           
         
@@ -434,7 +483,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/01/BioItem/GEO数据挖掘/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/01/Python/Python数据处理笔记01-argv函数与读取csv文件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -453,182 +502,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/01/BioItem/GEO数据挖掘/" itemprop="url">GEO数据挖掘</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-01T12:00:00+08:00">
-                2019-07-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
-                    <span itemprop="name">生信实战项目</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  0
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/01/Python/Python数据处理笔记-argv函数与读取csv文件/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/01/Python/Python数据处理笔记-argv函数与读取csv文件/" itemprop="url">Python数据分析(01)-argv函数与读取或导出csv文件</a></h1>
+                <a class="post-title-link" href="/2019/07/01/Python/Python数据处理笔记01-argv函数与读取csv文件/" itemprop="url">Python数据分析01-argv函数与读取或导出csv文件</a></h1>
         
 
         <div class="post-meta">
@@ -696,7 +570,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  6,146
+                  6,330
                 </span>
               
 
@@ -712,7 +586,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  27
+                  28
                 </span>
               
             </div>
@@ -973,6 +847,9 @@
 <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629211507.png">
 
 </div>
+<h3 id="pandas计算"><code>pandas</code>计算</h3>
+<p><code>pandas</code>包中提供了各种统计函数，例如<code>sum</code>和<code>mean</code>。下面的代码功能是对多个文件中的某一列计算这两个统计量（总和与均值），并将每个输入文件的计算结果写入输出文件，代码保存文件为<code>pandas_sum_average_from_multiple_ﬁles.py</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> glob</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_path = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">all_files = glob.glob(os.path.join(input_path, <span class="string">'sales_*'</span>))</div><div class="line">all_data_frames = []</div><div class="line"><span class="keyword">for</span> input_file <span class="keyword">in</span> all_files:</div><div class="line">    data_frame = pd.read_csv(input_file, index_col=<span class="keyword">None</span>)</div><div class="line"></div><div class="line">    total_sales = pd.DataFrame([float(str(value).strip(<span class="string">'$'</span>).replace(<span class="string">','</span>, <span class="string">''</span>)) \</div><div class="line">                               <span class="keyword">for</span> value <span class="keyword">in</span> data_frame.loc[:, <span class="string">'Sale Amount'</span>]]).sum()</div><div class="line"></div><div class="line">    average_sales = pd.DataFrame([float(str(value).strip(<span class="string">'$'</span>).replace(<span class="string">','</span>, <span class="string">''</span>)) \</div><div class="line">                                 <span class="keyword">for</span> value <span class="keyword">in</span> data_frame.loc[:, <span class="string">'Sale Amount'</span>]]).mean()</div><div class="line">    data = &#123;<span class="string">'file_name'</span>: os.path.basename(input_file),</div><div class="line">            <span class="string">'total_sales'</span>: total_sales,</div><div class="line">            <span class="string">'average_sales'</span>: average_sales&#125;</div><div class="line"></div><div class="line">    all_data_frames.append(pd.DataFrame(data, \</div><div class="line">                                        columns=[<span class="string">'file_name'</span>, <span class="string">'total_sales'</span>, <span class="string">'average_sales'</span>]))</div><div class="line">data_frames_concat = pd.concat(all_data_frames, axis=<span class="number">0</span>, ignore_index=<span class="keyword">True</span>)</div><div class="line">data_frames_concat.to_csv(output_file, index=<span class="keyword">False</span>)</div></pre></td></tr></table></figure>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
 <li><a href="https://www.zhihu.com/question/23711222" target="_blank" rel="external">sys.argv是什么？</a></li>
@@ -1951,6 +1828,362 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/02/BioItem/GEO笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/02/BioItem/GEO笔记/" itemprop="url">GEO笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-02T12:00:00+08:00">
+                2019-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  33
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>此篇笔记主要是学习生信技术树Jimmy在<a href="https://www.bilibili.com/video/av37568990" target="_blank" rel="external">B站上的视频教程</a>。</p>
+<h2 id="背景知识">背景知识</h2>
+<h2 id="参考资料">参考资料</h2>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/01/BioItem/TCGA笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/01/BioItem/TCGA笔记/" itemprop="url">TCGA笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-01T12:00:00+08:00">
+                2019-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  33
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>此篇笔记主要是学习生信技术树Jimmy在<a href="https://www.bilibili.com/video/av49363776" target="_blank" rel="external">B站上的视频教程</a>。</p>
+<h2 id="背景知识">背景知识</h2>
+<h2 id="参考资料">参考资料</h2>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/05/28/Experiment/siRNA干扰实验流程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2322,363 +2555,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/04/24/R/数据计算/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/24/R/数据计算/" itemprop="url">R语言笔记之数据计算</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-24T12:00:00+08:00">
-                2019-04-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index">
-                    <span itemprop="name">R</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,213
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="r语言常见运算符">R语言常见运算符</h2>
-<p>R语言中常见的数学运算符如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>运算符号</th>
-<th>描述</th>
-<th>示例</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>x + y</code></td>
-<td>相加</td>
-<td><code>2+3=5</code></td>
-</tr>
-<tr class="even">
-<td><code>x - y</code></td>
-<td>相减</td>
-<td><code>8-2=6</code></td>
-</tr>
-<tr class="odd">
-<td><code>x * y</code></td>
-<td>相乘</td>
-<td><code>3*2=6</code></td>
-</tr>
-<tr class="even">
-<td><code>x / y</code></td>
-<td>除以</td>
-<td><code>10/5=2</code></td>
-</tr>
-<tr class="odd">
-<td><code>x^y</code>或<code>x**y</code></td>
-<td>幂</td>
-<td><code>2^5=32</code></td>
-</tr>
-<tr class="even">
-<td><code>x %% y</code></td>
-<td>x被y整除后的余数（x对y求模）</td>
-<td><code>7%%3=1</code></td>
-</tr>
-<tr class="odd">
-<td><code>x %/%y</code></td>
-<td>x整除y，仅保留整数部分</td>
-<td><code>7%/%3=2</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="r语言常见数学函数">R语言常见数学函数</h2>
-<p>常见数学函数如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>函数</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>abs(x)</td>
-<td>取x的绝对值</td>
-</tr>
-<tr class="even">
-<td>log(x, base=y)</td>
-<td>以y为底，求x的对数，默认情况下返回自然对数</td>
-</tr>
-<tr class="odd">
-<td>exp(x)</td>
-<td>返回x的自然指数</td>
-</tr>
-<tr class="even">
-<td>sqrt(x)</td>
-<td>返回x的平方根</td>
-</tr>
-<tr class="odd">
-<td>factorial(x)</td>
-<td>x的阶乘(<code>x!</code>)</td>
-</tr>
-<tr class="even">
-<td>choose(x,y)</td>
-<td>计算从x个可选元素中选择y个可能的组合数</td>
-</tr>
-</tbody>
-</table>
-<p>例如，现在求1、2、3这个三个数字的log值（自然对数），如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; log(<span class="number">1</span>:<span class="number">3</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.0000000</span> <span class="number">0.6931472</span> <span class="number">1.0986123</span></div></pre></td></tr></table></figure>
-<p>如果要计算以2为底的对数，需要添加<code>base=2</code>参数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; log(<span class="number">1</span>:<span class="number">3</span>, base = <span class="number">2</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.000000</span> <span class="number">1.000000</span> <span class="number">1.584963</span></div></pre></td></tr></table></figure>
-<p>如果要计算以2为底，10为底的对数，直接使用<code>log2()</code>或<code>log10()</code>即可。</p>
-<h2 id="科学计数法">科学计数法</h2>
-<p>在R中，可以使用科学计数法，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="number">1.2e3</span></div><div class="line">[<span class="number">1</span>] <span class="number">1200</span></div><div class="line">&gt; <span class="number">1.2e-3</span></div><div class="line">[<span class="number">1</span>] <span class="number">0.0012</span></div></pre></td></tr></table></figure>
-<h2 id="各种近似值">各种近似值</h2>
-<h3 id="常规近似值round">常规近似值<code>round()</code></h3>
-<p>R最多可以表示多达16位精度的数据，但实际中用不了那么多，可以使用近似值<code>round</code>，并添加上<code>digits</code>参数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; round(<span class="number">123.4567</span>, digits=<span class="number">2</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">123.46</span></div></pre></td></tr></table></figure>
-<p>如果要精确到百位，可以传入负数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; round(<span class="number">123.4567</span>, digits=-<span class="number">2</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div></pre></td></tr></table></figure>
-<h3 id="有效数字signif">有效数字<code>signif()</code></h3>
-<p>如果只关心有效数据，可以使用<code>signif()</code>函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; signif(<span class="number">123.456</span>, digits=<span class="number">3</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">123</span></div></pre></td></tr></table></figure>
-<h3 id="向下取整floor">向下取整floor()</h3>
-<p><code>floor(x)</code>朝小于x的近似整数近似，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; floor(<span class="number">123.45</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">123</span></div><div class="line">&gt; floor(-<span class="number">123.45</span>)</div><div class="line">[<span class="number">1</span>] -<span class="number">124</span></div></pre></td></tr></table></figure>
-<h3 id="向上取整ceiling">向上取整ceiling()</h3>
-<p><code>ceiling(x)</code>朝大于x的最近整数近似，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; ceiling(<span class="number">123.45</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">124</span></div><div class="line">&gt; ceiling(-<span class="number">123.456</span>)</div><div class="line">[<span class="number">1</span>] -<span class="number">123</span></div></pre></td></tr></table></figure>
-<h3 id="截取整数部分trunc">截取整数部分<code>trunc()</code></h3>
-<p><code>trunc(x)</code>直接截取整数部分，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; trunc(<span class="number">123.45</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">123</span></div><div class="line">&gt; trunc(-<span class="number">123.45</span>)</div><div class="line">[<span class="number">1</span>] -<span class="number">123</span></div></pre></td></tr></table></figure>
-<h2 id="三角函数">三角函数</h2>
-<p>R中含有完整的三角函数，例如<code>?Trig</code>就能获取相关的帮忙文档，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Trig &#123;base&#125;	R Documentation</div><div class="line">Trigonometric Functions</div><div class="line"></div><div class="line">Description</div><div class="line"></div><div class="line">These functions give the obvious trigonometric functions. They respectively compute the cosine, sine, tangent, arc-cosine, arc-sine, arc-tangent, and the two-argument arc-tangent.</div><div class="line"></div><div class="line">cospi(x), sinpi(x), and tanpi(x), compute cos(pi*x), sin(pi*x), and tan(pi*x).</div><div class="line"></div><div class="line">Usage</div><div class="line"></div><div class="line">cos(x)</div><div class="line">sin(x)</div><div class="line">tan(x)</div><div class="line"></div><div class="line">acos(x)</div><div class="line">asin(x)</div><div class="line">atan(x)</div><div class="line">atan2(y, x)</div><div class="line"></div><div class="line">cospi(x)</div><div class="line">sinpi(x)</div><div class="line">tanpi(x)</div></pre></td></tr></table></figure>
-<h3 id="余弦值cos">余弦值cos()</h3>
-<p>R中使用的是弧度值，而非角度值，因此直接使用角度会出问题，例如我们现在如果要计算120度的余弦值，输入<code>cos(180)</code>，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; cos(<span class="number">120</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.814181</span></div></pre></td></tr></table></figure>
-<p>此时其实计算提180这个弧度的余弦值，因此如果要计算一个角度的余弦值，需要使用名为<code>pi</code>的特殊变量，它表示π的值，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; pi</div><div class="line">[<span class="number">1</span>] <span class="number">3.141593</span></div><div class="line">&gt; cos(<span class="number">120</span>*pi/<span class="number">180</span>)</div><div class="line">[<span class="number">1</span>] -<span class="number">0.5</span></div></pre></td></tr></table></figure>
-<h2 id="r中表示数值的特殊符号">R中表示数值的特殊符号</h2>
-<p>在一些情况下，总有一些数字没法具体表示，例如在R中常常会见到<code>NA</code>，<code>Inf</code>等这种符号。</p>
-<h3 id="无穷大inf">无穷大<code>Inf</code></h3>
-<p>例如当我们使用0作为除数的时候，结果就是<code>Inf</code>，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="number">2</span>/<span class="number">0</span></div><div class="line">[<span class="number">1</span>] <span class="literal">Inf</span></div></pre></td></tr></table></figure>
-<p><code>Inf</code>就表示无穷大，它是Infinity的缩写，负无穷大则是<code>-Inf</code>。如果要检查一个数是否为无穷，可以使用<code>is.finite()</code>或<code>is.infinite()</code>函数，当一个数是有限大时，<code>is.finite()</code>返回TRUE，如果一个数为无穷大时，<code>is.infinite()</code>返回TRUE，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; is.finite(<span class="number">10</span>^(<span class="number">305</span>:<span class="number">310</span>))</div><div class="line">[<span class="number">1</span>]  <span class="literal">TRUE</span>  <span class="literal">TRUE</span>  <span class="literal">TRUE</span>  <span class="literal">TRUE</span> <span class="literal">FALSE</span> <span class="literal">FALSE</span></div></pre></td></tr></table></figure>
-<h3 id="无定义nan">无定义<code>NaN</code></h3>
-<p>在R中，还有一种计算结果是<code>NaN</code>，它是<code>Not a Number</code>的缩写，它表示无定义数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="literal">Inf</span> / <span class="literal">Inf</span></div><div class="line">[<span class="number">1</span>] <span class="literal">NaN</span></div></pre></td></tr></table></figure>
-<p>虽然<code>NaN</code>表示无定义，但在R中，它还是可以视为一个数，也能运算，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="literal">NaN</span> + <span class="number">4</span></div><div class="line">[<span class="number">1</span>] <span class="literal">NaN</span></div></pre></td></tr></table></figure>
-<h3 id="缺失值na">缺失值<code>NA</code></h3>
-<p>R使用<code>NA</code>来表示缺失值，它是<code>Not Available</code>的它定，但它也可以当作一个数字来使用，并且可以赋值给其它变量，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; x &lt;- <span class="literal">NA</span></div><div class="line">&gt; x + <span class="number">4</span></div><div class="line">[<span class="number">1</span>] <span class="literal">NA</span></div><div class="line">&gt; log(x)</div><div class="line">[<span class="number">1</span>] <span class="literal">NA</span></div></pre></td></tr></table></figure>
-<p>使用<code>is.na()</code>函数可以用于检测NA值，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; is.na(x)</div><div class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></div></pre></td></tr></table></figure>
-<p>需要注意的是，对于<code>NaN</code>，<code>is.na()</code>函数也会返回<code>TRUE</code>，但<code>is.finite()</code>，<code>is.infinite()</code>和<code>is.nan()</code>则会返回FALSE，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; is.na(<span class="literal">NaN</span>)</div><div class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></div><div class="line">&gt; is.finite(<span class="literal">NaN</span>)</div><div class="line">[<span class="number">1</span>] <span class="literal">FALSE</span></div><div class="line">&gt; is.infinite(<span class="literal">NaN</span>)</div><div class="line">[<span class="number">1</span>] <span class="literal">FALSE</span></div><div class="line">&gt; is.nan(<span class="literal">NaN</span>)</div><div class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></div></pre></td></tr></table></figure>
-<p>总结一下前面几种函数对于上述特殊值的计算结果，如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>Function</th>
-<th><code>Inf</code></th>
-<th><code>-Inf</code></th>
-<th><code>NaN</code></th>
-<th><code>NA</code></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>is.finite()</code></td>
-<td>FALSE</td>
-<td>FALSE</td>
-<td>FALSE</td>
-<td>FALSE</td>
-</tr>
-<tr class="even">
-<td><code>is.infinite()</code></td>
-<td>TRUE</td>
-<td>TRUE</td>
-<td>FALSE</td>
-<td>FALSE</td>
-</tr>
-<tr class="odd">
-<td><code>is.nan()</code></td>
-<td>FALSE</td>
-<td>FALSE</td>
-<td>TRUE</td>
-<td>FALSE</td>
-</tr>
-<tr class="even">
-<td><code>is.na()</code></td>
-<td>FALSE</td>
-<td>FALSE</td>
-<td>TRUE</td>
-<td>TRUE</td>
-</tr>
-</tbody>
-</table>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>R语言轻松入门与提高 [法]Andrie de Vries ,[比利时]Joris Mey [法] Andrie de Vries 著</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2729,7 +2605,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">155</span>
+                  <span class="site-state-item-count">156</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2751,7 +2627,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2825,7 +2701,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共582.8k字</span>
+  <span class="post-count">博客全站共584.1k字</span>
 </div>
 
         
