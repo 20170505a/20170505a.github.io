@@ -628,7 +628,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/01/Python/Python数据处理笔记-argv函数与读取csv文件/" itemprop="url">Python数据处理笔记-argv函数与读取csv文件</a></h1>
+                <a class="post-title-link" href="/2019/07/01/Python/Python数据处理笔记-argv函数与读取csv文件/" itemprop="url">Python数据分析(01)-argv函数与读取或导出csv文件</a></h1>
         
 
         <div class="post-meta">
@@ -696,7 +696,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4,344
+                  6,146
                 </span>
               
 
@@ -712,7 +712,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  19
+                  27
                 </span>
               
             </div>
@@ -735,7 +735,14 @@
       
         
           
-            <h2 id="sys.argv函数"><code>sys.argv[]</code>函数</h2>
+            <h2 id="前言">前言</h2>
+<p>这篇笔记的主要参考书是《Python数据分析基础》（[美] 克林顿·布朗利（Clinton，W.，Brownley） 著，陈光欣 译），封面如下：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629130344.png">
+
+</div>
+<p>作者在Github上已经放了<a href="https://github.com/cbrownley/foundations-for-analytics-with-python" target="_blank" rel="external">书中的源代码与数据文件</a>。</p>
+<h2 id="sys.argv函数"><code>sys.argv[]</code>函数</h2>
 <p><code>sys.argv[]</code>是用来获取命令行输入的参数的，<code>argv</code>的是<code>argument variable</code>的缩写。这个变量其实是一个List列表，其中参数和参数之间空格区分，<code>sys.argv[0]</code>表示代码本身文件路径，而<code>sys.argv[1]</code>表示获取的参数。现在看使用案例。</p>
 <p>首选我们在桌面上新建一个<code>test.py</code>文件，输入内容如下所示：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> sys</div><div class="line">result = sys.argv[<span class="number">0</span>]</div><div class="line">print(result)</div></pre></td></tr></table></figure>
@@ -757,7 +764,11 @@
 <p>在实际应用过程中，有可能要同时读取多个文件。读取多个文件的实现方式之一就是在命令行中将包含输入文件目录的路径名写在Python脚本之后，如果要使用这种方法，就需要<code>os</code>模块与<code>glob</code>模块，那么完整的代码如下所示，这段代码位于桌面，命令为<code>directory_test.py</code>，代码如下所示：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> math <span class="keyword">import</span>  exp, log, sqrt</div><div class="line"><span class="keyword">import</span> re</div><div class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> date, time, datetime, timedelta</div><div class="line"><span class="keyword">from</span> operator <span class="keyword">import</span> itemgetter</div><div class="line"><span class="keyword">import</span> glob</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">print(<span class="string">"Output:  "</span>)</div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line"><span class="keyword">for</span> input_file <span class="keyword">in</span> glob.glob(os.path.join(input_file, <span class="string">'*.txt'</span>)):</div><div class="line">    <span class="keyword">with</span> open(input_file, <span class="string">'r'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> filereader:</div><div class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> filereader:</div><div class="line">            print(<span class="string">"&#123;&#125;"</span>.format(row.strip()))</div></pre></td></tr></table></figure>
 <p>使用<code>os</code>模块可以使用其提供的与路径相关的函数，例如<code>os.path.join</code>函数可以将一个或多个路径成分连接在一起，在上面的代码中，</p>
-<p><code>glob</code>模块可以找出与特定模式相匹配的所有路径名。</p>
+<p><code>glob</code>模块可以找出与特定模式相匹配的所有路径名。它可以将某目录下面跟通配符模式相同的文件放到一个列表中，有了这个函数中，我们想于生成所有文件的列表就不需要使用for循环遍历目录了，而是直接使用<code>glob.glob(path + pattern)</code>的方式进行获取，可以看一下面的案例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(glob.glob(<span class="string">r'.\*.py'</span>))</div><div class="line">[<span class="string">'.\\12csv_reader_add_header_row.py'</span>, <span class="string">'.\\8csv_reader_counts_for_multiple_ﬁles.py'</span>, <span class="string">'.\\pandas_add_header_row.py'</span>]</div></pre></td></tr></table></figure>
+<p>这段代码表示的内容就是，搜索当前目录下的所有<code>.py</code>文件，并显示出来。</p>
+<p>另外一个类似的函数则是<code>iglob</code>，此函数则是一次只检索一个文件，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f = glob.iglob(<span class="string">r'.\*.py'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> py <span class="keyword">in</span> f:</div><div class="line"><span class="meta">... </span>    print(py)</div><div class="line">...</div><div class="line">.\<span class="number">12</span>csv_reader_add_header_row.py</div><div class="line">.\<span class="number">8</span>csv_reader_counts_for_multiple_ﬁles.py</div><div class="line">.\pandas_add_header_row.py</div></pre></td></tr></table></figure>
 <p><code>os</code>模块和<code>glob</code>模块组合在一起可以找出符合特定模式的某个文件夹下的所有文件。在这段代码的<code>for</code>循环中使用了<code>os.path.join</code>函数和<code>glob.glob</code>函数来找出符合特定模式的某个文件夹下面的所有文件。指向这个文件夹的路径包含在变量<code>input_file</code>中，这个变量需要在命令行中提供。<code>os.path.join</code>函数将这个文件夹路径和这个文件夹中所有符合特定模式的文件名连接起来，这种特定模式可以由<code>glob.glob</code>函数扩展。 这段代码使用是的模式<code>*.txt</code>来匹配由<code>.txt</code>结尾的所有文件名。</p>
 <p>现在来演示一下这个案例。</p>
 <p>在桌面上新建一个文件夹，命令为<code>test_directory</code>，在此目录下新建一个文本文件，命名为<code>test_1.txt</code>，输入以下内容：</p>
@@ -877,12 +888,98 @@
 <p>运行代码如下所示：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">11</span>csv_reader_select_contiguous_rows.py supplier_data_unnecessary_header_footer.csv <span class="number">11.</span>csv</div><div class="line"><span class="number">3</span> [<span class="string">'Supplier X'</span>, <span class="string">'001-1001'</span>, <span class="string">'5467'</span>, <span class="string">'$750.00'</span>, <span class="string">'1/20/14'</span>]</div><div class="line"><span class="number">4</span> [<span class="string">'Supplier X'</span>, <span class="string">'001-1001'</span>, <span class="string">'5467'</span>, <span class="string">'$750.00'</span>, <span class="string">'1/20/14'</span>]</div><div class="line"><span class="number">5</span> [<span class="string">'Supplier X'</span>, <span class="string">'50-9501'</span>, <span class="string">'7009'</span>, <span class="string">'$250.00'</span>, <span class="string">'1/30/14'</span>]</div><div class="line"><span class="number">6</span> [<span class="string">'Supplier X'</span>, <span class="string">'50-9501'</span>, <span class="string">'7009'</span>, <span class="string">'$250.00'</span>, <span class="string">'1/30/14'</span>]</div><div class="line"><span class="number">7</span> [<span class="string">'Supplier X'</span>, <span class="string">'50-9501'</span>, <span class="string">'6650'</span>, <span class="string">'$125.00'</span>, <span class="string">'2002/3/14'</span>]</div><div class="line"><span class="number">8</span> [<span class="string">'Supplier X'</span>, <span class="string">'50-9501'</span>, <span class="string">'6650'</span>, <span class="string">'$125.00'</span>, <span class="string">'2002/3/14'</span>]</div><div class="line"><span class="number">9</span> [<span class="string">'Supplier X'</span>, <span class="string">'920-4803'</span>, <span class="string">'3321'</span>, <span class="string">'$615.00'</span>, <span class="string">'2002/3/14'</span>]</div><div class="line"><span class="number">10</span> [<span class="string">'Supplier X'</span>, <span class="string">'920-4803'</span>, <span class="string">'3321'</span>, <span class="string">'$615.00'</span>, <span class="string">'2002/10/14'</span>]</div><div class="line"><span class="number">11</span> [<span class="string">'Supplier X'</span>, <span class="string">'920-4803'</span>, <span class="string">'3321'</span>, <span class="string">'$615.00'</span>, <span class="string">'2/17/14'</span>]</div><div class="line"><span class="number">12</span> [<span class="string">'Supplier X'</span>, <span class="string">'920-4803'</span>, <span class="string">'3321'</span>, <span class="string">'$615.00'</span>, <span class="string">'2/24/14'</span>]</div><div class="line"><span class="number">13</span> [<span class="string">"I don't want this row either"</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>]</div><div class="line"><span class="number">14</span> [<span class="string">"I don't want this row either"</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>]</div><div class="line"><span class="number">15</span> [<span class="string">"I don't want this row either"</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>]</div></pre></td></tr></table></figure>
 <p>此时就在桌面上生成了一个名为<code>11.csv</code>的csv文件。</p>
+<h2 id="添加标题行">添加标题行</h2>
+<p>当电子表格中没有标题行 的时候，就需要添加列标题。此时还以前面的ccsv文件为例说明一下，删除前后几行，菾下面的样式：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629130029.png">
+
+</div>
+<p>将文保存为<code>supplier_data_no_header_row.csv</code>格式。</p>
+<h3 id="使用常规方式添加标题行">使用常规方式添加标题行</h3>
+<p>在桌面上新建一个名为<code>12csv_reader_add_header_row.py</code>的Python文件，输入以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> csv</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">with</span> open(input_file, <span class="string">'r'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> csv_in_file:</div><div class="line">    <span class="keyword">with</span> open(output_file, <span class="string">'w'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> csv_out_file:</div><div class="line">        filereader = csv.reader(csv_in_file)</div><div class="line">        filewriter = csv.writer(csv_out_file)</div><div class="line">        header_list = [<span class="string">'Supplier Name'</span>, <span class="string">'Invoice Number'</span>,<span class="string">'Part Number'</span>,\</div><div class="line">                       <span class="string">'Cost'</span>, <span class="string">'Purchase Date'</span>]</div><div class="line">        filewriter.writerow(header_list)</div><div class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> filereader:</div><div class="line">            filewriter.writerow(row)</div></pre></td></tr></table></figure>
+<p>运行代码，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">12</span>csv_reader_add_header_row.py supplier_data_no_header_row.csv add_header.csv</div></pre></td></tr></table></figure>
+<p>在桌面上就生成了<code>add_header.csv</code>的新文件，打开如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629132100.png">
+
+</div>
+<h3 id="使用pandas包添加列标题">使用<code>pandas</code>包添加列标题</h3>
+<p><code>pandas</code>包中的<code>read_csv</code>函数可以直接指定输入文件不包含标题行，并哦可以提供一个列标题列表。如果要给一个没有标题行的数据集添加标题行，此文件命名为<code>pandas_add_header_row.py</code>，实现方式如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line">header_list = [<span class="string">'Supplier Name'</span>, <span class="string">'Invoice Number'</span>, <span class="string">'Part Number'</span>, \</div><div class="line">               <span class="string">'Cost'</span>, <span class="string">'Purchase Date'</span>]</div><div class="line"></div><div class="line">data_frame = pd.read_csv(input_file, header=<span class="keyword">None</span>, names= header_list)</div><div class="line">data_frame.to_csv(output_file, index=<span class="keyword">False</span>)</div></pre></td></tr></table></figure>
+<p>运行代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python pandas_add_header_row.py supplier_data_no_header_row.csv pandas_header.csv</div></pre></td></tr></table></figure>
+<p>这里需要注意一下最后一行<code>data_frame.to_csv(output_file, index=False)</code>里面的<code>index=False</code>，如果设置为<code>True</code>，则会在数据集的前面再添加1列，这1列是索引，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629133022.png">
+
+</div>
+<h2 id="读取多个csv文件">读取多个csv文件</h2>
+<p>数据处理过程中常常会遇到同时处理多个csv文件的情况。</p>
+<h3 id="创建3个演示csv文件">创建3个演示csv文件</h3>
+<p>在桌面上创建第1个csv文件（这个文件也可以从作者的Github上下载），命名为<code>sales_january_2014.csv</code>文件内容如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629135448.png">
+
+</div>
+<p>创建第2个csv文件，命名为<code>sales_february_2014.csv</code>，内容如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629135656.png">
+
+</div>
+<p>创建第3个csv文件，命名为<code>sales_march_2014.csv</code>，内容如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629135922.png">
+
+</div>
+<h3 id="文件计数与文件中的行列计数">文件计数与文件中的行列计数</h3>
+<p>这一部分是要计算一下每个文件中行与列的数量，代码文件为<code>8csv_reader_counts_for_multiple_ﬁles.py</code>，代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> csv</div><div class="line"><span class="keyword">import</span> glob</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_path = sys.argv[<span class="number">1</span>]</div><div class="line">file_counter = <span class="number">0</span></div><div class="line"><span class="keyword">for</span> input_file <span class="keyword">in</span> glob.glob(os.path.join(input_path, <span class="string">'sales_*'</span>)):</div><div class="line">    row_counter = <span class="number">1</span></div><div class="line">    <span class="keyword">with</span> open(input_file, <span class="string">'r'</span>, newline = <span class="string">''</span>) <span class="keyword">as</span> csv_in_file:</div><div class="line">        filereader = csv.reader(csv_in_file)</div><div class="line">        header = next(filereader, <span class="keyword">None</span>)</div><div class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> filereader:</div><div class="line">            row_counter += <span class="number">1</span></div><div class="line">    print(<span class="string">'&#123;0!s&#125;: \t&#123;1:d&#125; rows \t&#123;2:d&#125; columns'</span>.format(os.path.basename(input_file), row_counter, len(header)))</div><div class="line">    file_counter += <span class="number">1</span></div><div class="line">print(<span class="string">'Number of files: &#123;0:d&#125;'</span>.format(file_counter))</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">8</span>csv_reader_counts_for_multiple_ﬁles.py <span class="string">"C:\Users\20161111\Desktop"</span></div><div class="line">sales_february_2014.csv:        <span class="number">7</span> rows  <span class="number">5</span> columns</div><div class="line">sales_january_2014.csv:         <span class="number">7</span> rows  <span class="number">5</span> columns</div><div class="line">sales_march_2014.csv:   <span class="number">7</span> rows  <span class="number">5</span> columns</div><div class="line">Number of files: <span class="number">3</span></div></pre></td></tr></table></figure>
+<p>代码解释：</p>
+<ol style="list-style-type: decimal">
+<li><code>for input_file in glob.glob(os.path.join(input_path, 'sales_*')):</code>这里使用了<code>glob</code>模块中的<code>glob</code>函数，这个模块可以匹配某个特定模式的所有路径名，在这段代码中，搜索的模式是<code>sales_*</code>。这个模式表示要搜索所有文件名以<code>sale_</code>形状并且下划线后面可以是任意字符的文件。由于我们创建了3个csv文件，所以应该知道使用这段代码可以识别出这3个文件，它们的文件名都是以<code>sales_</code>形状的。如果我们要检索某个目录下的所有csv文件，则要将<code>sales_*</code>改为<code>*.csv</code>。</li>
+<li><code>os.path.basename(path)</code>：这是返回<code>path</code>的基本文件名。即如果<code>path</code>是<code>C:\Users\Clinton\Desktop\my_input_file.csv</code>，那么<code>os.path.basename(path)</code>则返回的是是<code>my_input_file.csv</code>。</li>
+</ol>
+<h2 id="合并多个文件">合并多个文件</h2>
+<p>有的时候需要将多个csv文件合并为一个csv文件，现在有几种合并方式。</p>
+<h3 id="常规合并方式">常规合并方式</h3>
+<p>先看常规方式来合并多个csv文件，输入以下代码，命名为<code>9csv_reader_concat_rows_from_multiple_ﬁles.py</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> csv</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> glob</div><div class="line"><span class="keyword">import</span> os</div><div class="line"></div><div class="line">input_path = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line"></div><div class="line">first_file = <span class="keyword">True</span></div><div class="line"></div><div class="line"><span class="keyword">for</span> input_file <span class="keyword">in</span> glob.glob(os.path.join(input_path,<span class="string">'sales_*'</span>)):</div><div class="line">    print(os.path.basename(input_file))</div><div class="line">    <span class="keyword">with</span> open(input_file, <span class="string">'r'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> csv_in_file:</div><div class="line">        <span class="keyword">with</span> open(output_file, <span class="string">'a'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> csv_out_file:</div><div class="line">            filereader = csv.reader(csv_in_file)</div><div class="line">            filewriter = csv.writer(csv_out_file)</div><div class="line">            <span class="keyword">if</span> first_file:</div><div class="line">                <span class="keyword">for</span> row <span class="keyword">in</span> filereader:</div><div class="line">                    filewriter.writerow(row)</div><div class="line">                first_file = <span class="keyword">False</span></div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                header = next(filereader, <span class="keyword">None</span>)</div><div class="line">                <span class="keyword">for</span> row <span class="keyword">in</span> filereader:</div><div class="line">                    filewriter(row)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">9</span>csv_reader_concat_rows_from_multiple_ﬁles.py <span class="string">"C:\Users\20161111\Desktop"</span> merge.csv</div><div class="line">sales_february_2014.csv</div><div class="line">sales_january_2014.csv</div><div class="line">sales_march_2014.csv</div></pre></td></tr></table></figure>
+<p>此时在桌面上生成了一名为<code>merge.csv</code>的文件，打开后，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629202951.png">
+
+</div>
+<h3 id="使用pandas包合并">使用<code>pandas</code>包合并</h3>
+<p><code>pandas</code>包可以直接将多个csv文件合并为一个csv文件。基本过程就是将每个输入文件读取到pandas的数据框中，将所有数据框追加到一个数据框列表，然后使用<code>concat</code>函数将所有数据框连接成一个数据框。<code>concat</code>函数可以使用<code>axis</code>函数来设置合并数据框的试，其中<code>axis=0</code>表示从头到尾垂直合并，<code>axis=1</code>表示并排地合并。</p>
+<p>使用<code>pandas</code>包合并多个csv文件的过程如下所示（文件命名为<code>pandas_concat_rows_from_multiple_ﬁles.py</code>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> glob</div><div class="line"><span class="keyword">import</span> os</div><div class="line"></div><div class="line">input_path = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line">all_files = glob.glob(os.path.join(input_path, <span class="string">'sales_*'</span>))</div><div class="line">all_data_frames = []</div><div class="line"><span class="keyword">for</span> file <span class="keyword">in</span> all_files:</div><div class="line">    data_frame = pd.read_csv(file, index_col = <span class="keyword">None</span>)</div><div class="line">    all_data_frames.append(data_frame)</div><div class="line"></div><div class="line">data_frame_concat = pd.concat(all_data_frames, axis = <span class="number">0</span>, ignore_index = <span class="keyword">True</span>)</div><div class="line">data_frame_concat.to_csv(output_file, index = <span class="keyword">False</span>)</div></pre></td></tr></table></figure>
+<p>运行如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python pandas_concat_rows_from_multiple_ﬁles.py <span class="string">"C:\Users\20161111\Desktop"</span> pandas_merge.csv</div></pre></td></tr></table></figure>
+<h2 id="计算每个文件值中的总和与均值">计算每个文件值中的总和与均值</h2>
+<p>在数据处理过程中，有的时候需要计算多个csv文件中的一些统计量，例如均值和总和。现在以前面的3个csv文件为例说明一下如何计算。</p>
+<h3 id="常规计算方式">常规计算方式</h3>
+<p>现在使用Python的常规方式来计算前面3个csv文件某列的总和和均值。代码如下所示（代码名称为<code>10csv_reader_sum_average_from_multiple_ﬁles.py</code>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> csv</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> glob</div><div class="line"><span class="keyword">import</span> os</div><div class="line"></div><div class="line">input_path = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line">output_header_list = [<span class="string">'file_name'</span>, <span class="string">'total_sales'</span>, <span class="string">'average_sales'</span>]</div><div class="line">csv_out_file = open(output_file, <span class="string">'a'</span>, newline=<span class="string">''</span>)</div><div class="line">filewriter = csv.writer(csv_out_file)</div><div class="line">filewriter.writerow(output_header_list)</div><div class="line"></div><div class="line"><span class="keyword">for</span> input_file <span class="keyword">in</span> glob.glob(os.path.join(input_path, <span class="string">'sales_*'</span>)):</div><div class="line">    <span class="keyword">with</span> open(input_file, <span class="string">'r'</span>, newline = <span class="string">''</span>) <span class="keyword">as</span> csv_in_file:</div><div class="line">        filereader = csv.reader(csv_in_file)</div><div class="line">        output_list = []</div><div class="line">        output_list.append(os.path.basename(input_file))</div><div class="line">        header = next(filereader,<span class="keyword">None</span>)</div><div class="line">        total_sales = <span class="number">0.0</span></div><div class="line">        number_of_sales = <span class="number">0.0</span></div><div class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> filereader:</div><div class="line">            sale_amount = row[<span class="number">3</span>]</div><div class="line">            total_sales += float(str(sale_amount).strip(<span class="string">'$'</span>).replace(<span class="string">','</span>, <span class="string">''</span>))</div><div class="line">            number_of_sales += <span class="number">1</span></div><div class="line">        average_sales = <span class="string">'&#123;0:.2f&#125;'</span>.format(total_sales / number_of_sales)</div><div class="line">        output_list.append(total_sales)</div><div class="line">        output_list.append(average_sales)</div><div class="line">        filewriter.writerow(output_list)</div><div class="line">csv_out_file.close()</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">10</span>csv_reader_sum_average_from_multiple_ﬁles.py <span class="string">"C:\Users\20161111\Desktop"</span> add_col.csv</div></pre></td></tr></table></figure>
+<p>此时就会在桌面上创建一个<code>add_col.csv</code>文件，打开后如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190629211507.png">
+
+</div>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
 <li><a href="https://www.zhihu.com/question/23711222" target="_blank" rel="external">sys.argv是什么？</a></li>
 <li>克林顿·布朗利（Clinton，W.，Brownley） 著，陈光欣 译. Python数据分析基础[M]. 2017.</li>
 <li><a href="https://www.pypandas.cn/" target="_blank" rel="external">Panadas中文文档</a></li>
 <li><a href="https://blog.csdn.net/w_weiying/article/details/81411257" target="_blank" rel="external">Pandas中loc和iloc函数用法详解（源码+实例）</a></li>
+<li><a href="https://github.com/cbrownley/foundations-for-analytics-with-python" target="_blank" rel="external">《Python数据分析基础》中源代码与数据文件</a></li>
 </ol>
 
           
@@ -2728,7 +2825,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共580.5k字</span>
+  <span class="post-count">博客全站共582.8k字</span>
 </div>
 
         
