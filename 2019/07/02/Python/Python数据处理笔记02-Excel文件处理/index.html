@@ -89,7 +89,9 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630141416.png">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630150632.png">
-<meta property="og:updated_time" content="2019-06-30T07:11:04.556Z">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190701153503.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190702100612.png">
+<meta property="og:updated_time" content="2019-07-02T06:54:50.357Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python数据分析02-Excel文件处理">
 <meta name="twitter:description" content="Python处理Excel的包 在PYthon中处理Excel文件（扩展名为.xls和.xlsx的文件）的扩展包为xlrd和xlwt，这两个包对Excel中的日期型数据支持非常好。而在Anaconda Python中，已经含有了这两个包，不用额外安装。如果是最原始版本的Python，则需要下载这两个包。 书中关于这两个包的介绍并不多，因此一些参数只是告诉你了要么用，至于这个参数具体是做什么的，">
@@ -351,7 +353,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,190
+                  1,640
                 </span>
               
 
@@ -367,7 +369,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  5
+                  8
                 </span>
               
             </div>
@@ -438,6 +440,35 @@
 
 </div>
 <h2 id="使用pandas读取excel文件">使用<code>pandas</code>读取Excel文件</h2>
+<p>使用<code>pandas</code>也可以读取Excel文件，将下面的代码保存为<code>pandas_read_and_write_excel.py</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line">data_frame = pd.read_excel(input_file, sheetname = <span class="string">'january_2013'</span>)</div><div class="line">writer = pd.ExcelWriter(output_file)</div><div class="line">data_frame.to_excel(writer, sheet_name = <span class="string">'jan_13_output'</span>, index = <span class="keyword">False</span>)</div><div class="line">writer.save()</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PS D:\netdisk\python_data&gt; python .\pandas_read_and_write_excel.py .\sales_2013.xlsx pandas_output.xls</div></pre></td></tr></table></figure>
+<h2 id="选取特定的行">选取特定的行</h2>
+<p>现在挑出那些<code>Sale Amount</code>超过1400的行。</p>
+<h3 id="常规python选择某一行">常规Python选择某一行</h3>
+<p>保存下面代码，命名为<code>4excel_value_meets_condition.py</code>，代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> date</div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook,xldate_as_tuple</div><div class="line"><span class="keyword">from</span> xlwt <span class="keyword">import</span> Workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">output_workbook = Workbook()</div><div class="line">output_worksheet = output_workbook.add_sheet(<span class="string">'jan_2013_output'</span>)</div><div class="line">sale_amount_column_index = <span class="number">3</span></div><div class="line"><span class="keyword">with</span> open_workbook(input_file) <span class="keyword">as</span> workbook:</div><div class="line">    worksheet = workbook.sheet_by_name(<span class="string">'january_2013'</span>)</div><div class="line">    data = []</div><div class="line">    header = worksheet.row_values(<span class="number">0</span>)</div><div class="line">    data.append(header)</div><div class="line">    <span class="keyword">for</span> row_index <span class="keyword">in</span> range(<span class="number">1</span>, worksheet.nrows):</div><div class="line">        row_list = []</div><div class="line">        sale_amount = worksheet.cell_value\</div><div class="line">            (row_index, sale_amount_column_index)</div><div class="line">        <span class="keyword">if</span> sale_amount &gt; <span class="number">1400</span>:</div><div class="line">            <span class="keyword">for</span> column_index <span class="keyword">in</span> range(worksheet.ncols):</div><div class="line">                cell_value = worksheet.cell_value\</div><div class="line">                    (row_index, column_index)</div><div class="line">                cell_type = worksheet.cell_type\</div><div class="line">                    (row_index, column_index)</div><div class="line">                <span class="keyword">if</span> cell_type == <span class="number">3</span>:</div><div class="line">                    date_cell = xldate_as_tuple\</div><div class="line">                        (cell_value, workbook.datemode)</div><div class="line">                    date_cell = date(*date_cell[<span class="number">0</span>:<span class="number">3</span>])\</div><div class="line">                    .strftime(<span class="string">'%m/%d/%Y'</span>)</div><div class="line">                    row_list.append(date_cell)</div><div class="line">                <span class="keyword">else</span>:</div><div class="line">                    row_list.append(cell_value)</div><div class="line">        <span class="keyword">if</span> row_list:</div><div class="line">            data.append(row_list)</div><div class="line">    <span class="keyword">for</span> list_index, output_list <span class="keyword">in</span> enumerate(data):</div><div class="line">        <span class="keyword">for</span> element_index, element <span class="keyword">in</span> enumerate(output_list):</div><div class="line">            output_worksheet.write(list_index, element_index, element)</div><div class="line">output_workbook.save(output_file)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PS D:\netdisk\python_data&gt; python .\<span class="number">4</span>excel_value_meets_condition.py .\sales_2013.xlsx <span class="number">4</span>output.xls</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190701153503.png">
+
+</div>
+<h3 id="pandas包选取某一行"><code>pandas</code>包选取某一行</h3>
+<p>在下面的案例中，使用<code>pandas</code>挑出那些<code>Sale Amount</code>列大于1400的行。如果需要多个条件，则需要添加<code>&amp;</code>与<code>|</code>符号，代码文件保存为<code>pandas_value_meets_condition.py</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">data_frame = pd.read_excel(input_file, <span class="string">'january_2013'</span>, index_col = <span class="keyword">None</span>)</div><div class="line">data_frame_value_meets_condition = \</div><div class="line">    data_frame[data_frame[<span class="string">'Sale Amount'</span>].astype(float) &gt; <span class="number">1400</span>]</div><div class="line">writer = pd.ExcelWriter(output_file)</div><div class="line">data_frame_value_meets_condition.to_excel(writer, sheet_name = <span class="string">'jan_13_output'</span>,\</div><div class="line">                                          index = <span class="keyword">False</span>)</div><div class="line">writer.save()</div></pre></td></tr></table></figure>
+<p>运行代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PS D:\netdisk\python_data&gt; python .\pandas_value_meets_condition.py .\sales_2013.xlsx pandas_output.xlsx</div></pre></td></tr></table></figure>
+<p>打开<code>pandas_output.xlsx</code>，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190702100612.png">
+
+</div>
+<h2 id="挑选满足多个条件的行">挑选满足多个条件的行</h2>
+<p>例如在前面的数据中，我们要挑选<code>01/24/2013</code>与<code>01/31/2013</code>这两个购买日期的行，代码保存为<code>5excel_value_in_set.py</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<h2 id="参考资料">参考资料</h2>
 
       
     </div>
@@ -559,7 +590,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">156</span>
+                  <span class="site-state-item-count">157</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -616,7 +647,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#python处理excel的包"><span class="nav-number">1.</span> <span class="nav-text">Python处理Excel的包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习数据下载"><span class="nav-number">2.</span> <span class="nav-text">练习数据下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取工作表的信息"><span class="nav-number">3.</span> <span class="nav-text">获取工作表的信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理单个sheet"><span class="nav-number">4.</span> <span class="nav-text">处理单个sheet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#读写excel文件"><span class="nav-number">4.1.</span> <span class="nav-text">读写Excel文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#格式化日期"><span class="nav-number">5.</span> <span class="nav-text">格式化日期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常规方法"><span class="nav-number">5.1.</span> <span class="nav-text">常规方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用pandas读取excel文件"><span class="nav-number">6.</span> <span class="nav-text">使用pandas读取Excel文件</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#python处理excel的包"><span class="nav-number">1.</span> <span class="nav-text">Python处理Excel的包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习数据下载"><span class="nav-number">2.</span> <span class="nav-text">练习数据下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取工作表的信息"><span class="nav-number">3.</span> <span class="nav-text">获取工作表的信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理单个sheet"><span class="nav-number">4.</span> <span class="nav-text">处理单个sheet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#读写excel文件"><span class="nav-number">4.1.</span> <span class="nav-text">读写Excel文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#格式化日期"><span class="nav-number">5.</span> <span class="nav-text">格式化日期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常规方法"><span class="nav-number">5.1.</span> <span class="nav-text">常规方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用pandas读取excel文件"><span class="nav-number">6.</span> <span class="nav-text">使用pandas读取Excel文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选取特定的行"><span class="nav-number">7.</span> <span class="nav-text">选取特定的行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常规python选择某一行"><span class="nav-number">7.1.</span> <span class="nav-text">常规Python选择某一行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pandas包选取某一行"><span class="nav-number">7.2.</span> <span class="nav-text">pandas包选取某一行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#挑选满足多个条件的行"><span class="nav-number">8.</span> <span class="nav-text">挑选满足多个条件的行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -671,7 +702,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共584.1k字</span>
+  <span class="post-count">博客全站共589.7k字</span>
 </div>
 
         
