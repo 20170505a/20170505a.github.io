@@ -2512,7 +2512,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/R/dplyr笔记/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/R/ggplot2(1) - 概述/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -2531,7 +2531,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/04/12/R/dplyr笔记/" itemprop="url">R语言笔记之dplyr</a></h1>
+                <a class="post-title-link" href="/2017/04/12/R/ggplot2(1) - 概述/" itemprop="url">ggplot2(1) - 概述</a></h1>
         
 
         <div class="post-meta">
@@ -2599,7 +2599,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,775
+                  1,518
                 </span>
               
 
@@ -2615,7 +2615,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  9
+                  7
                 </span>
               
             </div>
@@ -2638,31 +2638,332 @@
       
         
           
-            <h2 id="安装">安装</h2>
+            <h2 id="r语言中的绘图系统">R语言中的绘图系统</h2>
+<p>R语言中存在着3种不同的绘图系统：</p>
+<ul>
+<li>base：这是最早的绘图系统，这种绘图系统非常简单，容易上手，使用plot()函数就是这个系统的，但是很难绘出比较好看的图形。后来又开发了grid绘图系统，当时开发grid绘图系统时，是为了修改base中的一些限制，从而使用绘图更为灵活。</li>
+<li>lattice：中文名称是晶格，格子的意思。lattice绘图系统是建立在grid系统之上的。它有grid不具备的两个特点：①每个绘图的结果都能被保存到一个变量中，而不仅仅是绘制在屏幕上。这表明用户可以先画出一些图形，再对其进行编辑，然后再把它画出来。②可在一个格子中包含多个面板，因此可以将图形分成不同的类别，并比较各级之间的差异。</li>
+<li>ggplot2：这个gg指的是grammar of graphics，这种绘图系统的目标在于把图形分解成不同的组块。</li>
+</ul>
+<h2 id="lattice绘图系统简要">lattice绘图系统简要</h2>
+<p><code>lattice</code>绘图系统中对应的plot函数是xyplot，它使用了一个公式接口来指定x和y坐标变量，绘图效果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(lattice) </div><div class="line">xyplot(Turnout ~ Income, obama_vs_mccain)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111046.png">
+
+</div>
+<p>它的很多参数与base系统中的基本一致，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xyplot(Turnout ~ Income, obama_vs_mccain, col = <span class="string">"violet"</span>, pch = <span class="number">20</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111151.png">
+
+</div>
+<h2 id="ggplot2绘图系统">ggplot2绘图系统</h2>
+<p>在ggplot2绘图系统中，每个绘图都由<code>ggplot</code>函数创建，它的第一个参数是数据框，第二个参数是aesthetic，这个参数其实就是把x和y列变量传递给<code>aes</code>函数，最后再添加一个<code>geom_</code>这种形式的参数，让图形显示出一些点，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2) </div><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) + geom_point()</div></pre></td></tr></table></figure>
+<h3 id="绘图数据集">绘图数据集</h3>
+<p>我们用的数据集是<code>obama_vs_mccain</code>，这个数据集中的信息是2008年美国大选的数据，位于<code>learningr</code>包中，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(obama_vs_mccain[<span class="number">1</span>:<span class="number">5</span>])</div><div class="line">       State Region Obama McCain Turnout</div><div class="line"><span class="number">1</span>    Alabama     IV <span class="number">38.74</span>  <span class="number">60.32</span>    <span class="number">61.6</span></div><div class="line"><span class="number">2</span>     Alaska      X <span class="number">37.89</span>  <span class="number">59.42</span>    <span class="number">68.0</span></div><div class="line"><span class="number">3</span>    Arizona     IX <span class="number">44.91</span>  <span class="number">53.39</span>    <span class="number">55.7</span></div><div class="line"><span class="number">4</span>   Arkansas     VI <span class="number">38.86</span>  <span class="number">58.72</span>    <span class="number">53.1</span></div><div class="line"><span class="number">5</span> California     IX <span class="number">60.94</span>  <span class="number">36.91</span>    <span class="number">62.0</span></div><div class="line"><span class="number">6</span>   Colorado   VIII <span class="number">53.66</span>  <span class="number">44.71</span>    <span class="number">70.8</span></div></pre></td></tr></table></figure>
+<p>绘图结果如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111747.png">
+
+</div>
+<h3 id="修改绘图参数">修改绘图参数</h3>
+<p>ggplot2可以识别base中的图形系统的命令来改变点的颜色和形状，也有自己的绘图参数，现在将代码修改为以下内容：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point(color = <span class="string">"violet"</span>, shape = <span class="number">20</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112054.png">
+
+</div>
+<h3 id="设置对数坐标">设置对数坐标</h3>
+<p>如果要将坐标以对数的形式进行设置，可以添加<code>scale_x_log10</code>与<code>scale_y_log10</code>参数，参数内的参数是<code>breaks</code>，它表示的是意思是指定刻度值的位置，代码修改为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point()+</div><div class="line">  scale_x_log10(breaks=seq(<span class="number">2e4</span>,<span class="number">4e4</span>,<span class="number">1e4</span>))+</div><div class="line">  scale_y_log10(breaks=seq(<span class="number">50</span>, <span class="number">75</span>, <span class="number">5</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112325.png">
+
+</div>
+<h3 id="图形的分面">图形的分面</h3>
+<p>使用切面(facet)可以将图形分割为不同的面板，此时需要添加的函数是<code>facet_wrap</code>，如下所示</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point()+</div><div class="line">  scale_x_log10(breaks=seq(<span class="number">2e4</span>,<span class="number">4e4</span>,<span class="number">1e4</span>))+</div><div class="line">  scale_y_log10(breaks=seq(<span class="number">50</span>, <span class="number">75</span>, <span class="number">5</span>))+</div><div class="line">  facet_wrap(~ Region, ncol = <span class="number">4</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112519.png">
+
+</div>
+<h3 id="将图形储存在变量中">将图形储存在变量中</h3>
+<p>ggplot2可以将图形存储在变量中，然后继续往这个变量中添加新的函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gg1 &lt;- ggplot(obama_vs_mccain, aes(Income, Turnout)) + </div><div class="line">  geom_point()</div></pre></td></tr></table></figure>
+<p>如果要显示其输出，直接输入<code>print(gg1)</code>或<code>gg1</code>即可：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(gg1)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112817.png">
+
+</div>
+<p>或者是继续往里面添加函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">gg1 &lt;- ggplot(obama_vs_mccain, aes(Income, Turnout)) + </div><div class="line">  geom_point() </div><div class="line">gg2 &lt;- gg1 + </div><div class="line">  facet_wrap(~ Region, ncol = <span class="number">5</span>) +</div><div class="line">  theme(axis.text.x = element_text(angle = <span class="number">30</span>, hjust =<span class="number">1</span>))</div><div class="line">gg2</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705113017.png">
+
+</div>
+<h2 id="绘制线图">绘制线图</h2>
+<p>现在使用ggplot2来绘制一下线图，使用的数据是<code>learningr</code>包中的<code>crab_tag</code>数据集，这个数据集记录了2008年和2009年，蟹类的迁移深度与温度。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(learningr)</div><div class="line">ggplot(crab_tag$daylog, aes(Date, -Min.Depth))+ geom_line()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115204.png">
+
+</div>
+<p>在绘制多条线条时有一点复杂，当在ggplot中指定aesthetics时，用户是为所有的geom都指定了这个aesthetics，也就是说，aesthetics对绘图的影响来说是“全局的”，在下面的案例中，我们希望在一条线上指定最大深度，在另外一条线上指定最小深度，代码如下所示:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(crab_tag$daylog, aes(Date, -Min.Depth))+ </div><div class="line">  geom_line(aes(y = -Max.Depth))+</div><div class="line">  geom_line(aes(y = -Min.Depth))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115550.png">
+
+</div>
+<p>而在实际操作中，通常不采用这种方法，而是使用reshape2包中的melt函数处理一下数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(reshape2)</div><div class="line">crab_long &lt;- melt(</div><div class="line">  crab_tag$daylog,</div><div class="line">  id.vars = <span class="string">"Date"</span>,</div><div class="line">  measure.vars = c(<span class="string">"Min.Depth"</span>,<span class="string">"Max.Depth"</span>)</div><div class="line">)</div><div class="line">ggplot(crab_long, aes(Date, -value, group=variable))+</div><div class="line">  geom_line()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115842.png">
+
+</div>
+<p>再来查看一下原始数据与经melt处理后的数据：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; head(crab_tag$daylog)</div><div class="line">  Mission.Day       Date Max.Temp Min.Temp Max.Depth Min.Depth Batt.Volts</div><div class="line"><span class="number">1</span>           <span class="number">0</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">08</span>   <span class="number">27.734</span>   <span class="number">25.203</span>      <span class="number">0.06</span>     -<span class="number">0.07</span>       <span class="number">3.06</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">09</span>   <span class="number">25.203</span>   <span class="number">23.859</span>      <span class="number">0.06</span>     -<span class="number">0.07</span>       <span class="number">3.09</span></div><div class="line"><span class="number">3</span>           <span class="number">2</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">10</span>   <span class="number">24.016</span>   <span class="number">23.500</span>     -<span class="number">0.07</span>     -<span class="number">0.10</span>       <span class="number">3.09</span></div><div class="line"><span class="number">4</span>           <span class="number">3</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">11</span>   <span class="number">26.453</span>   <span class="number">23.281</span>     -<span class="number">0.04</span>     -<span class="number">0.10</span>       <span class="number">3.09</span></div><div class="line"><span class="number">5</span>           <span class="number">4</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">12</span>   <span class="number">27.047</span>   <span class="number">23.609</span>     -<span class="number">0.10</span>     -<span class="number">0.26</span>       <span class="number">3.09</span></div><div class="line"><span class="number">6</span>           <span class="number">5</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">13</span>   <span class="number">24.625</span>   <span class="number">23.438</span>     -<span class="number">0.04</span>     -<span class="number">0.13</span>       <span class="number">3.09</span></div><div class="line">&gt; head(crab_long)</div><div class="line">        Date  variable value</div><div class="line"><span class="number">1</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">08</span> Min.Depth -<span class="number">0.07</span></div><div class="line"><span class="number">2</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">09</span> Min.Depth -<span class="number">0.07</span></div><div class="line"><span class="number">3</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">10</span> Min.Depth -<span class="number">0.10</span></div><div class="line"><span class="number">4</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">11</span> Min.Depth -<span class="number">0.10</span></div><div class="line"><span class="number">5</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">12</span> Min.Depth -<span class="number">0.26</span></div><div class="line"><span class="number">6</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">13</span> Min.Depth -<span class="number">0.13</span></div></pre></td></tr></table></figure>
+<p>第二修改后的图形还不好看，因为两条线颜色是相同的，我们可以使用<code>geom_ribbon</code>来美化一下，使最大值与最小值之间进行填充，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(crab_tag$daylog, aes(Date, ymin = -Min.Depth, ymax = -Max.Depth))+</div><div class="line">  geom_ribbon(color = <span class="string">"black"</span>, fill=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120218.png">
+
+</div>
+<h2 id="绘制直方图">绘制直方图</h2>
+<p>这里还用<code>learningr</code>包中的<code>obama_vs_mccain</code>数据集，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Obama))+</div><div class="line">  geom_histogram(binwidth = <span class="number">5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120655.png">
+
+</div>
+<p>通过传递特殊的名字，例如<code>..count..</code>或<code>..density..</code>到<code>y-aesthetic</code>中来可以计数或密度，现在我们使用<code>..density..</code>参数，注意看y轴的坐标：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Obama, ..density..))+</div><div class="line">  geom_histogram(binwidth = <span class="number">5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120829.png">
+
+</div>
+<h2 id="箱线图">箱线图</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ovm &lt;- within( </div><div class="line">  obama_vs_mccain, </div><div class="line">  Region &lt;- reorder(Region, Obama, median) </div><div class="line">) </div><div class="line">head(ovm)</div><div class="line">ggplot(ovm, aes(Region, Obama))+</div><div class="line">  geom_boxplot()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705121027.png">
+
+</div>
+<h2 id="条形图">条形图</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">ovm &lt;- within( </div><div class="line">  obama_vs_mccain, </div><div class="line">  Region &lt;- reorder(Region, Obama, median) </div><div class="line">) </div><div class="line"></div><div class="line">ovm &lt;- ovm[!(ovm$State %<span class="keyword">in</span>% c(<span class="string">"Alaska"</span>, <span class="string">"Hawaii"</span>)), ]</div><div class="line">religions &lt;- with(ovm, rbind(Catholic, Protestant, Non.religious, Other))</div><div class="line"></div><div class="line">religions_long &lt;- melt( </div><div class="line">  ovm, </div><div class="line">  id.vars = <span class="string">"State"</span>, </div><div class="line">  measure.vars = c(<span class="string">"Catholic"</span>, <span class="string">"Protestant"</span>, <span class="string">"Non.religious"</span>, <span class="string">"Other"</span>) </div><div class="line">)</div><div class="line"></div><div class="line">ggplot(religions_long, aes(State, value, fill = variable)) +</div><div class="line">  geom_bar(stat = <span class="string">"identity"</span>) + </div><div class="line">  coord_flip()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705121710.png">
+
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>学习R.[美] Richard，Cotton 著刘军 译</li>
+<li></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/R/数据管理之dplyr与SQL笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/04/12/R/数据管理之dplyr与SQL笔记/" itemprop="url">R语言笔记之数据管理之dplyr与SQL笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-12T12:00:00+08:00">
+                2017-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index">
+                    <span itemprop="name">R</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,149
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="r语言的数据管理">R语言的数据管理</h2>
+<p>在进行数据分析时，常常会遇到某些情形，例如我要挑出满足某一条的行，我要挑出某些列。此时可以使用<code>dplyr</code>包，或SQL操作。</p>
+<h2 id="dplyr包的操作"><code>dplyr</code>包的操作</h2>
+<h3 id="dplyr包的安装"><code>dplyr</code>包的安装</h3>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"dplyr"</span>)</div><div class="line"><span class="keyword">library</span>(dplyr)</div></pre></td></tr></table></figure>
-<h2 id="数据集">数据集</h2>
+<h3 id="数据集">数据集</h3>
 <p>现在使用<code>datasets</code>包中的<code>ChickWeight</code>数据集，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">library</span>(datasets)</div><div class="line">&gt; dim(ChickWeight)</div><div class="line">[<span class="number">1</span>] <span class="number">578</span>   <span class="number">4</span></div><div class="line">&gt; head(ChickWeight)</div><div class="line">  weight Time Chick Diet</div><div class="line"><span class="number">1</span>     <span class="number">42</span>    <span class="number">0</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">2</span>     <span class="number">51</span>    <span class="number">2</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">3</span>     <span class="number">59</span>    <span class="number">4</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">4</span>     <span class="number">64</span>    <span class="number">6</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">5</span>     <span class="number">76</span>    <span class="number">8</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">6</span>     <span class="number">93</span>   <span class="number">10</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line">&gt; str(ChickWeight)</div><div class="line">Classes ‘nfnGroupedData’, ‘nfGroupedData’, ‘groupedData’ and <span class="string">'data.frame'</span>:	<span class="number">578</span> obs. of  <span class="number">4</span> variables:</div><div class="line"> $ weight: num  <span class="number">42</span> <span class="number">51</span> <span class="number">59</span> <span class="number">64</span> <span class="number">76</span> <span class="number">93</span> <span class="number">106</span> <span class="number">125</span> <span class="number">149</span> <span class="number">171</span> <span class="keyword">...</span></div><div class="line"> $ Time  : num  <span class="number">0</span> <span class="number">2</span> <span class="number">4</span> <span class="number">6</span> <span class="number">8</span> <span class="number">10</span> <span class="number">12</span> <span class="number">14</span> <span class="number">16</span> <span class="number">18</span> <span class="keyword">...</span></div><div class="line"> $ Chick : Ord.factor w/ <span class="number">50</span> levels <span class="string">"18"</span>&lt;<span class="string">"16"</span>&lt;<span class="string">"15"</span>&lt;..: <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="number">15</span> <span class="keyword">...</span></div><div class="line"> $ Diet  : Factor w/ <span class="number">4</span> levels <span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> - attr(*, <span class="string">"formula"</span>)=Class <span class="string">'formula'</span>  language weight ~ Time | Chick</div><div class="line">  .. ..- attr(*, <span class="string">".Environment"</span>)=&lt;environment: R_EmptyEnv&gt; </div><div class="line"> - attr(*, <span class="string">"outer"</span>)=Class <span class="string">'formula'</span>  language ~Diet</div><div class="line">  .. ..- attr(*, <span class="string">".Environment"</span>)=&lt;environment: R_EmptyEnv&gt; </div><div class="line"> - attr(*, <span class="string">"labels"</span>)=List of <span class="number">2</span></div><div class="line">  ..$ x: chr <span class="string">"Time"</span></div><div class="line">  ..$ y: chr <span class="string">"Body weight"</span></div><div class="line"> - attr(*, <span class="string">"units"</span>)=List of <span class="number">2</span></div><div class="line">  ..$ x: chr <span class="string">"(days)"</span></div><div class="line">  ..$ y: chr <span class="string">"(gm)"</span></div></pre></td></tr></table></figure>
 <p>从上面结果可以看出来，ChickWeight含有4个变量，分别为数值型变量weight，数值型变量Time，因子型变量Chick，因子型变量Diet。</p>
-<h2 id="tibble数据类型">tibble数据类型</h2>
+<h3 id="tibble数据类型">tibble数据类型</h3>
 <p>tibble是R语言中一个用来替换data.frame类型的扩展的数据框，tibble继承了data.frame，是弱类型的，同时与data.frame有相同的语法，使用起来更方便。tibble对data.frame做了重新的设计：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">tibble，不关心输入类型，可存储任意类型，包括list类型</div><div class="line">tibble，没有行名设置 row.names</div><div class="line">tibble，支持任意的列名</div><div class="line">tibble，会自动添加列名</div><div class="line">tibble，类型只能回收长度为1的输入</div><div class="line">tibble，会懒加载参数，并按顺序运行</div><div class="line">tibble，是tbl_df类型</div></pre></td></tr></table></figure>
 <p>这里再注明一下，tibble这个包是包含在tidyverse项目中的，tidyverse是一组处理与可视化R包的集合，其中包含以下的包：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">ggplot2 - 可视化数据</div><div class="line">dplyr - 数据操作语法，可以用它解决大部分数据处理问题</div><div class="line">tidyr - 清理数据</div><div class="line">readr - 读入表格数据</div><div class="line">purrr - 提供一个完整一致的工具集增强R的函数编程</div><div class="line">tibble - 新一代数据框</div><div class="line">stringr - 提供函数集用来处理字符数据</div><div class="line">forcats - 提供有用工具用来处理因子问题</div><div class="line"></div><div class="line"><span class="comment"># 安装tidyverse：</span></div><div class="line">install.packages(<span class="string">"tidyverse"</span>)</div><div class="line"><span class="keyword">library</span>(tidyverse)</div></pre></td></tr></table></figure>
-<h2 id="计数count">计数<code>count</code></h2>
+<h3 id="计数count">计数<code>count</code></h3>
 <p>dplyr包中的count函数可以进行计数，用法为<code>count(x, ..., wt = NULL, sort = FALSE)</code>，其中<code>x</code>是目标数据集，<code>...</code>是数据集中的变量，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; count(ChickWeight,Diet)</div><div class="line"><span class="comment"># A tibble: 4 x 2</span></div><div class="line">  Diet      n</div><div class="line">  &lt;fct&gt; &lt;int&gt;</div><div class="line"><span class="number">1</span> <span class="number">1</span>       <span class="number">220</span></div><div class="line"><span class="number">2</span> <span class="number">2</span>       <span class="number">120</span></div><div class="line"><span class="number">3</span> <span class="number">3</span>       <span class="number">120</span></div><div class="line"><span class="number">4</span> <span class="number">4</span>       <span class="number">118</span></div></pre></td></tr></table></figure>
 <p>从上面的结果我们可以看出来，输出的结果是一个tibble，其中它与data.frame不同的地方在于，它会在行名称的下面再加一行，就上面的结果而言，它添加了一行为<code>&lt;fct&gt;, &lt;int&gt;</code>的信息，指明了不同列的类型，其它的数据类型信息如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">int，代表integer</div><div class="line">dbl，代表double</div><div class="line">chr，代表character向量或字符串。</div><div class="line">dttm，代表日期+时间(a date + a time)</div><div class="line">lgl，代表逻辑判断<span class="literal">TRUE</span>或者<span class="literal">FALSE</span></div><div class="line">fctr，代表因子类型factor</div><div class="line">date，代表日期dates.</div></pre></td></tr></table></figure>
-<h2 id="汇总summaryise">汇总<code>summaryise()</code></h2>
+<h3 id="汇总summaryise">汇总<code>summaryise()</code></h3>
 <p>summaryise()，用法为<code>summarise(.data, ...)</code>，其中<code>.data</code>是数据集，<code>...</code>是需要汇总的函数，用法如下所示</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; summarise(ChickWeight,mean(weight,na.rm=<span class="literal">TRUE</span>))</div><div class="line">  mean(weight, na.rm = <span class="literal">TRUE</span>)</div><div class="line"><span class="number">1</span>                   <span class="number">121.8183</span></div><div class="line">&gt; summarise(ChickWeight,mean(Time,na.rm=<span class="literal">TRUE</span>),min(weight))</div><div class="line">  mean(Time, na.rm = <span class="literal">TRUE</span>) min(weight)</div><div class="line"><span class="number">1</span>                 <span class="number">10.71799</span>          <span class="number">35</span></div></pre></td></tr></table></figure>
-<h2 id="分组group_by">分组<code>group_by</code></h2>
+<h3 id="分组group_by">分组<code>group_by</code></h3>
 <p><code>group_by</code>，用法为<code>group_by(.data, ..., add = FALSE)</code>，其中<code>.data</code>是数据集，<code>...</code>是分组对象，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt; CW_g1 &lt;- group_by(ChickWeight,Diet)</div><div class="line">&gt; CW_g1</div><div class="line"><span class="comment"># A tibble: 578 x 4</span></div><div class="line"><span class="comment"># Groups:   Diet [4]</span></div><div class="line">   weight  Time Chick Diet </div><div class="line"> *  &lt;dbl&gt; &lt;dbl&gt; &lt;ord&gt; &lt;fct&gt;</div><div class="line"> <span class="number">1</span>     <span class="number">42</span>     <span class="number">0</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">2</span>     <span class="number">51</span>     <span class="number">2</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">3</span>     <span class="number">59</span>     <span class="number">4</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">4</span>     <span class="number">64</span>     <span class="number">6</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">5</span>     <span class="number">76</span>     <span class="number">8</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">6</span>     <span class="number">93</span>    <span class="number">10</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">7</span>    <span class="number">106</span>    <span class="number">12</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">8</span>    <span class="number">125</span>    <span class="number">14</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"> <span class="number">9</span>    <span class="number">149</span>    <span class="number">16</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"><span class="number">10</span>    <span class="number">171</span>    <span class="number">18</span> <span class="number">1</span>     <span class="number">1</span>    </div><div class="line"><span class="comment"># ... with 568 more rows</span></div></pre></td></tr></table></figure>
 <p>group_by可以和summarise连用，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; summarise(group_by(ChickWeight,Diet),mean(Time,na.rm=<span class="literal">TRUE</span>))</div><div class="line"><span class="comment"># A tibble: 4 x 2</span></div><div class="line">  Diet  `mean(Time, na.rm = TRUE)`</div><div class="line">  &lt;fct&gt;                      &lt;dbl&gt;</div><div class="line"><span class="number">1</span> <span class="number">1</span>                           <span class="number">10.5</span></div><div class="line"><span class="number">2</span> <span class="number">2</span>                           <span class="number">10.9</span></div><div class="line"><span class="number">3</span> <span class="number">3</span>                           <span class="number">10.9</span></div><div class="line"><span class="number">4</span> <span class="number">4</span>                           <span class="number">10.8</span></div></pre></td></tr></table></figure>
-<h2 id="筛选filter">筛选<code>filter</code></h2>
+<h3 id="筛选filter">筛选<code>filter</code></h3>
 <p><code>filter()</code>函数，用法为<code>filter(.data, ...)</code>。举例说明，如下所示：</p>
 <p>挑选出weight大于等于40的数据，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; CW_F1 &lt;- filter(ChickWeight,weight &gt;= <span class="number">40</span>)</div><div class="line">&gt; head(CW_F1)</div><div class="line">  weight Time Chick Diet</div><div class="line"><span class="number">1</span>     <span class="number">42</span>    <span class="number">0</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">2</span>     <span class="number">51</span>    <span class="number">2</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">3</span>     <span class="number">59</span>    <span class="number">4</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">4</span>     <span class="number">64</span>    <span class="number">6</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">5</span>     <span class="number">76</span>    <span class="number">8</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">6</span>     <span class="number">93</span>   <span class="number">10</span>     <span class="number">1</span>    <span class="number">1</span></div></pre></td></tr></table></figure>
@@ -2674,7 +2975,7 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CW_F4&lt;- filter(ChickWeight,Diet %<span class="keyword">in</span>% c(<span class="number">1</span>,<span class="number">3</span>))</div><div class="line">CW_F4</div></pre></td></tr></table></figure>
 <p>挑选出Chick为2，Diet为1的数据，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; CW_F5&lt;- filter(ChickWeight,Diet==<span class="number">1</span>,Chick==<span class="number">2</span>)</div><div class="line">&gt; head(CW_F5)</div><div class="line">  weight Time Chick Diet</div><div class="line"><span class="number">1</span>     <span class="number">40</span>    <span class="number">0</span>     <span class="number">2</span>    <span class="number">1</span></div><div class="line"><span class="number">2</span>     <span class="number">49</span>    <span class="number">2</span>     <span class="number">2</span>    <span class="number">1</span></div><div class="line"><span class="number">3</span>     <span class="number">58</span>    <span class="number">4</span>     <span class="number">2</span>    <span class="number">1</span></div><div class="line"><span class="number">4</span>     <span class="number">72</span>    <span class="number">6</span>     <span class="number">2</span>    <span class="number">1</span></div><div class="line"><span class="number">5</span>     <span class="number">84</span>    <span class="number">8</span>     <span class="number">2</span>    <span class="number">1</span></div><div class="line"><span class="number">6</span>    <span class="number">103</span>   <span class="number">10</span>     <span class="number">2</span>    <span class="number">1</span></div></pre></td></tr></table></figure>
-<h2 id="挑选满足条件的某一列select">挑选满足条件的某一列<code>select</code></h2>
+<h3 id="挑选满足条件的某一列select">挑选满足条件的某一列<code>select</code></h3>
 <p>filter在使用时，它是将满足某一条件的整个数据集都给拿了出来，而select函数则是只将某一列拿出来，例如我们现在只将weight和Diet挑选出来，并与filter对比一下，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CW_s1&lt;-selet(ChickWeight,weight,Diet)</div></pre></td></tr></table></figure>
 <p>排列某一列，只选择剩下的部分，如下所示：</p>
@@ -2683,10 +2984,10 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(select(ChickWeight,-weight,-Diet))</div><div class="line">  Time Chick</div><div class="line"><span class="number">1</span>    <span class="number">0</span>     <span class="number">1</span></div><div class="line"><span class="number">2</span>    <span class="number">2</span>     <span class="number">1</span></div><div class="line"><span class="number">3</span>    <span class="number">4</span>     <span class="number">1</span></div><div class="line"><span class="number">4</span>    <span class="number">6</span>     <span class="number">1</span></div><div class="line"><span class="number">5</span>    <span class="number">8</span>     <span class="number">1</span></div><div class="line"><span class="number">6</span>   <span class="number">10</span>     <span class="number">1</span></div></pre></td></tr></table></figure>
 <p>选择从Time到Diet这之间的列，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(select(ChickWeight,Time:Diet))</div><div class="line">  Time Chick Diet</div><div class="line"><span class="number">1</span>    <span class="number">0</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">2</span>    <span class="number">2</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">3</span>    <span class="number">4</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">4</span>    <span class="number">6</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">5</span>    <span class="number">8</span>     <span class="number">1</span>    <span class="number">1</span></div><div class="line"><span class="number">6</span>   <span class="number">10</span>     <span class="number">1</span>    <span class="number">1</span></div></pre></td></tr></table></figure>
-<h2 id="添加mutate">添加<code>mutate</code></h2>
+<h3 id="添加mutate">添加<code>mutate</code></h3>
 <p><code>mutate()</code>可以添加不同的列，现在我们在原始数据后面加上一列，名称是Diff，列的内容是该行weight值与weight均值之差，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; CW_m1 &lt;- mutate(ChickWeight,Diff=(weight-mean(weight)))</div><div class="line">&gt; head(CW_m1)</div><div class="line">  weight Time Chick Diet      Diff</div><div class="line"><span class="number">1</span>     <span class="number">42</span>    <span class="number">0</span>     <span class="number">1</span>    <span class="number">1</span> -<span class="number">79.81834</span></div><div class="line"><span class="number">2</span>     <span class="number">51</span>    <span class="number">2</span>     <span class="number">1</span>    <span class="number">1</span> -<span class="number">70.81834</span></div><div class="line"><span class="number">3</span>     <span class="number">59</span>    <span class="number">4</span>     <span class="number">1</span>    <span class="number">1</span> -<span class="number">62.81834</span></div><div class="line"><span class="number">4</span>     <span class="number">64</span>    <span class="number">6</span>     <span class="number">1</span>    <span class="number">1</span> -<span class="number">57.81834</span></div><div class="line"><span class="number">5</span>     <span class="number">76</span>    <span class="number">8</span>     <span class="number">1</span>    <span class="number">1</span> -<span class="number">45.81834</span></div><div class="line"><span class="number">6</span>     <span class="number">93</span>   <span class="number">10</span>     <span class="number">1</span>    <span class="number">1</span> -<span class="number">28.81834</span></div></pre></td></tr></table></figure>
-<h2 id="管道命令in">管道命令<code>%in%</code></h2>
+<h3 id="管道命令in">管道命令<code>%in%</code></h3>
 <p><code>%in%</code>是dplyr的管道命令，可以将几个函数串联起来。看下面的案例：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">CW_p1 &lt;- ChickWeight%&gt;%</div><div class="line">  filter(Chick!=c(<span class="number">15</span>,<span class="number">18</span>,<span class="number">20</span>,<span class="number">17</span>))%&gt;%</div><div class="line">  group_by(Diet)%&gt;%</div><div class="line">  summarise(mean(Time,na.rm=<span class="literal">TRUE</span>))</div></pre></td></tr></table></figure>
 <p>结果如下所示：</p>
@@ -2695,13 +2996,33 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">CW_p2 &lt;- ChickWeight%&gt;%</div><div class="line">  filter(weight&gt;=<span class="number">50</span>,Diet!=<span class="number">1</span>)%&gt;%</div><div class="line">  mutate(DiffTime=(Time-mean(Time,na.rm=<span class="literal">TRUE</span>)))%&gt;%</div><div class="line">  select(Diet:DiffTime)</div><div class="line">head(CW_p2)</div></pre></td></tr></table></figure>
 <p>运行结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(CW_p2)</div><div class="line">  Diet    DiffTime</div><div class="line"><span class="number">1</span>    <span class="number">2</span> -<span class="number">10.2310127</span></div><div class="line"><span class="number">2</span>    <span class="number">2</span>  -<span class="number">8.2310127</span></div><div class="line"><span class="number">3</span>    <span class="number">2</span>  -<span class="number">6.2310127</span></div><div class="line"><span class="number">4</span>    <span class="number">2</span>  -<span class="number">4.2310127</span></div><div class="line"><span class="number">5</span>    <span class="number">2</span>  -<span class="number">2.2310127</span></div><div class="line"><span class="number">6</span>    <span class="number">2</span>  -<span class="number">0.2310127</span></div></pre></td></tr></table></figure>
-<h2 id="排序arrange">排序<code>arrange</code></h2>
+<h3 id="排序arrange">排序<code>arrange</code></h3>
 <p><code>arrange()</code>可以将数据集进行排序，用法如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(arrange(ChickWeight,desc(weight)))</div><div class="line">  weight Time Chick Diet</div><div class="line"><span class="number">1</span>    <span class="number">373</span>   <span class="number">21</span>    <span class="number">35</span>    <span class="number">3</span></div><div class="line"><span class="number">2</span>    <span class="number">361</span>   <span class="number">20</span>    <span class="number">35</span>    <span class="number">3</span></div><div class="line"><span class="number">3</span>    <span class="number">341</span>   <span class="number">21</span>    <span class="number">34</span>    <span class="number">3</span></div><div class="line"><span class="number">4</span>    <span class="number">332</span>   <span class="number">18</span>    <span class="number">35</span>    <span class="number">3</span></div><div class="line"><span class="number">5</span>    <span class="number">331</span>   <span class="number">21</span>    <span class="number">21</span>    <span class="number">2</span></div><div class="line"><span class="number">6</span>    <span class="number">327</span>   <span class="number">20</span>    <span class="number">34</span>    <span class="number">3</span></div></pre></td></tr></table></figure>
+<h1 id="sqldf包的操作"><code>sqldf</code>包的操作</h1>
+<p><code>sqldf</code>包提供了使用SQL操作数据框的方式，通常这种操作非常适合那些有数据库背景的人使用。</p>
+<h3 id="安装sqldf包">安装<code>sqldf</code>包</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">install.packages(<span class="string">"sqldf"</span>)</div><div class="line"><span class="keyword">library</span>(sqldf)</div></pre></td></tr></table></figure>
+<h3 id="sqldf包的使用">sqldf包的使用</h3>
+<p>我们使用<code>learningr</code>包中的<code>deer_endocranial_volume</code>数据集来演示一下sqldf的操作，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(learningr)</div><div class="line">data(<span class="string">"deer_endocranial_volume"</span>)</div><div class="line">head(deer_endocranial_volume)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(deer_endocranial_volume)</div><div class="line">  SkullID VolCT VolBead VolLWH VolFinarelli VolCT2 VolBead2 VolLWH2</div><div class="line"><span class="number">1</span>   DIC44   <span class="number">389</span>     <span class="number">375</span>   <span class="number">1484</span>          <span class="number">337</span>     <span class="literal">NA</span>       <span class="literal">NA</span>      <span class="literal">NA</span></div><div class="line"><span class="number">2</span>     B11   <span class="number">389</span>     <span class="number">370</span>   <span class="number">1722</span>          <span class="number">377</span>     <span class="literal">NA</span>       <span class="literal">NA</span>      <span class="literal">NA</span></div><div class="line"><span class="number">3</span>   DIC90   <span class="number">352</span>     <span class="number">345</span>   <span class="number">1495</span>          <span class="number">328</span>     <span class="literal">NA</span>       <span class="literal">NA</span>      <span class="literal">NA</span></div><div class="line"><span class="number">4</span>   DIC83   <span class="number">388</span>     <span class="number">370</span>   <span class="number">1683</span>          <span class="number">377</span>     <span class="literal">NA</span>       <span class="literal">NA</span>      <span class="literal">NA</span></div><div class="line"><span class="number">5</span>  DIC787   <span class="number">375</span>     <span class="number">355</span>   <span class="number">1458</span>          <span class="number">328</span>     <span class="literal">NA</span>       <span class="literal">NA</span>      <span class="literal">NA</span></div><div class="line"><span class="number">6</span> DIC1573   <span class="number">325</span>     <span class="number">320</span>   <span class="number">1363</span>          <span class="number">291</span>     <span class="literal">NA</span>       <span class="literal">NA</span>      <span class="literal">NA</span></div></pre></td></tr></table></figure>
+<p>现在挑选出VolCt大于400，或者是VolCT2大于400的行。</p>
+<p>我们先用R语言来操作，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">subset( </div><div class="line">  deer_endocranial_volume, </div><div class="line">  VolCT &gt; <span class="number">400</span> | VolCT2 &gt; <span class="number">400</span>, </div><div class="line">  c(VolCT, VolCT2) </div><div class="line">)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; subset( </div><div class="line">+     deer_endocranial_volume, </div><div class="line">+     VolCT &gt; <span class="number">400</span> | VolCT2 &gt; <span class="number">400</span>, </div><div class="line">+     c(VolCT, VolCT2) </div><div class="line">+ )</div><div class="line">   VolCT VolCT2</div><div class="line"><span class="number">10</span>   <span class="number">410</span>    <span class="number">413</span></div><div class="line"><span class="number">11</span>   <span class="number">405</span>    <span class="number">408</span></div><div class="line"><span class="number">13</span>   <span class="number">416</span>    <span class="number">417</span></div><div class="line"><span class="number">16</span>   <span class="number">418</span>     <span class="literal">NA</span></div></pre></td></tr></table></figure>
+<p>现在使用sqldf包来操作，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">query &lt;- </div><div class="line">  <span class="string">"SELECT </span></div><div class="line"><span class="string">    VolCT, </span></div><div class="line"><span class="string">    VolCT2 </span></div><div class="line"><span class="string">  FROM </span></div><div class="line"><span class="string">    deer_endocranial_volume </span></div><div class="line"><span class="string">  WHERE </span></div><div class="line"><span class="string">    VolCT &gt; 400 OR </span></div><div class="line"><span class="string">    VolCT2 &gt; 400"</span> </div><div class="line">sqldf(query)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; query &lt;- </div><div class="line">+     <span class="string">"SELECT </span></div><div class="line"><span class="string">+     VolCT, </span></div><div class="line"><span class="string">+     VolCT2 </span></div><div class="line"><span class="string">+   FROM </span></div><div class="line"><span class="string">+     deer_endocranial_volume </span></div><div class="line"><span class="string">+   WHERE </span></div><div class="line"><span class="string">+     VolCT &gt; 400 OR </span></div><div class="line"><span class="string">+     VolCT2 &gt; 400"</span> </div><div class="line">&gt; sqldf(query)</div><div class="line">  VolCT VolCT2</div><div class="line"><span class="number">1</span>   <span class="number">410</span>    <span class="number">413</span></div><div class="line"><span class="number">2</span>   <span class="number">405</span>    <span class="number">408</span></div><div class="line"><span class="number">3</span>   <span class="number">416</span>    <span class="number">417</span></div><div class="line"><span class="number">4</span>   <span class="number">418</span>     <span class="literal">NA</span></div></pre></td></tr></table></figure>
+<p>具体的SQL语法可以参考专业的SQL书籍。</p>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
 <li><a href="http://mp.weixin.qq.com/s?__biz=MzI3MTM3OTExNQ==&amp;mid=2247484766&amp;idx=1&amp;sn=dcc57331b24218554e0460805939dcb8&amp;chksm=eac3fa9addb4738ca192ef01d1b92cfd0f78cdd0475c13feadece8f9f6cad2ae083615c84d52&amp;mpshare=1&amp;scene=1&amp;srcid=1001zguL8UAOBMPnRamkpY1x#rd" target="_blank" rel="external">时光加速器－dplyr.李楠 克里克学苑</a></li>
 <li><a href="http://blog.fens.me/r-tibble/" target="_blank" rel="external">R语言数据科学新类型tibble</a></li>
+<li>学习R.[美] Richard，Cotton 著刘军 译</li>
 </ol>
 
           
@@ -3876,300 +4197,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/08/R/字符串与日期与格式化代码/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/04/08/R/字符串与日期与格式化代码/" itemprop="url">R语言笔记之字符串-日期-格式化代码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-08T12:00:00+08:00">
-                2017-04-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index">
-                    <span itemprop="name">R</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,236
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  14
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="字符串常用函数">字符串常用函数</h2>
-<p>is.character()：判断是否是字符串； nchar()：有几个字符； length()：变量的长度 如下所示</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; x &lt;- <span class="string">"Hello, World!"</span>;x</div><div class="line">[<span class="number">1</span>] <span class="string">"Hello, World!"</span></div><div class="line">&gt; is.character(x)</div><div class="line">[<span class="number">1</span>] <span class="literal">TRUE</span></div><div class="line">&gt; length(x)</div><div class="line">[<span class="number">1</span>] <span class="number">1</span></div><div class="line">&gt; nchar(x)</div><div class="line">[<span class="number">1</span>] <span class="number">13</span></div><div class="line">&gt; x2 &lt;- c(<span class="string">"Hello"</span>,<span class="string">"World!"</span>)</div><div class="line">&gt; length(x2)</div><div class="line">[<span class="number">1</span>] <span class="number">2</span></div><div class="line">&gt; nchar(x2)</div><div class="line">[<span class="number">1</span>] <span class="number">5</span> <span class="number">6</span></div></pre></td></tr></table></figure>
-<h2 id="内置数据集"> 内置数据集</h2>
-<p>R中有两个内置数据集，分别为LETTERS和letters，分别为大写字母和小写字母，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; letters</div><div class="line"> [<span class="number">1</span>] <span class="string">"a"</span> <span class="string">"b"</span> <span class="string">"c"</span> <span class="string">"d"</span> <span class="string">"e"</span> <span class="string">"f"</span> <span class="string">"g"</span> <span class="string">"h"</span> <span class="string">"i"</span> <span class="string">"j"</span> <span class="string">"k"</span> <span class="string">"l"</span> <span class="string">"m"</span> <span class="string">"n"</span> <span class="string">"o"</span> <span class="string">"p"</span> <span class="string">"q"</span> <span class="string">"r"</span> <span class="string">"s"</span> <span class="string">"t"</span></div><div class="line">[<span class="number">21</span>] <span class="string">"u"</span> <span class="string">"v"</span> <span class="string">"w"</span> <span class="string">"x"</span> <span class="string">"y"</span> <span class="string">"z"</span></div><div class="line">&gt; LETTERS</div><div class="line"> [<span class="number">1</span>] <span class="string">"A"</span> <span class="string">"B"</span> <span class="string">"C"</span> <span class="string">"D"</span> <span class="string">"E"</span> <span class="string">"F"</span> <span class="string">"G"</span> <span class="string">"H"</span> <span class="string">"I"</span> <span class="string">"J"</span> <span class="string">"K"</span> <span class="string">"L"</span> <span class="string">"M"</span> <span class="string">"N"</span> <span class="string">"O"</span> <span class="string">"P"</span> <span class="string">"Q"</span> <span class="string">"R"</span> <span class="string">"S"</span> <span class="string">"T"</span></div><div class="line">[<span class="number">21</span>] <span class="string">"U"</span> <span class="string">"V"</span> <span class="string">"W"</span> <span class="string">"X"</span> <span class="string">"Y"</span> <span class="string">"Z"</span></div><div class="line">&gt; letters[<span class="number">2</span>:<span class="number">5</span>]</div><div class="line">[<span class="number">1</span>] <span class="string">"b"</span> <span class="string">"c"</span> <span class="string">"d"</span> <span class="string">"e"</span></div><div class="line">&gt; LETTERS[<span class="number">4</span>:<span class="number">9</span>]</div><div class="line">[<span class="number">1</span>] <span class="string">"D"</span> <span class="string">"E"</span> <span class="string">"F"</span> <span class="string">"G"</span> <span class="string">"H"</span> <span class="string">"I"</span></div></pre></td></tr></table></figure></p>
-<h2 id="字符串的连接和分离">字符串的连接和分离</h2>
-<h3 id="字符串的分离strsplit"> 字符串的分离<code>strsplit()</code></h3>
-<p><code>strsplit()</code>函数用于分离字符串，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">pangram &lt;- <span class="string">"The quick brown fox jumps over the lazy dog"</span></div><div class="line">pangram</div><div class="line">length(pangram)</div><div class="line">str(pangram)</div><div class="line">pangram_split &lt;- strsplit(pangram, <span class="string">" "</span>)</div><div class="line">pangram_split</div><div class="line">length(pangram_split[[<span class="number">1</span>]])</div><div class="line">str(pangram_split)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt; pangram &lt;- <span class="string">"The quick brown fox jumps over the lazy dog"</span></div><div class="line">&gt; pangram</div><div class="line">[<span class="number">1</span>] <span class="string">"The quick brown fox jumps over the lazy dog"</span></div><div class="line">&gt; length(pangram)</div><div class="line">[<span class="number">1</span>] <span class="number">1</span></div><div class="line">&gt; str(pangram)</div><div class="line"> chr <span class="string">"The quick brown fox jumps over the lazy dog"</span></div><div class="line">&gt; pangram_split &lt;- strsplit(pangram, <span class="string">" "</span>)</div><div class="line">&gt; pangram_split</div><div class="line">[[<span class="number">1</span>]]</div><div class="line">[<span class="number">1</span>] <span class="string">"The"</span>   <span class="string">"quick"</span> <span class="string">"brown"</span> <span class="string">"fox"</span>   <span class="string">"jumps"</span> <span class="string">"over"</span>  <span class="string">"the"</span>   <span class="string">"lazy"</span>  <span class="string">"dog"</span>  </div><div class="line"></div><div class="line">&gt; length(pangram_split[[<span class="number">1</span>]])</div><div class="line">[<span class="number">1</span>] <span class="number">9</span></div><div class="line">&gt; str(pangram_split)</div><div class="line">List of <span class="number">1</span></div><div class="line"> $ : chr [<span class="number">1</span>:<span class="number">9</span>] <span class="string">"The"</span> <span class="string">"quick"</span> <span class="string">"brown"</span> <span class="string">"fox"</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<h3 id="字符串的连接paste"> 字符串的连接<code>paste()</code></h3>
-<p>字符串的连接用的是paste函数，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; paste(c(<span class="string">"hello"</span>,<span class="string">"world"</span>))</div><div class="line">[<span class="number">1</span>] <span class="string">"hello"</span> <span class="string">"world"</span></div></pre></td></tr></table></figure></p>
-<p>在为某些数据添加新的一列，进行分组时，很有用，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; myvars&lt;-paste(<span class="string">"q"</span>,<span class="number">1</span>:<span class="number">5</span>,sep=<span class="string">""</span>) <span class="comment"># 将q分别与1到5这五个数字连接起来</span></div><div class="line">&gt; myvars</div><div class="line">[<span class="number">1</span>] <span class="string">"q1"</span> <span class="string">"q2"</span> <span class="string">"q3"</span> <span class="string">"q4"</span> <span class="string">"q5"</span></div></pre></td></tr></table></figure>
-<h3 id="字符串连接的注意事项"> 字符串连接的注意事项</h3>
-<p>以字符串的分离结果为数据进行连接，结果如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; paste(result_split,collapse=<span class="string">" "</span>)-&gt;x3;x3</div><div class="line">[<span class="number">1</span>] <span class="string">"c(\"The\", \"quick\", \"brown\", \"fox\", \"jumps\", \"over\", \"the\", \"lazy\", \"dog\")"</span></div></pre></td></tr></table></figure></p>
-<p>会发现字符之间出现的斜杠，原理如下： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">List of <span class="number">1</span></div><div class="line"> $ : chr [<span class="number">1</span>:<span class="number">9</span>] <span class="string">"The"</span> <span class="string">"quick"</span> <span class="string">"brown"</span> <span class="string">"fox"</span> <span class="keyword">...</span></div><div class="line">&gt; result_split[[<span class="number">1</span>]]</div><div class="line">[<span class="number">1</span>] <span class="string">"The"</span>   <span class="string">"quick"</span> <span class="string">"brown"</span> <span class="string">"fox"</span>   <span class="string">"jumps"</span> <span class="string">"over"</span>  <span class="string">"the"</span>   <span class="string">"lazy"</span>  <span class="string">"dog"</span>  </div><div class="line">&gt; paste(result_split[[<span class="number">1</span>]],collapse = <span class="string">" "</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"The quick brown fox jumps over the lazy dog"</span></div><div class="line">&gt; str(result_split) </div><div class="line">List of <span class="number">1</span></div><div class="line"> $ : chr [<span class="number">1</span>:<span class="number">9</span>] <span class="string">"The"</span> <span class="string">"quick"</span> <span class="string">"brown"</span> <span class="string">"fox"</span> <span class="keyword">...</span></div><div class="line">&gt; paste(result_split[[<span class="number">1</span>]],collapse = <span class="string">" "</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"The quick brown fox jumps over the lazy dog"</span></div><div class="line">&gt; paste(result_split[[<span class="number">1</span>]],collapse = <span class="string">"*"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"The*quick*brown*fox*jumps*over*the*lazy*dog"</span></div></pre></td></tr></table></figure></p>
-<p>因为分离后的字符串结果为列表（list），对列表直接用paste进行连接时，容易出现这种情况，因此要对列表的第1个元素进行连接才能避免这种情况。另外，在进行连接时主，要用于collapase参数，即用什么连接，案例中使用了空格与星号进行连接。</p>
-<h3 id="同时调用sep和collapse进行连接"> 同时调用sep和collapse进行连接</h3>
-<p>以下面的这个例子中，先使用sep对不同向量进行连接，然后用collapse进行连接。 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; paste(LETTERS[<span class="number">1</span>:<span class="number">5</span>],<span class="number">1</span>:<span class="number">5</span>,sep=<span class="string">"_"</span>,collapse = <span class="string">"---"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"A_1---B_2---C_3---D_4---E_5"</span></div></pre></td></tr></table></figure></p>
-<h3 id="paste创建有规律的变量名"> paste创建有规律的变量名</h3>
-<p>创造含有sample1-5的五个元素的向量： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; paste(<span class="string">"Sample"</span>,<span class="number">1</span>:<span class="number">5</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"Sample 1"</span> <span class="string">"Sample 2"</span> <span class="string">"Sample 3"</span> <span class="string">"Sample 4"</span> <span class="string">"Sample 5"</span></div></pre></td></tr></table></figure></p>
-<h2 id="字符的排序"> 字符的排序</h2>
-<p>排序用sort(),如果要倒序，则添加<code>decreasing = TRUE</code>，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; sort(letters)</div><div class="line"> [<span class="number">1</span>] <span class="string">"a"</span> <span class="string">"b"</span> <span class="string">"c"</span> <span class="string">"d"</span> <span class="string">"e"</span> <span class="string">"f"</span> <span class="string">"g"</span> <span class="string">"h"</span> <span class="string">"i"</span> <span class="string">"j"</span> <span class="string">"k"</span> <span class="string">"l"</span> <span class="string">"m"</span> <span class="string">"n"</span> <span class="string">"o"</span> <span class="string">"p"</span> <span class="string">"q"</span> <span class="string">"r"</span> <span class="string">"s"</span> <span class="string">"t"</span></div><div class="line">[<span class="number">21</span>] <span class="string">"u"</span> <span class="string">"v"</span> <span class="string">"w"</span> <span class="string">"x"</span> <span class="string">"y"</span> <span class="string">"z"</span></div><div class="line">&gt; sort(letters,decreasing = <span class="literal">TRUE</span>)</div><div class="line"> [<span class="number">1</span>] <span class="string">"z"</span> <span class="string">"y"</span> <span class="string">"x"</span> <span class="string">"w"</span> <span class="string">"v"</span> <span class="string">"u"</span> <span class="string">"t"</span> <span class="string">"s"</span> <span class="string">"r"</span> <span class="string">"q"</span> <span class="string">"p"</span> <span class="string">"o"</span> <span class="string">"n"</span> <span class="string">"m"</span> <span class="string">"l"</span> <span class="string">"k"</span> <span class="string">"j"</span> <span class="string">"i"</span> <span class="string">"h"</span> <span class="string">"g"</span></div><div class="line">[<span class="number">21</span>] <span class="string">"f"</span> <span class="string">"e"</span> <span class="string">"d"</span> <span class="string">"c"</span> <span class="string">"b"</span> <span class="string">"a"</span></div><div class="line">&gt; sort(result_split[[<span class="number">1</span>]])</div><div class="line">[<span class="number">1</span>] <span class="string">"brown"</span> <span class="string">"dog"</span>   <span class="string">"fox"</span>   <span class="string">"jumps"</span> <span class="string">"lazy"</span>  <span class="string">"over"</span>  <span class="string">"quick"</span> <span class="string">"the"</span>   <span class="string">"The"</span></div></pre></td></tr></table></figure></p>
-<h2 id="查找文本"> 查找文本</h2>
-<p>所用的案例是美国州的名字，数据集为state.name，如果要获取字符串的子字符串，则有2种方法，分别为： 1. 通过位置：例如让R返回从第5个位置开始的紧接的第3个字母。 2. 通过模式，例如返回匹配某个模式的子集。</p>
-<h3 id="通过位置查询"> 通过位置查询</h3>
-<p>此函数为substr，现在返回state.name中各个元素的第3到第6的子字符串，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; head(state.name)</div><div class="line">[<span class="number">1</span>] <span class="string">"Alabama"</span>    <span class="string">"Alaska"</span>     <span class="string">"Arizona"</span>    <span class="string">"Arkansas"</span>   <span class="string">"California"</span> <span class="string">"Colorado"</span>  </div><div class="line">&gt; head(substr(state.name, start = <span class="number">3</span>,<span class="keyword">stop</span>=<span class="number">6</span>))</div><div class="line">[<span class="number">1</span>] <span class="string">"abam"</span> <span class="string">"aska"</span> <span class="string">"izon"</span> <span class="string">"kans"</span> <span class="string">"lifo"</span> <span class="string">"lora"</span></div></pre></td></tr></table></figure></p>
-<h3 id="通过模式查找匹配字符串"> 通过模式查找匹配字符串</h3>
-<p>grep()函数可提取子字符串，它需要2个参数： 1. pattern：想要查询的模式； 2. x：被查询的向量。</p>
-<p><strong>需要注意的是grep()函数区分大小写</strong> 现在查找名称中含有“New”的州，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; grep(<span class="string">"New"</span>,state.name)</div><div class="line">[<span class="number">1</span>] <span class="number">29</span> <span class="number">30</span> <span class="number">31</span> <span class="number">32</span></div><div class="line">&gt; grep(<span class="string">"new"</span>,state.name)</div><div class="line">integer(<span class="number">0</span>)</div></pre></td></tr></table></figure></p>
-<p>返回的是数值变量，它表示的是元素的位置，例如： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; grep(<span class="string">"New"</span>,state.name)</div><div class="line">[<span class="number">1</span>] <span class="number">29</span> <span class="number">30</span> <span class="number">31</span> <span class="number">32</span></div><div class="line">&gt; state.name[c(<span class="number">29</span>,<span class="number">30</span>)]</div><div class="line">[<span class="number">1</span>] <span class="string">"New Hampshire"</span> <span class="string">"New Jersey"</span></div></pre></td></tr></table></figure></p>
-<p>可以直接返回元素，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; state.name[grep(<span class="string">"New"</span>,state.name)]</div><div class="line">[<span class="number">1</span>] <span class="string">"New Hampshire"</span> <span class="string">"New Jersey"</span>    <span class="string">"New Mexico"</span>    <span class="string">"New York"</span></div></pre></td></tr></table></figure></p>
-<h3 id="文本替换"> 文本替换</h3>
-<p>sub()函数可以用于检索文本中的特定模式，并将其替换为其它的文本； gsub()可以实现所有的替换功能，它的三个参数为：查找的字符串，替换的字符串与被修改的文本。 例如替换A real world is cute中的cute与ugly: <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">x1 &lt;- <span class="string">"A real world is cute."</span></div><div class="line">x1</div><div class="line">gsub(<span class="string">"cute"</span>,<span class="string">"ugly"</span>,x1)</div></pre></td></tr></table></figure></p>
-<h4 id="子字符串的提取案例之一"> 子字符串的提取案例之一：</h4>
-<p>一个向量，包含3个文件名，分别为file_a.csv，file_b.csv，file_c.csv，现在要提取这3个文件名中的a、b和c，需要用两个步骤，分别为： 1. 将字符串“file_”替换为空格； 2. 将“.csv”去掉，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; x &lt;- c(<span class="string">"file_a.csv"</span>,<span class="string">"file_b.csv"</span>,<span class="string">"file_c.csv"</span>)</div><div class="line">&gt; y &lt;- gsub(<span class="string">"file_"</span>,<span class="string">""</span>,x);y</div><div class="line">[<span class="number">1</span>] <span class="string">"a.csv"</span> <span class="string">"b.csv"</span> <span class="string">"c.csv"</span></div><div class="line">&gt; gsub(<span class="string">".csv"</span>,<span class="string">""</span>,y)</div><div class="line">[<span class="number">1</span>] <span class="string">"a"</span> <span class="string">"b"</span> <span class="string">"c"</span></div></pre></td></tr></table></figure>
-<h2 id="大小写转换toupper与tolower">大小写转换toupper()与tolower()</h2>
-<p>所用到的函数是<code>toupper()</code>与<code>tolower()</code>，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; x &lt;- c(<span class="string">"word"</span>)</div><div class="line">&gt; toupper(x)</div><div class="line">[<span class="number">1</span>] <span class="string">"WORD"</span></div><div class="line">&gt; x &lt;- c(<span class="string">"word"</span>)</div><div class="line">&gt; y &lt;- c(<span class="string">"Excel"</span>)</div><div class="line">&gt; toupper(x)</div><div class="line">[<span class="number">1</span>] <span class="string">"WORD"</span></div><div class="line">&gt; tolower(y)</div><div class="line">[<span class="number">1</span>] <span class="string">"excel"</span></div></pre></td></tr></table></figure>
-<h2 id="日期格式的创建"> 日期格式的创建</h2>
-<p>日期通常以字符串的形式输入到R中，然后转化为数值形式存储的日期变量，函数as.Date()用于执行这种转化，其语法为<code>as.Date(x, &quot;input_format&quot;)</code>，其中x是 字符型数据，input_format则是读入日期的适当格式。</p>
-<p>其格式如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">%d 数字表示的日期（<span class="number">0</span>~<span class="number">31</span>） 例如<span class="number">01</span>~<span class="number">31</span></div><div class="line">%a 缩写的星期名 例如Mon</div><div class="line">%A 非缩写的星期名 例如Monday</div><div class="line">%m 月份（<span class="number">00</span>~<span class="number">12</span>） 例如<span class="number">00</span>~<span class="number">12</span></div><div class="line">%b 缩写的月份 例如Jan</div><div class="line">%B 非缩写的月份 例如January</div><div class="line">%y 两位数的年份 例如<span class="number">07</span></div><div class="line">%Y 四位数的年份  例如<span class="number">2007</span></div></pre></td></tr></table></figure>
-<p>默认的日期格式为yyyy-mm-dd，语句为： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mydates &lt;- as.Date(c(<span class="string">"2007-06-22"</span>,<span class="string">"2004-02-13"</span>))</div><div class="line">mydates</div><div class="line">str(mydates)</div></pre></td></tr></table></figure></p>
-<p>结果如下： &gt; mydates &lt;- as.Date(c(“2007-06-22”,“2004-02-13”)) &gt; mydates &gt;[1] “2007-06-22” “2004-02-13” &gt; str(mydates) &gt; Date[1:2], format: “2007-06-22” “2004-02-13”</p>
-<h3 id="weekdays函数"> weekdays()函数</h3>
-<p>返回某个日期是星期几如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">## 格式转化</span></div><div class="line">​```r</div><div class="line">&gt; strDates &lt;- c("01/05/1965", "08/16/1975")</div><div class="line">&gt; dates &lt;- as.Date(strDates, "%m/%d/%Y")</div><div class="line">#输入的日期转化为对应日期，其中%m对应为月份，%d对应为日期，%Y对应为年</div><div class="line">&gt; dates</div><div class="line">[1] "1965-01-05" "1975-08-16"</div><div class="line">&gt; str(dates)</div><div class="line"> Date[1:2], format: "1965-01-05" "1975-08-16"</div></pre></td></tr></table></figure></p>
-<h3 id="案例"> 案例：</h3>
-<p>在leadership数据集中，日期是以mm/dd/yy的格式来表示的，现在将其转化为默认的yyyy-mm-dd格式，代码为： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; myformat &lt;- <span class="string">"%m/%d/%y"</span></div><div class="line">&gt; leadership$testDate &lt;- as.Date(leadership$testDate, myformat)</div><div class="line">&gt; leadership</div><div class="line">  managerID   testDate country gender age item1 item2 item3 item4 item5 stringsAsFactor</div><div class="line"><span class="number">1</span>         <span class="number">1</span> <span class="number">2008</span>-<span class="number">10</span>-<span class="number">24</span>      US      M  <span class="number">32</span>     <span class="number">5</span>     <span class="number">4</span>     <span class="number">5</span>     <span class="number">5</span>     <span class="number">5</span>           <span class="literal">FALSE</span></div><div class="line"><span class="number">2</span>         <span class="number">2</span> <span class="number">2008</span>-<span class="number">10</span>-<span class="number">28</span>      US      <span class="literal">F</span>  <span class="number">45</span>     <span class="number">3</span>     <span class="number">5</span>     <span class="number">2</span>     <span class="number">5</span>     <span class="number">5</span>           <span class="literal">FALSE</span></div><div class="line"><span class="number">3</span>         <span class="number">3</span> <span class="number">2008</span>-<span class="number">10</span>-<span class="number">01</span>      UK      <span class="literal">F</span>  <span class="number">25</span>     <span class="number">3</span>     <span class="number">5</span>     <span class="number">5</span>     <span class="number">5</span>     <span class="number">2</span>           <span class="literal">FALSE</span></div><div class="line"><span class="number">4</span>         <span class="number">4</span> <span class="number">2008</span>-<span class="number">10</span>-<span class="number">12</span>      UK      M  <span class="number">39</span>     <span class="number">3</span>     <span class="number">3</span>     <span class="number">4</span>    <span class="literal">NA</span>    <span class="literal">NA</span>           <span class="literal">FALSE</span></div><div class="line"><span class="number">5</span>         <span class="number">5</span> <span class="number">2009</span>-<span class="number">05</span>-<span class="number">01</span>      UK      <span class="literal">F</span>  <span class="literal">NA</span>     <span class="number">2</span>     <span class="number">2</span>     <span class="number">1</span>     <span class="number">2</span>     <span class="number">1</span>           <span class="literal">FALSE</span></div><div class="line">  agecat</div><div class="line"><span class="number">1</span>  Young</div><div class="line"><span class="number">2</span>  Young</div><div class="line"><span class="number">3</span>  Young</div><div class="line"><span class="number">4</span>  Young</div><div class="line"><span class="number">5</span>   &lt;<span class="literal">NA</span>&gt;</div></pre></td></tr></table></figure></p>
-<h3 id="当前日期">当前日期</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; Sys.Date() <span class="comment"># 给出当前日期</span></div><div class="line">[<span class="number">1</span>] <span class="string">"2014-01-18"</span></div><div class="line">&gt; date() <span class="comment">#返回当前的日期和时间</span></div><div class="line">[<span class="number">1</span>] <span class="string">"Sat Jan 18 14:22:07 2014"</span></div><div class="line">&gt; today&lt;-Sys.Date()</div><div class="line">&gt; format(today,format = <span class="string">"%B %d %Y"</span>) <span class="comment"># 格式化当前日期</span></div><div class="line">[<span class="number">1</span>] <span class="string">"一月 18 2014"</span></div><div class="line">&gt; format(today,fomat =<span class="string">"%A"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"2014-01-18"</span></div></pre></td></tr></table></figure>
-<h3 id="两个日期的相减">两个日期的相减</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; startdate &lt;- as.Date(<span class="string">"2004-02-12"</span>)</div><div class="line">&gt; enddate &lt;- as.Date(<span class="string">"2011-01-22"</span>)</div><div class="line">&gt; days &lt;-enddate - startdate;days <span class="comment"># 两个时间点之差</span></div><div class="line">Time difference of <span class="number">2536</span> days</div></pre></td></tr></table></figure>
-<p>用difftime()来计算时间间隔，并以星期，天，时，分，秒来表示。 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; today &lt;- Sys.Date()</div><div class="line">&gt; dob &lt;- as.Date(<span class="string">"1956-10-12"</span>)</div><div class="line">&gt; difftime(today, dob, units=<span class="string">"weeks"</span>)</div><div class="line">Time difference of <span class="number">2988.143</span> weeks</div></pre></td></tr></table></figure></p>
-<p>as.character(dates)用于将日期转化为字符型变量，其它与日期有关的函数可以查看help(as.Date),help(strftime)，与日期有关的包为lubridate，复杂日期计算有关 的包为fCalendar。</p>
-<h2 id="格式化r代码format与sprintf">格式化R代码format()与sprintf()</h2>
-<p>这一步通常是在计算了所有的数据之后进行的，主要用于输出一份报表，使输出的数据看起来比较整齐 ，例如我们可以设置小数点对齐，或指定固定的列宽，或者是添加一些货币符号，或百分号。</p>
-<p>如果要实现上述功能，用到的函数就是<code>format()</code>，它可以将数字变成美观的文本需要注意的是，此时数字会转换为文本，也就是转换为字符串，因此这一步要在最后一步进行。<code>format()</code>的参数如下所示：</p>
-<ul>
-<li><code>trim</code>：逻辑值。FALSE表示通过添加空格现实现文本的右对齐；TRUE会去掉前面的空格；</li>
-<li><code>digits</code>：控制显示的有效数字的个数；</li>
-<li><code>nsmall</code>：小数点后最少显示多少个数字；</li>
-<li><code>decimal.mark</code>：小数点的格式；</li>
-<li><code>big.mark</code>：设置小数点前整数部分的分段符；</li>
-<li><code>small.mark</code>：设置小数点后小数部分的分段符。</li>
-</ul>
-<h4 id="案例1fromat输出小数">案例1：<code>fromat()</code>输出小数</h4>
-<p>看一个案例，我们要输出一个数字<code>12345.6789</code>，以<code>逗号作为小数点</code>，<code>空格作为整数部分的分段符</code>，<code>点号</code>作为小数部分的分段符（分段则是3个数字作为一段），如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">format(<span class="number">12345.6789</span>, diits = <span class="number">9</span>, decimal.mark=<span class="string">","</span>,</div><div class="line">       big.mark = <span class="string">" "</span>, small.mark = <span class="string">"."</span>, small.interval = <span class="number">3</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; format(<span class="number">12345.6789</span>, diits = <span class="number">9</span>, decimal.mark=<span class="string">","</span>,</div><div class="line">+        big.mark = <span class="string">" "</span>, small.mark = <span class="string">"."</span>, small.interval = <span class="number">3</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"12 345,68"</span></div></pre></td></tr></table></figure>
-<p>使用<code>print()</code>函数时，也可以使用<code>digits</code>参数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; print(<span class="number">11</span>/<span class="number">3</span>,digits=<span class="number">3</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">3.67</span></div></pre></td></tr></table></figure>
-<h4 id="案例2format输出列表">案例2：<code>format()</code>输出列表</h4>
-<p>计算<code>mtcars</code>中某几列的平均值，并且以两位小数的形式将其输出，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x &lt;- colMeans(mtcars[,<span class="number">1</span>:<span class="number">4</span>])</div><div class="line">format(x, digits = <span class="number">2</span>, nsamll = <span class="number">2</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; x &lt;- colMeans(mtcars[,<span class="number">1</span>:<span class="number">4</span>])</div><div class="line">&gt; format(x, digits = <span class="number">2</span>, nsamll = <span class="number">2</span>)</div><div class="line">    mpg     cyl    disp      hp </div><div class="line"><span class="string">" 20.1"</span> <span class="string">"  6.2"</span> <span class="string">"230.7"</span> <span class="string">"146.7"</span></div></pre></td></tr></table></figure>
-<h4 id="案例3sprintf添加百分号">案例3：<code>sprintf()</code>添加百分号<code>%</code></h4>
-<p><code>sprintf</code>是一种能够使用输出的字符以C语言的风格进行格式化，<code>sprintf</code>的第一个参数包含字符串或数字变量的点位符，其他参数则将逐个代入这些占位符<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>。</p>
-<p>如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">y &lt;- seq(<span class="number">0.5</span>, <span class="number">0.55</span>, <span class="number">0.01</span>)</div><div class="line">sprintf(<span class="string">"%.1f %%"</span>, <span class="number">100</span>*y)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; sprintf(<span class="string">"%.1f %%"</span>, <span class="number">100</span>*y)</div><div class="line">[<span class="number">1</span>] <span class="string">"50.0 %"</span> <span class="string">"51.0 %"</span> <span class="string">"52.0 %"</span> <span class="string">"53.0 %"</span> <span class="string">"54.0 %"</span> <span class="string">"55.0 %"</span></div></pre></td></tr></table></figure>
-<p>解释一下：<code>&quot;%.1f %%&quot;, 100*y</code>是用来格式化字符串的，这在C与Python中很常见，这是告诉函数要将哪此部分远的为变量，<code>%.1f</code>表示将传入的第一个值进行格式化，要求显示小数点后一位数字 ，<code>%%</code>则是表示输出一个<code>%</code>。</p>
-<h4 id="案例4sprintf输出货币格式">案例4：<code>sprintf()</code>输出货币格式</h4>
-<p>输出货币格式只需要在<code>sprintf()</code>函数中添加上一个<code>$</code>符号即可，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1000</span>)</div><div class="line">z &lt;- <span class="number">1000</span>*runif(<span class="number">5</span>)</div><div class="line">sprintf(<span class="string">"$ %3.2f"</span>, z)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; set.seed(<span class="number">1000</span>)</div><div class="line">&gt; z &lt;- <span class="number">1000</span>*runif(<span class="number">5</span>)</div><div class="line">&gt; sprintf(<span class="string">"$ %3.2f"</span>, z)</div><div class="line">[<span class="number">1</span>] <span class="string">"$ 327.88"</span> <span class="string">"$ 758.85"</span> <span class="string">"$ 113.94"</span> <span class="string">"$ 690.76"</span> <span class="string">"$ 516.40"</span></div></pre></td></tr></table></figure>
-<h4 id="案例5sprintf替换变量">案例5：<code>sprintf()</code>替换变量</h4>
-<p>再看一个<code>sprintf()</code>函数的案例，这个在Python或C中会经常遇到：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">stuff &lt;- c(<span class="string">"bread"</span>, <span class="string">"cookies"</span>)</div><div class="line">price &lt;- c(<span class="number">2.1</span>, <span class="number">4</span>)</div><div class="line">sprintf(<span class="string">"%s costed $ %3.2f"</span>, stuff, price)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; stuff &lt;- c(<span class="string">"bread"</span>, <span class="string">"cookies"</span>)</div><div class="line">&gt; price &lt;- c(<span class="number">2.1</span>, <span class="number">4</span>)</div><div class="line">&gt; sprintf(<span class="string">"%s costed $ %3.2f"</span>, stuff, price)</div><div class="line">[<span class="number">1</span>] <span class="string">"bread costed $ 2.10"</span>   <span class="string">"cookies costed $ 4.00"</span></div></pre></td></tr></table></figure>
-<h2 id="formatc使用c语言风格格式化数字"><code>formatC()</code>使用C语言风格格式化数字</h2>
-<p><code>formatC</code>可以使用C语言风格来输出字符串，可以指定使用固定型或科学型的格式，小数的位数以及输出的宽度，无论使用哪种选项，输入都应该是numeric类型（包括数组），输出的是character字符向量或数组，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; pow &lt;- <span class="number">1</span>:<span class="number">3</span></div><div class="line">&gt; formatC(pow)</div><div class="line">[<span class="number">1</span>] <span class="string">"1"</span> <span class="string">"2"</span> <span class="string">"3"</span></div><div class="line">&gt; powers_of_e &lt;- exp(pow)</div><div class="line">&gt; powers_of_e</div><div class="line">[<span class="number">1</span>]  <span class="number">2.718282</span>  <span class="number">7.389056</span> <span class="number">20.085537</span></div><div class="line">&gt; formatC(powers_of_e)</div><div class="line">[<span class="number">1</span>] <span class="string">"2.718"</span> <span class="string">"7.389"</span> <span class="string">"20.09"</span></div><div class="line">&gt; formatC(powers_of_e,digits=<span class="number">3</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"2.72"</span> <span class="string">"7.39"</span> <span class="string">"20.1"</span></div><div class="line">&gt; formatC(powers_of_e,digits=<span class="number">3</span>,width = <span class="number">10</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"      2.72"</span> <span class="string">"      7.39"</span> <span class="string">"      20.1"</span></div></pre></td></tr></table></figure>
-<h2 id="特殊字符">特殊字符</h2>
-<p>有一些特殊字符可以被以包含在字符中，例如我们可以通过<code>\t</code>来插入一个制表符，下面我们使用<code>cat()</code>函数来输出这种特殊字符，这里不使用<code>print()</code>是因为print执行的额外转换动作会所制表符<code>\t</code>转换成反斜框和一个<code>t.</code>。cat的参数<code>fill = TRUE</code>使光标在一行结束后移动到下一行，如下所示<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; cat(<span class="string">"foo\tbar"</span>, fill=<span class="literal">TRUE</span>)</div><div class="line">foo	bar</div></pre></td></tr></table></figure>
-<p>使用<code>\n</code>可以输出换行符，如下扬尘：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; cat(<span class="string">"foo\nbar"</span>, fill = <span class="literal">TRUE</span>)</div><div class="line">foo</div><div class="line">bar</div></pre></td></tr></table></figure>
-<p>这里的转义字符与Python语言类似，不再多述。</p>
-<h2 id="文件路径">文件路径</h2>
-<p>参考<a href="http://rvdsd.top/2017/04/10/R/%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AF%BC%E5%85%A5%E4%B8%8E%E5%AF%BC%E5%87%BA/">《数据的导入与导出》</a>那篇笔记。</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>R语言轻松入门与提高 [法]Andrie de Vries ,[比利时]Joris Mey</li>
-</ol>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>学习R.[美] Richard，Cotton 著刘军 译<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>学习R.[美] Richard，Cotton 著刘军 译<a href="#fnref2">↩</a></p></li>
-</ol>
-</div>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4220,7 +4247,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">158</span>
+                  <span class="site-state-item-count">159</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4316,7 +4343,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共600.5k字</span>
+  <span class="post-count">博客全站共603.1k字</span>
 </div>
 
         
