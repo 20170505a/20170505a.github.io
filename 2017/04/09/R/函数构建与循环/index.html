@@ -89,7 +89,7 @@
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190621203341.png">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190621205945.png">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190617074809.png">
-<meta property="og:updated_time" content="2019-06-22T02:16:36.370Z">
+<meta property="og:updated_time" content="2019-07-05T01:21:48.490Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="R语言笔记之函数构建">
 <meta name="twitter:description" content="函数的编写 格式如下所示： 123456函数名 &amp;lt;- function(数据,参数1=默认值,...)&amp;#123;异常处理;表达式(循环/判别);return(返回值);&amp;#125; 函数案例A 输入直角三角形的两个边长，求斜边长 12345rcal &amp;lt;- function(x,y)&amp;#123; z &amp;lt;- x^2 + y^2 result &amp;lt;- sqrt(z) r">
@@ -351,7 +351,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  6,569
+                  6,998
                 </span>
               
 
@@ -367,7 +367,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  28
+                  30
                 </span>
               
             </div>
@@ -598,9 +598,22 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">optimise(revenue, interval = c(<span class="number">50</span>, <span class="number">150</span>), maximum = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
 <p>计算结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; optimise(revenue, interval = c(<span class="number">50</span>, <span class="number">150</span>), maximum = <span class="literal">TRUE</span>)</div><div class="line">$maximum</div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div><div class="line"></div><div class="line">$objective</div><div class="line">[<span class="number">1</span>] <span class="number">5000</span></div></pre></td></tr></table></figure>
+<h2 id="replicate函数"><code>replicate</code>函数</h2>
+<p><code>replicate</code>函数与<code>rep</code>函数类似，<code>rep</code>函数的功能是将一个参数重复数次，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; rep(<span class="number">1</span>,<span class="number">4</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span></div><div class="line">&gt; rep(c(<span class="number">1</span>,<span class="number">4</span>),<span class="number">3</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">1</span> <span class="number">4</span> <span class="number">1</span> <span class="number">4</span> <span class="number">1</span> <span class="number">4</span></div></pre></td></tr></table></figure>
+<p>而<code>replicate</code>函数则是把某个表达式重复计算数次，多数情况下，它们的计算结果都相同，除非是使用了随机数时才有可能不同，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; replicate(<span class="number">5</span>, runif(<span class="number">1</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">0.7306532</span> <span class="number">0.8837189</span> <span class="number">0.5781437</span> <span class="number">0.2151454</span> <span class="number">0.4487271</span></div><div class="line">&gt; rep(runif(<span class="number">1</span>),<span class="number">5</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.7360304</span> <span class="number">0.7360304</span> <span class="number">0.7360304</span> <span class="number">0.7360304</span> <span class="number">0.7360304</span></div></pre></td></tr></table></figure>
+<p><code>replicate</code>函数的这种功能在比较复杂的例子中使用很广，例如Monte Carlo个分析中。</p>
+<p>现在看一个比较简单的案例。</p>
+<p>在这个案例中，我们会分析某人上下班时使用不同交通工具所花费的时间，我们在这个案例中会创建一个<code>time_for_commute</code>函数，这个函数用<code>sample</code>随机挑选一种交通工具（小汽车、公交车或自行车），然后使用<code>rnorm</code>或<code>rlnorm</code>找到一个正态分布或对数正态分布的行程时间，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">time_for_commute &lt;- <span class="keyword">function</span>()&#123;</div><div class="line">  <span class="comment"># select communication tool</span></div><div class="line">  mode_of_transport &lt;- sample(</div><div class="line">    c(<span class="string">"car"</span>, <span class="string">"bus"</span>, <span class="string">"train"</span>, <span class="string">"bike"</span>),</div><div class="line">    size = <span class="number">1</span>,</div><div class="line">    prob = c(<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.4</span>)</div><div class="line">)</div><div class="line">  time &lt;- <span class="keyword">switch</span>(</div><div class="line">    mode_of_transport,</div><div class="line">    car = rlnorm(<span class="number">1</span>, log(<span class="number">30</span>), <span class="number">0.5</span>),</div><div class="line">    bus = rlnorm(<span class="number">1</span>, log(<span class="number">40</span>), <span class="number">0.5</span>),</div><div class="line">    train = rnorm(<span class="number">1</span>, <span class="number">30</span>, <span class="number">10</span>),</div><div class="line">    bike = rnorm(<span class="number">1</span>, <span class="number">60</span>, <span class="number">5</span>))</div><div class="line">  names(time) &lt;- mode_of_transport</div><div class="line">  time</div><div class="line">&#125;</div><div class="line"></div><div class="line">replicate(<span class="number">5</span>, time_for_commute())</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; replicate(<span class="number">5</span>, time_for_commute())</div><div class="line">   train      bus      bus     bike      bus </div><div class="line"><span class="number">56.38663</span> <span class="number">53.76305</span> <span class="number">29.99244</span> <span class="number">60.87293</span> <span class="number">98.38907</span></div></pre></td></tr></table></figure>
+<p>代码解释：<code>switch</code>语句很难使这个函数被量化，这就说明，为了找到上下班时间的分布，我们需要多次调用<code>time_for_commute</code>来生成每天的数据。</p>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
 <li>R语言轻松入门与提高 [法]Andrie de Vries ,[比利时]Joris Mey [法] Andrie de Vries 著</li>
+<li>学习R.[美] Richard，Cotton 著刘军 译</li>
 </ol>
 
       
@@ -636,8 +649,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/04/10/R/R语言笔记之循环语句/" rel="prev" title="R语言笔记之循环语句">
-                R语言笔记之循环语句 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/04/10/R/数据的导入与导出/" rel="prev" title="R语言笔记之数据的导入与导出">
+                R语言笔记之数据的导入与导出 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -719,7 +732,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">159</span>
+                  <span class="site-state-item-count">158</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -776,7 +789,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数的编写"><span class="nav-number">1.</span> <span class="nav-text">函数的编写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数案例a"><span class="nav-number">1.1.</span> <span class="nav-text">函数案例A</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数案例b"><span class="nav-number">1.2.</span> <span class="nav-text">函数案例B</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数案例c-转换百分比"><span class="nav-number">1.3.</span> <span class="nav-text">函数案例C-转换百分比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的返回结果"><span class="nav-number">1.4.</span> <span class="nav-text">函数的返回结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的简化"><span class="nav-number">1.5.</span> <span class="nav-text">函数的简化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#给函数添加更多的参数"><span class="nav-number">1.6.</span> <span class="nav-text">给函数添加更多的参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#设置默认值"><span class="nav-number">1.6.1.</span> <span class="nav-text">设置默认值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三点参数"><span class="nav-number">1.6.2.</span> <span class="nav-text">三点参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将函数当作参数"><span class="nav-number">1.7.</span> <span class="nav-text">将函数当作参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匿名函数"><span class="nav-number">1.8.</span> <span class="nav-text">匿名函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数匹配"><span class="nav-number">1.9.</span> <span class="nav-text">函数匹配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理作用域"><span class="nav-number">2.</span> <span class="nav-text">处理作用域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的检索路径"><span class="nav-number">2.1.</span> <span class="nav-text">函数的检索路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用内部函数"><span class="nav-number">2.2.</span> <span class="nav-text">使用内部函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法分配"><span class="nav-number">2.3.</span> <span class="nav-text">方法分配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过usemethod调用方法"><span class="nav-number">2.3.1.</span> <span class="nav-text">通过UseMethod调用方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用默认方法"><span class="nav-number">2.3.2.</span> <span class="nav-text">使用默认方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现自己的通用函数"><span class="nav-number">2.3.3.</span> <span class="nav-text">实现自己的通用函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数返回多个结果"><span class="nav-number">3.</span> <span class="nav-text">函数返回多个结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用单变量求解函数方程"><span class="nav-number">4.</span> <span class="nav-text">使用单变量求解函数方程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数的编写"><span class="nav-number">1.</span> <span class="nav-text">函数的编写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数案例a"><span class="nav-number">1.1.</span> <span class="nav-text">函数案例A</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数案例b"><span class="nav-number">1.2.</span> <span class="nav-text">函数案例B</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数案例c-转换百分比"><span class="nav-number">1.3.</span> <span class="nav-text">函数案例C-转换百分比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的返回结果"><span class="nav-number">1.4.</span> <span class="nav-text">函数的返回结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的简化"><span class="nav-number">1.5.</span> <span class="nav-text">函数的简化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#给函数添加更多的参数"><span class="nav-number">1.6.</span> <span class="nav-text">给函数添加更多的参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#设置默认值"><span class="nav-number">1.6.1.</span> <span class="nav-text">设置默认值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三点参数"><span class="nav-number">1.6.2.</span> <span class="nav-text">三点参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将函数当作参数"><span class="nav-number">1.7.</span> <span class="nav-text">将函数当作参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匿名函数"><span class="nav-number">1.8.</span> <span class="nav-text">匿名函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数匹配"><span class="nav-number">1.9.</span> <span class="nav-text">函数匹配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理作用域"><span class="nav-number">2.</span> <span class="nav-text">处理作用域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的检索路径"><span class="nav-number">2.1.</span> <span class="nav-text">函数的检索路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用内部函数"><span class="nav-number">2.2.</span> <span class="nav-text">使用内部函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法分配"><span class="nav-number">2.3.</span> <span class="nav-text">方法分配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过usemethod调用方法"><span class="nav-number">2.3.1.</span> <span class="nav-text">通过UseMethod调用方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用默认方法"><span class="nav-number">2.3.2.</span> <span class="nav-text">使用默认方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现自己的通用函数"><span class="nav-number">2.3.3.</span> <span class="nav-text">实现自己的通用函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数返回多个结果"><span class="nav-number">3.</span> <span class="nav-text">函数返回多个结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用单变量求解函数方程"><span class="nav-number">4.</span> <span class="nav-text">使用单变量求解函数方程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#replicate函数"><span class="nav-number">5.</span> <span class="nav-text">replicate函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -831,7 +844,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共597.7k字</span>
+  <span class="post-count">博客全站共600.5k字</span>
 </div>
 
         
