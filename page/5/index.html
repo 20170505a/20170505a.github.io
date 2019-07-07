@@ -2134,7 +2134,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/07/StatQuest/生物统计-StatQuest学习笔记05-线性模型/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/10/StatQuest/生物统计-StatQuest学习笔记09-Fisher精确检验/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -2153,7 +2153,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/06/07/StatQuest/生物统计-StatQuest学习笔记05-线性模型/" itemprop="url">StatQuest学习笔记05——线性模型</a></h1>
+                <a class="post-title-link" href="/2018/06/10/StatQuest/生物统计-StatQuest学习笔记09-Fisher精确检验/" itemprop="url">StatQuest学习笔记09——Fisher精确检验</a></h1>
         
 
         <div class="post-meta">
@@ -2165,8 +2165,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-07T12:10:54+08:00">
-                2018-06-07
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-10T12:10:54+08:00">
+                2018-06-10
               </time>
             
 
@@ -2221,7 +2221,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  12,136
+                  1,007
                 </span>
               
 
@@ -2237,7 +2237,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  47
+                  4
                 </span>
               
             </div>
@@ -2260,1267 +2260,75 @@
       
         
           
-            <h2 id="前言主要内容">前言——主要内容</h2>
-<p>这篇笔记是StatQuest视频教程的第16到22。其中第16内容是线性回归（Linear Regression，它也叫一般线性模型 即General Linear Models）的基本原理；第17内容是在R语言中进行线性回归；第18内容是多重线性回归；第19内容是R主语言与多重线性回归；第20内容是一般线性模型中的t检验与ANOVA；第21内容是设计矩阵；第22内容是在R语言中设计矩阵。</p>
-<h2 id="线性回归主要思想">线性回归主要思想</h2>
-<p>线性回归的主要思想就是利用最小二乘法找到最佳拟合曲线，计算<span class="math inline">\({R}^2\)</span>，计算p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093039.png">
-
-</div>
-<p>在第4篇笔记中，我们利用了最小二乘法计算了小鼠的体重与大小的线性关系，具体的计算过程可以参见上一篇笔记，最终的线性回归方程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093122.png">
-
-</div>
-<p>由于这个方程的斜率不为0，因此我们知道小鼠的体重的话，就能够预测小鼠的大小。此时我们要看一下这个回归方程的好坏程度，也就是看一下<span class="math inline">\({R}^2\)</span>的意义，第一步，计算小鼠的平均大小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093137.png">
-
-</div>
-<p>将这些小鼠大小的点投射到y轴上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093153.png">
-
-</div>
-<p>下图中的黑色横线就是小鼠大小的平均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093205.png">
-
-</div>
-<p>接着计算离均差平方和（SS），这里需要与残差平方和进行区分。</p>
-<p>离均差平方和是指一组数据中，每个数据与均值差值的平方，英文就是SS，全称为sum of squares of deviation from mean ），而残差平方和（SSE）是指观察值与拟合值之间的差异的平方，图计算的是SS：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093217.png">
-
-</div>
-<p>SS的公式，而这组数据的方差则是指SS除以样本数，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093228.png">
-
-</div>
-<p>此时再回到原始数据，我们将通过最小二乘得到的曲线与每个原始值差值的平方加起来，这个是残差平方和SS(fit)（这个其实就是上篇笔记中提到的SSE），残差平方和除以样本数，就是残差的平均方差（即Var(fit)=SS(fit)/n，这个值没有找到相应的术语），它的公式如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093239.png">
-
-</div>
-<p>通常来说，变异等于总的离均差平方和除以样本数，也就是均方差，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093256.png">
-
-</div>
-<p>下图的左图是小鼠的大小的变异（variance），右图是原始数据与回归曲线之间的变异：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093309.png">
-
-</div>
-<p>如果将上述左图的点与自身均值差值的平方和与右图中原始数据的点和拟合的曲线的距离相比，右边这种通过最小二乘法得到的曲线的变异更小。因此我们在右图中可以知道，如果考虑了小鼠的体重，那么这条曲线可以解释小鼠大小的变异，也就是说，小鼠体重越大，它的大小就越大，反之，也是如此，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093319.png">
-
-</div>
-<p><span class="math inline">\({R}^2\)</span>指的就是小鼠的体重可以解释小鼠大小的程度，它的公式如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093343.png">
-
-</div>
-<p>经计算，发现原始数据的均方差为11.1，拟合曲线的均方差为4.4，那么<span class="math inline">\({R}^2\)</span>的结果如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093429.png">
-
-</div>
-<p>从上图我们可以说，当考虑了小鼠的体重时，小鼠的大小的变异程度会降低60%（这是与原始数据只考虑小鼠的大小，不考虑小鼠的体重相比），也可以说，小鼠大小的变异可以解释小鼠体重变异的60%。</p>
-<p>我们也可以采用平方和来计算，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093445.png">
-
-</div>
-<p>我们再看一个案例，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093619.png">
-
-</div>
-<p>在这个案例中，拟合曲线的变异是0，因此小鼠的体重可以解释小鼠大小100%的变异。</p>
-<p>再看一个案例，在这个案例中，我们知道小鼠的体重，但是无法根据小鼠的体重来预测小鼠的大小，因为原始数据的变异为11.1，拟合曲线的变异也是11.1，那么<span class="math inline">\({R}^2\)</span>就等于0，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093629.png">
-
-</div>
-<p>当我们计算离均差平方和（SS(mean)）时，我们会将忽略小鼠的体重，将每个数据点投射到y轴（也就是小鼠的大小上），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093653.png">
-
-</div>
-<p>此时我们绘制一条小鼠大小的平均值曲线，如下图所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093704.png">
-
-</div>
-<p>此时计算这些数据点距离这个平均值曲线的距离，也就是SS(mean）)，最终我们会得到这个回归曲线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093716.png">
-
-</div>
-<p>以上就是最小二乘法求线性回归的基本思想，它可以应用到更复杂的公式中去，它的思想就是，先计算原始数据的离均差平方和SS(mean)，再计算这些数据与拟合曲线的的差值平方和，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093729.png">
-
-</div>
-<h2 id="复杂案例">复杂案例</h2>
-<p>此时我们再看一个稍微复杂的案例。</p>
-<p>还是以小鼠为例说明，如果我们知道小鼠的体重（<code>weight</code>），尾巴长度（<code>tail length</code>）和小鼠的身体长度（<code>body length</code>），我们就可以根据前两个变量来预测第三个变量，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093740.png">
-
-</div>
-<p>此时，我们将这3个变量投射到一个三维坐标系中，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093757.png">
-
-</div>
-<p>例如我们有一个数据，它在坐标中的位置就如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093807.png">
-
-</div>
-<p>现在把所有的数据点都放到这个坐标中，则如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093825.png">
-
-</div>
-<p>此时，我们利用最小二乘法来计算拟合曲线，由于这是三维坐标，这个曲线其实是不是曲线（在二维坐标中是曲线，在三维坐标中就是一个平面了），而是一个平面，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093836.png">
-
-</div>
-<p>这个平面的方程就如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093907.png">
-
-</div>
-<p>其中，y是身体长度，x是体重，z是尾巴长度，而0.1则是在y轴上的截矩。如果我们知道一个小鼠的体重和尾巴长度，那么我们就能计算出小鼠的身体长度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093920.png">
-
-</div>
-<p>此时，我们按照二维坐标的计算方式来计算<span class="math inline">\({R}^2\)</span>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093932.png">
-
-</div>
-<p>此时，这个z轴数据是没用的，它并不会用于计算SS(fit)，此时可以将z值视为0并不会影响预测小鼠的身体长度，然后使用最小二乘法，如下所示（这一步的推导过程我不理解）：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707093947.png">
-
-</div>
-<p>在上图中，把z视为0，意味着，与更少的参数相比，更多的参数并不会让SS(fit)更差（字面翻译，具体原理还没弄懂）。换句话说，像下面的这个公式那样：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094001.png">
-
-</div>
-<p>虽然Mouse size这个等号后面有很多参数，但是这个公式与下面Mouse size = 0.3 + mouse weight是差不多的，剔除的那几个参数并不会影响Mouse size，因此可以把那些不必要的参数系数设为0，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094010.png">
-
-</div>
-<p>由于存在一些随机因素，小老鼠在这个数据集中得到硬币朝上（get heads）概率并不比大老鼠的高，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094028.png">
-
-</div>
-<p>因此在这个公式中，如果有更多的参数，那么我们就有了更多的随机事情来降低SS(fit)，导致产生一个更好的<span class="math inline">\({R}^2\)</span>，因此人们会使用一个调整的<span class="math inline">\({R}^2\)</span>（adjusted <span class="math inline">\({R}^2\)</span>，从本质上来讲，就是参数的数据来对<span class="math inline">\({R}^2\)</span>进行校正。</p>
-<p><span class="math inline">\({R}^2\)</span>虽然是一个很重要的指标，但是它也有一些局限，看下面的案例：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094042.png">
-
-</div>
-<p>在上图中，只有2个点，计算的SS(mean)=10，SS(fit)=0，后者等于0是因为你总能画出经过两个点的直线，并求出其方程，因此求出的R的平方就是100%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094053.png">
-
-</div>
-<p>虽然R的平方是100%，这是一个很好的数字，但是任意两个数字都能得到同样的R的平方（其实在利用Qubit测文库的时候，就只是使用了2个标准品，标准品虽然含量非常准，但也是一个非常粗糙的估计，因此在对文库进行定量时，还要配合使用qPCR），下面的这两个数字得到的R的平方也是100%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094106.png">
-
-</div>
-<p>为了解决这个问题，我们需要研究一下R的平方是否有统计学意义，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094123.png">
-
-</div>
-<p>在计算p值之前，我们先看一下<span class="math inline">\({R}^2\)</span>是如何定义的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094136.png">
-
-</div>
-<p>在小鼠的体重与大小的数据中，我们得到的<span class="math inline">\({R}^2\)</span>是0.6，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094146.png">
-
-</div>
-<p>在计算<span class="math inline">\({R}^2\)</span>方面，我们会使用一个统计量，即F，F的公式如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094159.png">
-
-</div>
-<p><span class="math inline">\({R}^2\)</span>的计算公式和F统计量的计算公式的分子是一样的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094209.png">
-
-</div>
-<p>这个分子的意义就是小鼠体重的变异，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094220.png">
-
-</div>
-<p>F的分母有点不太一样，它的意义如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094230.png">
-
-</div>
-<p>在上图中，下图中的蓝色虚线就是拟合曲线与实际值的差值，它的平方和就变异程度，也就是无法被体重解释的小鼠大小的程度，现在再看一下<span class="math inline">\({R}^2\)</span>和F统计量的公式，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094241.png">
-
-</div>
-<p>这两个公式的有一部分是一样的，也就是那些平方和，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094253.png">
-
-</div>
-<p>转换到图形上，则是这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094304.png">
-
-</div>
-<p>F统计量分母中的一部分是拟合后的平方和，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094317.png">
-
-</div>
-<p>F后面的那一坨东西是自由度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094327.png">
-
-</div>
-<p>我们此时看一下什么是自由度，就先从红色方框中的部分开始，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094337.png">
-
-</div>
-<p>拟合曲线中有2个参数，即y=y-intercept + slope x中有intercept和slope这两个参数，它就有2个自由度，而均值的公式是y=y-intercept，它只有一个参数，因此它就是1个自由度。换话句话说，与均值的公式相比，拟合曲线多了一个自由度，即斜率，斜率代表了体重与大小的关系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094350.png">
-
-</div>
-<p>那么原来红色方框中的那一部分的值就是1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094401.png">
-
-</div>
-<p>那么F统计量的分子就是由这个多出来的参数解释的变异程度，在这个案例中，就是由小鼠的体重解释小鼠大小的变异程度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094410.png">
-
-</div>
-<p>如果我们使用小鼠的体重，尾巴长度来解释小鼠大小的变异，就是这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094506.png">
-
-</div>
-<p>它的拟合曲线的自由度就是3，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094529.png">
-
-</div>
-<p>此时我们再看一下F统计量的分子，这个分母就是由拟合曲线无法解释的程度，这个分母中的有一个参数n，随后我们会解释，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094541.png">
-
-</div>
-<p>直观上讲，如果我们的公式中有更多的的参数，那么我们就需要多的数据来估计它们，例如我们只需要2个点就能绘制出一条直线，但是我们如果要绘制一个平面，那么至少需要3个点。再接着看F统计量，如果拟合曲线比较好，那么F的值就是一个比较大的数字（从公式上也能看出来，拟合比较好的话，肯定是我们解释的程度要远远大于不能解释的程度），如下图所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094600.png">
-
-</div>
-<p>此时，我们需要把F值转换为p值，先看一个小案例，下面的是一组随机数据，它们计算出来的F值是2，把F值绘制到一个直方图上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094614.png">
-
-</div>
-<p>再来看一组数据，计算其SS(mean)和SS(fit)，计算F值，再添加到直方图上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094624.png">
-
-</div>
-<p>再来计算一组随机数据，方法同上，得到F值为1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094637.png">
-
-</div>
-<p>不断地重复这个过程，我们会得到很多F值，然后把它们都绘制到直方图上，例如其中一个F值是6，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094648.png">
-
-</div>
-<p>从上面的这个图中我们可以知道这些信息：</p>
+            <h2 id="前言">前言</h2>
+<p>以前我也写过有关统计学的笔记，本来是想结合StatQuest把原来的笔记整理一下，后来一想，还是算了，直接把StatQuest的系列教程做成笔记，这样比较系统，也会避免笔记冗余。这篇笔记是StatQuest视频教程的第31个，主要内容是Fisher精确检验与超几何分布，Fisher精确检验我以前的笔记中也有，就是<a href="http://rvdsd.top/2017/08/18/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-07%E5%8D%A1%E6%96%B9%E5%88%86%E6%9E%90/">《卡方检验》这篇笔记</a>。</p>
+<h2 id="fisher精确检验">Fisher精确检验</h2>
+<p>我们还以MM豆（MM豆是M&amp;M巧克力豆的缩写，美国的一个品牌）为例进行说明。</p>
+<p>此时我从MM豆的盒子里抓了一把MM豆，这批MM豆有8个，其中有7个蓝豆，1个红豆。此时问题来：</p>
 <ol style="list-style-type: decimal">
-<li>x轴上对应的是F值，从左到右依次增大；</li>
-<li>F值越大，这个F值的点占到整个直方图中的比例也就越低，换句话讲，就是F值更大，它就是一个越不容易得到的值，如果把得到F值的这个概率定为p，那么，F值越大，p值就越小（也就是说F值越大，它越是一个极端的值，不太容易出现）。</li>
-</ol>
-<p>此时，把上面的直方图用一条曲线拟合起来，事实上，我们在计算F值对应的p值时，通常是使用曲线，而不是直方图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094830.png">
-
-</div>
-<p>此时我们看一个F值的分布，F值的分布曲线是由其自由度决定的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094846.png">
-
-</div>
-<p>再看由两个F分布叠加的图形，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094901.png">
-
-</div>
-<p>从这张图形上我们可以看出，自由度越大，F分布的曲线下降得越厉害，也就是说，拟合曲线中的参数越多（自由度高），样本数目赵多，p值越小。其实这也是F分布的原理。</p>
-<h2 id="r语言与线性回归">R语言与线性回归</h2>
-<p>此时我们看一下原始数据，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">weight = <span class="number">0.9</span>, <span class="number">1.8</span>, <span class="number">2.4</span>, <span class="number">3.5</span>, <span class="number">3.9</span>, <span class="number">4.4</span>, <span class="number">5.1</span>, <span class="number">5.6</span>, <span class="number">6.3</span></div><div class="line">size = <span class="number">1.4</span>, <span class="number">2.6</span>, <span class="number">1.0</span>, <span class="number">3.7</span>, <span class="number">5.5</span>, <span class="number">3.2</span>, <span class="number">3.0</span>, <span class="number">4.9</span>, <span class="number">6.3</span></div></pre></td></tr></table></figure>
-<p>此时绘制出小鼠的体重与其大小的散点图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">weight &lt;- c(<span class="number">0.9</span>, <span class="number">1.8</span>, <span class="number">2.4</span>, <span class="number">3.5</span>, <span class="number">3.9</span>, <span class="number">4.4</span>, <span class="number">5.1</span>, <span class="number">5.6</span>, <span class="number">6.3</span>)</div><div class="line">size &lt;- c(<span class="number">1.4</span>, <span class="number">2.6</span>, <span class="number">1.0</span>, <span class="number">3.7</span>, <span class="number">5.5</span>, <span class="number">3.2</span>, <span class="number">3.0</span>, <span class="number">4.9</span>, <span class="number">6.3</span>)</div><div class="line">mouse.data &lt;- data.frame(weight, size)</div><div class="line">head(mouse.data)</div><div class="line">plot(mouse.data$weight,mouse.data$size)</div><div class="line">mouse.regression &lt;- lm(size~weight, data=mouse.data)</div><div class="line">summary(mouse.regression)</div></pre></td></tr></table></figure>
-<p>图形如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094916.png">
-
-</div>
-<p>线性回归统计结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; summary(mouse.regression)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = size ~ weight, data = mouse.data)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">    Min      1Q  Median      3Q     Max </div><div class="line">-<span class="number">1.5482</span> -<span class="number">0.8037</span>  <span class="number">0.1186</span>  <span class="number">0.6186</span>  <span class="number">1.8852</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </div><div class="line">(Intercept)   <span class="number">0.5813</span>     <span class="number">0.9647</span>   <span class="number">0.603</span>   <span class="number">0.5658</span>  </div><div class="line">weight        <span class="number">0.7778</span>     <span class="number">0.2334</span>   <span class="number">3.332</span>   <span class="number">0.0126</span> *</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">1.19</span> on <span class="number">7</span> degrees of freedom</div><div class="line">Multiple R-squared:  <span class="number">0.6133</span>,	Adjusted R-squared:  <span class="number">0.558</span> </div><div class="line"><span class="literal">F</span>-statistic:  <span class="number">11.1</span> on <span class="number">1</span> and <span class="number">7</span> DF,  p-value: <span class="number">0.01256</span></div></pre></td></tr></table></figure>
-<p>现在解释一下这个结果：</p>
-<p>第一部分：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Call:</div><div class="line">lm(formula = size ~ weight, data = mouse.data)</div></pre></td></tr></table></figure>
-<p>这一行表示的是使用<code>lm()</code>函数进行线性回归的公式，这里的size是自变量，weight是因变量，数据集来源于<code>mouse.data</code>。</p>
-<p>第二部分：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Residuals:</div><div class="line">    Min      1Q  Median      3Q     Max </div><div class="line">-<span class="number">1.5482</span> -<span class="number">0.8037</span>  <span class="number">0.1186</span>  <span class="number">0.6186</span>  <span class="number">1.8852</span></div></pre></td></tr></table></figure>
-<p>这是残差的结果，它表示原始数据距离拟合曲线的距离的 一些统计情况，如果是理想情况，那么正值与负值的频率是一样的，也就是说原始值在拟合曲线上方与下方的点是一样的。</p>
-<p>第三部分：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </div><div class="line">(Intercept)   <span class="number">0.5813</span>     <span class="number">0.9647</span>   <span class="number">0.603</span>   <span class="number">0.5658</span>  </div><div class="line">weight        <span class="number">0.7778</span>     <span class="number">0.2334</span>   <span class="number">3.332</span>   <span class="number">0.0126</span> *</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">1.19</span> on <span class="number">7</span> degrees of freedom</div></pre></td></tr></table></figure>
-<p>这一部分是经过最小二乘法计算得到出的拟合曲线的系数，其中第1列第1个数字0.5813，就是截矩，截矩下方的0.7778是斜率，那么得到的拟合曲线公式就是：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">size = <span class="number">0.5813</span> + <span class="number">0.7778</span> x weight</div></pre></td></tr></table></figure>
-<p>第2列与第3列是回归曲线的截矩与斜率的标准差与t值。第4列，也就是最后一列，是这些估计值的p值，通常来说，我们并不关注截矩的这个值。也就是说，它的p值大小我们不乎。但是，斜率，也就是说<code>weight</code>的这个p值必须要小于0.05，也就是说，它必须要有统计学意义，只有这样，我们才能对小鼠的大小进行一个可靠的估计，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707094938.png">
-
-</div>
-<p>这个案例的线性回归结果中，<code>weight</code>的p值是小于0.05的，也就是说它有意义，它后面有一个<code>*</code>号，这个<code>*</code>表示p值大于0.01，小于0.5，我们可以在统计结果中看到<code>*</code>的数量对应的p值大小。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095003.png">
-
-</div>
-<p>最后一行是下面的内容：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Residual standard error: <span class="number">1.19</span> on <span class="number">7</span> degrees of freedom</div></pre></td></tr></table></figure>
-<p>它表示，拟合曲线有7个自由度，残差的标准差为1.19。</p>
-<p>第四部分：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Multiple R-squared:  <span class="number">0.6133</span>,	Adjusted R-squared:  <span class="number">0.558</span> </div><div class="line"><span class="literal">F</span>-statistic:  <span class="number">11.1</span> on <span class="number">1</span> and <span class="number">7</span> DF,  p-value: <span class="number">0.01256</span></div></pre></td></tr></table></figure>
-<p>在这一部分的结果中，我们可以得到这些信息：</p>
-<ol style="list-style-type: decimal">
-<li><code>Multiple R-squared:  0.6133</code>表示的是<span class="math inline">\({R}^2\)</span>，它表示体重可以解释61%的小鼠大小的变异，这已经是很好的结果了；</li>
-<li><code>Adjusted R-squared:  0.558</code>这个是由参数的多少调控后的<span class="math inline">\({R}^2\)</span>的值；</li>
-<li><code>F-statistic:  11.1 on 1 and 7 DF,</code>这表示F的统计量为11.1，1和7是两个自由度；</li>
-<li><code>p-value: 0.01256</code>这是F统计量对应的结果。</li>
-</ol>
-<p>最后我们可以在这个散点图上添加拟合曲线，输入命令<code>abline(mouse.regression, col=&quot;blue&quot;)</code>即可，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095037.png">
-
-</div>
-<h2 id="多元线性回归">多元线性回归</h2>
-<p>前面我们讲的线性回归其实只有2个变量（小鼠的体重与小鼠的大小），这种线性回归可以视为简单线性回归，其实线性回归还可以涉及到多个变量，这就是多元线性回归。而很多不太理解线性回归的人通常认为简单线性回归与多元线性回归差异很大，其实它们在本质上没多少区别。下图的左图是简单线性回归，右图是多元线性回归，在计算<span class="math inline">\({R}^2\)</span>方面，它们没有区别，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095051.png">
-
-</div>
-<p>在多元线性回归中，需要对<span class="math inline">\({R}^2\)</span>进行调整，从而与多元线性回归方程中的多个参数对应，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095108.png">
-
-</div>
-<p>在计算F值时，这两种回归的原理是一样的，只是简单线性回归的p(fit)=2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095122.png">
-
-</div>
-<p>多元线性回归的p(fit)=3（只是在这个案例中，多元线性回归的p(fit)=3，如果是其他的案例，还要具体情况具体分析），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095132.png">
-
-</div>
-<p>它们的截矩都是一样的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095143.png">
-
-</div>
-<p>此时我们分别将这两种回归方程中各个数据点与截矩进行对比，来找出这两个回归的优劣：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095152.png">
-
-</div>
-<p>比较均值可能不太容易看出来，我们可以将这两个回归直接相互进行对比，我们就能知道，我们是否值得花时间和精力收集额外的一个数据，并将其添加到回归方程中，即一个小鼠尾巴（tail length）这个数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095201.png">
-
-</div>
-<p>此时，我们按照之前计算F的方法来计算一下这两个线性回归方和的F值，跟先前计算F值不太相同的地方在于，我们使用了简单线性回归的来替换原来的均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095214.png">
-
-</div>
-<p>SS(simple)如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095228.png">
-
-</div>
-<p>此时，p(simple)=2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095244.png">
-
-</div>
-<p>SS(multiple)如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095255.png">
-
-</div>
-<p>而p(multiple)=3，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095305.png">
-
-</div>
-<p>如果简单线性回归和多元线性回归的<span class="math inline">\({R}^2\)</span>差值很大，并且p值很小，那么向简单线性回归中添加一个小鼠尾巴变量（tail length）就是有必要的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095326.png">
-
-</div>
-<h2 id="r语言与多重线性回归">R语言与多重线性回归</h2>
-<p>此时，我们添加上小鼠尾巴的数据，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tail = <span class="number">0.7</span>, <span class="number">1.3</span>, <span class="number">0.7</span>, <span class="number">2.0</span>, <span class="number">3.6</span>, <span class="number">3.0</span>, <span class="number">2.9</span>, <span class="number">3.9</span>, <span class="number">4.0</span></div></pre></td></tr></table></figure>
-<p>构建小鼠的三个变量的数据框，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">weight &lt;- c(<span class="number">0.9</span>, <span class="number">1.8</span>, <span class="number">2.4</span>, <span class="number">3.5</span>, <span class="number">3.9</span>, <span class="number">4.4</span>, <span class="number">5.1</span>, <span class="number">5.6</span>, <span class="number">6.3</span>)</div><div class="line">size &lt;- c(<span class="number">1.4</span>, <span class="number">2.6</span>, <span class="number">1.0</span>, <span class="number">3.7</span>, <span class="number">5.5</span>, <span class="number">3.2</span>, <span class="number">3.0</span>, <span class="number">4.9</span>, <span class="number">6.3</span>)</div><div class="line">tail &lt;- c(<span class="number">0.7</span>, <span class="number">1.3</span>, <span class="number">0.7</span>, <span class="number">2.0</span>, <span class="number">3.6</span>, <span class="number">3.0</span>, <span class="number">2.9</span>, <span class="number">3.9</span>, <span class="number">4.0</span>)</div><div class="line">mouse.data &lt;- data.frame(size,weight,tail)</div><div class="line">head(mouse.data)</div></pre></td></tr></table></figure>
-<p>构建好的数据框如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(mouse.data)</div><div class="line">  size weight tail</div><div class="line"><span class="number">1</span>  <span class="number">1.4</span>    <span class="number">0.9</span>  <span class="number">0.7</span></div><div class="line"><span class="number">2</span>  <span class="number">2.6</span>    <span class="number">1.8</span>  <span class="number">1.3</span></div><div class="line"><span class="number">3</span>  <span class="number">1.0</span>    <span class="number">2.4</span>  <span class="number">0.7</span></div><div class="line"><span class="number">4</span>  <span class="number">3.7</span>    <span class="number">3.5</span>  <span class="number">2.0</span></div><div class="line"><span class="number">5</span>  <span class="number">5.5</span>    <span class="number">3.9</span>  <span class="number">3.6</span></div><div class="line"><span class="number">6</span>  <span class="number">3.2</span>    <span class="number">4.4</span>  <span class="number">3.0</span></div></pre></td></tr></table></figure>
-<h3 id="简单线性回归">简单线性回归</h3>
-<p>我们先回顾一下简单线性回归，先绘制小鼠体重与其大小的散点图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plot(mouse.data$weight,mouse.data$size)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095338.png">
-
-</div>
-<p>然后利用<code>lm()</code>函数来对小鼠的这体重和大小这两个变量做回归分析，再用<code>aline()</code>函数添加回归曲线，代码如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">simple.regression &lt;- lm(size ~ weight, data=mouse.data)</div><div class="line">summary(simple.regression)</div><div class="line">abline(simple.regressin, col=<span class="string">"red"</span>,lwd = <span class="number">2</span>)</div></pre></td></tr></table></figure>
-<p>简单线性回归结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; summary(simple.regression)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = size ~ weight, data = mouse.data)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">    Min      1Q  Median      3Q     Max </div><div class="line">-<span class="number">1.5482</span> -<span class="number">0.8037</span>  <span class="number">0.1186</span>  <span class="number">0.6186</span>  <span class="number">1.8852</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </div><div class="line">(Intercept)   <span class="number">0.5813</span>     <span class="number">0.9647</span>   <span class="number">0.603</span>   <span class="number">0.5658</span>  </div><div class="line">weight        <span class="number">0.7778</span>     <span class="number">0.2334</span>   <span class="number">3.332</span>   <span class="number">0.0126</span> *</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">1.19</span> on <span class="number">7</span> degrees of freedom</div><div class="line">Multiple R-squared:  <span class="number">0.6133</span>,	Adjusted R-squared:  <span class="number">0.558</span> </div><div class="line"><span class="literal">F</span>-statistic:  <span class="number">11.1</span> on <span class="number">1</span> and <span class="number">7</span> DF,  p-value: <span class="number">0.01256</span></div></pre></td></tr></table></figure>
-<p>回归曲线如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095351.png">
-
-</div>
-<h3 id="多元线性回归-1">多元线性回归</h3>
-<p>绘制多元线性回归的散点图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plot(mouse.data)</div></pre></td></tr></table></figure>
-<p>图片如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095406.png">
-
-</div>
-<p>在绘制多元线性回归的图形时，不用指定x轴与y轴，R会把所有的变量进行排列组合，绘制出一多个图形，现在解释一下这个图形；</p>
-<p>第一：size与weight，x轴是weight，y轴是size</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095428.png">
-
-</div>
-<p>第二，看下面的图形，x轴是size，y轴是weigth：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095439.png">
-
-</div>
-<p>上述的这两个图形是非常相似的，只是它们的坐标轴颠倒了一下：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095449.png">
-
-</div>
-<p>第三，size与tail，这两个变量位于整张图形的对角上，它们的图形也非常相似，也是xy轴颠倒了一下：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095502.png">
-
-</div>
-<p>同样类似的还有weight和tail变量：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095511.png">
-
-</div>
-<p>从图形上我们可以看出来，weight和tail与size相关，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095520.png">
-
-</div>
-<p>weight和tail也有一定的相关关系，这表明，这两个变量也能够为我们提供一些类似的信息，但我们的模型有可能不太需要这些信息：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095556.png">
-
-</div>
-<p>此时，我们使用<code>lm()</code>函数进行多元线性回归分析，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">multiple.regression &lt;- lm(size ~weight + tail, data=mouse.data)</div></pre></td></tr></table></figure>
-<p>在R中，我们指定各种变量的位置的依据如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095617.png">
-
-</div>
-<p>默认情况下，y轴截矩和两个斜率如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095630.png">
-
-</div>
-<p>查看一下多元线性回归的结果，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; summary(multiple.regression)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = size ~ weight + tail, data = mouse.data)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-<span class="number">0.99928</span> -<span class="number">0.38648</span> -<span class="number">0.06967</span>  <span class="number">0.34454</span>  <span class="number">1.07932</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </div><div class="line">(Intercept)   <span class="number">0.7070</span>     <span class="number">0.6510</span>   <span class="number">1.086</span>   <span class="number">0.3192</span>  </div><div class="line">weight       -<span class="number">0.3293</span>     <span class="number">0.3933</span>  -<span class="number">0.837</span>   <span class="number">0.4345</span>  </div><div class="line">tail          <span class="number">1.6470</span>     <span class="number">0.5363</span>   <span class="number">3.071</span>   <span class="number">0.0219</span> *</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">0.8017</span> on <span class="number">6</span> degrees of freedom</div><div class="line">Multiple R-squared:  <span class="number">0.8496</span>,	Adjusted R-squared:  <span class="number">0.7995</span> </div><div class="line"><span class="literal">F</span>-statistic: <span class="number">16.95</span> on <span class="number">2</span> and <span class="number">6</span> DF,  p-value: <span class="number">0.003399</span></div></pre></td></tr></table></figure>
-<p>上述结果与简单线性回归类似，我们看一下最后一部分：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Multiple R-squared:  <span class="number">0.8496</span>,	Adjusted R-squared:  <span class="number">0.7995</span> </div><div class="line"><span class="literal">F</span>-statistic: <span class="number">16.95</span> on <span class="number">2</span> and <span class="number">6</span> DF,  p-value: <span class="number">0.003399</span></div></pre></td></tr></table></figure>
-<p><span class="math inline">\({R}^2\)</span>的值为0.8496，调整后的值为0.7995，F值为16.95，p值为0.003399，这个拟合效果是非常好的。</p>
-<p>我们再看一下各个自变量的系数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)  </div><div class="line">(Intercept)   <span class="number">0.7070</span>     <span class="number">0.6510</span>   <span class="number">1.086</span>   <span class="number">0.3192</span>  </div><div class="line">weight       -<span class="number">0.3293</span>     <span class="number">0.3933</span>  -<span class="number">0.837</span>   <span class="number">0.4345</span>  </div><div class="line">tail          <span class="number">1.6470</span>     <span class="number">0.5363</span>   <span class="number">3.071</span>   <span class="number">0.0219</span> *</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
-<p>我们看一下weight这个自变量的系数，并将它与简单线性回归中的weight进行对比，也就是如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095647.png">
-
-</div>
-<p>在多元线性回归中，weight的系数为-0.3293，Pr(&gt;|t|)为0.4345；而在简单线性回归中，weight的系数为0.7778，Pr(&gt;|t|)为0.0126。</p>
-<p>这就说明，与只使用tail这一个变量来预测小鼠的大小相比，我们使用weight和tail这两个变量并不是非常显著。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095705.png">
-
-</div>
-<p>我们再看一下tail这个变量，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095717.png">
-
-</div>
-<p>tail这个变量的p值为0.0219。这就说明，我们使用weight和tail这两个变量比只使用weight这个变量来预测小鼠的大小（size），有显著的区别。</p>
-<p>结论就是，我们使用weight和tail这两个变量来预测小鼠的size是比较好的：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095731.png">
-
-</div>
-<p>但是，如果我们精力与时间有限，那么我们可以中使用小鼠的tail来预测其size，不用考虑weight变量：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095743.png">
-
-</div>
-<h2 id="t检验与anova">t检验与ANOVA</h2>
-<h3 id="t检验与一般线性模型">t检验与一般线性模型</h3>
-<blockquote>
-<p>统计学初学者通常会首选接触到t检验、方差分析、线性回归等方法，不少人的感觉就是，t检验用于两组均值比较，方差分析用于多组均值比较，而线性回归则用于自变量对因变量的影响分析。看起来似乎没有什么关系，但它们却统一在一个模型下，这就是一般线性模型（General Linear Model）。一般线性模型并不是一个具体的模型，而是多种方法的统称，像t检验、方差分析、线性回归等都从属于一般线性模型的范畴。</p>
-<p>——《白话统计》（冯国双.P22.2018）</p>
-</blockquote>
-<h3 id="回顾线性回归">回顾线性回归</h3>
-<p>线性回归就是对两个变量采用最小二乘法，求出其线性回归方程，从而使用一个变量预测另外一个变量，在前面的案例中，我们就是检测了小鼠的体重和小鼠的大小，从而求出线性回归方向，从线性回归方程中，我们知道这两个特点：</p>
-<ol style="list-style-type: decimal">
-<li>小鼠的体重对于小鼠的大小预测的效果怎么样（这个要看<span class="math inline">\({R}^2\)</span>，这个值越大，表示预测效果越好）；</li>
-<li>我们得到的这个线性回归方程是否有统计学意义（这个要看p值，p值小于某个阈值（通常是0.05）就表示有意义）。</li>
+<li>如何描述袋子中的MM豆颜色的分布？</li>
+<li>我这个盒子里的蓝豆的比例是不是比正常的要高一些（正常MM豆中的蓝豆比例为21%）？</li>
+<li>我能否计算这个MM豆样本的p值？</li>
 </ol>
 <p>如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095800.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115901.jpg">
 
 </div>
-<h3 id="将线性回归方程应用于t检验">将线性回归方程应用于t检验</h3>
-<p>此时，我们研究一下能否将线性回归方程的思想应用到t检验上（其实是能的），看下面的案例，在这个案例中，我们有一个对照组，有一个突变组，研究了它们某个基因的表达情况，如下所示：</p>
+<p>MM豆的盒子里有40个MM豆，它的各种MM豆的颜色比例如下图所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095812.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115906.jpg">
 
 </div>
-<p>t检验的目标就在于比较两且数据的均值，并观察它们是否有统计学上的差异，如下所示：</p>
+<p>此时，我用直方图来研究一下我的这盒MM豆是否是一个特例（就是说跟平常所见的MM豆的颜色比例不同），下面我们就以我手中的这8个MM豆（7个蓝豆，1个红豆）为基础，来计算一下这个概率，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095827.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115913.jpg">
 
 </div>
-<p>如果有一个相同的方法可以计算线性回归和t检验的p值，那么我们就可以在更加复杂的情况下，使用这种方法：</p>
+<p>首先我事先说明一下，我们在计算这批MM豆的概率时，不用考虑它们的顺序，也就是说，当我拿出7个蓝豆与1个红豆的时候，不用在意这8个MM豆是如何排序的，就像是下面的这个样子：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095839.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115918.jpg">
 
 </div>
-<p>下图分别是线性回归和t检验的散点图：</p>
+<p>现在让我们计算一下这7个蓝豆和1个红豆的概率，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095852.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115922.jpg">
 
 </div>
-<p>此时， 我们开始计算F值（由F值就能计算出p值）。</p>
-<p>第一步：先忽略x轴坐标的意义，分别计算线性回归图形中所有点的均值和t检验中所有点的均值（即把control和mutant这两组数据混在一块，计算出一个均值），如下所示：</p>
+<p>第1步：第1个MM豆是蓝色，此时它的概率为8/40，如何计算呢？就是因为一盒MM豆中按照正常的比例（这个比例是作者从MM豆的官网上查的），它有40个MM豆，有8个蓝豆，此时蓝豆的概率就是8/40，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095902.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115926.jpg">
 
 </div>
-<p>第二步：计算残差平方和，即原始数据点的对应的y轴坐标减去均值，平方后的和，如下所示：</p>
+<p>第2步：还是1个蓝豆，它的概率是7/39，如何计算呢？因为此时已经拿出了一个蓝豆了，这盒MM豆剩下的就只有39个了，蓝豆还有7个，那么蓝豆的概率就是7/39，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095916.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115930.jpg">
 
 </div>
-<p>这个计算过程比较简单。</p>
-<p>第三步：找出拟合曲线，此时就需要x轴的坐标了：</p>
+<p>按照这种方法计算下去，第3个蓝豆的概率就是6/38，第4个蓝豆的概率就是5/37，最后，第8个MM豆是红色的概率就是5/33，计算结束。</p>
+<p>现在把这8个概率相乘，就是我们手中有7个蓝豆和1个红豆的概率，最终的结果为0.000000065，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095928.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115934.jpg">
 
 </div>
-<p>其中线性回归这个图形的拟合曲线很好找，但是t检验这一组的拟合曲线不太好找，如下所示：</p>
+<p>这个概率是非常小的，不过我们需要记住的是，我们此时没有考虑MM豆的顺序，如果我们考虑了MM豆的顺序的话，我们还可以再计算一次，方法跟前面的是一样的，考虑了顺序之后，就是下面的这个样子：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095938.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115939.jpg">
 
 </div>
-<p>此时，我们先针对control组找到一个拟合曲线，其实就是它的均值所在位置：</p>
+<p>最终的计算结果是0.00000053，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707095950.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115946.jpg">
 
 </div>
-<p>得到的曲线为y=2.2，如下所示：</p>
+<p>此时我们计算出了出现这个事件的概率（也就是说7个蓝豆和1个红豆）了，那么，我们如何计算p值呢？首选我们要知道，p值是一系列小概率事件的总和，还包括下面的这些情况，例如8个蓝豆，还有7个橘黄豆和1个蓝豆，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100007.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115951.jpg">
 
 </div>
-<p>对于mutant组同样如此，它的回归曲线方程为y=3.6，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100018.png">
-
-</div>
-<p>此时，我们就得到了线性回归这一组数据的拟合曲线，以及t检验这一组中的两条回归曲线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100028.png">
-
-</div>
-<p>此时，我们将t检验这一组图形中的两条曲线合并为一个方程，接着计算F值：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100040.png">
-
-</div>
-<p>虽然t检验组中的这两条曲线看起来比较诡异，但我们还是能接受的：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100053.png">
-
-</div>
-<p>将这两条曲线的方程合并为一条，那么这个方程就如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100106.png">
-
-</div>
-<p>其中，红色部分表示的是control组的均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100119.png">
-
-</div>
-<p>绿色的3.6是mutant组的均值：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100131.png">
-
-</div>
-<p>残差为蓝色的部分，但这条曲线也是比较诡异的，我们计算control组时，它的mutant这组的系数为0，其实就相当于y=1 x 2.2 + residual了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100149.png">
-
-</div>
-<p>那么control组中的这几个点的计算过程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100201.png">
-
-</div>
-<p>对于mutant这一组，当我们计算它时，它的control的系数为0，那么这个公式就变成了y = 1 x 3.6 + residual了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100213.png">
-
-</div>
-<p>计算mutant组的数据时，就是0乘以control，加上1乘以mutant，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100236.png">
-
-</div>
-<p>还有：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100251.png">
-
-</div>
-<p>现在得到了所有的数据点：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100435.jpg">
-
-</div>
-<p>现在我们把这个计算过程中的系数提取出来，看一下：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100506.jpg">
-
-</div>
-<p>这个系数看起来给人的印象就是这样的：在分别计算两组的数据时，它们相应的系数（一个是2.2，一个是3.6）就是像是有一对开关在控制，在control组中，2.2的系数为1，3.6的系数为0，mutant正好相反。因此，提取它们，构成一个设计矩阵，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100514.jpg">
-
-</div>
-<p>这个矩阵我们称为设计矩阵（design matrix），它代表了原始的数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100520.jpg">
-
-</div>
-<p>其中column1表示control组的开或关（on or off）：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100530.jpg">
-
-</div>
-<p>column2表示了mutant组的开或关：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100536.jpg">
-
-</div>
-<p>在实际运用中，每个column都已经是默认存在了，那么这个公式就会写为如下形式：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100547.jpg">
-
-</div>
-<p>此时，我们就拟合了control和mutant数据，把它们放到了一个公式里（其实是一个矩阵），现在计算F值和p值了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100618.jpg">
-
-</div>
-<p>第四步：计算SS(fit)，即实际值与拟合曲线差值的平方和：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100624.jpg">
-
-</div>
-<p>计算结果如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100632.jpg">
-
-</div>
-<p>F值的计算结果如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100637.jpg">
-
-</div>
-<p>在左图的线性回归图形中，ｙ轴表示的是小鼠的平均大小，ｐ(mean)=1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100643.jpg">
-
-</div>
-<p>在右图的t检验中，y轴表示的是平均基因的表达水平，p(mean)=1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100656.jpg">
-
-</div>
-<p>同理，线性回归中的p(fit)=2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100702.jpg">
-
-</div>
-<p>t检验中的p(fit)=2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100709.jpg">
-
-</div>
-<p>现在计算p值，先看一下过程，先计算一SS(mean)，然后计算SS(fit)，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100715.jpg">
-
-</div>
-<p>t检验的p值和F值的计算至此结束，需要注意的是，我们在前面构建的矩阵并不是t检验的一个标准矩阵（这里先不管这个），接着看ANOVA。</p>
-<h3 id="将线性回归方程应用于anova">将线性回归方程应用于ANOVA</h3>
-<p>为了方便理解，我们可以将ANOVA看成升级版的t检验，t检验用于比较两组的数据，ANOVA用于比较多组之间的数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100830.jpg">
-
-</div>
-<p>第一步：计算SS(mean)：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100835.jpg">
-
-</div>
-<p>第二步：计算SS(fit)：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100841.jpg">
-
-</div>
-<p>第三步：设计矩阵：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100851.jpg">
-
-</div>
-<p>第四步：计算F值</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100856.jpg">
-
-</div>
-<h2 id="设计矩阵">设计矩阵</h2>
-<h3 id="矩阵的查看">矩阵的查看</h3>
-<p>在后文，一般线性模型（General Linear Models）都缩写为GLM。在前面的部分中，我们提到了，我们设计的那个矩阵并不是一个标准的矩阵（下图左图），右图才是一个标准的t检验矩阵，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100911.jpg">这个标准的矩阵对应的这个方程有点不太一样，它的后面是<code>difference(mutant - control)</code>，我们看一下这个新的矩阵：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100927.jpg">
-
-</div>
-<p>在这个矩阵中，第1列所有的数据（control和mutant）都变成了（mean(control)），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100935.jpg">
-
-</div>
-<p>不过，第2列中，只有mutant的数据变成了<code>difference(mutant - control)</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100945.jpg">
-
-</div>
-<p>例如，下图的数字<code>1</code>对应的数据点（我暂把它叫做A点，它是control组中的点），就是<code>mean(control)</code>的“开”，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100952.jpg">
-
-</div>
-<p>同理，数字<code>0</code>表示A点对应的就是<code>difference(mutant - control)</code>的“关”，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707100957.jpg">
-
-</div>
-<p>这样我们就很好理解了，control组中的A这个点的对应的<code>mean(control)</code>这个系数为1，A点对应的<code>difference(mutant-control)</code>这个系数为0，加起来，就是A点的这个数字。同时，在mutant中的某个点（我把它称为B点，它位于mutant组），它对应的<code>mean(control)</code>这个系数为1（这个好理解，因为它后面还有mutant - control），对应的<code>difference(mutant-control)</code>这个系数也为1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101003.jpg">
-
-</div>
-<p>以下两个方程（设计矩阵和标准矩阵）的残差是相同的，它们也有相同的参数，因此<code>p(fit)</code>也是相同的：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101010.jpg">
-
-</div>
-<p>因此，它们的F值也是相同的：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101018.jpg">
-
-</div>
-<p>现在我们面临一个疑问：即使这两个方程的结果都一样，为什么右边的这个方程更普遍？原作者认为这可能与回归有关：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101027.jpg">
-
-</div>
-<p>我们先看一下这个设计矩阵是如何工作的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101033.jpg">
-
-</div>
-<p>设计矩阵的第1列的这个系数是与<code>mean(control)</code>相乘的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101039.jpg">
-
-</div>
-<p>第2列的数字是与<code>difference(mutant - control)</code>相乘的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101045.jpg">
-
-</div>
-<p>将<code>mean(control)</code>乘以1，那就是它的原始数字，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101051.jpg">
-
-</div>
-<p>将<code>difference(mutant - control)</code>乘以0，就是没有，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101057.jpg">
-
-</div>
-<p>这个设计矩阵中的数字是1和1，因此它非常适合做t检验或ANOVA，因为这些数字可以代表不同的分类（其实我们也可以使用其它的数字）：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101103.jpg">
-
-</div>
-<p>例如，下面是一个线性回归的设计矩阵，这个矩阵就与左边的这个线性回归方程是等价的：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101111.jpg">
-
-</div>
-<p>在这个矩阵的第1列，都是数字1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101118.jpg">
-
-</div>
-<p>第2列是这些点在对应的x轴上的坐标，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101123.jpg">
-
-</div>
-<p>我们现在看一下第1行，它对应的是第1个点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101135.jpg">此时用1乘以这个这个公式中的系数（<code>y-intercept</code>），这就表示，这个系数（<code>y-intercept</code>）处于打开（<code>on</code>）的状态，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101142.jpg">
-
-</div>
-<p>再用第1行的第2个数字（也就是0.9）乘以斜率（slope），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101148.jpg">
-
-</div>
-<p>为了这让个过程更加具体，我们把这个方程中的矩阵和斜率用具体的数字替换一下，计算出拟合曲线上的真实数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101154.jpg">
-
-</div>
-<p>拟合的曲线斜率非常小，它为0.01（注意：这条拟合曲线与前面我们做的简单线性回归的曲线不同，因为这里面的数据跟前面的貌似不是一批的），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101200.jpg">
-
-</div>
-<p>它的斜率为0.8，与第1个数据点相乘，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101205.jpg">
-
-</div>
-<p>经计算，得到0.73，它对应的是就是拟合曲线上的第一个点，就是绿叉的那个点，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101211.jpg">
-
-</div>
-<p>现在我们看第2行，它对应的是第2个点，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101220.jpg">
-
-</div>
-<p>现在我们计算拟合曲线上对应的第2个点，下图绿叉所在位置，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101226.jpg">
-
-</div>
-<p>现在把这个矩阵中所有的点都在拟合曲线上计算出来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101232.jpg">
-
-</div>
-<p>一旦计算出这些拟合曲线上的点，那么我们就可以计算其残差，并计算p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101238.jpg">
-
-</div>
-<p>用这个案例就是为了说明，设计矩阵不一定只含有１和０，也可以含有一组其它的数字，将这数字投射到方程中，一次投射一行：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101248.jpg">
-
-</div>
-<p>我们再看t检验的案例，t检验的这种案例更加常见，因此我们后文中的案例都按照这种格式进行，如下的所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101254.jpg">
-
-</div>
-<p>现在我们知道了，我们可以把任何数字都放到一个设计矩阵里。</p>
-<h3 id="第1个案例">第1个案例</h3>
-<p>现在我们再看一些案例，这些案例混合了t检验与线性回归，下图是两种不同种类的小鼠的体重与大小，不同颜色用于区分不同种类的小鼠，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101332.jpg">
-
-</div>
-<p>其中，红色是对照组小鼠，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101343.jpg">
-
-</div>
-<p>绿色的是突变组小鼠（mutant）如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101350.jpg">
-
-</div>
-<p>从直观上我们就能够看出，突变组小鼠的比较大，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101357.jpg">换句话说，突变组与对照组小鼠趋势是这个样子的：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101404.jpg">
-
-</div>
-<p>我们现在面临的问题就是：如何使用统计学的方法来判断这两组小鼠是否有统计学意义上的差别？</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101413.jpg">
-
-</div>
-<p>如果我们对整体小鼠（包括mutant和control）做一个回归，那么我们也无法找出这两组小鼠是否有差异，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101421.jpg">
-
-</div>
-<p>如果我们忽略小鼠的体重与大小之间的关系，只对小鼠的大小做一个统计，我们就发现，小鼠的大小（size）并没有统计学意义上的差别，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101426.jpg">
-
-</div>
-<p>由于小鼠的体重（weight）和大小（size）之间的这个关系与小鼠的类型有关，因此我们可以把这两种因素归到一种统计学方法中来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101432.jpg">
-
-</div>
-<p>换句话讲，我们并不直接比较小鼠的大小（这个比较是用t检验来进行的），而是用另外的一种方法来比较，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101438.jpg">
-
-</div>
-<p>这种方法就是，比较这两种小鼠的回归曲线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101444.jpg">
-
-</div>
-<p>为了比较这两个曲线，我们需要一个含有对照组小鼠方程截矩的方程，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101450.jpg">
-
-</div>
-<p>这个方程还要含有突变组小鼠与对照组小鼠的差值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101456.jpg">
-
-</div>
-<p>这个方程还要含有斜率（在这个案例中，这两条曲线的斜率是相同的，但在实际运用中，可能不同），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101501.jpg">
-
-</div>
-<p>这就意味着，我们需要一个设计矩阵，这个矩阵的第1列是数字1，它们是y轴上的某些点，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101506.jpg">
-
-</div>
-<p>设计矩阵的第2列是0和1，它们代表<code>mutant off</code>（也就是突变组与对照组的差值），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101512.jpg">
-
-</div>
-<p>其中0代表<code>off</code>，它代表control的off，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101517.jpg">
-
-</div>
-<p>1代表mutant小鼠，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101524.jpg">
-
-</div>
-<p>第3列是小鼠的体重，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101530.jpg">
-
-</div>
-<p>绿色的是突变组，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101536.jpg">
-
-</div>
-<p>现在看第1行，1，0，2.4对应的方程的数字如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101544.jpg">
-
-</div>
-<p>它投射到拟合曲线上的点如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101549.jpg">
-
-</div>
-<p>第2行的数字对应到方程上如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101555.jpg">
-
-</div>
-<p>第2个点投射到拟合曲线上就是这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101600.jpg">
-
-</div>
-<p>把所有的点投射到相应的曲线上，就如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101606.jpg">
-
-</div>
-<p>一旦我们确定了拟合曲线上的点的位置，就可以计算其残差，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101611.jpg">
-
-</div>
-<h4 id="第1个simpler-model">第1个simpler model</h4>
-<p>此时我们把这个复杂的模型（用fancy model表示）与简单的模型（simpler model）比较，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101639.jpg">
-
-</div>
-<p>此时，把这个fancy model的残差平方和代入到下面的公式中，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101644.jpg">
-
-</div>
-<p>其中fancy model有3个参数，也就是<code>p(fancy)</code>为3，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101652.jpg">
-
-</div>
-<p>把simple的SS代入到下面方程，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101741.jpg">
-
-</div>
-<p>simple方程中的参数只有1个，也就是说<code>p(simple)</code>为1，代入到下面的方程，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101751.jpg">
-
-</div>
-<p>最终得到的F值为21.88，p值为0.003，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101756.jpg">
-
-</div>
-<p>这里需要提一下的是，simpler model可以是任何的模型，下图中这个simpler model就是一个简单线性回归模型，如下所示：</p>
-<h4 id="第2个simpler-model">第2个simpler model</h4>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101803.jpg">
-
-</div>
-<p>我们用这个simple model来计算一下，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101903.jpg">
-
-</div>
-<p>得到的结果为F值是32.6，p值为0.0023，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101813.jpg">
-
-</div>
-<p>从上图的结果来看，使用小鼠的体重(weight)和种类(type)能够比只使用小鼠的体重(weigth)更好地预测小鼠的大小(size)。再看下面的一个simpler model，在这个模型中，我们忽略了小鼠的体重，如下所示：</p>
-<h4 id="第3个simpler-model">第3个simpler model</h4>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101932.jpg">
-
-</div>
-<p>现在把这个simpler model的平方和加入到F值的公式中，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101937.jpg">
-
-</div>
-<p>这次得到的F值与p值如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707101945.jpg">
-
-</div>
-<p>这个结果的p值与第一个simpler model（即考虑全部的小鼠平均值的那个模型）的p值相比，它更小，这就说明，使用小鼠的体重(weight)和类型(type)来预测小鼠的大小，比只使用类型(type)更好。</p>
-<h3 id="第2个案例批次效应">第2个案例：批次效应</h3>
-<p>现在A实验室（Lab A）做了一个实验，如下图左图所示，而B实验室（Lab B）实验重复了A实验室的实验。现在我们要综合这两次的实验结果，观察一下，mutant组与control相比，有没有差异，但是，这两次实验不是一次做的，因此存在批次效果（batch effect），我们现在要解决的问题是，如何消除这个批次效应，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102002.jpg">
-
-</div>
-<p>首选，我们先计算一下Ａ实验的control组的均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102006.jpg">
-
-</div>
-<p>第二，我们计算一下B实验的control这个结果与A实验的control这个均值的差值，这用于研究批次效应，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102012.jpg">
-
-</div>
-<p>第三，我们再加入mutant和control数据的差值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102017.jpg">
-
-</div>
-<p>此时，设计一个矩阵，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102022.jpg">
-
-</div>
-<p>从本质上来讲， 我们想知道上述方程最后一项重要不重要。也就是说矩阵最后一项重要与否，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102027.jpg">
-
-</div>
-<p>现在我们比较这个复杂方程（simple equation）与简单方程（simpler equation，简单方程忽略了control与mutant的分组）的区别，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102032.jpg">
-
-</div>
-<p>如果得到一个很小的p值，那么这就告诉我们要研究control与mutant的差异，这就意味着我control和mutant之间存在着显著性差异。</p>
-<h2 id="r语言与设计矩阵">R语言与设计矩阵</h2>
-<h3 id="第1案例小鼠体重">第1案例：小鼠体重</h3>
-<p>还看前文的案例，我们想知道mutant组的小鼠和control的小鼠在size上是否有统计学意义上的差别。我们分别做了这两种小鼠的回归曲线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102039.jpg">
-
-</div>
-<p>此时我们使用R语言来进行分析，输入以下代码：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Type &lt;- factor(c(</div><div class="line">  rep(<span class="string">"Control"</span>, times=<span class="number">4</span>),</div><div class="line">  rep(<span class="string">"Mutant"</span>, times=<span class="number">4</span>)))</div><div class="line"></div><div class="line">Weight &lt;- c(<span class="number">2.4</span>, <span class="number">3.5</span>, <span class="number">4.4</span>, <span class="number">4.9</span>, <span class="number">1.7</span>, <span class="number">2.8</span>, <span class="number">3.2</span>, <span class="number">3.9</span>)</div><div class="line">Size &lt;- c(<span class="number">1.9</span>, <span class="number">3</span>, <span class="number">2.9</span>, <span class="number">3.7</span>, <span class="number">2.8</span>, <span class="number">3.3</span>, <span class="number">3.9</span>, <span class="number">4.8</span>)</div><div class="line">model.matrix(~Type+Weight)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; Type &lt;- factor(c(</div><div class="line">+   rep(<span class="string">"Control"</span>, times=<span class="number">4</span>),</div><div class="line">+   rep(<span class="string">"Mutant"</span>, times=<span class="number">4</span>)))</div><div class="line">&gt; </div><div class="line">&gt; Weight &lt;- c(<span class="number">2.4</span>, <span class="number">3.5</span>, <span class="number">4.4</span>, <span class="number">4.9</span>, <span class="number">1.7</span>, <span class="number">2.8</span>, <span class="number">3.2</span>, <span class="number">3.9</span>)</div><div class="line">&gt; Size &lt;- c(<span class="number">1.9</span>, <span class="number">3</span>, <span class="number">2.9</span>, <span class="number">3.7</span>, <span class="number">2.8</span>, <span class="number">3.3</span>, <span class="number">3.9</span>, <span class="number">4.8</span>)</div><div class="line">&gt; model.matrix(~Type+Weight)</div><div class="line">  (Intercept) TypeMutant Weight</div><div class="line"><span class="number">1</span>           <span class="number">1</span>          <span class="number">0</span>    <span class="number">2.4</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span>          <span class="number">0</span>    <span class="number">3.5</span></div><div class="line"><span class="number">3</span>           <span class="number">1</span>          <span class="number">0</span>    <span class="number">4.4</span></div><div class="line"><span class="number">4</span>           <span class="number">1</span>          <span class="number">0</span>    <span class="number">4.9</span></div><div class="line"><span class="number">5</span>           <span class="number">1</span>          <span class="number">1</span>    <span class="number">1.7</span></div><div class="line"><span class="number">6</span>           <span class="number">1</span>          <span class="number">1</span>    <span class="number">2.8</span></div><div class="line"><span class="number">7</span>           <span class="number">1</span>          <span class="number">1</span>    <span class="number">3.2</span></div><div class="line"><span class="number">8</span>           <span class="number">1</span>          <span class="number">1</span>    <span class="number">3.9</span></div><div class="line">attr(,<span class="string">"assign"</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0</span> <span class="number">1</span> <span class="number">2</span></div><div class="line">attr(,<span class="string">"contrasts"</span>)</div><div class="line">attr(,<span class="string">"contrasts"</span>)$Type</div><div class="line">[<span class="number">1</span>] <span class="string">"contr.treatment"</span></div></pre></td></tr></table></figure>
-<p>其中<code>model.matrix()</code>这个函数是用于构建设计矩阵的，它能自动将因子型数据转换为哑变量（dumpy variables）。构建好的矩阵的所代表的第1列是对照组的截矩，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102046.jpg">
-
-</div>
-<p>第2列代表的数据是mutant与control的差值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102052.jpg">
-
-</div>
-<p>最后1列是如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102103.jpg">
-
-</div>
-<p>现在构建线性回归模型，结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; model &lt;- lm(Size~Type + Weight)</div><div class="line">&gt; summary(model)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = Size ~ Type + Weight)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">       <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span>        <span class="number">5</span>        <span class="number">6</span>        <span class="number">7</span>        <span class="number">8</span> </div><div class="line"> <span class="number">0.05455</span>  <span class="number">0.34562</span> -<span class="number">0.41623</span>  <span class="number">0.01607</span> -<span class="number">0.01753</span> -<span class="number">0.32646</span> -<span class="number">0.02062</span>  <span class="number">0.36461</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)   </div><div class="line">(Intercept)  <span class="number">0.08052</span>    <span class="number">0.52744</span>   <span class="number">0.153</span>  <span class="number">0.88463</span>   </div><div class="line">TypeMutant   <span class="number">1.48685</span>    <span class="number">0.26023</span>   <span class="number">5.714</span>  <span class="number">0.00230</span> **</div><div class="line">Weight       <span class="number">0.73539</span>    <span class="number">0.13194</span>   <span class="number">5.574</span>  <span class="number">0.00256</span> **</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">0.3275</span> on <span class="number">5</span> degrees of freedom</div><div class="line">Multiple R-squared:  <span class="number">0.8975</span>,	Adjusted R-squared:  <span class="number">0.8564</span> </div><div class="line"><span class="literal">F</span>-statistic: <span class="number">21.88</span> on <span class="number">2</span> and <span class="number">5</span> DF,  p-value: <span class="number">0.003367</span></div></pre></td></tr></table></figure>
-<p>现在看这个结果，第1部分如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Call:</div><div class="line">lm(formula = Size ~ Type + Weight)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">       <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span>        <span class="number">5</span>        <span class="number">6</span>        <span class="number">7</span>        <span class="number">8</span> </div><div class="line"> <span class="number">0.05455</span>  <span class="number">0.34562</span> -<span class="number">0.41623</span>  <span class="number">0.01607</span> -<span class="number">0.01753</span> -<span class="number">0.32646</span> -<span class="number">0.02062</span>  <span class="number">0.36461</span></div></pre></td></tr></table></figure>
-<p>这是每个数据与拟合曲线的残差。</p>
-<p>第2部分，我们看最后的信息：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Multiple R-squared:  <span class="number">0.8975</span>,	Adjusted R-squared:  <span class="number">0.8564</span></div></pre></td></tr></table></figure>
-<p>这些是多重<span class="math inline">\({R}^2\)</span>，因为我们的拟合曲线是一个比复杂的方程（它有2个参数），后面的是根据参数的数量调整后的<span class="math inline">\({R}^2\)</span>。最后就是F值与p值了，p值为0.003367，这个p值是线性回归的p值整体数据（其实就是simpler model）对比后的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102109.jpg">
-
-</div>
-<p>接着看各项的系数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)   </div><div class="line">(Intercept)  <span class="number">0.08052</span>    <span class="number">0.52744</span>   <span class="number">0.153</span>  <span class="number">0.88463</span>   </div><div class="line">TypeMutant   <span class="number">1.48685</span>    <span class="number">0.26023</span>   <span class="number">5.714</span>  <span class="number">0.00230</span> **</div><div class="line">Weight       <span class="number">0.73539</span>    <span class="number">0.13194</span>   <span class="number">5.574</span>  <span class="number">0.00256</span> **</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
-<p>结果中<code>Weight</code>这个变量的p值为0.00256，它表示的是，如果在这个复杂模型（fancy model）中剔除<code>Weight</code>这个变量，构建成的简单模型（simpler model）与原始数据的拟合效果。它反映的是一个复杂模型的统计效果和只用常规t检验的统计效果的比较（p值小于0.05，说明前者的统计效果更好）。换句话讲，它反映了复杂模型中剔除了<code>Weight</code>这个变量后，使用最小二乘法进行的检验与原复杂模型检验的比较，由于p值很小，这就说明了<code>Weight</code>这个变量的重要性。</p>
-<p>同理，<code>TypeMutant</code>这个变量对应的p值为0.00230，它反映的是原复杂方程（fancy model）与该方程剔除小鼠类型这个变量后的比较（剔除了小鼠类型的这个变量，就变成了普通线性回归方程）。</p>
-<h3 id="第2案例批次效果">第2案例：批次效果</h3>
-<p>这个案例还是前面的那个案例，在这个案例中，我们会看到两个实验室做的同一个实验，它们存在着批次效应，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102552.png">
-
-</div>
-<p>现在使用R语言进行分析，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Lab &lt;- factor(c(rep(<span class="string">"A"</span>,times=<span class="number">6</span>),rep(<span class="string">"B"</span>,times=<span class="number">6</span>)))</div><div class="line">Type &lt;- factor(c(rep(<span class="string">"Control"</span>, times = <span class="number">3</span>),rep(<span class="string">"Mutant"</span>, times = <span class="number">3</span>),rep(<span class="string">"Control"</span>, times = <span class="number">3</span>),rep(<span class="string">"Mutant"</span>, times = <span class="number">3</span>)))</div><div class="line">Expression &lt;- c(<span class="number">1.7</span>, <span class="number">2</span>, <span class="number">2.2</span>,<span class="number">3.1</span>, <span class="number">3.6</span>, <span class="number">3.9</span>, <span class="number">0.9</span>, <span class="number">1.2</span>, <span class="number">1.9</span>, <span class="number">1.8</span>, <span class="number">2.2</span>, <span class="number">2.9</span>)</div><div class="line">model.matrix(~Lab+Type)</div></pre></td></tr></table></figure>
-<p>构建好的设计矩阵如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&gt; model.matrix(~Lab+Type)</div><div class="line">   (Intercept) LabB TypeMutant</div><div class="line"><span class="number">1</span>            <span class="number">1</span>    <span class="number">0</span>          <span class="number">0</span></div><div class="line"><span class="number">2</span>            <span class="number">1</span>    <span class="number">0</span>          <span class="number">0</span></div><div class="line"><span class="number">3</span>            <span class="number">1</span>    <span class="number">0</span>          <span class="number">0</span></div><div class="line"><span class="number">4</span>            <span class="number">1</span>    <span class="number">0</span>          <span class="number">1</span></div><div class="line"><span class="number">5</span>            <span class="number">1</span>    <span class="number">0</span>          <span class="number">1</span></div><div class="line"><span class="number">6</span>            <span class="number">1</span>    <span class="number">0</span>          <span class="number">1</span></div><div class="line"><span class="number">7</span>            <span class="number">1</span>    <span class="number">1</span>          <span class="number">0</span></div><div class="line"><span class="number">8</span>            <span class="number">1</span>    <span class="number">1</span>          <span class="number">0</span></div><div class="line"><span class="number">9</span>            <span class="number">1</span>    <span class="number">1</span>          <span class="number">0</span></div><div class="line"><span class="number">10</span>           <span class="number">1</span>    <span class="number">1</span>          <span class="number">1</span></div><div class="line"><span class="number">11</span>           <span class="number">1</span>    <span class="number">1</span>          <span class="number">1</span></div><div class="line"><span class="number">12</span>           <span class="number">1</span>    <span class="number">1</span>          <span class="number">1</span></div><div class="line">attr(,<span class="string">"assign"</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0</span> <span class="number">1</span> <span class="number">2</span></div><div class="line">attr(,<span class="string">"contrasts"</span>)</div><div class="line">attr(,<span class="string">"contrasts"</span>)$Lab</div><div class="line">[<span class="number">1</span>] <span class="string">"contr.treatment"</span></div><div class="line"></div><div class="line">attr(,<span class="string">"contrasts"</span>)$Type</div><div class="line">[<span class="number">1</span>] <span class="string">"contr.treatment"</span></div></pre></td></tr></table></figure>
-<p>第1列代表的是<code>Lab A control mean</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102127.jpg">
-
-</div>
-<p>第2列是<code>lab B offset</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102506.png">
-
-</div>
-<p>第3列是<code>difference(mutant - control)</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102453.png">
-
-</div>
-<p>现在计算一下批次效应，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">batch.lm &lt;- lm(Expression ~ Lab + Type)</div><div class="line">summary(batch.lm)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; summary(batch.lm)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = Expression ~ Lab + Type)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">    Min      1Q  Median      3Q     Max </div><div class="line">-<span class="number">0.6500</span> -<span class="number">0.2833</span> -<span class="number">0.0500</span>  <span class="number">0.2750</span>  <span class="number">0.7167</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)   <span class="number">2.1167</span>     <span class="number">0.2279</span>   <span class="number">9.287</span>  <span class="number">6.6e-06</span> ***</div><div class="line">LabB         -<span class="number">0.9333</span>     <span class="number">0.2632</span>  -<span class="number">3.546</span> <span class="number">0.006250</span> ** </div><div class="line">TypeMutant    <span class="number">1.2667</span>     <span class="number">0.2632</span>   <span class="number">4.813</span> <span class="number">0.000956</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">0.4558</span> on <span class="number">9</span> degrees of freedom</div><div class="line">Multiple R-squared:  <span class="number">0.7989</span>,	Adjusted R-squared:  <span class="number">0.7542</span> </div><div class="line"><span class="literal">F</span>-statistic: <span class="number">17.87</span> on <span class="number">2</span> and <span class="number">9</span> DF,  p-value: <span class="number">0.0007342</span></div></pre></td></tr></table></figure>
-<p>这个结果跟先前多元回归的结果类似，最后一部分就是<span class="math inline">\({R}^2\)</span>以及调整后的<span class="math inline">\({R}^2\)</span>，它的p值为0.0007342，但是这个p值不是我们所需要的，这个p值代表的是复杂方程与一个简单方程（也就是下图中<code>y = overall mean</code>）的统计学差异，这个p值是不能用于判断mutant和control差异的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102425.jpg">
-
-</div>
-<p>我们再看一下<code>TypeMutant</code>这个变量对应的p值，这个p值是0.000956，这个才是我们所需要的p值，它表示的是，我们去掉<code>difference(mutant - control)</code>这个变量后，我们是否还能拟合出一条好的曲线（我个人理解就是：原假设就是去掉`TypeMutant后，剩下的数据能够拟合出一条好的曲线方程，但是结果却是p值小于0.05，是一个非常小的值，因此原假设不成立，也就是说这个变量不能去掉），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102353.jpg">
-
-</div>
-<p>总之，这个变量（<code>TypeMutant</code>）是我们所需要的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707102207.jpg">
-
-</div>
-<p>这个案例说明的是，我们在做线性回归时，不一定总要看最终的p值（也就是统计结果右下角的p值），而是针对自己具体的容易来查找相应的p值。</p>
+<p>后来经过计算，这个p值为0.01，那么我们就可以说，我的这盒MM豆是特例。</p>
+<h2 id="fisher精确检验与超几何分布">Fisher精确检验与超几何分布</h2>
+<p>另外在这个视频教程的题目中提到了超几何分布，Fisher精确检验可以视为超几何分布的一种变形，超几何分布在GO分析方面有着重要的作用，先留个坑，等视频学完了再填上。</p>
 
           
         
@@ -3569,7 +2377,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/06/StatQuest/生物统计-StatQuest学习笔记06-分位数及其应用/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/09/StatQuest/生物统计-StatQuest学习笔记08-比数与比数比/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -3588,7 +2396,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/06/06/StatQuest/生物统计-StatQuest学习笔记06-分位数及其应用/" itemprop="url">StatQuest学习笔记06——分位数及其应用</a></h1>
+                <a class="post-title-link" href="/2018/06/09/StatQuest/生物统计-StatQuest学习笔记08-比数与比数比/" itemprop="url">StatQuest学习笔记08——比数与比数比</a></h1>
         
 
         <div class="post-meta">
@@ -3600,8 +2408,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-06T12:10:54+08:00">
-                2018-06-06
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T12:10:54+08:00">
+                2018-06-09
               </time>
             
 
@@ -3656,7 +2464,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2,709
+                  5,073
                 </span>
               
 
@@ -3672,7 +2480,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  9
+                  18
                 </span>
               
             </div>
@@ -3696,231 +2504,567 @@
         
           
             <h2 id="前言主要内容">前言——主要内容</h2>
-<p>这篇笔记的内容是StatQuest视频文件的第23，24，25。文件第23讲的是分位数(quantiles)与百分位数(percentiles)；文件24讲的是QQ图；文件25讲的是分位数的均一化。</p>
-<h2 id="分位数">分位数</h2>
-<p>先看一个案例，我们检测了一些基因的表达情况，下图是第1个基因的表达数据：</p>
+<p>这篇笔记的主要内容是StatQuest视频教程的第29与30，第29的内容是比值比（Odds）与比值比的log转换（LogOdds）。第30的内容是oddo ratio。</p>
+<h2 id="ratio与rate的区别">ratio与rate的区别</h2>
+<p>原视频中有几个术语比较容易混淆，下面是几个英文的注释。</p>
+<p>ratio：译为“相对比”，通常简称为“比”，是指一个数字与另外一个数字的比值，它可以是两个有关的同类指标之比，也可以是不同性质的指标之比，常以倍数或百分数来表示，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103122.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113643.png">
 
 </div>
-<p>最终，我们检测了15个基因的表达情况，它们的数据如下所示：</p>
+<p>这里的甲、乙指标值可以是绝对数、相对数或平均数等。我们看下面的一个表：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>某地区某年居民钩虫感染人数</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>年龄组/岁</td>
+<td>检查人数</td>
+<td>感染人数</td>
+</tr>
+<tr class="even">
+<td>0-14</td>
+<td>453</td>
+<td>48</td>
+</tr>
+<tr class="odd">
+<td>15-49</td>
+<td>824</td>
+<td>78</td>
+</tr>
+<tr class="even">
+<td>50及以上</td>
+<td>206</td>
+<td>18</td>
+</tr>
+<tr class="odd">
+<td>合计</td>
+<td>1483</td>
+<td>144</td>
+</tr>
+</tbody>
+</table>
+<p>这个表示中，0-14岁组与15-49岁组钩虫感染人数相对比为48/78X100%=61.54%，0-14岁组与15-49岁组钩虫感染率的相对比为10.60%/9.47%=1.12（倍）。</p>
+<p>rate：对应的中文翻译是“率”，率是一个具有时间概率的比，用于说明在某一时期内某个现象发生的频率或旨度。某事件在某时间的发生率为表示为：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103128.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113656.png">
 
 </div>
-<p>从图上我们可以看出，坐标中一共有15个点，如果我们从下向上数，数到第8个点时，划一条线，这个条的上方有50%的点，即7个点，下方也有50%的点，即7个点，这个点就叫做中位数（median），如下所示：</p>
+<p>率常以百分率（%）、千分率、万分率（1/万）、十万分率（1/10万）等表示，在用率的指标时，应说明观察时时期的时间单位。常用的率有生存率、发病率。例如2000年初，在某地区调查了1000名60岁以上的老人，经检查发现，有80人患糖尿病。在2001年初随访这1000名60岁以上的老人，并进行体验，发生其中有95名老人患有糖尿病，那么糖尿病的发病率为：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103134.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113705.png">
 
 </div>
-<p>从技术角度来讲，中位数就是一个百分比数（quantile），因为它把这一组数据划分成了2个部分，每部分所占的点数占总数目都是相同的，有时候，这个点也被标为0.5，也时候也被标为50%。</p>
-<blockquote>
-<p>中位数(median)是将n个变量值从小到大排列，位置居于中间的那个数。当n为奇数时取位次居中的变量值，当n为偶数时，取位次居中的两个变量值的均值。</p>
-<p>百分位数(percentile)是一种位置指标，用Px来表示，读作第X百分位数。一个百分位数Px将全部产变量值分为两部分，在Px处若无相同变量值，则在不包含Px的全部变量值中有X%的变量值小于它，有(100-X)%变量值大于它。故百分位数是一个界值，其重要用途是确定医学参考值范围（reference range）。中位数实际上是第50百分位数。</p>
-<p>——《医学统计学》（第四版）.孙振球.2014</p>
-</blockquote>
-<p>从下图中我们可以看到，这个中位数的值为4.5，也就是说第50分位数的值为4.5，如下所示：</p>
+<p>也就是说，这个地区60岁以上的老人在2000年的糖尿病发病率为1.63%。</p>
+<p>——上述内容引用自《医学统计学及SAS应用》（王炳顺.2014）</p>
+<h2 id="odds与odds-ratio翻译的区别">odds与odds ratio翻译的区别</h2>
+<p>odds与odds ratio这两个词容易弄混，后来找了一本书（颜虹. 医学统计学.第2版[M]. 人民卫生出版社, 2010.），根据书里的翻译如下：</p>
+<p>odds：翻译为<code>优势比</code>或<code>比数</code>或<code>比值</code>，在不同的情况下，可以译成不同的名称，例如在比赛时，可以译为“胜算”，在赌博时，也可以译为“胜率”，在疾病方面，也可以译为“风险”。为了方便理解与描述，后文中我会在括号中注明。</p>
+<p>odds ratio：翻译为<code>比数比</code>或<code>比值比</code>。</p>
+<p>后文会详细讲这两个术语的区别，为了避免搞混淆，此篇笔记都会使用中英文来描述比数和比数比。</p>
+<h2 id="odds">odds</h2>
+<p>关于比数（odds），我们先举一个例子。</p>
+<p>你或许这么说过，“我支持的球队踢赢的概率可能是1:4”。这里暗含的意思就是有5场比赛，其中我的支持的球队会赢1场（下图蓝点所示），会输4场（下图红点所示），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103139.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113717.jpg">
 
 </div>
-<p>现在我们再添加两条线，再加上前面的50%分位数的线，这三条线就把整个数据分成了4部分，其中最下面的那条线叫0.25或25%百分位数，因为大概为25%的点低于它，如下所示：</p>
+<p>那么此时我们使用比数（odds）来表示<code>1:4</code>，我们也可以说是<code>1/4</code>，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103146.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113725.jpg">
 
 </div>
-<p>最上面的线叫75%百分位数，因为约有75%的点低于它，如下所示：</p>
+<p>计算一下，就是0.25。也就是说我支持的球队赢的胜算是0.25（注：odds在这里译为了胜算，因为我觉得在球赛这种场合使用比数比较不太合适，这里可以理解为“胜算”）。</p>
+<p>再把这个案例修改一下，如果我支持的球队赢得比赛的胜算（odds）是5:3，那么实际上暗示会有8场比赛，在这8场比赛中，我支持的球队会赢5场（蓝点所示），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103150.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113732.jpg">
 
 </div>
-<p>通常来说，分位数就是那些能够把数据集分为相同区间组的线，这是技术上的定义。而百分位数（percentiles）则是指那些能够把数据集分为100份相同区间的分位数（quantiles），不过在实际运用中，这个术语非常灵活。例如我们把50%百分位数称为中位数，把75%百分位数称为第75百分位数（这就与我们引用教材中的命名相同了），如下所示：</p>
+<p>因此球队赢的胜算（odds）就是<code>5/3</code>，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103156.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113737.jpg">
 
 </div>
-<p>最低下的数字，也就是最小的数字，称为0%百分位数，也叫第0百分位数，如下所示：</p>
+<p>计算结果就是1.7。我们可以说我支持的球队赢的胜算（odds）是1.7。</p>
+<p>需要注意的是，比数（odds，这里又切换到了统计学术语）与概率（probability）不同，比数（odds）指的是某些发生的事情与不发生的事情的比值，那么在这个案例中，比数（odds）的计算就是赢的事件数目（蓝色点）除以输的事件数目（红色点）如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103159.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113745.jpg">
 
 </div>
-<p>倒数第2个数字则是第7百分位数，如下所示：</p>
+<p>而概率（probability）则指的发生的事情数目（蓝色点）除以所有的事件数目（赢的（蓝色点）和输的（红色点）），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103204.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113753.jpg">
 
 </div>
-<p>在R语言中，有专门计算分位数的函数，就是<code>quantile()</code>，它提供了9种不同的方法来计算分位数，其结果可能略微有所不同。这就说明，如果你的数据集很小，那么这个函数按照不同方法计算出来的分位数就有很大的同，如果数据集很大，那么计算结果就大体相同。</p>
+<p>因此，在前文中介绍的案例里，赢的比数就是5比3，也就是1.7，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103213.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113800.jpg">
 
 </div>
-<h2 id="qq图">QQ图</h2>
-<p>QQ图的全称为Quantile-Quantile图，也就是分位数的图，它研究的是数据是否符合正态分布。还以前面的基因表达为例来说明一下，我们检测了15个基因表达值，这些数据服是否服从正态分布？这就需要QQ图来回答，如下所示：</p>
+<p>而赢的概率则是5/8，也就是0.625，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103223.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113805.jpg">
 
 </div>
-<p>第一步：计算出每个点的百分位数，如下所示：</p>
+<p>此时我们就理解了比数（odds）与概率（probability）的区别。</p>
+<p>此时我们看一下如何从概率（probability）中计算比值比（odds）。在上个案例中，我们看到了，赢的比数（odds）为1.7，概率为0.625，我们还可以计算一下输入的概率，也就是3/8=0.375。其实也就是<code>1-赢的概率=1-5/8=3/8=0.375</code>，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103229.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113813.jpg">
 
 </div>
-<p>第二步：绘制出正态分布曲线，如下所示：</p>
+<p>此时我们用赢的概率除以输的概率，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103234.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113819.jpg">
 
 </div>
-<p>第三步：将同样的分位数映射到这个正态分布曲线上（我的理解就是某个数字，例如0.6，它的分位数是0.07的话，那么就在正态分布曲线上找到相应的一条直线x，这条直线与正态分布曲线构成的左边面积为0.07，其余的数字都这么做），如下所示：</p>
+<p>计算后，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103238.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113826.jpg">
 
 </div>
-<p>数据集中有15个点，它们把这批数据分成了相同区间的组（equal sized group）（注：我的理解就是，这个相同区间指的是分位数的比，而不是实际值，例如我有100个点，这个点从小到大排列，每个点都会有自己相应的分位数，如果把按它们各自的分位数进行划分，那么可以把100%划分为100份1%），那么这些数据对应的分位数都投射到正态分布区间上，就是下面的这个图，从图上可以知道，中间部分的直线间隔小，两边的直线间隔长，这个很好理解，因为划分是按面积进行划分的，面积代表了概率，如下所示：</p>
+<p>上述讲了两种计算比数（odds）的方式，一种是根据事件数目计算，一种是根据概率计算。但经常使用的是则是第二种，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103243.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113835.jpg">
 
 </div>
-<p>对于正态分布曲线来说，“相同区间的组”（equal sized groups）意味着一个数据在每组中的概率是相同的（一组就是由x轴，正态分布曲线，两侧的红线构成的狭长区域）：</p>
+<h2 id="log-odds">log odds</h2>
+<p>再回到最初的案例，也就是我支持的球队在5场比赛中，可能赢1场的那个案例，它的比数（odds）计算如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103247.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113849.jpg">
 
 </div>
-<p>现在就可以绘制QQ图了，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103251.jpg">QQ图含有2个坐标，横坐标是正态分布的x轴，纵坐标是原始数据的分位数，现在我们绘制原始数据中最小的那个点，它的数值是0.6，这个数值对应的就是纵坐标，它的这个值所对应的分位数在正态分布曲线上的点是x轴上-1.5的点，此时将它们绘制到QQ图上，如下所示：</p>
+<p>如果我支持的球队表现更差，胜算（odds，就是比数，我是为了方便描述比赛）为1:8，那么就是下面的情况：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103256.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113855.jpg">
 
 </div>
-<p>接着，把所有的点都绘制到QQ图上，如下所示：</p>
+<p>如果我支持的球队表现再差，假设胜算（odds）为1:16，那么就是下面的情况：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103303.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113901.jpg">
 
 </div>
-<p>此时，我们看一下这些点是否与下面红色的直线重合（这个红色的直线其实就是y=x，如果数据符合正态分布，那么它就重合），如下所示：</p>
+<p>或者还差呢，比如1:32，这基本上就接近0了，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103307.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113907.jpg">
 
 </div>
-<p>这些点貌似与红色的线重合得并不多，我们再看一下这些数据与另外的一种分布（这种分布就是均匀分布，即uniform distribution）的比较，第1步，求出各个数据点对应的分位数，如下所示：</p>
+<p>我们再假设一下，我支持的球队很好，有可能踢个4:3，或1.3，也就是下面的样子：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103314.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113914.jpg">
 
 </div>
-<p>第二步：绘制出相应均值分布的曲线，如下所示：</p>
+<p>如果还好，比如8:3（或2.7），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103318.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113919.jpg">
 
 </div>
-<p>第三步：将原始数据对应的分位数投射到这个曲线上：</p>
+<p>如果非常好，例如32:3（或者说是10.7），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103322.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113923.jpg">
 
 </div>
-<p>第四步：绘制QQ图，如下所示：</p>
+<p>在这个案例中，我们知道，最初球队的胜算（odds，比数）是1，然后上下波动，差的时候，是从很小的值（基本上接近于0了）到1，如果很好的时候，则是从1到很大。此时，我们把这个比数（odds）放到一个数轴上表示，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103325.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113930.jpg">
 
 </div>
-<p>我们此时发现，这组数据与均值分布对应的红色直线比较匹配，它就更加杂得均值分布，下图是数据与正态分布的QQ图的比较：</p>
+<p>红色的箭头表示的就是球队比较差的时候，输的胜算（odds，比数），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103332.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113947.jpg">
 
 </div>
-<h2 id="比较两组数据">比较两组数据</h2>
-<p>现在我们再来看一个案例，在这个案例中，我们比较这两组数据，其中第二组数据比较少，如下所示：</p>
+<p>蓝色的则相反，表示的是球队赢的胜算（odds，比数），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103342.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113954.jpg">
 
 </div>
-<p>第二组数据只有4个数字，其实就是4个四分位数（我觉得视频中有问题，四分位数分别为25%，50%，75%的百分位数，只有3个，视频中却说有4个），因此我们也可以找出第一组数据中相应的四分位数，如下所示：</p>
+<p>但是，这个数轴不太直观，因为红色与蓝色不对称，比较起来不方便，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103346.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114003.jpg">
 
 </div>
-<p>在第一组中，与第二组第一个数字（也就是3.8）百分位数相同的是2.5，那么就在QQ图 纵坐标的位置画一条直线（这个直线是y=2.5，即下图的黑色虚线），此时在横坐标上画出x=3.8的直线（下图红色虚线，代表第二组中的3.8），两个直线交叉就是第1个点在QQ图上的位置，如下所示：</p>
+<p>例如，如果胜算（odds）是1比6的话，也就是说1/6=0.17，它就在下面的这个位置：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103352.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114009.jpg">
 
 </div>
-<p>然后依次画出第二组中4个点与第一组中相应点构成的点，连成直线，如下所示：</p>
+<p>如果胜算（odds，比数）是6比1的话，也就是6/1=6，它就在很远处，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103355.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114018.jpg">
 
 </div>
-<p>由于上图中QQ图的点很少，很难判断这两组数据是否是相同的分布，因此为了判断两组数据是否服从同样的分布，需要收集更多的点。</p>
-<h2 id="分位数的标准化">分位数的标准化</h2>
-<p>先看一个案例，例如我们手中有一批芯片（基因表达芯片，非集成电路）的数据，芯片有以下这些特点：</p>
+<p>但是这些比数（odds）的程度都比较类似（一个是1比6，一个是6比1），但是区别很大，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114027.jpg">
+
+</div>
+<p>为了方便观察，我们可以把比数（odds）进行一个log转换来解决这个问题，转换后的数轴如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114034.jpg">
+
+</div>
+<p>例如，如果比数是1:6，那么经过log转换（<code>log(1/6)=log(0.17)=-1.79</code>）则是下面这个样子：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114043.jpg">
+
+</div>
+<p>如果比数（odds）是6比1，经过log转换，则是下面的这个样子：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114049.jpg">
+
+</div>
+<p>我们通过使用log转换，这两个相似的值就很对称了，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114102.jpg">
+
+</div>
+<p>注：在学习统计学的时候，有时候我们可能看到一个指标，觉得很奇怪，但是只要深入其中最根本的原理部分，就会发现，这有一定的合理性。</p>
+<h2 id="odds深入">odds深入</h2>
+<p>在我们刚涉及比数（odds）时，是按事件数目计算的，接着我们又按概率进行了计算，这两种方法在本质上是相同的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114144.jpg">
+
+</div>
+<p>最后我们又涉及了比数（odds）的log转换，此时我们需要注意的是，概率的比值（ratio of probabilities）的log转换称为logit函数（logit function），它是logistic回归（logistic regression)的基础，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114151.jpg">
+
+</div>
+<p>此时我们明白了比数（odds）和比数的log转换，那么它有什么用处呢，看下面的一个案例。在下面的这个案例里，如果随机选择一对加起来的值为100的两个数字，然后利用这对数字计算log(odds)，并且绘制出直方图，这个直方图就比较类似于正态分布了，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114203.jpg">
+
+</div>
+<p>添加上正态分布曲线，就是下面的这个样子：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114211.jpg">
+
+</div>
+<p>使用log(odds)在解决某些统计学问题方面很有用，尤其是在我们计算赢/输概率方面，或者是yes/no，或者是true/false这些情况时（我觉得这与二项分布有些类似，以后补一下）。</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114216.jpg">
+
+</div>
+<p>最后，我们需要注意的是比数（odds）虽然是一个比率（ratio），但它与比数比（odds ratio）是不同的，至于有哪些不同，后文会提到。</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114220.jpg">
+
+</div>
+<h2 id="odds-ratio">odds ratio</h2>
+<p>当我们说比数（odds）的时候，我们仅指两个事件发生的<code>比（ratio）</code>的<code>比值</code>，还以前面的案例为例说明，例如比数（odds）我们指的是我支持的球队获胜的<code>比（ratio）</code>除以我支持的球队失败的比例，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114226.jpg">
+
+</div>
+<p>我们用图型表示就是下面的这个样子，蓝色圆形表示赢，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114231.jpg">
+
+</div>
+<p>红色圆形表示输，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114236.jpg">
+
+</div>
+<p>那么我支持的球队赢的<code>比数（odds）</code>就是蓝色的圆形除以红色的圆形，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114256.jpg">
+
+</div>
+<p>此时，我们计算一下圆形的数目，就可以计算出<code>比数（odds）</code>，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114303.jpg">
+
+</div>
+<p>此时需要注意的是，即使<code>比数（odds）</code>是一个<code>比（ratio）</code>，它也不是人们所谓的<code>比数比（odds ratio）</code>，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114313.jpg">
+
+</div>
+<p>当人们说<code>比数比（odds ratio）</code>的时候，事实上他们是在说<code>比数的比（ratio of odds）</code>（这几个术语很拗口，为了避免混淆，我都会在括号时注明英文），分子与分母都是一个比数（odds），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114319.jpg">
+
+</div>
+<p>计算可得0.17，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114325.jpg">
+
+</div>
+<p>就像我们计算某件事情的比数（odds）时，如果分母比分子大很多，那么比数比（odds ratio）就位于0到1这个区间上，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114331.jpg">
+
+</div>
+<p>相反，如果分子很大，分母很小，那么比数比（odds ratio）就位于1到极大这个区间上，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114336.jpg">
+
+</div>
+<p>与比数（odds）类似，我们也可以把比数比（odds ratio）进行log转换，让它们看起来比较对称，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114341.jpg">
+
+</div>
+<p>例如，比数比（odds ratio）为<code>(2/4)/(3/1)</code>，进行log转换，即<code>log(odds ratio)=-1.79</code>，比数比（odds ratio）为<code>(3/1)/(2/4)</code>，进行log转换，即<code>log(odds ratio)=1.79</code>，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114346.jpg">
+
+</div>
+<p>此时我们就得到了转换后的比数比（odds ratio），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114346.jpg">
+
+</div>
+<h2 id="odds-ratio案例">odds ratio案例</h2>
+<p>此时，我们看一个案例，<code>Has cancer</code>表示得癌症的情况，Yes是得，No是不得，<code>Has the mutated gene</code>表示含有突变基因的情况，Yes是含有突变基因，No是不含突变基因，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114911.jpg">
+
+</div>
+<p>方框中的数据是356个（356=23+117+6+210），其中，我们从是否得癌症的角度来看，29个人得癌症（29=23+3），327人不得癌症（327=117+210），我们从是否含有突变基因的角度来看，含有突变基因的人数是140（140=23+117），不含突变基因的人数是216（216=6+210）。</p>
+<p>此时，我们可以使用比数比（odds ratio）来研究突变基因与癌症之间的关系，如果一个人含有突变基因，那么它得病症的风险（odds，比数）有多高？如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114404.jpg">
+
+</div>
+<p>如果一个人含有突变基因，那么他得癌症的的风险（odds）为<code>23/117</code>，如果一个人不含突变基因，那么他得癌症的风险就是<code>6/210</code>，此时我们把<code>23/117</code>放在分子上，把<code>6/210</code>放在分母上，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114409.jpg">
+
+</div>
+<p>它们整体上被称为比数比（odds ratio），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114414.jpg">
+
+</div>
+<p>经计算，可得比数比（odds ratio）为6.88，这个数字告诉我们，含有突变基因的人得癌症的风险要比不含突变基因的人风险高出6.88倍，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114419.jpg">
+
+</div>
+<p>把6.88进行log转换，就得到了1.93，这个转换的意义类似于线性回归中的<span class="math inline">\({R}^2\)</span>，它表示的是两个事件（在这个案例中是突变基因与癌症的关系）的关联程度，它们的值反映了事件的效应程度（effect size），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114438.jpg">
+
+</div>
+<p>当这个值很大的时候，表示突变基因是癌症的一个很好的指标，如果这个值比较小，那么突变基因就不是癌症的一个很好指标，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114438.jpg">
+
+</div>
+<p>此时还有一个问题，还是与线性回归中的<span class="math inline">\({R}^2\)</span>一样，我们要知道，这个值是否有统计学上的意义，一共有3种方式来计算比数比（odds ratio），如下所示：</p>
 <ol style="list-style-type: decimal">
-<li>检测样本中基因活跃的程度（其实就是基因表达量的高低）；</li>
-<li>芯片检测基因的活跃程度是通过不同颜色的光来达到的；</li>
-<li>如果你检测芯片的仪器的光源更亮，那么这批数据就比其他的仪器检测到的信号更强。</li>
+<li>Fisher’s 精确检验</li>
+<li>Chi-Square检验</li>
+<li>The Wald检验（有人喜欢用这种方法来计算p值与置信区间）</li>
 </ol>
-<p>由于芯片的这些特点，我们就需要对芯片的数据进行标准化，从而研究不同样本之间的差异是由技术重复引起的，还是实验因素引起的，芯片数据标准化的过程跟生物的关系不大，如下所示：</p>
+<p>至于哪种方法好，目前还没有一个统计的认识，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103401.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114445.jpg">
 
 </div>
-<p>我们来看一下原始数据，下图中的不同颜色表示不同的基因，这个数据中的每个点已经转换为了光强的密度值（intensity values），如下所示：</p>
+<h3 id="fisher精确检验">Fisher精确检验</h3>
+<p>我们先用Fisher精确检验来计算。</p>
+<p>第一步，我们先把这几个数字当作是某个袋子中的不同颜色的巧克力豆（注：原视频说把这些豆子是M&amp;M豆，后来查了一下，这是美国的一个巧克力豆品牌，简称为MM豆，它有各种颜色），得癌症的用红色表示，不得的用蓝色表示，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103406.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115027.jpg">
 
 </div>
-<p>下面是每个样本的均值，</p>
+<p>第二步，在得癌症的人中，数字是29，也就是29=26+3，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103412.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115039.jpg">
 
 </div>
-<p>每个样本的均值都不同，这表明，我们需要校正所有光的强度，分位数标准化（quantile normalization）就是为了解决这个问题的，如下所示：</p>
+<p>第三步：不得癌症的人的数字是327，也就是327=117+210，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103417.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115044.jpg">
 
 </div>
-<p>第一步，我们先看每个样本中亮度最强的那个点，如下所示：</p>
+<p>第四步：计算我们抓到23个红豆和117个蓝豆的p值，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103421.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115049.jpg">
 
 </div>
-<p>第二步：计算这3个点的均值，如下所示：</p>
+<p>经计算，这个p值为0.00001，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103425.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115053.jpg">
 
 </div>
-<p>第三步：把这些均值投射到一个新的坐标轴上，如下所示：</p>
+<h3 id="chi-square检验">Chi-square检验</h3>
+<p>我们再用Chi-square来检验一下p值，它的原理就是通过比较理论值与真实值之间的差异来计算p值的。</p>
+<p>第一步，我们先假设突变基因与癌症没有关系，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103430.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115059.jpg">
 
 </div>
-<p>那么，样本1中强度最大的那个点（就是蓝色的点）的分位数标准化的值的就是上面我们计算出来的均值，如下所示：</p>
+<p>第二步：计算整体中得癌症的概率，在这个数据集中，得癌症的人是29个，即29=23+6，那么它除以总的人数356（356=23+117+6+210）就是得癌症的概率，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103437.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115103.jpg">
 
 </div>
-<p>样本2和样本3中那两个点也是如此，如下所示：</p>
+<p>第三步：计算不同组中得得癌症的理论人数，以含有这个突变基因的组为例（这个组的人数是140，即140=23+117），那么这个组中得癌症的理论人数应该为140 x 0.08 = 11.2，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103442.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115107.jpg">
 
 </div>
-<p>第四步：现在把亮度强度次亮的点再投射到这个新的坐标轴上，方法与前面的一样，也是先救出均值，然后再投射，如下所示：</p>
+<p>按照同样的方法，把所有组的理论得癌症人数都计算出来，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103446.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115118.jpg">
 
 </div>
-<p>所有的点都按照这样处理，如下所示：</p>
+<p>第四步：比较理论值与观察值，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103453.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115123.jpg">
 
 </div>
-<p>经过这样的分位数标准化后，每个样本的数据基本上都一样了，如下所示：</p>
+<p>至于有2个p值，这主要是因为卡方检验通常是不连续数据，但样本量足够大的话，可以视为连续数据。因此在进行卡方检验时，可以使用连续性校正，也可以不使用。</p>
+<h3 id="wald检验">Wald检验</h3>
+<p>这种检验常常用于计算logistic回归中的比数比（odds ratios）的显示性与置信区间，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103458.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115128.jpg">
 
 </div>
-<p>并且，每个样本中不同基因的原始次序也得到了保留，sample 1中的红色基因原来是最后一个，经处理后中，还是最后一个，如下所示：</p>
+<p>Wald检验会充分利用<code>log(odds ratios)</code>，它通常是服从正态分布的，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707103503.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115135.jpg">
 
 </div>
-<p>以上的整个过程就是分位数标准化的整个过程，因为标准化后的数据与原始数据都有相同的分位数。</p>
+<p>这个直方图是由10000个随机的<code>log(odds ratio)</code>生成的，它告诉我们如果突变基因与癌症没有关系的话，可能的p值大小，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115140.jpg">
+
+</div>
+<p>如果要在自己的计算机上绘制这个直方图，那么随机选择的人的数目就是300到400。在这个案例中我们计算的步骤如下（Wald检验不懂，我只能照着字面翻译）：</p>
+<p>第一，我们选择的是325（数字位于300到400之间）；</p>
+<p>第二，针对每个样本选择一个0到1之间的随机数，例如0.01，0.73，0.95；</p>
+<p>第三，小于0.08的那些随机数就是得样本得癌症的概率，例如，17除以325就是0.05，小于0.08；</p>
+<p>第四，为每个样本再挑选1个位于0到1之间的随机数字；</p>
+<p>第五，小于0.05的那些随机数字就是含有突变基因的人数。</p>
+<p>至少，我们会得到一个矩阵，这个矩阵中的值和基因与癌症之间的关系无关，下面主是这个矩阵，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115144.jpg">
+
+</div>
+<p>𦘀，计算<code>log(odds ratio)</code>，做10000万次，然后绘制出直方图，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115157.jpg">
+
+</div>
+<p>这个直方图的正态分布曲线如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115203.jpg">
+
+</div>
+<p>在x=0处，log(odds ratio)=0，它表示不同组之间的比数（odds）没有差异，这个正态分布的标准差为0.43，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115210.jpg">
+
+</div>
+<p>通常使用观测值来估计标准差，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115218.jpg">
+
+</div>
+<p>计算过程如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115223.jpg">
+
+</div>
+<p>最终结果是0.47，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115227.jpg">
+
+</div>
+<p>我们可以发现，这个0.47与0.43还是比较接近的。</p>
+<p>Wald检验所做的就是观测值的<code>log(odds ratio)</code>距离0有多少个标准差，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115231.jpg">
+
+</div>
+<p>由于Wald检验通常使用估计的标准差（这里就是0.47），那么我们使用一个中心为0，标准差为0.47的正态分布区曲线来替换原来的直方图，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115235.jpg">
+
+</div>
+<p>此时计算一下观测值的<code>log(odds ratio)</code>，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115239.jpg">
+
+</div>
+<p>计算可得<code>log(odds ratio)=1.93</code>，它位于曲线的右侧部分，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115243.jpg">
+
+</div>
+<p>此时我们计算一个这个值距离0有几个标准差，我们只用它除以标准差即可，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115248.jpg">
+
+</div>
+<p>经计算可得，观测值的<code>log(odds ratio)</code>距离0有4.11个标准差，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115253.jpg">
+
+</div>
+<p>按照我们平时的计算规则，通常偏离2个标准差的p值会小于0.05，那么此时我们就可以知道<code>log(odds ratio)</code>在统计学上的显著的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115253.jpg">
+
+</div>
+<p>不过，为了得到一个精确的双尾检验的p值，我们可以求出大于1.93以及小于-的.93的曲线下面积，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115257.jpg">
+
+</div>
+<p>不过上述是传统的，利用标准正态曲线计算的方式，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115312.jpg">
+
+</div>
+<p>利用这种方法就意味着，大于4.11以及小于-4.11的曲线下面积的点都加在了一起，其中4.11是<code>log(odds ratio)</code>离均值标准差的数目，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115312.jpg">
+
+</div>
+<p>最终我们计算的结果就是，突变基因与癌症之间没有关系的p值是0.00005，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115318.jpg">
+
+</div>
+<h3 id="三种方法总结">三种方法总结</h3>
+<p>前面我们使用了3种方法来计算p值，当我们生成10000个随机的<code>log(odds ratios)</code>时，我们分别使用这3种方法来检验，如果检验符合预期，那么有5%的可能性p值是小于0.05的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115322.jpg">
+
+</div>
+<p>从这三种方法的计算结果来看，它们在限制p值方面都表现得很好，因此你所做的就是找出你自己专业领域中最常用的方法。就作者个人的看法，如果都能通过所有的检验，那么他会选择一个在边界上的p值。</p>
+<h2 id="总结">总结</h2>
+<p>比数比（odds ratio）就是比数（odds）的比，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115352.jpg">
+
+</div>
+<p><code>log(odds ratio)</code>就是<code>odds ratio</code>进行log转换，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115356.jpg">
+
+</div>
+<p>比数比（odds ratio）会告诉我们两件事情之间的联系，例如有某种突变基因的人是否会增加其得癌症的风险（odds），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115402.jpg">
+
+</div>
+<p>有三种方法来计算两个事件之间的p值，分别为Fisher精确检验，Chi-Square检验，Wald检验，在前面的案例中，这3个检验得到的p值如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115406.jpg">
+
+</div>
 
           
         
@@ -4006,7 +3150,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">166</span>
+                  <span class="site-state-item-count">169</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4028,7 +3172,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -4102,7 +3246,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共630.8k字</span>
+  <span class="post-count">博客全站共640.1k字</span>
 </div>
 
         
