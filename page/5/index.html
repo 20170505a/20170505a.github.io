@@ -259,6 +259,983 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/22/BioTools/BioStar笔记之Entrez/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/22/BioTools/BioStar笔记之Entrez/" itemprop="url">Biostar Handbook笔记之Entrez</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-22T12:00:00+08:00">
+                2018-08-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,872
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是entrez">什么是Entrez</h2>
+<p>Entrez是NCBI的一个检索工具，它整合了PubMed数据库中的生物学文献中的信息，包括DNA序列，蛋白质序列，结构，基因组，基因表达的信息等。Entrez是一个法语单词，读作“En-trez”。</p>
+<h2 id="entrez的使用">Entrez的使用</h2>
+<p>NCBI提供了Entrez的一个WEB API，称为<a href="https://www.ncbi.nlm.nih.gov/books/NBK25500/" target="_blank" rel="external">Entrez E-utils</a>，还有一套工具，称为<a href="https://www.ncbi.nlm.nih.gov/books/NBK179288/" target="_blank" rel="external">Entrez Direct</a>。其中Entrez Direct可以在Linux下运行，通过命令行的形式访问NCBi的数据库。</p>
+<h2 id="ncbi的数据组织形式">NCBI的数据组织形式</h2>
+<p>NCBI上的数据是随着生物学的研究而不断更新的。例如我们以<code>Ebola virus 1976</code>为关键词在NCBI的Nucleotide中检索一下，单击第二行的链接，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180829/F61bhef8kd.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>我们会看到<a href="https://www.ncbi.nlm.nih.gov/nuccore/AF086833.2" target="_blank" rel="external">如下信息</a>：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180829/mdEHmK4lcE.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在解释一下这个信息：</p>
+<ol style="list-style-type: decimal">
+<li><code>AF086833</code>是登录号(accession number)，它代表了一个完整的数据记录，即使这个数据的版本再更改，它也会保持不变，具有唯一性。</li>
+<li><code>VERSION AF086833.2</code>表示版本号，它与登录号比较相似，只是在登录号的后面用了一个号和一个数字表示，即<code>.2</code>。版本号的逗号前面部分不变，但是，如果序列发生改变，只改变版本号的逗号后面部分。</li>
+</ol>
+<p>自从2015年，NCBI已经不再使用原本的GI号了，一个数据对应一个GI号，不过一些老的文献中可能还会使用GI或gi号，这里需要注意一下。</p>
+<h2 id="entrez-e-utils-web-api的使用">Entrez E-utils Web API的使用</h2>
+<p>我们可以通过一个特定的URL使用Entrez Web API接口来访问NCBI的数据，这个接口的构成形式是这个样子的：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://service.nih.gov?param1=value1&amp;param2=value2&amp;param3=value3</div></pre></td></tr></table></figure>
+<p>由于<code>&amp;</code>符号在shell中是一个特殊符号，因为我需要使用一个单引号，或者是转义字符来正常使用<code>&amp;</code>，转义字符的使用是<code>\&amp;</code>。</p>
+<p>现在我们使用这种方法来获得<code>AF086833.2</code>的数据，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">curl -s https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?id=AF086833.2\&amp;db=nuccore\&amp;rettype=fasta | head</div><div class="line"><span class="meta">#</span> 或者是下面的这个样子</div><div class="line">curl -s 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?id=AF086833.2&amp;db=nuccore&amp;rettype=fasta' | head</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/python_zjl$ curl -s https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?id=AF086833.2\&amp;db=nuccore\&amp;rettype=fasta | head</div><div class="line"><span class="meta">&gt;</span>AF086833.2 Ebola virus - Mayinga, Zaire, 1976, complete genome</div><div class="line">CGGACACACAAAAAGAAAGAAGAATTTTTAGGATCTTTTGTGTGCGAATAACTATGAGGAAGATTAATAA</div><div class="line">TTTTCCTCTCATTGAAATTTATATCGGAATTTAAATTGAAATTGTTACTGTAATCACACCTGGTTTGTTT</div><div class="line">CAGAGCCACATCACAAAGATAGAGAACAACCTAGGTCTCCGAAGGGAGCAAGGGCATCAGTGTGCTCAGT</div><div class="line">TGAAAATCCCTTGTCAACACCTAGGTCTTATCACATCACAAGTTCCACCTCAGACTCTGCAGGGTGATCC</div><div class="line">AACAACCTTAATAGAAACATTATTGTTAAAGGACAGCATTAGTTCACAGTCAAACAAGCAAGATTGAGAA</div><div class="line">TTAACCTTGGTTTTGAACTTGAACACTTAGGGGATTGAAGATTCAACAACCCTAAAGCTTGGGGTAAAAC</div><div class="line">ATTGGAAATAGTTAAAAGACAAATTGCTCGGAATCACAAAATTCCGAGTATGGATTCTCGTCCTCAGAAA</div><div class="line">ATCTGGATGGCGCCGAGTCTCACTGAATCTGACATGGATTACCACAAGATCTTGACAGCAGGTCTGTCCG</div><div class="line">TTCAACAGGGGATTGTTCGGCAAAGAGTCATCCCAGTGTATCAAGTAAACAATCTTGAAGAAATTTGCCA</div></pre></td></tr></table></figure>
+<h2 id="entrez-direct的使用">Entrez Direct的使用</h2>
+<p>Entrez Direct简称EDirect，它算是Entrez E-utils的本地版本.</p>
+<h3 id="安装">安装</h3>
+<p>它的安装如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt install ncbi-entrez-direct</div><div class="line"><span class="meta">#</span> 如果安装不了，可以直接从官网下载</div><div class="line"><span class="meta">#</span> curl ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.zip -o edirect.zip</div></pre></td></tr></table></figure>
+<h3 id="下载序列">下载序列</h3>
+<p>现在我们先看一下下面的这个命令<code>efetch</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">efetch -db=nuccore -format=gb -id=AF086833 | head</div></pre></td></tr></table></figure>
+<p>fetch的英文意思是拿来，从这个命令的命名上大概能猜出来，这个命令是用来检索一些信息的。</p>
+<p>通过<code>efetch --help</code>看了这个命令的说明后，我们知道，<code>-db=nuccore</code>表示检索的是核酸（为什么使用nuccore，后来我试了一下<code>-db=nucleotide</code>也可以)还不清楚。<code>-format=gb</code>表示显示的是GeneBank的格式，<code>id=AF086833</code>表示登录号。</p>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/python_zjl$ </div><div class="line">biotest@biotest-VirtualBox:~/python_zjl$ efetch -db=nuccore -format=gb -id=AF086833 | head</div><div class="line">LOCUS       AF086833               18959 bp    cRNA    linear   VRL 13-FEB-2012</div><div class="line">DEFINITION  Ebola virus - Mayinga, Zaire, 1976, complete genome.</div><div class="line">ACCESSION   AF086833</div><div class="line">VERSION     AF086833.2</div><div class="line">KEYWORDS    .</div><div class="line">SOURCE      Ebola virus - Mayinga, Zaire, 1976 (EBOV-May)</div><div class="line">  ORGANISM  Ebola virus - Mayinga, Zaire, 1976</div><div class="line">            Viruses; ssRNA viruses; ssRNA negative-strand viruses;</div><div class="line">            Mononegavirales; Filoviridae; Ebolavirus.</div><div class="line">REFERENCE   1  (bases 1 to 18959)</div></pre></td></tr></table></figure>
+<p>前面提到，<code>-db=nuccore</code>表示的是核酸，为什么不使用<code>-db=nucleotide</code>，我发现使用了一下，也能显示，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/python_zjl$ efetch -db=nucleotide  -format=gb -id=AF086833 | head</div><div class="line">LOCUS       AF086833               18959 bp    cRNA    linear   VRL 13-FEB-2012</div><div class="line">DEFINITION  Ebola virus - Mayinga, Zaire, 1976, complete genome.</div><div class="line">ACCESSION   AF086833</div><div class="line">VERSION     AF086833.2</div><div class="line">KEYWORDS    .</div><div class="line">SOURCE      Ebola virus - Mayinga, Zaire, 1976 (EBOV-May)</div><div class="line">  ORGANISM  Ebola virus - Mayinga, Zaire, 1976</div><div class="line">            Viruses; ssRNA viruses; ssRNA negative-strand viruses;</div><div class="line">            Mononegavirales; Filoviridae; Ebolavirus.</div><div class="line">REFERENCE   1  (bases 1 to 18959)</div></pre></td></tr></table></figure>
+<h3 id="下载不同格式的序列">下载不同格式的序列</h3>
+<p>使用<code>efetch</code>功能，还能把<code>AF086833</code>的信息导入到不同格式的文件中去，但要注意<code>-format=格式</code>这个参数，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> efetch -db=nuccore -format=gb -id=AF086833 &gt; AF086833.gb</div><div class="line"><span class="meta">#</span> download information output Genebank format files</div><div class="line"></div><div class="line"><span class="meta">$</span> efetch -db=nuccore -format=fasta -id=AF086833 &gt; AF086833.fa</div><div class="line"><span class="meta">#</span> download information output fasta format files</div></pre></td></tr></table></figure>
+<p>如果要下载多条序列，可以直接在<code>id=</code>参数后面添加就行了，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> efetch -db=nuccore -format=fasta -id=AF086833,AF086833 &gt; test.fa</div><div class="line"><span class="meta">#</span> 这里只是说明一下下载多个序列的用法，因此id=后面接了两个相同的登录号</div></pre></td></tr></table></figure>
+<h3 id="显示指定的碱基范围">显示指定的碱基范围</h3>
+<p>efetch还可以显示指定的序列范围，例如下面就是显示<code>AF086833.2</code>这个序列的第100到300个碱基，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ efetch -db=nuccore -format=fasta -id=AF086833 -seq_start=100 -seq_stop=300</div><div class="line"><span class="meta">&gt;</span>AF086833.2:100-300 Ebola virus - Mayinga, Zaire, 1976, complete genome</div><div class="line">TTTAAATTGAAATTGTTACTGTAATCACACCTGGTTTGTTTCAGAGCCACATCACAAAGATAGAGAACAA</div><div class="line">CCTAGGTCTCCGAAGGGAGCAAGGGCATCAGTGTGCTCAGTTGAAAATCCCTTGTCAACACCTAGGTCTT</div><div class="line">ATCACATCACAAGTTCCACCTCAGACTCTGCAGGGTGATCCAACAACCTTAATAGAAACAT</div></pre></td></tr></table></figure>
+<p>这里要使用两个参数，一个是<code>-seq_start=</code>，它是起始的碱基位置，一个是<code>-seq_stop=</code>，它是碱基的结束位置。</p>
+<h3 id="显示互补链">显示互补链</h3>
+<p>通过添加<code>-strand</code>参数可以显示互补链，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ efetch -db=nuccore -format=fasta -id=AF086833 -seq_start=1 -seq_stop=5 -strand=1</div><div class="line"><span class="meta">&gt;</span>AF086833.2:1-5 Ebola virus - Mayinga, Zaire, 1976, complete genome</div><div class="line">CGGAC</div><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ efetch -db=nuccore -format=fasta -id=AF086833 -seq_start=1 -seq_stop=5 -strand=2</div><div class="line"><span class="meta">&gt;</span>AF086833.2:c5-1 Ebola virus - Mayinga, Zaire, 1976, complete genome</div><div class="line">GTCCG</div></pre></td></tr></table></figure>
+<p>从上面的结果可以看出来，<code>strand=1</code>表示是正义链，也就是<code>CGGAC</code>，而<code>strand=2</code>表示的是互补链，也就是<code>CGGAC</code>的互补链，即<code>GTCCG</code>。</p>
+<h2 id="entrez-direct检索">Entrez Direct检索</h2>
+<p>如果我们有一个项目号(project accession)，例如<code>PRJNA257197</code>，我们就能通过EDirect来检索这个项目的一些信息。这个项目号存在于发表的文章中，或者是文件的附件里。现在我们利用<code>esearch</code>来检索一下，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">esearch -db=nucleotide -query PRJNA257197</div><div class="line">esearch -db protein -query PRJNA257197</div></pre></td></tr></table></figure>
+<p>其中<code>-query</code>后面跟的是要检索的关系词。</p>
+<p>结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ esearch -db nucleotide -query PRJNA257197</div><div class="line">&lt;ENTREZ_DIRECT&gt;</div><div class="line">  &lt;Db&gt;nucleotide&lt;/Db&gt;</div><div class="line">  &lt;WebEnv&gt;NCID_1_215173136_130.14.18.125_9001_1535597951_440051473_0MetA0_S_MegaStore&lt;/WebEnv&gt;</div><div class="line">  &lt;QueryKey&gt;1&lt;/QueryKey&gt;</div><div class="line">  &lt;Count&gt;249&lt;/Count&gt;</div><div class="line">  &lt;Step&gt;1&lt;/Step&gt;</div><div class="line">&lt;/ENTREZ_DIRECT&gt;</div><div class="line"></div><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ esearch -db protein -query PRJNA257197</div><div class="line">&lt;ENTREZ_DIRECT&gt;</div><div class="line">  &lt;Db&gt;protein&lt;/Db&gt;</div><div class="line">  &lt;WebEnv&gt;NCID_1_215068217_130.14.22.215_9001_1535597965_849331092_0MetA0_S_MegaStore&lt;/WebEnv&gt;</div><div class="line">  &lt;QueryKey&gt;1&lt;/QueryKey&gt;</div><div class="line">  &lt;Count&gt;2240&lt;/Count&gt;</div><div class="line">  &lt;Step&gt;1&lt;/Step&gt;</div><div class="line">&lt;/ENTREZ_DIRECT&gt;</div></pre></td></tr></table></figure>
+<p>在上面的代码中，我们使用了两条命令来检索<code>PRJNA257197</code>的信息，结果显示了这个项目的“环境”(environment)“，这个环境，我的理解就是，这个项目在Web上的一些配置信息，如下所示：</p>
+<ol style="list-style-type: decimal">
+<li><code>&lt;Db&gt;nucleotide&lt;/Db&gt;</code>说明这是一个核酸数据库；</li>
+<li>剩下的看不懂，不知道是什么，可能是ip地址。</li>
+<li><code>&lt;Count&gt;249&lt;/Count&gt;</code>表示有249个检索结果。</li>
+</ol>
+<h2 id="edirect提取核酸与蛋白信息">EDirect提取核酸与蛋白信息</h2>
+<p>我们可以采用管道操作，将这个项目中的一些信息，例如核酸的信息下载下来，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">esearch -db nucleotide -query PRJNA257197 | efetch -format=fasta &gt; genomes.fa</div></pre></td></tr></table></figure>
+<p>也可以下载蛋白质的信息，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">esearch -db protein -query PRJNA257197 | efetch -format=fasta &gt; proteins.fa</div></pre></td></tr></table></figure>
+<p>查看一下相应的信息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ ls</div><div class="line">AF086833.fa  AF086833.gb  genomes.fa  proteins.fa</div><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ head -3 genomes.fa </div><div class="line"><span class="meta">&gt;</span>KR105345.1 Zaire ebolavirus isolate Ebola virus/H.sapiens-wt/SLE/2014/Makona-G6089.1, partial genome</div><div class="line">ATAATTTTCCTCTCATTGAAATTTATATCGGAATTTAAATTGAAATTGTTACTGTAATCATACCTGGTTT</div><div class="line">GTTTCAGAGCCATATCACCAAGATAGAGAACAACCTAGGTCTCCGGAGGGGGCAAGGGCATCAGTGTGCT</div><div class="line"></div><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ head -3 proteins.fa </div><div class="line"><span class="meta">&gt;</span>AKC37233.1 polymerase [Zaire ebolavirus]</div><div class="line">MATQHTQYPDARLSSPIVLDQCDLVTRACGLYSSYSLNPQLRNCKLPKHIYRLKYDVTVTKFLSDVPVAT</div><div class="line">LPIDFIVPILLKALSGNGFCPVEPRCQQFLDEIIKYTMQDALFLKYYLKNVGAQEDCVDDHFQEKILSSI</div></pre></td></tr></table></figure>
+<h3 id="提取复杂信息">提取复杂信息</h3>
+<p>Entrez Direct中有一个<code>xtract</code>工具，可以用于从XML文件中提取相应的信息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/EDirect$ efetch -db taxonomy -id 9606,7227,10090 -format xml | xtract -Pattern Taxon -first TaxId Scien tificName GenbankCommonName Division</div><div class="line">9606	human	Primates</div><div class="line">7227	fruit fly	Invertebrates</div><div class="line">10090	house mouse	Rodents</div></pre></td></tr></table></figure>
+<p>总之，Entrez中有很多有用的工具，没事可以多看看文档。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>Biostar Handbook</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-17聚类分析笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-17聚类分析笔记/" itemprop="url">聚类分析笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-19T12:02:00+08:00">
+                2018-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5,852
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  24
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>以前看过StatQuest的聚类分析笔记，可以参考这篇笔记<a href="http://rvdsd.top/2018/06/29/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B017-%E8%81%9A%E7%B1%BB/">《StatQuest学习笔记17——聚类》</a>。</p>
+<h2 id="聚类的概率与类型">聚类的概率与类型</h2>
+<h3 id="聚类分析法的概念">聚类分析法的概念</h3>
+<p>聚类分析法(cluster analysis)是研究“物以类聚”的一种现代统计分析方法，聚类的目的是把分类对象按照一定的规则分成若干类，这些类不是事先给定的，而是根据数据的特征确定的，在同一类中这些对象在某种意义上趋向于彼此相似，而在不同类中对象趋于不相似。</p>
+<h3 id="聚类分析法的类型">聚类分析法的类型</h3>
+<p>在实际问题中，经常要对一些东西进行分类，例如在古生物研究中，通过挖掘出来的一些骨髓的形状和大小对它们进行科学的分类，在这里，骨髓的形状和大小是我们用来分类的依据，称为指标或变量，用<span class="math inline">\(X_{1},X_{2},\cdots,X_{p}\)</span>表示，其中，p是变量的个数，需要进行分类的骨髓为样品，用1,2,3,…n表示，其中n是样本的个数，聚类分析的数据结果见下表：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/1F0eg5gCJd.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在聚类分析中，基本的思想是认为所研究的样本或变量存在着程度不同的相似性（亲疏关系）。于是，根据一批样品中的多个观测指标，具体找出一些能够度量样本之间相似程度的统计量，以这些统计量为划分类型的依据，把一些相似程度较大的样本聚合为一类，把另外一些彼此之间相似程度较大的样品又聚合为另一类，关系密切的聚合到一个小的分类单位，关系疏远的聚合到一个大的分类单位，直到把所有的样本都又聚合完毕，把不同类型一一划分出来，形成一个由小到大的分类系统，最后把整个分类系统画成一张聚类图，用它把所有样本间的亲疏关系表示出来。</p>
+<p>通常根据分类对象的不同，可以将聚类分为两类：一类是对样品进行分类处理，叫Q型；一类是对变量进行分类处理，叫R型。Q型聚类又叫样品分类，就是对观测对象进行聚类，是根据被观测的对象各种特征进行分类。在生物信息学中，经常使用的是R型，例如有对照组1，2，3三个样本，实验组1，2，3这三个样本，把这6个样本把基因表达谱的数据进行聚类。</p>
+<h3 id="聚类统计量">聚类统计量</h3>
+<p>聚类分手析的基本原则是将有较大相似性的对象归为同一类，而将差异较大的个体归入不同的类。为了将样本聚类，就需要研究样品之间的关系，一种方法是将每一个样本看做p维空间的一个点，并在空间定义距离，距离较近的点归为一类，距离较远的点属于不同的类。对变量通常计算它们的相似系数，性质越接近的变量，它们的相似系数越接近于1或-1，彼此无关的变量的相似系数越接近于0。可进行聚类的统计量有距离和相似系数。距离有欧氏距离，马氏距离，兰氏距离，相似系数有夹角余弦，相关系数。</p>
+<p>对样品进行聚类时，我们将把样品间的“靠近”程度用某种距离来刻画对指标的聚类，往往用某种相似系数来刻画。当选用n个样本，p个指标时，就可以得到一个<span class="math inline">\(n\times p\)</span>的数据矩阵，即<span class="math inline">\(X=(x_{ij})n \times p\)</span>，该距离的元素<span class="math inline">\(x_{ij}\)</span>表示第i个样本的第j个变量值。</p>
+<h4 id="距离和相似系数">距离和相似系数</h4>
+<p>对样品或变量进行分类时，我们常用距离和相似系数对样品或变量之间的相似性进行度量。距离常用来度量样本之间的相似性，而相似系数常用来度量变量间的相似性。</p>
+<p>距离多用于样品的分类，信<span class="math inline">\(d_{ij}\)</span>表示样本<span class="math inline">\(x_{i}\)</span>和<span class="math inline">\(x_{j}\)</span>的距离，一般要求<span class="math inline">\(d_{ij}\)</span>满足以下四个条件，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/fDEh2L8bCJ.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在聚类分析中并不严格要求定义的距离都满足这四条，一般来说前三条大部分是能满足的，一些不能满足(4)，但是在广义的角度上也称其为距离。</p>
+<p>设<span class="math inline">\(x_{ij}(i=1,2,\cdots,n;j=1,2,\cdots,p)\)</span>为第i个样本的第j个指标的观测数据。即若每个样本有p个变量，则每个样本都可以看成p维空间中的一个点，n个样品就是p维空间中的n个点，定义<span class="math inline">\(d_{ij}\)</span>为样本xj和xj的距离，于是得到一个<span class="math inline">\(n\times n\)</span>的距离矩阵，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hmL6biif2K.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>样品聚类都是基于此距离矩阵进行的，现在我们看一个简单的案例：</p>
+<h4 id="距离案例a样本聚类">距离：案例A：样本聚类</h4>
+<p>以下列举5个观察值，2个变量数据的平面散点图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">x1 &lt;- c(<span class="number">5</span>,<span class="number">7</span>,<span class="number">3</span>,<span class="number">6</span>,<span class="number">6</span>)</div><div class="line">x2 &lt;- c(<span class="number">7</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">6</span>)</div><div class="line">plot(x1,x2)</div><div class="line">text(x1,x2,labels=c(<span class="number">1</span>:<span class="number">5</span>),adj=-<span class="number">.5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190703142825.png">
+
+</div>
+<p>由于只有2个变量，所以从散点图上就可以直观地将这5个样本分为几类，但当变量较多时，这种方法显著是不行的。为了计算平面上各点之间的距离<span class="math inline">\(d_{ij}\)</span>，在聚类分析中对连续型变量常用的距离有以下3种，如下所示：</p>
+<h5 id="明氏距离minkowski">明氏距离(Minkowski):</h5>
+<p><span class="math inline">\(d_{i j}(q)=\left[\sum_{k=1}^{p}\left(x_{i k}-x_{j k}\right)^{q}\right]^{\frac{1}{q}}\)</span></p>
+<p>当<code>q=1</code>时，<span class="math inline">\(d_{i j}(1)=\sum_{k=1}^{p}\left|x_{i k}-x_{j k}\right|\)</span>，称为绝对值距离(manhattan);</p>
+<p>当<code>q=2</code>时，<span class="math inline">\(d_{i j}(2)=\left[\sum_{k=1}^{p}\left(x_{i k}-x_{j k}\right)^{2}\right]^{\frac{1}{2}}\)</span>，称为欧氏距离(euclidean)；</p>
+<p>当<span class="math inline">\(q=\infty\)</span>时，<span class="math inline">\(d_{i j}(\infty) \max _{1 \leqslant k \leqslant D}\left|x_{i k}-x_{j k}\right|\)</span>，称为切比雪夫距离(maximun)。</p>
+<h5 id="马氏距离mahalanobi">马氏距离(Mahalanobi)：</h5>
+<p><span class="math inline">\(d_{i j}(M)=\left(x_{i}-x_{j}\right)^{\prime} \Sigma^{-1}\left(x_{i}-x_{j}\right)\)</span></p>
+<p>其中：<span class="math inline">\(x_{i}\)</span>为样本<span class="math inline">\(i\)</span>的p什指标组成的行徽号<span class="math inline">\(\sum\)</span>为协方差阵。</p>
+<p>优点：马氏距离既排除了各指标间的相关性干扰，又消除了各指标的量纲。</p>
+<p>缺点：样本协方差中阵在聚类过程中不变，这点不合理。</p>
+<h5 id="兰氏距离canberra">兰氏距离(Canberra)</h5>
+<p><span class="math inline">\(d_{i j}(L W)=\frac{1}{p} \sum_{k=1}^{p} \frac{\left|x_{i k}-x_{j k}\right|}{x_{i k}+x_{j k}} \quad\left(x_{i j}&gt;0\right)\)</span></p>
+<p>下面我们使用<code>dist()</code>函数计算一下案例A的欧氏距离与马氏距离，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">dist(x,mdehtod=<span class="string">"euclidean"</span>,diag=<span class="literal">FALSE</span>,upper=<span class="literal">FALSE</span>,p=<span class="number">2</span>)</div><div class="line"><span class="comment"># x是数据矩阵</span></div><div class="line"><span class="comment"># method是计算方法，包括euclidean,maximum,manhattan,canberra,binary,minkowski</span></div><div class="line"><span class="comment"># diag为是否包含对角线元素</span></div><div class="line"><span class="comment"># upper为是否需要上三角</span></div><div class="line"><span class="comment"># p为Minkowski距离的幂次</span></div></pre></td></tr></table></figure>
+<p>案例A的计算结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">&gt; X&lt;-as.matrix(data.frame(x1,x2))</div><div class="line">&gt; dist(X) <span class="comment"># 默认情况下是欧氏距离</span></div><div class="line">         <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span></div><div class="line"><span class="number">2</span> <span class="number">6.324555</span>                           </div><div class="line"><span class="number">3</span> <span class="number">5.385165</span> <span class="number">4.123106</span>                  </div><div class="line"><span class="number">4</span> <span class="number">2.236068</span> <span class="number">4.123106</span> <span class="number">4.242641</span>         </div><div class="line"><span class="number">5</span> <span class="number">1.414214</span> <span class="number">5.099020</span> <span class="number">5.000000</span> <span class="number">1.000000</span></div><div class="line">&gt; dist(X,diag=<span class="literal">T</span>,upper=<span class="literal">T</span>) <span class="comment"># 默认情况下是欧氏距离</span></div><div class="line">         <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span>        <span class="number">5</span></div><div class="line"><span class="number">1</span> <span class="number">0.000000</span> <span class="number">6.324555</span> <span class="number">5.385165</span> <span class="number">2.236068</span> <span class="number">1.414214</span></div><div class="line"><span class="number">2</span> <span class="number">6.324555</span> <span class="number">0.000000</span> <span class="number">4.123106</span> <span class="number">4.123106</span> <span class="number">5.099020</span></div><div class="line"><span class="number">3</span> <span class="number">5.385165</span> <span class="number">4.123106</span> <span class="number">0.000000</span> <span class="number">4.242641</span> <span class="number">5.000000</span></div><div class="line"><span class="number">4</span> <span class="number">2.236068</span> <span class="number">4.123106</span> <span class="number">4.242641</span> <span class="number">0.000000</span> <span class="number">1.000000</span></div><div class="line"><span class="number">5</span> <span class="number">1.414214</span> <span class="number">5.099020</span> <span class="number">5.000000</span> <span class="number">1.000000</span> <span class="number">0.000000</span></div><div class="line">&gt; dist(X,method=<span class="string">"manhattan"</span>,diag=<span class="literal">T</span>,upper=<span class="literal">T</span>) <span class="comment">#马氏距离</span></div><div class="line">  <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span></div><div class="line"><span class="number">1</span> <span class="number">0</span> <span class="number">8</span> <span class="number">7</span> <span class="number">3</span> <span class="number">2</span></div><div class="line"><span class="number">2</span> <span class="number">8</span> <span class="number">0</span> <span class="number">5</span> <span class="number">5</span> <span class="number">6</span></div><div class="line"><span class="number">3</span> <span class="number">7</span> <span class="number">5</span> <span class="number">0</span> <span class="number">6</span> <span class="number">7</span></div><div class="line"><span class="number">4</span> <span class="number">3</span> <span class="number">5</span> <span class="number">6</span> <span class="number">0</span> <span class="number">1</span></div><div class="line"><span class="number">5</span> <span class="number">2</span> <span class="number">6</span> <span class="number">7</span> <span class="number">1</span> <span class="number">0</span></div><div class="line">&gt; dist(X,method=<span class="string">"minkowski"</span>,diag=<span class="literal">T</span>,upper=<span class="literal">T</span>,p=<span class="number">2</span>)</div><div class="line">         <span class="number">1</span>        <span class="number">2</span>        <span class="number">3</span>        <span class="number">4</span>        <span class="number">5</span></div><div class="line"><span class="number">1</span> <span class="number">0.000000</span> <span class="number">6.324555</span> <span class="number">5.385165</span> <span class="number">2.236068</span> <span class="number">1.414214</span></div><div class="line"><span class="number">2</span> <span class="number">6.324555</span> <span class="number">0.000000</span> <span class="number">4.123106</span> <span class="number">4.123106</span> <span class="number">5.099020</span></div><div class="line"><span class="number">3</span> <span class="number">5.385165</span> <span class="number">4.123106</span> <span class="number">0.000000</span> <span class="number">4.242641</span> <span class="number">5.000000</span></div><div class="line"><span class="number">4</span> <span class="number">2.236068</span> <span class="number">4.123106</span> <span class="number">4.242641</span> <span class="number">0.000000</span> <span class="number">1.000000</span></div><div class="line"><span class="number">5</span> <span class="number">1.414214</span> <span class="number">5.099020</span> <span class="number">5.000000</span> <span class="number">1.000000</span> <span class="number">0.000000</span></div></pre></td></tr></table></figure>
+<h4 id="相似系数">相似系数</h4>
+<p>对两个变量之间的相似程度可以用相似系数来刻画，用<span class="math inline">\(C_{ij}\)</span>表示第i个变量与第j个变量之间的相似系数，<span class="math inline">\(C_{ij}\)</span>的绝对值越接近1，表示指标i与指标j的关系越密切，<span class="math inline">\(C_{ij}\)</span>的绝对值越接近于0，表示指标i与指标j的关系越疏远，常用的相似系数有夹角余弦和相关系数，如下所示：</p>
+<h5 id="夹角余弦">夹角余弦：</h5>
+<p><span class="math display">\[
+C_{i j}(1)=\frac{\sum_{k=1}^{n} x_{k i} x_{k j}}{\left[\left(\sum_{k=1}^{n} x_{k i}^{2}\right)\left(\sum_{k=1}^{n} x_{k j}^{2}\right)\right]^{\frac{1}{2}}}
+\]</span></p>
+<h5 id="相关系数">相关系数：</h5>
+<p><span class="math display">\[
+C_{i j}(2)=\frac{\sum_{k=1}^{n}\left(x_{k i}-\overline{x}_{i}\right)\left(x_{k i}-\overline{x}_{j}\right)}{\sqrt{\sum_{k=1}^{n}\left(x_{k i}-\overline{x}_{i}\right)^{2} \sum_{k=1}^{n}\left(x_{k j}-\overline{x}_{j}\right)^{2}}}
+\]</span></p>
+<p>相似系数之间的转换，一般来说，距离越小，两样本之间关系越密切，而相似系数越大，两变量之间的关系越密切，为了聚类分析方便起见，可以用下面的通用公式得到变量间的距离，即<span class="math inline">\(d_{ij}^2=1-C_{ij}^2\)</span>。</p>
+<h2 id="系统聚类法">系统聚类法</h2>
+<h3 id="系数聚类法的基本思想">系数聚类法的基本思想</h3>
+<p>确定了距离和相似系数后就要进行分类。分类有许多种方法，最常用的一种方法是在样品距离的基础上定义类与类之间的距离。首选将n个样品分成n类，每个样品自成成一类，然后每将将具有最小距离的两类合并，合并后重新计算类与类之间的距离，这个过程一直持续到将所有的样品归为一类为止，并把这个过程画成一张聚类图，由聚类图可以方便地进行分类。因为聚类图很像一张系统图，所以这种方法就叫层次聚类法(hierachical clustering method)。层次聚类方法是目前应用最多的一种方法。从上面的分析可以看出，虽然已经给出了计算样品之间的距离，但在实际计算过程中还要定义类与类之间的距离。如何定义类与类之间的距离，也有很多方法，不同的方法就产生了不同的层次聚类，常用的方法有六种：</p>
+<ol style="list-style-type: decimal">
+<li>最短距离法：类与类之间的距离等于两类最近样品之间的距离；</li>
+<li>最长距离法：类与类之间的距离等于两类最远样品之间的距离；</li>
+<li>类平均法：类与类之间的距离等于各类元素两两之间平方距离的平均；</li>
+<li>重心法：类与类之间的距离定义为对应这两类重心之间的距离。对样品分类来说，每一类的类重心就是该类样品的均值。</li>
+<li>中间距离法：最长距离夸大了类间距离，最短距离低估了类间距离，介于两者之间的距离法即为中间距离法，中间距离法则是采用了介于最远和最近之间的距离。</li>
+<li>离差平方和法（Ward法）：基于方差分析的思想，如果类分得正确，同样样品之间的离差平方和应当较小，类与类之间的离差平方和应该较大。</li>
+</ol>
+<h3 id="层次聚类法的计算公式">层次聚类法的计算公式</h3>
+<h4 id="最短距离法">最短距离法</h4>
+<p>该法使用<span class="math inline">\(D_{k}(p, q)=\min \left\{d_{i j} | i \in G_{p}, j \in G_{q}\right\}\)</span>来刻画<span class="math inline">\(G_p\)</span>与类<span class="math inline">\(G_{1}\)</span>中最临近的两个样本的距离。若类<span class="math inline">\(G_{p}\)</span>与类<span class="math inline">\(G_{q}\)</span>合并为<span class="math inline">\(G_{r}\)</span>，则<span class="math inline">\(G_{r}\)</span>与<span class="math inline">\(G_{s}\)</span>的距离为： <span class="math display">\[
+D_{k}(r, s)=\min \left\{D_{k}(p, s), D_{k}(q, s)\right\}
+\]</span></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190703143117.png">
+
+</div>
+<h4 id="最长距离法">最长距离法</h4>
+<p>该法用<span class="math inline">\(D_{k}(p, q)=\max \left\{d_{i j} | i \in G_{p}, j \in G_{q}\right\}\)</span>来刻画<span class="math inline">\(G_p\)</span>与类<span class="math inline">\(G_{1}\)</span>中最临近的两个样本的距离。</p>
+<p>若类<span class="math inline">\(G_{p}\)</span>与类<span class="math inline">\(G_{q}\)</span>合并为<span class="math inline">\(G_{r}\)</span>，则<span class="math inline">\(G_{r}\)</span>与<span class="math inline">\(G_{s}\)</span>的距离为： <span class="math display">\[
+D_{k}(r, s)=\max \left\{D_{k}(p, s), D_{k}(q, s)\right\}
+\]</span> <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190703143250.png"></p>
+<h4 id="重心法">重心法</h4>
+<p>在样本空间中，一个类用它的重心（即该类样本的均值）作代表较为合理，类与类之间的距离就用重心之间的距离来表示。</p>
+<p>设样本之间的距离用欧氏距离，若若类<span class="math inline">\(G_{p}\)</span>与类<span class="math inline">\(G_{q}\)</span>合并为<span class="math inline">\(G_{r}\)</span>，它们各有<span class="math inline">\(n_{p}\)</span>、<span class="math inline">\(n_{q}\)</span>、<span class="math inline">\(n_{r}\left(n_{r}=n_{p}+n_{q}\right)\)</span>个样本，它们的重心用<span class="math inline">\(\overline{x}_{P}\)</span>、<span class="math inline">\(\overline{x}_{q}\)</span>和<span class="math inline">\(\overline{x}_{r}\)</span>表示，显然，<span class="math inline">\(\overline{x}_{r}=\frac{1}{n_{r}}\left(n_{p} \overline{x}_{P}+n_{q} \overline{x}_{q}\right)\)</span>，某一类<span class="math inline">\(G_{k}\)</span>重心为<span class="math inline">\(\overline{x}_{k}\)</span>，它与新类<span class="math inline">\(G_{r}\)</span>的距离是： <span class="math display">\[
+D^{2}(k, r)=\left(\overline{x}_{k}-\overline{x}_{r}\right)^{\prime}\left(\overline{x}_{k}-\overline{x}_{r}\right)
+\]</span> 其递推公式为： <span class="math display">\[
+D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)-\frac{n_{p}}{n_{r}} \cdot \frac{n_{q}}{n_{r}} D^{2}(p, q)
+\]</span></p>
+<h4 id="中间距离法">中间距离法</h4>
+<p>该方法是对最短距离法和最长距离法的一个折中，即令类间距离的递推公式为： <span class="math display">\[
+(当G_{r}=\left\{G_{p}, G_{q}\right\})\quad D_{k r}^{2}=\frac{1}{2} D_{k p}^{2}+\frac{1}{2} D_{k q}^{2}-\frac{1}{4} D_{p q}^{2}
+\]</span></p>
+<h4 id="类平均法">类平均法</h4>
+<p>将两类之间的距离平方案底为这两类元素两两之间的平均来计算距离，即： <span class="math display">\[
+D^{2}(k, r)=\frac{1}{n_{k} n_{r}} \sum_{i \in G_{k}} \sum_{G_{r}} d_{i j}^{2}=\frac{1}{n_{k} n_{r}}\left(\sum_{i \in G_{k} j \in G_{p}} d_{i j}^{2}+\sum_{i \in G_{k} j \in G_{q}} d_{i j}^{2}\right)
+\]</span> 其递推公式为： <span class="math display">\[
+D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
+\]</span></p>
+<h4 id="离差平方和法ward法">离差平方和法(Ward法)</h4>
+<p>这种方法是Ward提出来的，因此称为Ward法，该方法的基本思想来自于方差分析，如果分类正确，同样样品的离差平方和应当较小，类与类的离差平方和应当较大。具体做法是先将n个样品各自归为一类，然后每次缩小一类，每缩小一类，离差平方和就要增大，选择使方差增加最小的两类合并，直接所有的样本都归为一类为止。计算过程如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/AHHeFa9cI9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/0iaFhF3HA3.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>这六种层次聚类法的并类原则和过程完全相同，不同之处在于类与类之间的距离定义。当采用欧氏距离时，Lance和Williams于19678年将这些方法统一成如下的递推公式，即：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/HDddlmkB4d.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180823/df257DGccL.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h4 id="层次聚类法的基本步骤">层次聚类法的基本步骤</h4>
+<ol style="list-style-type: decimal">
+<li>计算n个样本两两的距离<span class="math inline">\(\{d_{ij}\}\)</span>，记作D；</li>
+<li>构造n个类，每个类只包含一个样品；</li>
+<li>合并距离最近的两类为一个新类；</li>
+<li>计算新类与当前各类的距离，若类个数为1，进行第5步，否则回到第3步；</li>
+<li>画聚类图；</li>
+<li>决定类的个数和类。</li>
+</ol>
+<h4 id="层次聚类的函数">层次聚类的函数</h4>
+<p>R中进行层次聚类的函数是<code>hclust()</code>，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">hclust(d,mehtod=<span class="string">"complete"</span>,<span class="keyword">...</span>)</div><div class="line"><span class="comment"># d为相似矩阵</span></div><div class="line"><span class="comment"># method是层次聚类方法，包括ward,single,complete,average,mcquitty,median,centroid</span></div></pre></td></tr></table></figure>
+<p>现在使用案例A中的数据进行层次聚类。开始有5类，即每个样品自成一类，即<span class="math inline">\(\{G_{1},G_{2},G_{3},G_{4},G_{5}\}\)</span>，这5类之间的距离就等于5个样品之间的距离，距离矩阵记为<span class="math inline">\(D_{0}\)</span>，其中最小的元素为<span class="math inline">\(D_{0}(4,5)=1\)</span>，因此将<span class="math inline">\(G_{4}\)</span>和<span class="math inline">\(G_{5}\)</span>聚合并成一个新类，即<span class="math inline">\(G_{6}=\{G_{4},G_{5}\}\)</span>，然后再过计算<span class="math inline">\(G_{6}\)</span>与$G_{1},G_{2},G_{3}#之间的距离。</p>
+<p>应用公式<span class="math inline">\(G_{1}(6,i)=min{D_{0}(4,i),D_{0}(5,i)}\)</span>，求其最近相邻的距离，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/Jf1chaHL76.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>同理可知，其它类与类之间的距离如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/kHk4C3Bm8j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在绘制层次聚类图，如下所示；</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; hc &lt;-hclust(dist(X),<span class="string">"single"</span>)</div><div class="line">&gt; cbind(hc$merge,hc$height)</div><div class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]     [,<span class="number">3</span>]</div><div class="line">[<span class="number">1</span>,]   -<span class="number">4</span>   -<span class="number">5</span> <span class="number">1.000000</span></div><div class="line">[<span class="number">2</span>,]   -<span class="number">1</span>    <span class="number">1</span> <span class="number">1.414214</span></div><div class="line">[<span class="number">3</span>,]   -<span class="number">2</span>    <span class="number">2</span> <span class="number">4.123106</span></div><div class="line">[<span class="number">4</span>,]   -<span class="number">3</span>    <span class="number">3</span> <span class="number">4.123106</span></div><div class="line">&gt; plot(hc)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/06aFAJl8CA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>ward法（采用欧氏距离），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">hc2 &lt;-hclust(dist(X),<span class="string">"ward"</span>)</div><div class="line">cbind(hc2$merge,hc$height)</div><div class="line">&gt; cbind(hc2$merge,hc$height)</div><div class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]     [,<span class="number">3</span>]</div><div class="line">[<span class="number">1</span>,]   -<span class="number">4</span>   -<span class="number">5</span> <span class="number">1.000000</span></div><div class="line">[<span class="number">2</span>,]   -<span class="number">1</span>    <span class="number">1</span> <span class="number">1.414214</span></div><div class="line">[<span class="number">3</span>,]   -<span class="number">2</span>   -<span class="number">3</span> <span class="number">4.123106</span></div><div class="line">[<span class="number">4</span>,]    <span class="number">2</span>    <span class="number">3</span> <span class="number">4.123106</span></div><div class="line">plot(hc2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/6lm49eiDef.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="案例分析">案例分析</h3>
+<p>为了研究我们31个省、市、自治区2001年城镇居民生活消费的分布规律，根据调查资料作区域消费类型划分，其中变量如下所示：</p>
+<p>X1：人均食品支出；</p>
+<p>X2：人均衣着商品支出</p>
+<p>X3：人均家庭设备用品及服务支出</p>
+<p>X4：人均医疗保健支出</p>
+<p>X5：人均交通和通信支出</p>
+<p>X6：人均娱乐教育文化服务支出</p>
+<p>X7：人均居住支出</p>
+<p>X8：人均杂项商品中和服务支出</p>
+<p>表格如下所示（完整的数据在github上）：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/JekccFJc4j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在使用六种聚类方法进行聚类，如下所示：</p>
+<p>第1种：欧氏距离，euclidean</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">x_raw&lt;-read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/wbh_cluster_072.txt"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)<span class="comment"># 完整数据</span></div><div class="line">rownames(x_raw)&lt;-as.vector(x_raw$X)</div><div class="line">x_raw&lt;-x_raw[,-<span class="number">1</span>]</div><div class="line"></div><div class="line">x_dist1&lt;-dist(x_raw,method=<span class="string">"euclidean"</span>)</div><div class="line">hc1 &lt;-hclust(x_dist1,<span class="string">"single"</span>)</div><div class="line">fviz_dend(hc1) <span class="comment">#factoextra包</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/1CGDL9cH1I.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>还可以对分成几类进行颜色区分，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">fviz_dend(hc1, k = <span class="number">4</span>, </div><div class="line">          cex = <span class="number">0.5</span>, </div><div class="line">          k_colors = c(<span class="string">"#2E9FDF"</span>, <span class="string">"#00AFBB"</span>, <span class="string">"#E7B800"</span>, <span class="string">"#FC4E07"</span>),</div><div class="line">          color_labels_by_k = <span class="literal">TRUE</span>, </div><div class="line">          rect = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/lHbiGFIeEi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第二种：欧氏距离，complete</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc2 &lt;-hclust(x_dist1,<span class="string">"complete"</span>)</div><div class="line">fviz_dend(hc2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/46LK4cfLKm.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第三种：欧氏距离,euclidean,median，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc3 &lt;-hclust(x_dist1,<span class="string">"median"</span>)</div><div class="line">fviz_dend(hc3)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/bLH7a7Hk3e.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第四种：欧氏距离，euclidean，average，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc4 &lt;-hclust(x_dist1,<span class="string">"average"</span>)</div><div class="line">fviz_dend(hc4)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/h0dFL4DH7a.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第五种：欧氏距离，centroid，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc5 &lt;-hclust(x_dist1,<span class="string">"centroid"</span>)</div><div class="line">fviz_dend(hc5)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/2m74EhedAA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第六种：欧氏距离，ward，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hc6 &lt;-hclust(x_dist1,<span class="string">"ward"</span>)</div><div class="line">fviz_dend(hc6)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/fGbleIfG2c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>划分类别，如下所示：：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">fviz_dend(hc6, k = <span class="number">3</span>, </div><div class="line">          cex = <span class="number">0.5</span>, </div><div class="line">          k_colors = c(<span class="string">"#2E9FDF"</span>, <span class="string">"#00AFBB"</span>, <span class="string">"#E7B800"</span>),</div><div class="line">          color_labels_by_k = <span class="literal">TRUE</span>, </div><div class="line">          rect = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/03fegDE3Ig.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="kmeans聚类法">kmeans聚类法</h2>
+<h3 id="kmeans聚类法的概念">kmeans聚类法的概念</h3>
+<p>层级聚类法需要计算出不同样本或变量的距离，还要在聚类的每一步计算出类间距离，相应的计算量比较大，尤其是当样本量比较大的时候，非常消耗计算机资源。而kmeans是一类快速聚类法。kmeans法（K均值法）的具体算法至少包括以下三个步骤：</p>
+<ol style="list-style-type: decimal">
+<li>将所有的样本分成k个初始类；</li>
+<li>通过欧氏距离将某个样本划入离中心最近的类中，并对获得的样本与失去样品的类重新计算中心坐标</li>
+<li>重复步骤2，直到所有的样品都不能再分配为止。</li>
+</ol>
+<p>kmeans法和层级聚类法一样，都是以距离的远近亲疏为标准进行聚类的。但两者的不同之处在于：层级聚类对没的类数产生一系列的聚类结果，而K均值法只能产生指定类数的聚类结果。具体类数的确定，离不开实践经验的积累。有时候也要借助层级聚类法，以一部分样本为对象进行聚类，其结果为Kmeans法提供参考。</p>
+<h3 id="kemans聚类的原理与计算">kemans聚类的原理与计算</h3>
+<p>kmeans算法以k为参数，把n个对象分为k个聚类，以使聚类内具有较高的相似度，而聚类间的相似度较低。相似度的计算是根据一个聚类中对象的均值来进行的。kmeans算法的处理流程如下所示：</p>
+<ol style="list-style-type: decimal">
+<li>随机地选择k个对象，每个对象初始地代表了一个簇的平均值或中心，对剩余的每个对象，根据其与各个聚类中心的距离将其赋给最近的簇；</li>
+<li>重新过计算每个簇的平均值作为聚类中心进行聚类。</li>
+</ol>
+<p>这个过程不断重复，直到准则函数收敛，通常，采用平方误差准则，其定义如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/6mcbdGI5m2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中，E为数据中所有对象与相应聚类中心的均方差之和，p为代表对象空间中的一个点，<span class="math inline">\(m_{i}\)</span>为类<span class="math inline">\(C_{i}\)</span>的均值（p和<span class="math inline">\(m_{i}\)</span>都是多维的）。该式所示聚类的标准旨在使所有获得的聚类有以下特点：</p>
+<p>各本身尽可能地紧凑，而各类之间尽可能地分开，kmean迭代图例如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/39JJc44BHe.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>根据聚类中的均值进行聚类划分的kmeans算法如下：</p>
+<ol style="list-style-type: decimal">
+<li>从n个数据对象中取任意k个对象作为初始簇中心；</li>
+<li>循环下述流程3到4，直到每个聚类不再发生变化为止；</li>
+<li>根据每个簇中对象的均值（中心对象），计算每个对象与这些中心对象的距离，并根据最小距离重新对相应对象进行划分；</li>
+<li>重新计算每个（有变化）簇的均值。</li>
+</ol>
+<h3 id="kmeans">kmeans()</h3>
+<p>R中的kmeans()函数用于进行kmeans聚类，用法为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">kmeans(x,centers,..)</div><div class="line">其中，x为数据矩阵或数据框</div><div class="line">centers为聚类数或初始聚类中心</div></pre></td></tr></table></figure>
+<h3 id="案例分析-1">案例分析</h3>
+<p>kmeans算法的R语言实现及模拟。本例模拟正态随机变量<span class="math inline">\(x~N(\mu,\delta^2)\)</span>。</p>
+<ol style="list-style-type: decimal">
+<li>用R模拟1000个均值为0，标准差为0.3的正态分布随机数据，再把这些随机数转换为10个变量、100个对象的矩阵；</li>
+<li>用同样的方法模拟1000个均值为1，标准差为0.3的正态分布随机数，再转化为10个变量、100个对象的矩阵；</li>
+<li>把这两个矩阵合并为10个变量、200个样本的数据矩阵；</li>
+<li>利用kmeans聚类法将其聚成两类，观察其效果，如下所示：</li>
+</ol>
+<p>先看一下层级聚类：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/gl6f4DCm0c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>再看一下kmeans聚类：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(factoextra)</div><div class="line">cl&lt;-kmeans(x_norm,<span class="number">2</span>)</div><div class="line">fviz_cluster(cl,data=x_norm)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Id6A8cAl0I.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>我们通过<code>fviz_nbclust</code>函数查看一下聚成几类比较好，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_norm2&lt;-scale(x_norm)</div><div class="line">fviz_nbclust(x_norm2, kmeans, method = <span class="string">"wss"</span>) + geom_vline(xintercept = <span class="number">4</span>, linetype = <span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/jKBHBmKiJg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从图上可以看出，聚成2类比较好，因为1到2变化幅度最大，2之后的变化幅度就非常小了。</p>
+<p>可视化二：可以将不同的聚类呈现出来：</p>
+<p>使用<code>silhouette</code>函数来计算一下要绘图的轮廓。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">x.res &lt;- kmeans(x_norm, <span class="number">2</span>)</div><div class="line">sil &lt;- silhouette(km.res$cluster, dist(x_norm))</div><div class="line">fviz_silhouette(sil)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/icH4baljaI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="其它r语言聚类函数">其它R语言聚类函数</h2>
+<p>eclust()是另外的一个聚类函数，此函数简化了聚类分析的工作流程，可以用于计算层次聚类和分区聚类，eclust()自动计算最佳聚类簇数。 自动提供Silhouette plot，可以结合ggplot2绘制图形，使用eclust()的K均值聚类如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_eclust &lt;- eclust(x_norm,<span class="string">"hclust"</span>)</div><div class="line">fviz_dend(x_eclust,rect=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/Dc1mFb1KEi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在计算一下前面的那个案例，也就是各个省市的聚类，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_eclust2 &lt;-eclust(x_raw,<span class="string">"hclust"</span>,k=<span class="number">4</span>)</div><div class="line">fviz_dend(x_eclust2,rect=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180824/5cG9k0918F.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>各省市的Kmean聚类图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<h2 id="代码汇总">代码汇总</h2>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><p>多元统计分析及R语言建模.王斌会</p></li>
+<li><p><a href="https://blog.csdn.net/Anna_datahummingbird/article/details/79912348" target="_blank" rel="external">R语言聚类分析-kmeans聚类分析实战</a></p></li>
+<li><p><a href="https://mp.weixin.qq.com/s/M_rJqcHz6HUlGIHVeN4RkQ" target="_blank" rel="external">R语言学习笔记之聚类分析</a></p></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-16决策树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-16决策树/" itemprop="url">决策树笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-19T12:02:00+08:00">
+                2018-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,377
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="决策树的原理">决策树的原理</h2>
+<p>决策树的原理可以参考这篇笔记<a href="http://rvdsd.top/2018/07/01/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B019-%E5%86%B3%E7%AD%96%E6%A0%91/">《StatQuest学习笔记19——决策树》</a>。</p>
+<h2 id="决策树的计算过程">决策树的计算过程</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)。这里我们先看一批数据，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Dh8fddjd9h.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>原始数据很多，有1000多行。这个数据来自于Flake and lawrence(2002)，可以在<a href="https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/mg" target="_blank" rel="external">网上下载</a>，这且数据是做什么的，我也不清楚。这个数据集有6个自变量和1个因变量，一共有1385个观测值。书上说之所以用这个数据是因为这里的所有变量都是数量变量，因此这个数据集也可以用经典线性回归来做，从而可以对各种方法进行比较。</p>
+<h3 id="线性回归">线性回归</h3>
+<p>现在先对全部数据做一个简单的 线性回归，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_dt &lt;- read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/mg.csv"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)</div><div class="line">result_dt &lt;- lm(y~.,raw_dt)</div><div class="line">summary(result_dt)</div><div class="line">pairs(raw_dt)<span class="comment">#查看不同变量之间的相关关系</span></div><div class="line"><span class="comment"># 或plot(raw_dt)</span></div><div class="line">cor(raw_dt)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_dt)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = y ~ ., data = raw_dt)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-0.40866 -0.09516  0.01098  0.09645  0.40011 </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)  0.95582    0.07142  13.384  &lt; 2e-16 ***</div><div class="line">x1           0.28512    0.02773  10.282  &lt; 2e-16 ***</div><div class="line">x2           0.17263    0.02655   6.502 1.10e-10 ***</div><div class="line">x3          -0.37956    0.02769 -13.709  &lt; 2e-16 ***</div><div class="line">x4          -0.36756    0.02764 -13.298  &lt; 2e-16 ***</div><div class="line">x5           0.07165    0.02656   2.697  0.00707 ** </div><div class="line">x6           0.19003    0.02778   6.841 1.18e-11 ***</div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class="line"></div><div class="line">Residual standard error: 0.1459 on 1378 degrees of freedom</div><div class="line">Multiple R-squared:  0.5868,	Adjusted R-squared:  0.585 </div><div class="line">F-statistic: 326.2 on 6 and 1378 DF,  p-value: &lt; 2.2e-16</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/egLil2EEmc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>mg数据各个变量之间的相关系数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; cor(raw_dt)</div><div class="line">            y         x1         x2         x3         x4         x5         x6</div><div class="line">y   <span class="number">1.0000000</span>  <span class="number">0.2620280</span>  <span class="number">0.5441721</span> -<span class="number">0.5006887</span> -<span class="number">0.4355964</span>  <span class="number">0.5510561</span>  <span class="number">0.1511016</span></div><div class="line">x1  <span class="number">0.2620280</span>  <span class="number">1.0000000</span> -<span class="number">0.1465800</span> -<span class="number">0.6543690</span>  <span class="number">0.4333849</span>  <span class="number">0.4543362</span> -<span class="number">0.6277910</span></div><div class="line">x2  <span class="number">0.5441721</span> -<span class="number">0.1465800</span>  <span class="number">1.0000000</span> -<span class="number">0.1475594</span> -<span class="number">0.6539043</span>  <span class="number">0.4367584</span>  <span class="number">0.4515753</span></div><div class="line">x3 -<span class="number">0.5006887</span> -<span class="number">0.6543690</span> -<span class="number">0.1475594</span>  <span class="number">1.0000000</span> -<span class="number">0.1471907</span> -<span class="number">0.6537680</span>  <span class="number">0.4397873</span></div><div class="line">x4 -<span class="number">0.4355964</span>  <span class="number">0.4333849</span> -<span class="number">0.6539043</span> -<span class="number">0.1471907</span>  <span class="number">1.0000000</span> -<span class="number">0.1494223</span> -<span class="number">0.6524989</span></div><div class="line">x5  <span class="number">0.5510561</span>  <span class="number">0.4543362</span>  <span class="number">0.4367584</span> -<span class="number">0.6537680</span> -<span class="number">0.1494223</span>  <span class="number">1.0000000</span> -<span class="number">0.1498846</span></div><div class="line">x6  <span class="number">0.1511016</span> -<span class="number">0.6277910</span>  <span class="number">0.4515753</span>  <span class="number">0.4397873</span> -<span class="number">0.6524989</span> -<span class="number">0.1498846</span>  <span class="number">1.0000000</span></div></pre></td></tr></table></figure>
+<p>从前面的线性回归结果可以看出来，<span class="math inline">\(R^2=0.5868\)</span>，这个数值并不太好，再加上两两散点图与相关系数的结果，我们看不出各个变量之间的任何模式。现在我们使用其它的几种算法建模方法，同时使用交叉验证（利用均方误差或标准化均方误差）对各种方法时行比较。</p>
+<p>下面我们对各种方法都用10折交叉验证的方法来判断其结果的可靠性（关于10折交叉验证的一些知识，可以看这笔记<a href="http://rvdsd.top/2018/07/05/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。对于每种方法，按照随机建立的10个训练集通过计算建立10个模型，对测试集分别得到10个标准化均方误差(NMSE)，再得出10次平均的NMSE。令<span class="math inline">\(\bar{y}\)</span>为因变量均值，<span class="math inline">\(\hat{y}\)</span>为从训练集得到的模型对一个测试数据集的预测值，这里NMSE的定义如下所示：</p>
+<p><span class="math inline">\(NMSE=\bar{(y-\hat{y})^2}/=\bar{(y-\bar{y})^2}=\sum(y-\hat{y})^2/\sum(y-\bar{y})^2\)</span></p>
+<p>显然，如果什么模型都不用，仅仅用均值来做预测，那么NMSE应该等于1.所以，如果在回归时得到NMSE大于1，这个模型就很糟糕了，还不如没有模型。仅仅对于训练集来说，其NMSE等于<span class="math inline">\(1-R^2\)</span>，这里的<span class="math inline">\(R^2\)</span>为回归的确定系数，但是对于测试集来说，其NMSE与测试集回归的<span class="math inline">\(R^2\)</span>没有什么关系，交叉验证主要关心测试集的NMSE。</p>
+<h3 id="构建训练集和测试集">构建训练集和测试集</h3>
+<p>现在构建为交叉验证服务的10个训练集和测试集，具体过程是：随机把下标分配给1,2,…10这10个数字，也就是把数据下标随机分成10份，然后每次提取一份作为测试集，其它9份放在一起作为训练集，用模型进行拟合，记下结果和误差，如此下去，一共做10次，最后把误差平均起来。这里所用的随机选Z折下标集的函数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">CV=<span class="keyword">function</span>(n,Z=<span class="number">10</span>,seed=<span class="number">1000</span>)&#123;</div><div class="line">  z=rep(<span class="number">1</span>:Z,ceiling(n/Z))[<span class="number">1</span>:n]</div><div class="line">  set.seed(seed)</div><div class="line">  z=sample(z,n)</div><div class="line">  mm=list()</div><div class="line">  <span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:Z)</div><div class="line">    mm[[i]]=(<span class="number">1</span>:n)[z==i]</div><div class="line">  <span class="keyword">return</span>(mm)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的<code>n</code>是样本量，<code>Z</code>为折的数目（也就是训练集加测试集的数目，这里默认是10），<code>seed</code>为随机种子，这里设为了1000，转出为<code>Z</code>个下标集，<code>mm[[i]]</code>为第i（i=1,2,…,Z)个下标集，根据这个函数对这个mg数据集求10个下标集的代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n&lt;-nrow(raw_dt)</div><div class="line">Z=<span class="number">10</span></div><div class="line">mm=CV(n,Z)</div><div class="line">D=<span class="number">1</span></div></pre></td></tr></table></figure>
+<p>在这段代码中，<code>mm</code>存储了10个下标集，而D说明因变量是第一个变量，这些值在后面对每种方法都要用。</p>
+<p>为了和其它方法进行地比较，先对数据mg求简单的线性回归的10折交叉验证的测试集的NMSE，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(MSE)</div><div class="line">[1] 0.4222689</div></pre></td></tr></table></figure>
+<p>结果表明，测试集的NMSE为0.4222689</p>
+<h2 id="决策树回归">决策树回归</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)，现在我们先用数据集mg做一棵回归树，然后解释其意义。这里要使用到<code>rpart</code>包中的<code>rpart()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rpart)</div><div class="line"><span class="keyword">library</span>(rpart.plot)</div><div class="line">a=rpart(y~.,raw_dt)</div><div class="line">rpart.plot(a,type=<span class="number">2</span>,faclen=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; a</div><div class="line">n= 1385 </div><div class="line"></div><div class="line">node), split, n, deviance, yval</div><div class="line">      * denotes terminal node</div><div class="line"></div><div class="line"> 1) root 1385 70.9545100 0.9301440  </div><div class="line">   2) x2&lt; 0.9894983 736 31.9699900 0.8017888  </div><div class="line">     4) x3&gt;=0.8423859 551 16.4573000 0.7288982  </div><div class="line">       8) x2&gt;=0.5178963 483 13.3868900 0.7068909  </div><div class="line">        16) x2&lt; 0.7999875 263  4.7064590 0.6422662  </div><div class="line">          32) x3&lt; 1.092533 185  3.3567710 0.6073434 *</div><div class="line">          33) x3&gt;=1.092533 78  0.5889238 0.7250958 *</div><div class="line">        17) x2&gt;=0.7999875 220  6.2689860 0.7841468 *</div><div class="line">       9) x2&lt; 0.5178963 68  1.1749050 0.8852150 *</div><div class="line">     5) x3&lt; 0.8423859 185  3.8660570 1.0188850  </div><div class="line">      10) x4&gt;=1.062353 71  1.8511830 0.9239636 *</div><div class="line">      11) x4&lt; 1.062353 114  0.9767496 1.0780020 *</div><div class="line">   3) x2&gt;=0.9894983 649 13.1077400 1.0757060  </div><div class="line">     6) x3&gt;=1.056185 206  3.5797200 0.9644841  </div><div class="line">      12) x4&gt;=0.9107852 23  0.5746155 0.7823564 *</div><div class="line">      13) x4&lt; 0.9107852 183  2.1462980 0.9873744 *</div><div class="line">     7) x3&lt; 1.056185 443  5.7947760 1.1274250 *</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hG48FgC33C.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>计算的结果有2个，一个是文本描述的结果，一个是图形结果，这两个结果是等价的，我们可以了解这个决策树的构造过程。现在解释一下这个决策树。</p>
+<p>决策树就像一棵倒长的树，有很多分叉，分叉点叫节点(node)，其中1号节点为根节点，也就是上图中最高的那个节点，输出的文本信息则是全部数据的信息，其中在1号节点上，n=1385，偏差(deviance)=70.9545100，在该节点的因变量的均值为0.9301440。</p>
+<p>这里的偏差是批在每个节点的偏差，它的定义为：在该节点的数据中的因变量与其均值之差的平方和，即<span class="math inline">\(\sum_{i}(y_{i}-\bar{y})^2\)</span>这里回归树用偏差大小来选择变量，当然也可以用其它诸如残差平方和作为选择变量的准则。</p>
+<p>上述的这些信息显示在上图中（不过只显示了均值），然后计算机程度在每个自变量中选择一个数值分割点，使得在该节点的整个数据在这个分割点比在其它分割点分成两部分之后的偏差之和都小，对每个自变量都选择这样的一个分割点，并对不同自变量的分割结果做比较，得到一个使得分割后总偏差最小的变量，这个变量就是该节点的分割变量（或称为拆分变量）。</p>
+<p>根据输出的文本信息，在这个案例中，根节点的分割变量为x2，其分割点为0.9894983，x2小于该值的观测值分到左边（节点2），大于该值的则分到右边（节点3）。在每个节点都展示出观测值数目、偏差及因变量均值这三项内容（不过决策树的图形中只有均值），这样数据就分成了两个部分。然后，对每一部分数据，选择分割变量及其分割点的程序重新开始。如此下去，根据一些按照拟合程度和避免决策树无限制长下去的准则，到一定节点就不再分割，这些节点就是终节点（也称为叶节点），也就是文本信息中带有星号(<code>*</code>)的为叶节点。</p>
+<h3 id="决策树的使用">决策树的使用</h3>
+<p>使用决策树很简单，如果有新的（只知道自变量的）观测值，就可以根据决策树以及各个变量大小，从根节点一直走到一个终节点，那里因变量的均值就是该观测值的因变量预测值。决策树本身受数据影响较大，但许多决策树结果起来就可以构成很好的方法，例如boosting，bagging以及随机森林等组合方法就是以决策树作为基本决策单元构造出来的。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>复杂数据统计方法：基于R的应用.第三版.吴喜之</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/18/BioStatistics/生物统计-15判别分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1123,7 +2100,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/24/BIoTools/各种基因名转换/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/24/BioTools/各种基因名转换/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -1142,7 +2119,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/06/24/BIoTools/各种基因名转换/" itemprop="url">各种基因名笔记</a></h1>
+                <a class="post-title-link" href="/2018/06/24/BioTools/各种基因名转换/" itemprop="url">各种基因名笔记</a></h1>
         
 
         <div class="post-meta">
@@ -1210,7 +2187,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,507
+                  3,757
                 </span>
               
 
@@ -1226,7 +2203,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  6
+                  17
                 </span>
               
             </div>
@@ -1295,6 +2272,112 @@
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">geneIDselect &lt;-select(org.Hs.eg.db, <span class="comment">#.db是这个芯片数据对应的注释包</span></div><div class="line">                      keys=gene,</div><div class="line">                      columns=c(<span class="string">"SYMBOL"</span>,<span class="string">"ENSEMBL"</span>,<span class="string">"GENENAME"</span>), <span class="comment">#clolumns参数是你要转换的ID类型是什么，这里选择三个。</span></div><div class="line">                      keytype=<span class="string">"ENTREZID"</span> )<span class="comment">#函数里面的keytype与keys参数是对应的，keys是你输入的那些数据，keytype是指这些数据是属于什么类型的数据。 </span></div><div class="line">head(geneIDselect)</div></pre></td></tr></table></figure>
 <p>运行结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; head(geneIDselect)</div><div class="line">  ENTREZID SYMBOL         ENSEMBL</div><div class="line"><span class="number">1</span>     <span class="number">4312</span>   MMP1 ENSG00000196611</div><div class="line"><span class="number">2</span>     <span class="number">8318</span>  CDC45 ENSG00000093009</div><div class="line"><span class="number">3</span>    <span class="number">10874</span>    NMU ENSG00000109255</div><div class="line"><span class="number">4</span>    <span class="number">55143</span>  CDCA8 ENSG00000134690</div><div class="line"><span class="number">5</span>    <span class="number">55388</span>  MCM10 ENSG00000065328</div><div class="line"><span class="number">6</span>      <span class="number">991</span>  CDC20 ENSG00000117399</div><div class="line">                                                     GENENAME</div><div class="line"><span class="number">1</span>                                   matrix metallopeptidase <span class="number">1</span></div><div class="line"><span class="number">2</span>                                      cell division cycle <span class="number">45</span></div><div class="line"><span class="number">3</span>                                                neuromedin U</div><div class="line"><span class="number">4</span>                            cell division cycle associated <span class="number">8</span></div><div class="line"><span class="number">5</span> minichromosome maintenance <span class="number">10</span> replication initiation factor</div><div class="line"><span class="number">6</span>                                      cell division cycle <span class="number">20</span></div></pre></td></tr></table></figure>
+<h2 id="使用biomart包来转换基因名">使用<code>biomaRt</code>包来转换基因名</h2>
+<p><code>biomaRt</code>工具包是一个连接<code>bioMart</code>数据库的R语言接口，能够通过这个软件包自由地链接到bioMart数据库，方便得读取该数据库的数据，并进一步进行数据处理，从名称中的<code>Mart</code>这个英文字符就可以知道，这是一个有数据中心类似功能的包（注：Mart在英文中有中心，集市的意思）。</p>
+<p>bioMart是一个集成了生物学数据的大型集成数据库，包括Ensemble，Uniprot，NCBI，EBI，TAIR等常用的数据库。具体说来，使用这个工具包可以做以下几个工作：</p>
+<ol style="list-style-type: decimal">
+<li><p>查找某个基因在染色体上的位置。反之，给定染色体每一区间，返回该区间的基因s；</p></li>
+<li><p>通过EntrezGene的ID查找到相关序列的GO注释。反之，给定相关的GO注释，获取相关的EntrezGene的ID；</p></li>
+<li><p>通过EntrezGene的ID查找到相关序列的上游100bp序列（可能包含启动子等调控元件）；</p></li>
+<li><p>查找人类染色体上每一段区域中已知的SNPs；</p></li>
+<li><p>给定一组的序列ID，获得其中具体的序列。</p></li>
+</ol>
+<h3 id="biomart包中函数"><code>biomaRt</code>包中函数</h3>
+<p>先了解几个这个包中的函数。</p>
+<h4 id="usemart函数"><code>useMart()</code>函数</h4>
+<p><code>useMart()</code>函数是<code>biomaRt</code>包中的函数，其功能在于选择BioMart数据库，如果要查看能使用BioMart的哪个数据库，可以使用<code>listMarts</code>函数，这个函数后面会有介绍。</p>
+<p><code>useMart()</code>参数为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">useMart(biomart, dataset, host=<span class="string">"www.ensembl.org"</span>,</div><div class="line">path=<span class="string">"/biomart/martservice"</span>, port=<span class="number">80</span>, archive=<span class="literal">FALSE</span>, ssl.verifypeer =</div><div class="line"><span class="literal">TRUE</span>, ensemblRedirect = <span class="literal">NULL</span>, version, verbose = <span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
+<ol style="list-style-type: decimal">
+<li><code>biomart</code>：BioMart所用的数据库名称；</li>
+<li><code>dataset</code>：biomart参数选中的大数据中的小数据库，使用我们先选ENSMBL数据库，再选人的数据库，语句就是如下所示：</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(biomaRt)</div><div class="line"></div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>, dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line"><span class="comment"># Or as the same following command lines:</span></div><div class="line"><span class="comment"># ensembl &lt;- useMart("ensembl")</span></div><div class="line">ensembl</div><div class="line">class(ensembl)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">library</span>(biomaRt)</div><div class="line">&gt; ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>, dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">&gt; <span class="comment"># Or as the same following command lines:</span></div><div class="line">&gt; <span class="comment"># ensembl &lt;- useMart("ensembl")</span></div><div class="line">&gt; ensembl</div><div class="line">Object of class <span class="string">'Mart'</span>:</div><div class="line">  Using the ENSEMBL_MART_ENSEMBL BioMart database</div><div class="line">  Using the hsapiens_gene_ensembl dataset</div><div class="line">&gt; class(ensembl)</div><div class="line">[<span class="number">1</span>] <span class="string">"Mart"</span></div><div class="line">attr(,<span class="string">"package"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"biomaRt"</span></div></pre></td></tr></table></figure>
+<p>从中可以发现，<code>ensembl</code>是一个<code>Mart</code>类型的对象。</p>
+<h4 id="listmarts函数"><code>listMarts()</code>函数</h4>
+<p><code>listMarts</code>：返回BioMart的数据库名称，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; listMarts()</div><div class="line">               biomart               version</div><div class="line"><span class="number">1</span> ENSEMBL_MART_ENSEMBL      Ensembl Genes <span class="number">97</span></div><div class="line"><span class="number">2</span>   ENSEMBL_MART_MOUSE      Mouse strains <span class="number">97</span></div><div class="line"><span class="number">3</span>     ENSEMBL_MART_SNP  Ensembl Variation <span class="number">97</span></div><div class="line"><span class="number">4</span> ENSEMBL_MART_FUNCGEN Ensembl Regulation <span class="number">97</span></div></pre></td></tr></table></figure>
+<p>在使用<code>useMart()</code>创建一个查询对象时，可以使用<code>test_gene_id &lt;- useMart(biomart = &quot;ensembl&quot;)</code>这个语句来创建，它就相当于<code>test_gene_id &lt;- useMart(biomart = &quot;ENSEMBL_MART_ENSEMBL&quot;)</code>。</p>
+<p>另外，<code>ENSEMBL_MART_MOUSE</code>是不同品系小鼠的数据库。<code>ENSEMBL_MART_SNP</code>这个从字面上应该是SNP数据库，<code>ENSEMBL_MART_FUNCGEN</code>应该是基因调控元件的一些数据库。</p>
+<h4 id="listdatasets函数"><code>listDatasets()</code>函数</h4>
+<p>当我们使用<code>useMart()</code>函数选择了总数据库（例如ensembl这个大数据为）后，就可以使用<code>listDatasets()</code>函数来查看可用的数据库的子数据库（小鼠的，还是人的），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">test_ensembl &lt;- useMart(<span class="string">"ensembl"</span>)</div><div class="line">list_dataset &lt;- listDatasets(test_ensembl)</div><div class="line">head(list_dataset)</div><div class="line">str(list_dataset)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; head(list_dataset)</div><div class="line">                       dataset                           description     version</div><div class="line"><span class="number">1</span> abrachyrhynchus_gene_ensembl Pink-footed goose genes (ASM259213v1) ASM259213v1</div><div class="line"><span class="number">2</span>     acalliptera_gene_ensembl      Eastern happy genes (fAstCal1.2)  fAstCal1.2</div><div class="line"><span class="number">3</span>   acarolinensis_gene_ensembl        Anole lizard genes (AnoCar2.0)   AnoCar2.0</div><div class="line"><span class="number">4</span>    acitrinellus_gene_ensembl        Midas cichlid genes (Midas_v5)    Midas_v5</div><div class="line"><span class="number">5</span>        ahaastii_gene_ensembl    Great spotted kiwi genes (aptHaa1)     aptHaa1</div><div class="line"><span class="number">6</span>    amelanoleuca_gene_ensembl                 Panda genes (ailMel1)     ailMel1</div><div class="line">&gt; str(list_dataset)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">190</span> obs. of  <span class="number">3</span> variables:</div><div class="line"> $ dataset    : <span class="string">'AsIs'</span> chr  <span class="string">"abrachyrhynchus_gene_ensembl"</span> <span class="string">"acalliptera_gene_ensembl"</span> <span class="string">"acarolinensis_gene_ensembl"</span> <span class="string">"acitrinellus_gene_ensembl"</span> <span class="keyword">...</span></div><div class="line"> $ description: <span class="string">'AsIs'</span> chr  <span class="string">"Pink-footed goose genes (ASM259213v1)"</span> <span class="string">"Eastern happy genes (fAstCal1.2)"</span> <span class="string">"Anole lizard genes (AnoCar2.0)"</span> <span class="string">"Midas cichlid genes (Midas_v5)"</span> <span class="keyword">...</span></div><div class="line"> $ version    : <span class="string">'AsIs'</span> chr  <span class="string">"ASM259213v1"</span> <span class="string">"fAstCal1.2"</span> <span class="string">"AnoCar2.0"</span> <span class="string">"Midas_v5"</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
+<p>从结果中我们可以看出来，使用<code>useMart()</code>函数创建的<code>ensemebl</code>这个变量是一个<code>Mart</code>类型的变量。</p>
+<p>而<code>listDatasets(ensembl)</code>返回的结果则是查看在Ensembl这个数据库中，有多少能用的子数据库列表，从结果可以看出，有190个数据库能用，部分表格如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190710185051.png">
+
+</div>
+<p>其中第1列是数据库名，第2列是对数据库的描述，第3列是版本信息，现在来查看一下人类与小鼠的有关数据库，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">number_data &lt;- grep(<span class="string">"[Mm]ouse|[Hm]uman"</span>, list_dataset$description)</div><div class="line">list_dataset[number_data,]</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; list_dataset[number_data,]</div><div class="line">                     dataset                                      description         version</div><div class="line"><span class="number">76</span>     hsapiens_gene_ensembl                         Human genes (GRCh38.p12)      GRCh38.p12</div><div class="line"><span class="number">92</span>      mcaroli_gene_ensembl             Ryukyu mouse genes (CAROLI_EIJ_v1.1) CAROLI_EIJ_v1.1</div><div class="line"><span class="number">102</span>    mmurinus_gene_ensembl                     Mouse Lemur genes (Mmur_3.0)        Mmur_3.0</div><div class="line"><span class="number">103</span>   mmusculus_gene_ensembl                          Mouse genes (GRCm38.p6)       GRCm38.p6</div><div class="line"><span class="number">106</span>     mpahari_gene_ensembl              Shrew mouse genes (PAHARI_EIJ_v1.1) PAHARI_EIJ_v1.1</div><div class="line"><span class="number">107</span> mspicilegus_gene_ensembl                     Steppe mouse genes (MUSP714)         MUSP714</div><div class="line"><span class="number">108</span>    mspretus_gene_ensembl              Algerian mouse genes (SPRET_EiJ_v1)    SPRET_EiJ_v1</div><div class="line"><span class="number">135</span>    pbairdii_gene_ensembl Northern American deer mouse genes (HU_Pman_2.1)     HU_Pman_2.1</div></pre></td></tr></table></figure>
+<p>从上面的结果我们可以知道，人类基因数据库只有1个，即<code>hsapiens_gene_ensembl</code>，这也是前面的那个使用<code>useMart</code>来要创建查询语句中的<code>dataset</code>参数，即<code>ensembl= useMart(&quot;ENSEMBL_MART_ENSEMBL&quot;,dataset=&quot;hsapiens_gene_ensembl&quot;)</code>。</p>
+<p>而小鼠的数据库有7个，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190710191821.png">
+
+</div>
+<p>不过，就我们常用的小鼠而言，通常是C57BL/6小鼠，使用的数据库是<code>mmusculus_gene_ensembl</code>这个，也就是版本号为<code>GRCm38.p6</code>的数据库。</p>
+<p>也可以使用<code>searchDatasets()</code>函数来检索子数据库的类型，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">searchDatasets(mart = ensembl, pattern = <span class="string">"mouse"</span>)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; searchDatasets(mart = ensembl, pattern = <span class="string">"mouse"</span>)</div><div class="line">                     dataset                                      description         version</div><div class="line"><span class="number">92</span>      mcaroli_gene_ensembl             Ryukyu mouse genes (CAROLI_EIJ_v1.1) CAROLI_EIJ_v1.1</div><div class="line"><span class="number">106</span>     mpahari_gene_ensembl              Shrew mouse genes (PAHARI_EIJ_v1.1) PAHARI_EIJ_v1.1</div><div class="line"><span class="number">107</span> mspicilegus_gene_ensembl                     Steppe mouse genes (MUSP714)         MUSP714</div><div class="line"><span class="number">108</span>    mspretus_gene_ensembl              Algerian mouse genes (SPRET_EiJ_v1)    SPRET_EiJ_v1</div><div class="line"><span class="number">135</span>    pbairdii_gene_ensembl Northern American deer mouse genes (HU_Pman_2.1)     HU_Pman_2.1</div></pre></td></tr></table></figure>
+<p>总之，如果我们要使用人数据库时，在构建一个检索对象时，就如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ensembl= useMart(<span class="string">"ENSEMBL_MART_ENSEMBL"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div></pre></td></tr></table></figure>
+<p>小鼠的话，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mus = useMart(<span class="string">"ENSEMBL_MART_ENSEMBL"</span>,dataset=<span class="string">"mmusculus_gene_ensembl"</span>)</div></pre></td></tr></table></figure>
+<h4 id="参数选择相关函数">参数选择相关函数</h4>
+<p>在选中数据库后，就可以进行基因名的转换了，在转换之前，我们可以看一下要输入什么参数，以及能输出什么参数。</p>
+<p><code>listFilters()</code>可以得到所有的输入结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; listFilters(ensembl)[<span class="number">1</span>:<span class="number">5</span>,]</div><div class="line">             name              description</div><div class="line"><span class="number">1</span> chromosome_name Chromosome/scaffold name</div><div class="line"><span class="number">2</span>           start                    Start</div><div class="line"><span class="number">3</span>             end                      End</div><div class="line"><span class="number">4</span>      band_start               Band Start</div><div class="line"><span class="number">5</span>        band_end                 Band End</div></pre></td></tr></table></figure>
+<p><code>listAttributes</code>获得所有输出结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; listAttributes(ensembl)[<span class="number">1</span>:<span class="number">5</span>,]</div><div class="line">                           name                  description         page</div><div class="line"><span class="number">1</span>               ensembl_gene_id               Gene stable ID feature_page</div><div class="line"><span class="number">2</span>       ensembl_gene_id_version       Gene stable ID version feature_page</div><div class="line"><span class="number">3</span>         ensembl_transcript_id         Transcript stable ID feature_page</div><div class="line"><span class="number">4</span> ensembl_transcript_id_version Transcript stable ID version feature_page</div><div class="line"><span class="number">5</span>            ensembl_peptide_id            Protein stable ID feature_page</div></pre></td></tr></table></figure>
+<p><code>searchFilters</code>与<code>searchAttributes</code>定向搜索想要结果的关键词：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; searchFilters(mart = ensembl, <span class="string">'entrez|hgnc'</span>)</div><div class="line">                         name                                                description</div><div class="line"><span class="number">19</span> with_entrezgene_trans_name                      With EntrezGene transcript name ID(s)</div><div class="line"><span class="number">25</span>                  with_hgnc                                     With HGNC Symbol ID(s)</div><div class="line"><span class="number">26</span>       with_hgnc_trans_name                            With HGNC transcript name ID(s)</div><div class="line"><span class="number">37</span>            with_entrezgene                                       With NCBI gene ID(s)</div><div class="line"><span class="number">76</span>      entrezgene_trans_name EntrezGene transcript name ID(s) [e.g. ARMCX5-GPRASP2-<span class="number">211</span>]</div><div class="line"><span class="number">82</span>                    hgnc_id                                 HGNC ID(s) [e.g. HGNC:<span class="number">100</span>]</div><div class="line"><span class="number">83</span>                hgnc_symbol                                 HGNC symbol(s) [e.g. A1BG]</div><div class="line"><span class="number">84</span>            hgnc_trans_name                 HGNC transcript name ID(s) [e.g. A1BG-<span class="number">201</span>]</div><div class="line"><span class="number">97</span>       entrezgene_accession                         NCBI gene accession(s) [e.g. A1BG]</div><div class="line"><span class="number">98</span>              entrezgene_id                                   NCBI gene ID(s) [e.g. <span class="number">1</span>]</div></pre></td></tr></table></figure>
+<h4 id="getbm函数"><code>getBM()</code>函数</h4>
+<p><code>getBM()</code>函数的参数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">getBM(attributes, filters = <span class="string">""</span>, values = <span class="string">""</span>, mart, curl = <span class="literal">NULL</span>, </div><div class="line">checkFilters = <span class="literal">TRUE</span>, verbose = <span class="literal">FALSE</span>, uniqueRows = <span class="literal">TRUE</span>, bmHeader = <span class="literal">FALSE</span>,</div><div class="line">quote = <span class="string">"\""</span>)</div></pre></td></tr></table></figure>
+<p>参数如下：</p>
+<ul>
+<li><code>attributes</code>：输出的数据；</li>
+<li><code>filters</code>：输入数据的类型，例如<code>hgnc_symbol</code>就是说我们输入的基因名是HGNC协会指定的基因名。</li>
+</ul>
+<blockquote>
+<p>HGNC是指雨果基因命名委员会，它负责制定人类基因命名标准，HGNC的全称是hugo gene nomenclature committee，而其中hugo的全称则是 Human Genome Organisation，即人类基因组组织。</p>
+</blockquote>
+<ul>
+<li><code>values</code>：想要转换的基因名，例如在下面的案例中，我们想转换3个基因的名称，即<code>trans_gene_id &lt;- c(&quot;TP53&quot;, &quot;SMAD4&quot;, &quot;BRCA1&quot;)</code>。</li>
+<li><code>mart</code>：检索的数据库。</li>
+</ul>
+<p>第一个案例：将HGNC基因名转换为<code>Entrez</code>名称，使用案例如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">result_gene_entrez &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>, <span class="string">'entrezgene_id'</span>))</div><div class="line">result_gene_entrez</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_entrez</div><div class="line">  hgnc_symbol entrezgene_id</div><div class="line"><span class="number">1</span>       BRCA1           <span class="number">672</span></div><div class="line"><span class="number">2</span>       SMAD4          <span class="number">4089</span></div><div class="line"><span class="number">3</span>        TP53          <span class="number">7157</span></div></pre></td></tr></table></figure>
+<p>第二个案例：将HGNC基因名转换为Ensembl名称，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">result_gene_emsembl &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>))</div><div class="line">result_gene_emsembl</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_emsembl</div><div class="line">  hgnc_symbol ensembl_gene_id</div><div class="line"><span class="number">1</span>       BRCA1 ENSG00000012048</div><div class="line"><span class="number">2</span>       SMAD4 ENSG00000141646</div><div class="line"><span class="number">3</span>        TP53 ENSG00000141510</div></pre></td></tr></table></figure>
+<p>如果是想输出多个结果，就在<code>attributes</code>中添加多个参数即可：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">result_gene_emsembl2 &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">'entrezgene_id'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>))</div><div class="line">result_gene_emsembl2</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_emsembl2</div><div class="line">  hgnc_symbol entrezgene_id ensembl_gene_id</div><div class="line"><span class="number">1</span>       BRCA1           <span class="number">672</span> ENSG00000012048</div><div class="line"><span class="number">2</span>       SMAD4          <span class="number">4089</span> ENSG00000141646</div><div class="line"><span class="number">3</span>        TP53          <span class="number">7157</span> ENSG00000141510</div></pre></td></tr></table></figure>
+<p>第三个案例：将HGNC基因名转换为转录本名称，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"OTUD1"</span>, <span class="string">"SMAD4"</span>, <span class="string">"IRAK1"</span>,<span class="string">"EPHA2"</span>,<span class="string">"RAB32"</span>)</div><div class="line">result_gene_transcript &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">'entrezgene_id'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>,</div><div class="line">                                     <span class="string">"ensembl_transcript_id"</span>,</div><div class="line">                                     <span class="string">"refseq_mrna"</span>))</div><div class="line">result_gene_transcript</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_transcript</div><div class="line">   hgnc_symbol entrezgene_id ensembl_gene_id ensembl_transcript_id  refseq_mrna</div><div class="line"><span class="number">1</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000358432 NM_001329090</div><div class="line"><span class="number">2</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000358432    NM_004431</div><div class="line"><span class="number">3</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000462805             </div><div class="line"><span class="number">4</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000480202             </div><div class="line"><span class="number">5</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000461614             </div><div class="line"><span class="number">6</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369980    NM_001569</div><div class="line"><span class="number">7</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369974 NM_001025243</div><div class="line"><span class="number">8</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000444230             </div><div class="line"><span class="number">9</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000477274             </div><div class="line"><span class="number">10</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000455690             </div><div class="line"><span class="number">11</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369973             </div><div class="line"><span class="number">12</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000444254             </div><div class="line"><span class="number">13</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000437278             </div><div class="line"><span class="number">14</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000393687 NM_001025242</div><div class="line"><span class="number">15</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000429936             </div><div class="line"><span class="number">16</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000443220             </div><div class="line"><span class="number">17</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000467236             </div><div class="line"><span class="number">18</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000463031             </div><div class="line"><span class="number">19</span>       OTUD1        <span class="number">220213</span> ENSG00000165312       ENST00000376495 NM_001145373</div><div class="line"><span class="number">20</span>       RAB32         <span class="number">10981</span> ENSG00000118508       ENST00000367495    NM_006834</div><div class="line"><span class="number">21</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000588860             </div><div class="line"><span class="number">22</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000398417             </div><div class="line"><span class="number">23</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589076             </div><div class="line"><span class="number">24</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000590061             </div><div class="line"><span class="number">25</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000591914             </div><div class="line"><span class="number">26</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000592911             </div><div class="line"><span class="number">27</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589941             </div><div class="line"><span class="number">28</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000588745             </div><div class="line"><span class="number">29</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000592186             </div><div class="line"><span class="number">30</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589706             </div><div class="line"><span class="number">31</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000585448             </div><div class="line"><span class="number">32</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000591126             </div><div class="line"><span class="number">33</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000611848             </div><div class="line"><span class="number">34</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000590499             </div><div class="line"><span class="number">35</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000593223             </div><div class="line"><span class="number">36</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000586253             </div><div class="line"><span class="number">37</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000342988    NM_005359</div></pre></td></tr></table></figure>
+<p>## <code>biomaRt</code>包转换代码总结</p>
+<p>总结一下代码：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(biomaRt)</div><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">result_gene_entrez &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>, <span class="string">'entrezgene_id'</span>))</div><div class="line">result_gene_entrez</div></pre></td></tr></table></figure>
+<h2 id="在线转换工具">在线转换工具</h2>
+<ol style="list-style-type: decimal">
+<li>g:profiler：https://biit.cs.ut.ee/gprofiler/gost</li>
+</ol>
+<p>这个貌似有R包，学习完补充笔记。</p>
 <h2 id="参考资料">参考资料</h2>
 <ol style="list-style-type: decimal">
 <li><a href="https://blog.csdn.net/liufeichendi/article/details/78819884" target="_blank" rel="external">各类基因ID转换</a></li>
@@ -1303,6 +2386,10 @@
 <li><a href="https://www.douban.com/note/544090098/" target="_blank" rel="external">OMIM数据库</a></li>
 <li><a href="https://vip.biotrainee.com/d/109-entrez-id" target="_blank" rel="external">浅谈Entrez ID</a></li>
 <li><a href="https://blog.csdn.net/weixin_40739969/article/details/89354167" target="_blank" rel="external">Gene id 转换(三种基因各种id转换方法)</a></li>
+<li><a href="https://mp.weixin.qq.com/s/wsiceQmNVveoggiqeDSlmQ" target="_blank" rel="external">如何让基因名称在多个数据库间随意转换？</a></li>
+<li><a href="https://www.jianshu.com/p/f284e5a2069e" target="_blank" rel="external">g:profiler-富集分析/ID转换神器</a></li>
+<li><a href="https://blog.csdn.net/jiuyizhizhu/article/details/5649834" target="_blank" rel="external">R语言biomaRt工具包（package）的使用</a></li>
+<li><a href="https://www.jianshu.com/p/33093fc4f2ca" target="_blank" rel="external">biomaRt:基因类型转换R包使用</a></li>
 </ol>
 
           
@@ -1666,7 +2753,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/13/BIoTools/高通量qPCR均一化方法总结/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/13/BioTools/高通量qPCR均一化方法总结/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -1685,7 +2772,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/06/13/BIoTools/高通量qPCR均一化方法总结/" itemprop="url">高通量qPCR均一化方法总结</a></h1>
+                <a class="post-title-link" href="/2018/06/13/BioTools/高通量qPCR均一化方法总结/" itemprop="url">高通量qPCR均一化方法总结</a></h1>
         
 
         <div class="post-meta">
@@ -1871,1424 +2958,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/12/StatQuest/生物统计-StatQuest学习笔记11-p值详解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/12/StatQuest/生物统计-StatQuest学习笔记11-p值详解/" itemprop="url">StatQuest学习笔记11——p值详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-12T12:10:54+08:00">
-                2018-06-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  8,020
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  28
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这篇笔记主要是讲p值的，它是StatQuest视频教程的第33节，第34节，第35节，第37节的内容（跳过36是因为36讲的是FDR，专门写一篇笔记）。其中第33节的内容为什么是p值，p值的计算；第34节的内容是单尾检测与双尾检验，第35节的内容是作者直接以视频形式进行的讲解，内容是关于p值的阈值，无课件，略去；第37节的内容是p值挟持（p-hacking）与功效检验（power）。</p>
-<h2 id="什么是概率">什么是概率</h2>
-<p>人们通常认为，p值的意思就是概率（probability），p值与概率确实有关，但是它们并不相同，我们先看一个简单的例子。</p>
-<p>我们抛两次硬币，第1次，正面朝上的概率是50%，反面朝上的概率是50%。第2次，正面朝上的概率还是50%，反面朝上的概率还是50%，此时我们提出两个问题；</p>
-<ol style="list-style-type: decimal">
-<li>连续抛2次硬币，出现2次正面朝上的概率是多少？</li>
-<li>连续抛2次硬币，出现2次正面朝上的这个事件的p值是多少？如下所示：</li>
-</ol>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125811.jpg">
-
-</div>
-<p>先看第1个问题，出现2次正面朝上的概率是多少，为了方便讲解，我们用H（head）表示正面，用T表示反面（Tails），抛2次硬币，会出现4个结果，分别为：</p>
-<p>结果1：第1次正面，第2次正面；</p>
-<p>结果2：第1次正面，第2次反面；</p>
-<p>结果3：第1次反面，第2次正面；</p>
-<p>结果4：第1次反面，第2次反面，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125818.jpg">
-
-</div>
-<p>这4结果出现的概率上是相等的，我们的计算过程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125824.jpg">
-
-</div>
-<p>此时，我们就知道了，出现2次正面朝上的概率是0.25。此时我们再看一下出现2次反面朝上的概率，计算过程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125828.jpg">
-
-</div>
-<p>此时的结果也是0.25，它与2次正面朝上的概率是一样的。此时我们再计算一下，抛2次硬币，1次正面朝上，一次反面朝上的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125833.jpg">
-
-</div>
-<p>一面朝上，一面朝下的概率是0.5。在这个案例中，我们并没有考虑正面与反面的顺序，为什么不考虑呢？因为通常来说，我们所说的，抛两次，一面朝上，一面朝下，就包括第1次正面朝上，第2次反面朝上和第1次反面朝上，第2次正面朝上这两种情况，并且它们之间互不影响。例如我们在研究小鼠的体重时，有2只小鼠，先测哪只小鼠的体重都可以，两只小鼠的体重互不影响，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125838.jpg">
-
-</div>
-<h2 id="一个生物学的案例">一个生物学的案例</h2>
-<p>我们假设H（红色）是一个等位基因，T（蓝色）是另外一个等位基因。在下面的图片中，分别是一对夫妇的等基因情况，他们是杂合子，其中母亲的等位基因情况是HT，父亲的等位基因也是HT，那么他们后代中基因为HH的概率是0.25，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125841.jpg">
-
-</div>
-<p>如果母亲是纯合子（homozygote），父亲是杂合子（heterozygote），那么他们后代中出现HH的概率则是0.5，计算过程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125846.jpg">
-
-</div>
-<h2 id="什么是p值">什么是p值</h2>
-<p>p值就是生成某数据的随机机率（random chance），或者说是跟这个随机机率相同或者是更小机率的值，原文如下所示：</p>
-<blockquote>
-<p>a p-value is the probability that random chance generated the data, or something else that is equal or rarer。</p>
-</blockquote>
-<p>现在把这段话拆成3个部分，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125922.jpg">
-
-</div>
-<p>第一部分：<code>a p-value is the probability that random chance generated the data</code>。</p>
-<p>这句话是讲，p值是你所观察到的，能够随机生成这些数据的概率。在上面的这个案例中，就是0.25，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125927.jpg">
-
-</div>
-<p>第二部分：<code>or something else that is equal</code>。这句话是讲，跟得到这个结果相同的概率的事件，在上面的这个案例中，就是说TT的概率与HH的概率是相同的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125931.jpg">
-
-</div>
-<p>计算一下，这个概率是0.25，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125936.jpg">
-
-</div>
-<p>第三部分：<code>or rarer</code>，这个意思是说，出现某个更小概率的事件，由于在前面的案例中，没有其它的事件，因此这一部分就是0，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125941.jpg">
-
-</div>
-<p>综上可知， HH的p值为0.5，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125946.jpg">
-
-</div>
-<p>现在总结一下这个案例：</p>
-<p>HH的概率是0.25，而HH的p值为0.5，这两个值不相同，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125949.jpg">
-
-</div>
-<h2 id="一个稍微复杂的案例">一个稍微复杂的案例</h2>
-<p>这里再介绍一个稍微复杂的案例，这个案例还是以硬币为例进行说明，在这个案例中，我们抛5次硬币，求一下每次都是正面朝上的概率，那么它的公式就是如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125953.jpg">
-
-</div>
-<p>我们画出这5次的所有可能结果（话统计学术语叫样本空间），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707125958.jpg">
-
-</div>
-<p>其中连续5个H（就是5次正面朝上）就是我们感兴趣的事件，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130004.jpg">
-
-</div>
-<p>如果是4次正面朝上，就是下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130008.jpg">
-
-</div>
-<p>如果是3次正面，2次反面，就是这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130013.jpg">
-
-</div>
-<p>如果是3次反面，2次正面，就是这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130215.jpg">
-
-</div>
-<p>其余的就不列出了。最终的事件是32个，那么其中5次都是正面朝上的事件只有1个，它的概率就是1/32，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130220.jpg">
-
-</div>
-<p>经计算可得<code>1/32=0.03125</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130225.jpg">
-
-</div>
-<p>此时我们计算一下5次正面朝上的p值，关于p值的定义，我们再回顾一下前面的定义：</p>
-<blockquote>
-<p>a p-value is the probability that random chance generated the data, or something else that is equal or rarer.</p>
-</blockquote>
-<p>而在这个案例中，没有比5次正面朝上更小的事件了，因此我们可以忽略<code>or rarer</code>事件，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130230.jpg">
-
-</div>
-<p>那么，在这个案例中，p值是随机产生这些事件的概率或者是与同样产生该概率的事件，那么此时出现5次正面朝上的概率就是<code>1/32</code>，再加上同样产生该概率的其它事件，也就是5次反面朝上的概率，也是<code>1/32</code>，那么加起来就是<code>1/32</code>+<code>1/32</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130233.jpg">
-
-</div>
-<p>最终的结果是，p值为0.0625。</p>
-<p>此时我们再计算一种情况，即得到4次正在朝上与1次反面朝上的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130238.jpg">
-
-</div>
-<p>经计算可得<code>5/32=0.15625</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130241.jpg">
-
-</div>
-<p>那么我们此时计算一下它的概率（4次正面朝上，1次反面朝上），我们再回顾一下p值的定义：</p>
-<blockquote>
-<p>a p-value is the probability that random chance generated the data, or something else that is equal or rarer.</p>
-</blockquote>
-<p>根据定义，p值是由3部分构成的：</p>
-<p>第1部分：随机产生这个事件的概率；</p>
-<p>第2部分：产生与该事件相同概率的其他事件；</p>
-<p>第3部分：产生比该事件的概率更小的事件。</p>
-<p>由于比4次正面朝上，1次反面朝上更小的概率是5次都是正面，或5次都是反面朝上，那么4次正面朝上，1次反面朝上的p值需要加上5次都正面或5次都反面的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130246.jpg">
-
-</div>
-<p>因此最终的p值计算结果就是下面的这个公式：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130251.jpg">
-
-</div>
-<p>计算的结果为0.375，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130255.jpg">
-
-</div>
-<h2 id="连续型变量的p值">连续型变量的p值</h2>
-<p>抛硬币数正面与反面的这种数据我们可以称它们为离散型数据（例如结果中只能是1，2，3，4，5，不可能是1.1，3.145），但还有一类数据，例如身高，可以是175.2，174.3，也可以是174.456，它们带有小数点，可以表示连续型的数据（连续型的数据我的理解是可以无限划分，例如身高可以说是176.5，也可以是176.666，但硬币抛5次，你不能说有1次是1.1次正面朝上，3.145次正面朝上），它们是连续型数据变量。对于抛硬币，我们可以列出所有的5次硬币抛后的结果，但是，对于身高这种概率，如何计算呢，先列出来吗？如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130312.jpg">
-
-</div>
-<p>如果是这样的话，那么我们如何处理小数点后面的数字呢，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130317.jpg">
-
-</div>
-<p>对于这类数据，我们可以用一种“密度”（density）来替代它们，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130321.jpg">
-
-</div>
-<p>例如，我们下面的这个数据，这批数据是1996年，巴西女性15岁到49岁之间的身高数据：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130326.jpg">
-
-</div>
-<p>这个曲线下的面积，也就是说红色部分表示了一个人的身高在这个范围内的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130332.jpg">
-
-</div>
-<p>其中，142cm到169cm这个范围在曲线下的面积是95%，换句话讲，如果我们每次测量一个人的身高，它们有95%的可能性在142cm到169cm之间，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130337.jpg">
-
-</div>
-<p>继续看看这个案例，大于169cm的范围与曲线所围成的面积是2.5%，这也就是说，如果我们测量一个巴西的女性，它有2.5%的概率身高高于169cm，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130342.jpg">
-
-</div>
-<p>同时，小于142cm的范围与曲线围成的面积是2.5%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130347.jpg">
-
-</div>
-<p>为了计算p值，我们需要把曲线下的面积加起来，还是按照前面p值的定义，再来回顾一下：</p>
-<blockquote>
-<p>a p-value is the probability that random chance generated the data, or something else that is equal or rarer.</p>
-</blockquote>
-<p>也就是说，p值是得到该事件的概率，以及与出现相同概率事件的概率，以及比该事件的概率还要小的事件的概率的之和，也就是说p值是由3部分构成的（前面已经说过了）。</p>
-<p>例如我们要计算某些人身高是142cm的p值，那么它的p值就是低于142cm的概率加上大于169cm的概率，下图就是低于142cm的概率：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130352.jpg">
-
-</div>
-<p>再加上身高大于169cm的概率（2.5%），最终的p值就是0.05，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130357.jpg">
-
-</div>
-<p>再继续看这个案例，我们此时计算一下身高在155.4到156cm之间的人的概率，由于这两个数字之间只差0.04，那么代表这个范围的身高的人的概率，也就是说它们的曲线下面积基本就相当于一条红线了，非常窄，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130603.jpg">
-
-</div>
-<p>上图显示的红色只是大于155.4，小于156身高的人的概率（注意，这里是概率，是probability，不是p值）。</p>
-<p>此时我们再计算一个身高范围是155.4到156之间的人的p值，根据定义，还是如下所示：</p>
-<blockquote>
-<p>a p-value is the probability that random chance generated the data, or something else that is equal or rarer</p>
-</blockquote>
-<p>p值是由3部分构成的（前面已经讲过），分别是①某事件的概率，加上②与该事件相同概率的事件的概率，再加上③比该事件概率更小的事件的概率。我们分两步来计算p值，如下所示（需要注意的是，155.4与156正好位于正态分布曲线均值的两侧，因此小于155.4身高的人的概率与大于156身高的人的概率是相同的）：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130608.jpg">
-
-</div>
-<p>第一步：计算小于155.4cm身高的人的概率，下图的红色面积就是身高小于155.4cm的人的概率，它的值是48%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130613.jpg">
-
-</div>
-<p>第二步：计算身高大于156cm的人的概率，就是下面右侧红色的面积，也是48%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130618.jpg">
-
-</div>
-<p>那么，身高位于155.4和156之间的人的概率就是4%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130622.jpg">
-
-</div>
-<p>根据p值的定义，那么p值就等于<code>48%+48%+4%=100%，</code>，也就是说p值是1，这是一个非常大的数字，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130626.jpg">
-
-</div>
-<p>在这个案例中，我们知道了，155.4到156身高之间的人的概率是4%，但它的p值很大，是1。</p>
-<h2 id="单尾检验与双尾检验">单尾检验与双尾检验</h2>
-<p>现在考虑一个场景，你是一名医生，你现在开发了一种新型的癌症治疗方案，你希望你的这种新型治疗方案比标准的治疗方案要好，你做了一个小型临床实验，样本是6个病人，以下是数据：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130635.jpg">
-
-</div>
-<p>其中红点表示新型治疗方案，黑点表示标准治疗方案，数轴表示从好到差。我们可以发现新型的治疗方案貌似比标准的治疗方案要好，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130641.jpg">
-
-</div>
-<p>但是，中间貌似有一个黑点（也就是标准治疗方案）处于中间位置，不知道是好，还是差，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130646.jpg">
-
-</div>
-<p>然后你进行了统计，选择了单尾检验，p值为0.03，这个p值是小于0.05的，也就是说这种新型治疗方案有统计学意义，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130650.jpg">
-
-</div>
-<p>但是，当你选择了双尾检验时，发现p值为0.06，它又是大于0.05的，没有统计学差异，此时，你选择使用哪个p值？如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130657.jpg">
-
-</div>
-<p>这里要说一下，单尾检验（one-tailed）的假设是你的新型方案比标准方案要好，而双尾检验的假设是新型方案比标准方案要好，也有可能更差，或者是说没有统计学差异。而单尾检验的p值更小这是因为单尾检验并没有区分“更差”与“没有统计学差异”这两种结果，它的假设是新型方案比标准方案要好。由于我们想知道这个新型方案是否比标准方案更差（因为一个方案出来，你根本不清楚它比原来的是好，还是坏），此时我们就需要使用“双尾检验”，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130703.jpg">
-
-</div>
-<p>我们再来看一下这个临床试验的数据，由于这个新的方案更加偏向于好的治疗效果，这是不是意味着我们并不需要检验新型方案比标准方案更差？</p>
-<p>其实不是的，优良的统计学习惯意味着在我们开始实验之前，我们需要了解我们要使用什么统计学方法，以及如何对p值进行取舍。否则的话，我们就会被p值挟持（p=hacking），这就会增加我们实验报告中假阳性的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130708.jpg">
-
-</div>
-<p>此时，我们来看一下为什么会增加假阳性，先看一个标准的正态分布，x轴表示我们测量的数据从小到大（从左到右），y轴表示我们获取某个测量值后的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130713.jpg">
-
-</div>
-<p>大多数情况下，我们测量得到的数据都位于正态分布的中央部分，但是偶尔情况下，我们的测量值确实会很小或很大，也就是说测量值位于正在分布曲线的两侧，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130718.jpg">
-
-</div>
-<p>例如我从这个分布中得到了一个样本（有3个数值），这就表示，计算机获取的这3个数值有很大的可能性是位于正态分布曲线中央的，但是有时候，它们可能会很小，或很大，位于曲线的两侧，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130722.jpg">
-
-</div>
-<p>然后我们从同一个分布中再取一个样本（还是3个数据），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130726.jpg">
-
-</div>
-<p>大多数情况下，如果对这2个样本（分别含有3个数据）进行双尾t检验，那么检验结果中的p值应该是大于0.05的，这是因为多数情况下，这两个样本的数据有重叠部分，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130730.jpg">
-
-</div>
-<p>但是，有时候我们从同一个分布获取的两个样本，经过t检验，这个p值有可能小于0.05，我们就称这种情况为假阳性（false positive），这种情况可能发生的概率是5%，就像下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130735.jpg">
-
-</div>
-<p>再扩展一下，如果我从同一个分布中，进行了10000次双尾检验，就像下面的这个样子，它的假阳性率为5%的话，那么就有可能出现500次假阳性，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130740.jpg">
-
-</div>
-<p>下面的这张图表示的就是p值的直方图（针对此处的<code>sample #1</code>和<code>sample #2</code>，注意此处的两个样本与后面再次计算的样本是不同的，此处的样本中，<code>sample #1</code>与<code>sample #2</code>有重合），其中蓝色的线表示每个条形块含有约500次检验，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130745.jpg">
-
-</div>
-<p>而蓝色的线之下就是假阳性出现的次数，我们以其中的一个矩形为例，就是红色的部分：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130749.jpg">
-
-</div>
-<p>此时，我们再讨论一下单尾检验，如果样本1（<code>sample #1</code>）含有2个或更多个小于样本2（<code>sample #2</code>）的数值，那么我们就可以使用单尾t检验，在下图中我们可以看到，样本1中有2个数字的值都小于样本2中的所有的数字，那么我们就可以使用单尾t检验了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130754.jpg">
-
-</div>
-<p>此时我们看一下这个新的p值的直方图（针对此处的<code>sample #1</code>和<code>sample #2</code>，注意此处的两个样本与前面计算的样本是不同的，此处的样本中，<code>sample #1</code>中有2个值是小于s<code>ample #2</code>中的所有值的，而前面的两个样本则有重合），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130758.jpg">
-
-</div>
-<p>蓝色线就是500位置，此图中的第1个矩形大概是800，也就是说它接近于8%的假阳性率，再结合前面的案例，我们知道，即使这个检验过程中采用的p值的阈值是0.05，但最终的报告中出现的假阳性的概率是5%到8%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130555.jpg">
-
-</div>
-<p>此时，我们再到最初的案例，当我们对癌症进行治疗时，很显然，我们要知道这种治疗是能够改善癌症，还是加重癌症。事实上，对于所有的数据来说，我们可以选择单尾检验，也可以选择双尾检验。但是，在这个案例中，我们必须要弄清楚治疗的两个方面（是加重，还是改善），而不仅仅其中一个方面，因此，当我们在对p值进行取舍时，通常选择双尾检验的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130506.jpg">
-
-</div>
-<h2 id="p值挟持与统计功效">p值挟持与统计功效</h2>
-<p>我们试想这样的一个场景：你累死累活工作到深夜，你做了很多实验，然后对数据进行统计，发现p值是0.051，这就比较尴尬了。如果你还有时间再做几个重复，此时如何选择，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131113.jpg">
-
-</div>
-<p>在回答这个问题是之前，我们先做一个小小的相思实验，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131108.jpg">
-
-</div>
-<p>我们来看一个曲线，就是正态分布曲线，我们试想，这个曲线代表了某个实验室中近交系的小鼠的体重，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131104.jpg">
-
-</div>
-<p>如果我们对这个实验室的小鼠体重时行测量，那么大多数的体重都会落在正态分布曲线的中间部分，接近平均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131057.jpg">
-
-</div>
-<p>不过，也有一小部分落在曲线的两侧，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131054.jpg">
-
-</div>
-<p>由于这些小鼠的体重来源是来源于一个近交系的小鼠品系，那么两个样本之间的体重差别不会太大，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131049.jpg">
-
-</div>
-<p>此时，我们先称3只小鼠，把它们的体重命名为样本1（<code>Sample #1</code>），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131044.jpg">
-
-</div>
-<p>再称3只小鼠的体重，称为样本2（<code>Sample #2</code>），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131039.jpg">
-
-</div>
-<p>然后对这两个样本进行t检验，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131035.jpg">
-
-</div>
-<p>从理论上来讲，有95%的可能性，t检验的p值是大于0.05的，则那些p值小于0.05的统计结果则被称为“假阳性”（false positives），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131031.jpg">
-
-</div>
-<p>换句话讲，大多数情况下，我们所期望的结果就是这两个样本比较接近，并且有部分数据有所重合，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131026.jpg">
-
-</div>
-<p>不过，在极少的情况下我们会发现这两个样本分布在同一个分布的两侧，此时p值就会小于0.05，我们就会认为这两个样本来源于不同的两个分布，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131020.jpg">
-
-</div>
-<p>但是，我们想关注的事件只是这两个样本的p值大于0.05，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131015.jpg">
-
-</div>
-<p>我们从同一个分布中生成1000个数据集，每个数据集含有两个样本（分别为<code>Sample #1</code>和<code>Sample #2</code>），分别对其进行t检验，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131010.jpg">
-
-</div>
-<p>以下是前20个样本的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131004.jpg">
-
-</div>
-<p>其中，会出现个别p值小于0.05的情况，只要这个事件不的发生率不超过5%（就是p值小于0.05这件事），那么就没有关系，我们的目的就是找到一种方法在95%的情况下都适用，对于大多数的科学来讲，并没有特殊严格的成本效益（cost/benefit），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131001.jpg">
-
-</div>
-<p>以下是这1000个数据中p值小于0.05的事件，其中以第1列为例，它有53个p值小于0.05的事件，那么53/1000=5.3%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130956.jpg">
-
-</div>
-<p>第2列的p值比较接近显示性水平，如果这是来源于真实的实验，那么我们就容易这会想，如果我再做一次重复实验，或许p值就小于0.05了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130951.jpg">
-
-</div>
-<p>因此，当我们再向数据集中添加一个随机的值，好么p值就在0.05和0.1之间了，其中会导致30%的t检验的值的p值小于0.05，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130946.jpg">
-
-</div>
-<p>换句话讲，当全部的模拟数据给出一个“接近“的p值时，再加入更多的模拟数据，就会有30%的可能性导致p值出现显著性（即p值小于0.05），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130942.jpg">
-
-</div>
-<p>但我们需要注意的是，不要为了得到一个好的p值而增加样本，它会增加你的假阳性率。</p>
-<p>反之，在你进行实验之前，需要进行检验效能计算 （power calculation），用于计算你需要多少样本。其次，如果你在实验之前没有进行功效检验，那么此时也可以进行检验效能计算，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707130937.jpg">
-
-</div>
-<h3 id="统计功效">统计功效</h3>
-<p>统计功效研究的是，你在实验之前需要多少样本数才能得到一个较小的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131347.jpg">
-
-</div>
-<p>在我们讲解”功效“（power）的本质以及功效计算（power calculation）之前，我们先从直观上对这一概念理解一下，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131353.jpg">
-
-</div>
-<p>下面是两个正态分布曲线，假设左图的黑线表示喂食的小鼠体重，右侧的红线表示禁食的小鼠体重，很容易看到这两组小鼠的体重不一样，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131359.jpg">
-
-</div>
-<p>假如分别从这两组小鼠挑选两个小样本（<code>N=3</code>），那么进行t检验时，有很大的可能性得到一个小的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131403.jpg">
-
-</div>
-<p>但是，如果禁食的效果不理想，就会发现，这两组曲线有一部分会重叠，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131407.jpg">
-
-</div>
-<p>如果此时从这两组小鼠体重中取两个小样本，那么我们就不太可能得到一个小的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131412.jpg">
-
-</div>
-<p>此时，我们就可能定义一下功效（<code>Power</code>），功效指的是一个检验能够得到一个小p值的概率，第1个案例就是拥有高的功效，第2个案例就是低的功效，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131417.jpg">
-
-</div>
-<h3 id="影响功能的因素">影响功能的因素</h3>
-<p>有4个因素影响功效（power），分别为：</p>
-<p>第一：效应量（<code>effect size</code>）；如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131423.jpg">
-
-</div>
-<p>第二：数据的变异程度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131428.jpg">
-
-</div>
-<p>在这个图中，效应量校对小一些，但数据的变异程度也小一些，因此，从这两个分布中得到的样本有很大的概率变异程度也比较小，这就意味着，我们有很大的概率会得到一个小p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131433.jpg">
-
-</div>
-<p>下面的数据就表现出很大程度的变异，由于变异程度大，那么样本的变异程度也有很高，这就意味着，得到一个小p值的概率比较低，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131439.jpg">
-
-</div>
-<p>第三，样本的数量。</p>
-<p>样本数量多会弥补样本效果与数据的变异程度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131444.jpg">
-
-</div>
-<p>为了简单地说明样本量对效能的影响，我们先用t检验来说明一下，t检验比较的是均值；均值是从样本中估计出来的。</p>
-<p>然后我们再看一下样本量是如何影响均值的估计的，尤其是，样本的量如何影响这些估计值的置信度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131449.jpg">
-
-</div>
-<p>如果样本量是1，那么我们只用了1只小鼠的体重来估计全体小鼠的均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131457.jpg">
-
-</div>
-<p>如果我们再衡量另外1只小鼠的体重，那么我们会得到对整体小鼠体重均值的另外一个估计，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131502.jpg">
-
-</div>
-<p>大多数情况下，我们对均值的估计是位于一个区间内，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131507.jpg">
-
-</div>
-<p>但有时候，估计值也有可能远离中心区域，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131511.jpg">
-
-</div>
-<p>为了研究这些估计的变异程度，我们可以绘制出一个正态分布中随机挑选出来的1000个样本的直方图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131516.jpg">
-
-</div>
-<p>由于有一部分数据位于直方图的两侧，这些数据对于估计值有很低的置信度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131522.jpg">
-
-</div>
-<p>此时我们再看一下，样本数是2个的情况，那么对均值的估计就是这两个数的均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131527.jpg">
-
-</div>
-<p>第2个样本，也是2个小鼠的体重，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131532.jpg">
-
-</div>
-<p>第3个样本，同样如此：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131536.jpg">
-
-</div>
-<p>此时我们绘制一下样本数是2的直方图，并且把它与样本数为1时的直方图做个比较，从中我们可以发现，当样本数为2时，直方图的中央区域㬲中接近于真实的均值，这就间顺着我们有可能高的概率得到一个好的均值，它的置信度也更高，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131542.jpg">
-
-</div>
-<p>我们再绘制一下样本数为5时候的直方图，并把它与样本数为1和2的直方图进行比较，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131550.jpg">
-
-</div>
-<p>这就表示，当我们增加样本数时，我们估计的均值就越接近于真实的均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131555.jpg">
-
-</div>
-<p>当效应量（effect size）巨大时，我们并不需要对估计值的精确性做出要求。即使样本量很小也有很大的概率得到一个小p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131559.jpg">
-
-</div>
-<p>但是当效应量比较小时，我们对于估计的均值就要求很高的置信度，从而得到差异，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131605.jpg">
-
-</div>
-<p>例如，此时当样本数为3时，由于两个样本之间有很大程度的重叠，那么t检验的结果将是一个比较大的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131609.jpg">
-
-</div>
-<p>此时我们看一下样本数为8的情况，虽然此时两个样本还有部分重叠，但是相对于样本数为3的情况，我们此时（样本量为8）有更大的可能性得到一个小的p值，我们此时可以说，样本数为8（N=8）比样本数为3（N=3）拥有更强的功效（power），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131613.jpg">
-
-</div>
-<p>如果样本数为101，那么我们就有了更强的功效，也就是说我们有更高的概率得到一个小的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131618.jpg">
-
-</div>
-<p>最重要的一点就是，分布的变异程度才决定你通过增加样本数来提高检验功效，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131622.jpg">
-
-</div>
-<p>因为上图中的蓝线的变异程度较小，样本会相对接近于均值，在这个分布中，并不需要太多的样本就能得到一个相对可靠的估计的均值，相比之下，上图的红线的分布变异程度比较大，样本距离均值都较远，此时就需要更多的样本数来对均值进行估计，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131627.jpg">
-
-</div>
-<p>第四，使用的检验方法。</p>
-<p>在所有的检验方法中，A检验方法可能比B检验方法的功效更强，例如t检验就是一种功效比较强的检验方法，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131632.jpg">
-
-</div>
-<h3 id="如何进行功效计算">如何进行功效计算</h3>
-<p>此时，我们就知道了什么是功效，那么如何进行功效计算呢？</p>
-<p>首选，你需要一些可用的数据，例如一些以前的数据，或者是网上数据库中的数据，或者是你实验中的一些数据。</p>
-<p>如果你没有这些数据，也没事，照样能够进行计算，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131637.jpg">
-
-</div>
-<p>此时，我们假设你已经拥有了一批数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131642.jpg">
-
-</div>
-<p>我们利用这些数据对均值进行估计，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131646.jpg">
-
-</div>
-<p>也用它们计算标准差，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131650.jpg">
-
-</div>
-<p>有了均值与标准差，就能画出它们的分布曲线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131655.jpg">
-
-</div>
-<p>此时我们可以发现，它们的功效量比较小（因为有一部分重叠了），因此我们需要增加样本量来增加功效，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131659.jpg">
-
-</div>
-<p>此时，我们再回到前面我们讲的不同样本数目的直方图， 此时，我们再来看一下均值的变异，均值的变异称为标准差（<code>Standard Error</code>），它很容易计算，公式如下所示，其中在标准差公式的分母中的N表示样本量，从中我们可以发现，样本量越大，标准差就越小，也就是说变异程度越小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131703.jpg">
-
-</div>
-<p>那么功效计算的本质其实就是研究N值，N如果足够的大的话，那么得到一个小的p值的概率就越高，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131708.jpg">
-
-</div>
-<p>由于我们没有手动计算过功效，此处也不介绍计算功效的详细过程，但是，我们要介绍一下计算的原理，理解原理的话，就会很方便地学以致用，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131712.jpg">
-
-</div>
-<p>功效计算的主要思想包括功效量，数据的变异，样本量，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131716.jpg">
-
-</div>
-<p>如果手中已经有了数据，那么就能估算出功效量与变异，此时也能计算出N值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131720.jpg">
-
-</div>
-<p>如果没有数据，那么我们可以假设你有3个重复，然后假设你在寻找2倍的差异（这里貌似研究的是基因表达方面的东西），然后我们就可以看到数据的变异，以及得到一个好的功效。如果变异程度非常小，那么就需要增加样本数或者是增加功效量，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131725.jpg">
-
-</div>
-<p>例如，我们做了一个RNA-seq，已经计算出了人类的生物学变异以某些近交系模式动物的生物学变异，那么此时我们就杺把这些已知的变异加入到公式中，然后有2个选择，第一：将功效量加入公式来计算样本数目，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131730.jpg">
-
-</div>
-<p>第二，把样本数目加入公式来计算功效量，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131735.jpg">
-
-</div>
-<p>计算功效通常是使用软件进行计算，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131740.jpg">
-
-</div>
-<p>此时我们再回到开头的那个场景，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131744.jpg">
-
-</div>
-<p>此时，我们需要做就是2件事情：</p>
-<p>第一，使用现在的结果进行功效计算；</p>
-<p>第二，此时的p值有提示意义，你进行功效计算后，可以为你下一次实验设置多少样本数目提供决策依据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707131748.jpg">
-
-</div>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/12/BIoTools/分析miRNA时空表达的聚类工具/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/12/BIoTools/分析miRNA时空表达的聚类工具/" itemprop="url">生信-一个分析miRNA时空表达的聚类工具</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-12T12:00:00+08:00">
-                2018-06-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信工具/" itemprop="url" rel="index">
-                    <span itemprop="name">生信工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,192
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="文献信息">文献信息</h2>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Zhang B, Liu S Q, Li C, et al. MicroRNA-23a curbs necrosis during earlyT cell activation by enforcing intracellular reactive oxygen speciesequilibrium[J]. Immunity, 2016, 44(3):568-581.</div></pre></td></tr></table></figure>
-<h2 id="文献内容">文献内容</h2>
-<p>这篇文献是2016年发在《Immunity》的，文献的主要内容是，当宿主细胞与抗原接触时，细胞内就会产生活性氧基团（ROS），参与T细胞受体（TCR）的信号转导，但是如果ROS的生成不受控制的话，ROS就会对组织造成损伤。作者研究的则是某个miRNA参与了这个过程，在筛选过程中，作者找到了一个miRNA，即miR-23a，它参与细胞的保护。从机理上讲，miR-23a的靶基因是PPIF，PPIF的作用是控制线粒体通透性转换孔，因此miR-23a作用于PPIF，能够阻止ROS的流入，从而维持线粒体的完整性。我们所关注的重点就是作者有关miRNA的筛选工作。为了寻找miRNA介导的抗原诱导CD4 T细胞的应答。作者研究了不同时间点，CD4 T细胞的miRNA表达谱。具体操作是，从转基因LLO118 TCR（LLO118-Thy1.2+）小鼠体内取出20万个naive CD4 T细胞，转移到野生型小鼠（Thy1.1+）体内，接着给野生型小鼠注射亚致死剂量的Listeria菌（LLO是Listeria菌的一个蛋白），然后在不同的时间点，收集小鼠的抗原特异性CD4 T细胞，用高通量qPCR的手段检测miRNA的表达谱（一共是361个miRNA），时间点是6个（分别是第0天，第3天，第5天，第7天，第14天，第28天。</p>
-<p>我们处理这些数据的常规方法就是做热图，热图虽然能够聚类，但是很难反应出miRNA不同的聚类随时间变化的趋势，作者在处理这些数据时，采用了一个工具，叫ExpressCluster，这个工具能将不同时间的表达谱进行聚类，并且将不同的聚类结果以时间的形式呈现出现，如文献中的fig.1a所示（文献中一共有9个聚类，作者选择了第3个聚类）的那样。因此，这个工具很适应用于研究不同时间点基因表达谱的变化。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213231.jpg">
-
-</div>
-<p>我们就介绍一下这个工具如何使用，首先去官网下载相应的工具，下载后解压即可，里面有3个文件，一个是ExpressCluster程序，一个是使用手册，另外一个不用管。如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213251.jpg">
-
-</div>
-<p>现在我们利用文献的原始数据重复一下文献中的图片生成过程。此过程包括：下载原始数据（文献的附件里中有原始文件，也有均一化后的数据），修改为GCT格式，导入ExpressCluster生成聚类图，前面均一化的过程比较简单，我们略去不讲，直接进入转换GCT文件这一步。</p>
-<p>GCT文件格式是一类制表符分隔的文件，它描述的是基因的表达数据，它的数据格式如下图所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213311.jpg">
-
-</div>
-<p>后文的网址中有GCT的参考数据，下载下来，用Excel就可以打开，打开时，文献类型选择“所有文件”，</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213337.jpg">
-
-</div>
-<p>将其中的数据替换为文献中的数据：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213356.jpg">
-
-</div>
-<p>需要注意的一点是，黄色标注的地方需要修改，361表示检测的基因是361个，6表示数据有6组，Description不用管。保存后，就可以用ExpressCluster打开了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213414.jpg">
-
-</div>
-<p>AVAILABLE（红色方框）中的是每组数据的名称，选中它们，单击绿色箭头，转移到SELECTED中，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213438.jpg">
-
-</div>
-<p>接着，单击APPLY绿色按钮（上图），过滤数据，再在下面的Clusters（K）（绿色方框）中输入聚类的数目，文献中是9组，我们这里输入9，随后，最下面的GENERATE（红色方框）会变成蓝色，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213457.jpg">
-
-</div>
-<p>单击后，开始生成聚类图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213517.jpg">
-
-</div>
-<p>在右上角的查询框（红色方框）中输入miR-23a，查询miR-23a的位置，发现miR-23a在cluster3中，此时再单击右侧中的f(x)（红色方框），可以在相对值与实际值之间进行转换，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213530.jpg">
-
-</div>
-<p>保存图片（绿色方框），生成的图片如下：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213543.png">
-
-</div>
-<p>此外，该工具还能生成热图，单击下图中的红色方框，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213602.png">
-
-</div>
-<p>生成的热图如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325213616.png">
-
-</div>
-<p>ExpressCLuster中还有许多高级功能，此篇教程只是简单地入门，重复了一下文献中的图形，具体的其他操作可以参照操作手册。</p>
-<p><strong>参考资料；</strong></p>
-<ol style="list-style-type: decimal">
-<li><p>GCT文件格式：http://software.broadinstitute.org/cancer/software/genepattern/file-formats-guide#GCT</p></li>
-<li><p>ExpressCluster下载地址：http://cbdm.hms.harvard.edu/LabMembersPges/SD.html</p></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/10/StatQuest/生物统计-StatQuest学习笔记09-Fisher精确检验/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/10/StatQuest/生物统计-StatQuest学习笔记09-Fisher精确检验/" itemprop="url">StatQuest学习笔记09——Fisher精确检验</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-10T12:10:54+08:00">
-                2018-06-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,007
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>以前我也写过有关统计学的笔记，本来是想结合StatQuest把原来的笔记整理一下，后来一想，还是算了，直接把StatQuest的系列教程做成笔记，这样比较系统，也会避免笔记冗余。这篇笔记是StatQuest视频教程的第31个，主要内容是Fisher精确检验与超几何分布，Fisher精确检验我以前的笔记中也有，就是<a href="http://rvdsd.top/2017/08/18/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-07%E5%8D%A1%E6%96%B9%E5%88%86%E6%9E%90/">《卡方检验》这篇笔记</a>。</p>
-<h2 id="fisher精确检验">Fisher精确检验</h2>
-<p>我们还以MM豆（MM豆是M&amp;M巧克力豆的缩写，美国的一个品牌）为例进行说明。</p>
-<p>此时我从MM豆的盒子里抓了一把MM豆，这批MM豆有8个，其中有7个蓝豆，1个红豆。此时问题来：</p>
-<ol style="list-style-type: decimal">
-<li>如何描述袋子中的MM豆颜色的分布？</li>
-<li>我这个盒子里的蓝豆的比例是不是比正常的要高一些（正常MM豆中的蓝豆比例为21%）？</li>
-<li>我能否计算这个MM豆样本的p值？</li>
-</ol>
-<p>如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115901.jpg">
-
-</div>
-<p>MM豆的盒子里有40个MM豆，它的各种MM豆的颜色比例如下图所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115906.jpg">
-
-</div>
-<p>此时，我用直方图来研究一下我的这盒MM豆是否是一个特例（就是说跟平常所见的MM豆的颜色比例不同），下面我们就以我手中的这8个MM豆（7个蓝豆，1个红豆）为基础，来计算一下这个概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115913.jpg">
-
-</div>
-<p>首先我事先说明一下，我们在计算这批MM豆的概率时，不用考虑它们的顺序，也就是说，当我拿出7个蓝豆与1个红豆的时候，不用在意这8个MM豆是如何排序的，就像是下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115918.jpg">
-
-</div>
-<p>现在让我们计算一下这7个蓝豆和1个红豆的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115922.jpg">
-
-</div>
-<p>第1步：第1个MM豆是蓝色，此时它的概率为8/40，如何计算呢？就是因为一盒MM豆中按照正常的比例（这个比例是作者从MM豆的官网上查的），它有40个MM豆，有8个蓝豆，此时蓝豆的概率就是8/40，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115926.jpg">
-
-</div>
-<p>第2步：还是1个蓝豆，它的概率是7/39，如何计算呢？因为此时已经拿出了一个蓝豆了，这盒MM豆剩下的就只有39个了，蓝豆还有7个，那么蓝豆的概率就是7/39，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115930.jpg">
-
-</div>
-<p>按照这种方法计算下去，第3个蓝豆的概率就是6/38，第4个蓝豆的概率就是5/37，最后，第8个MM豆是红色的概率就是5/33，计算结束。</p>
-<p>现在把这8个概率相乘，就是我们手中有7个蓝豆和1个红豆的概率，最终的结果为0.000000065，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115934.jpg">
-
-</div>
-<p>这个概率是非常小的，不过我们需要记住的是，我们此时没有考虑MM豆的顺序，如果我们考虑了MM豆的顺序的话，我们还可以再计算一次，方法跟前面的是一样的，考虑了顺序之后，就是下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115939.jpg">
-
-</div>
-<p>最终的计算结果是0.00000053，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115946.jpg">
-
-</div>
-<p>此时我们计算出了出现这个事件的概率（也就是说7个蓝豆和1个红豆）了，那么，我们如何计算p值呢？首选我们要知道，p值是一系列小概率事件的总和，还包括下面的这些情况，例如8个蓝豆，还有7个橘黄豆和1个蓝豆，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115951.jpg">
-
-</div>
-<p>后来经过计算，这个p值为0.01，那么我们就可以说，我的这盒MM豆是特例。</p>
-<h2 id="fisher精确检验与超几何分布">Fisher精确检验与超几何分布</h2>
-<p>另外在这个视频教程的题目中提到了超几何分布，Fisher精确检验可以视为超几何分布的一种变形，超几何分布在GO分析方面有着重要的作用，先留个坑，等视频学完了再填上。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3334,7 +3008,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">170</span>
+                  <span class="site-state-item-count">174</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3356,7 +3030,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">49</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3421,7 +3095,9 @@
 
   <span class="post-meta-divider">|</span>
 
-
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#f0d784;text-decoration:none;padding-left:30px;background:url(https://s1.ax1x.com/2018/09/29/ilmwIH.png) no-repeat left center" rel="nofollow">豫公网安备 41018102000118	</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
 
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
 
@@ -3430,7 +3106,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共648.1k字</span>
+  <span class="post-count">博客全站共654.3k字</span>
 </div>
 
         
