@@ -845,235 +845,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-16决策树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-16决策树/" itemprop="url">决策树笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-19T12:02:00+08:00">
-                2018-08-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,377
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  10
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="决策树的原理">决策树的原理</h2>
-<p>决策树的原理可以参考这篇笔记<a href="http://rvdsd.top/2018/07/01/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B019-%E5%86%B3%E7%AD%96%E6%A0%91/">《StatQuest学习笔记19——决策树》</a>。</p>
-<h2 id="决策树的计算过程">决策树的计算过程</h2>
-<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)。这里我们先看一批数据，如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Dh8fddjd9h.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>原始数据很多，有1000多行。这个数据来自于Flake and lawrence(2002)，可以在<a href="https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/mg" target="_blank" rel="external">网上下载</a>，这且数据是做什么的，我也不清楚。这个数据集有6个自变量和1个因变量，一共有1385个观测值。书上说之所以用这个数据是因为这里的所有变量都是数量变量，因此这个数据集也可以用经典线性回归来做，从而可以对各种方法进行比较。</p>
-<h3 id="线性回归">线性回归</h3>
-<p>现在先对全部数据做一个简单的 线性回归，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_dt &lt;- read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/mg.csv"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)</div><div class="line">result_dt &lt;- lm(y~.,raw_dt)</div><div class="line">summary(result_dt)</div><div class="line">pairs(raw_dt)<span class="comment">#查看不同变量之间的相关关系</span></div><div class="line"><span class="comment"># 或plot(raw_dt)</span></div><div class="line">cor(raw_dt)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_dt)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = y ~ ., data = raw_dt)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-0.40866 -0.09516  0.01098  0.09645  0.40011 </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)  0.95582    0.07142  13.384  &lt; 2e-16 ***</div><div class="line">x1           0.28512    0.02773  10.282  &lt; 2e-16 ***</div><div class="line">x2           0.17263    0.02655   6.502 1.10e-10 ***</div><div class="line">x3          -0.37956    0.02769 -13.709  &lt; 2e-16 ***</div><div class="line">x4          -0.36756    0.02764 -13.298  &lt; 2e-16 ***</div><div class="line">x5           0.07165    0.02656   2.697  0.00707 ** </div><div class="line">x6           0.19003    0.02778   6.841 1.18e-11 ***</div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class="line"></div><div class="line">Residual standard error: 0.1459 on 1378 degrees of freedom</div><div class="line">Multiple R-squared:  0.5868,	Adjusted R-squared:  0.585 </div><div class="line">F-statistic: 326.2 on 6 and 1378 DF,  p-value: &lt; 2.2e-16</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/egLil2EEmc.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>mg数据各个变量之间的相关系数如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; cor(raw_dt)</div><div class="line">            y         x1         x2         x3         x4         x5         x6</div><div class="line">y   <span class="number">1.0000000</span>  <span class="number">0.2620280</span>  <span class="number">0.5441721</span> -<span class="number">0.5006887</span> -<span class="number">0.4355964</span>  <span class="number">0.5510561</span>  <span class="number">0.1511016</span></div><div class="line">x1  <span class="number">0.2620280</span>  <span class="number">1.0000000</span> -<span class="number">0.1465800</span> -<span class="number">0.6543690</span>  <span class="number">0.4333849</span>  <span class="number">0.4543362</span> -<span class="number">0.6277910</span></div><div class="line">x2  <span class="number">0.5441721</span> -<span class="number">0.1465800</span>  <span class="number">1.0000000</span> -<span class="number">0.1475594</span> -<span class="number">0.6539043</span>  <span class="number">0.4367584</span>  <span class="number">0.4515753</span></div><div class="line">x3 -<span class="number">0.5006887</span> -<span class="number">0.6543690</span> -<span class="number">0.1475594</span>  <span class="number">1.0000000</span> -<span class="number">0.1471907</span> -<span class="number">0.6537680</span>  <span class="number">0.4397873</span></div><div class="line">x4 -<span class="number">0.4355964</span>  <span class="number">0.4333849</span> -<span class="number">0.6539043</span> -<span class="number">0.1471907</span>  <span class="number">1.0000000</span> -<span class="number">0.1494223</span> -<span class="number">0.6524989</span></div><div class="line">x5  <span class="number">0.5510561</span>  <span class="number">0.4543362</span>  <span class="number">0.4367584</span> -<span class="number">0.6537680</span> -<span class="number">0.1494223</span>  <span class="number">1.0000000</span> -<span class="number">0.1498846</span></div><div class="line">x6  <span class="number">0.1511016</span> -<span class="number">0.6277910</span>  <span class="number">0.4515753</span>  <span class="number">0.4397873</span> -<span class="number">0.6524989</span> -<span class="number">0.1498846</span>  <span class="number">1.0000000</span></div></pre></td></tr></table></figure>
-<p>从前面的线性回归结果可以看出来，<span class="math inline">\(R^2=0.5868\)</span>，这个数值并不太好，再加上两两散点图与相关系数的结果，我们看不出各个变量之间的任何模式。现在我们使用其它的几种算法建模方法，同时使用交叉验证（利用均方误差或标准化均方误差）对各种方法时行比较。</p>
-<p>下面我们对各种方法都用10折交叉验证的方法来判断其结果的可靠性（关于10折交叉验证的一些知识，可以看这笔记<a href="http://rvdsd.top/2018/07/05/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。对于每种方法，按照随机建立的10个训练集通过计算建立10个模型，对测试集分别得到10个标准化均方误差(NMSE)，再得出10次平均的NMSE。令<span class="math inline">\(\bar{y}\)</span>为因变量均值，<span class="math inline">\(\hat{y}\)</span>为从训练集得到的模型对一个测试数据集的预测值，这里NMSE的定义如下所示：</p>
-<p><span class="math inline">\(NMSE=\bar{(y-\hat{y})^2}/=\bar{(y-\bar{y})^2}=\sum(y-\hat{y})^2/\sum(y-\bar{y})^2\)</span></p>
-<p>显然，如果什么模型都不用，仅仅用均值来做预测，那么NMSE应该等于1.所以，如果在回归时得到NMSE大于1，这个模型就很糟糕了，还不如没有模型。仅仅对于训练集来说，其NMSE等于<span class="math inline">\(1-R^2\)</span>，这里的<span class="math inline">\(R^2\)</span>为回归的确定系数，但是对于测试集来说，其NMSE与测试集回归的<span class="math inline">\(R^2\)</span>没有什么关系，交叉验证主要关心测试集的NMSE。</p>
-<h3 id="构建训练集和测试集">构建训练集和测试集</h3>
-<p>现在构建为交叉验证服务的10个训练集和测试集，具体过程是：随机把下标分配给1,2,…10这10个数字，也就是把数据下标随机分成10份，然后每次提取一份作为测试集，其它9份放在一起作为训练集，用模型进行拟合，记下结果和误差，如此下去，一共做10次，最后把误差平均起来。这里所用的随机选Z折下标集的函数如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">CV=<span class="keyword">function</span>(n,Z=<span class="number">10</span>,seed=<span class="number">1000</span>)&#123;</div><div class="line">  z=rep(<span class="number">1</span>:Z,ceiling(n/Z))[<span class="number">1</span>:n]</div><div class="line">  set.seed(seed)</div><div class="line">  z=sample(z,n)</div><div class="line">  mm=list()</div><div class="line">  <span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:Z)</div><div class="line">    mm[[i]]=(<span class="number">1</span>:n)[z==i]</div><div class="line">  <span class="keyword">return</span>(mm)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这里的<code>n</code>是样本量，<code>Z</code>为折的数目（也就是训练集加测试集的数目，这里默认是10），<code>seed</code>为随机种子，这里设为了1000，转出为<code>Z</code>个下标集，<code>mm[[i]]</code>为第i（i=1,2,…,Z)个下标集，根据这个函数对这个mg数据集求10个下标集的代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n&lt;-nrow(raw_dt)</div><div class="line">Z=<span class="number">10</span></div><div class="line">mm=CV(n,Z)</div><div class="line">D=<span class="number">1</span></div></pre></td></tr></table></figure>
-<p>在这段代码中，<code>mm</code>存储了10个下标集，而D说明因变量是第一个变量，这些值在后面对每种方法都要用。</p>
-<p>为了和其它方法进行地比较，先对数据mg求简单的线性回归的10折交叉验证的测试集的NMSE，代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(MSE)</div><div class="line">[1] 0.4222689</div></pre></td></tr></table></figure>
-<p>结果表明，测试集的NMSE为0.4222689</p>
-<h2 id="决策树回归">决策树回归</h2>
-<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)，现在我们先用数据集mg做一棵回归树，然后解释其意义。这里要使用到<code>rpart</code>包中的<code>rpart()</code>函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rpart)</div><div class="line"><span class="keyword">library</span>(rpart.plot)</div><div class="line">a=rpart(y~.,raw_dt)</div><div class="line">rpart.plot(a,type=<span class="number">2</span>,faclen=<span class="number">0</span>)</div></pre></td></tr></table></figure>
-<p>结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; a</div><div class="line">n= 1385 </div><div class="line"></div><div class="line">node), split, n, deviance, yval</div><div class="line">      * denotes terminal node</div><div class="line"></div><div class="line"> 1) root 1385 70.9545100 0.9301440  </div><div class="line">   2) x2&lt; 0.9894983 736 31.9699900 0.8017888  </div><div class="line">     4) x3&gt;=0.8423859 551 16.4573000 0.7288982  </div><div class="line">       8) x2&gt;=0.5178963 483 13.3868900 0.7068909  </div><div class="line">        16) x2&lt; 0.7999875 263  4.7064590 0.6422662  </div><div class="line">          32) x3&lt; 1.092533 185  3.3567710 0.6073434 *</div><div class="line">          33) x3&gt;=1.092533 78  0.5889238 0.7250958 *</div><div class="line">        17) x2&gt;=0.7999875 220  6.2689860 0.7841468 *</div><div class="line">       9) x2&lt; 0.5178963 68  1.1749050 0.8852150 *</div><div class="line">     5) x3&lt; 0.8423859 185  3.8660570 1.0188850  </div><div class="line">      10) x4&gt;=1.062353 71  1.8511830 0.9239636 *</div><div class="line">      11) x4&lt; 1.062353 114  0.9767496 1.0780020 *</div><div class="line">   3) x2&gt;=0.9894983 649 13.1077400 1.0757060  </div><div class="line">     6) x3&gt;=1.056185 206  3.5797200 0.9644841  </div><div class="line">      12) x4&gt;=0.9107852 23  0.5746155 0.7823564 *</div><div class="line">      13) x4&lt; 0.9107852 183  2.1462980 0.9873744 *</div><div class="line">     7) x3&lt; 1.056185 443  5.7947760 1.1274250 *</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hG48FgC33C.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>计算的结果有2个，一个是文本描述的结果，一个是图形结果，这两个结果是等价的，我们可以了解这个决策树的构造过程。现在解释一下这个决策树。</p>
-<p>决策树就像一棵倒长的树，有很多分叉，分叉点叫节点(node)，其中1号节点为根节点，也就是上图中最高的那个节点，输出的文本信息则是全部数据的信息，其中在1号节点上，n=1385，偏差(deviance)=70.9545100，在该节点的因变量的均值为0.9301440。</p>
-<p>这里的偏差是批在每个节点的偏差，它的定义为：在该节点的数据中的因变量与其均值之差的平方和，即<span class="math inline">\(\sum_{i}(y_{i}-\bar{y})^2\)</span>这里回归树用偏差大小来选择变量，当然也可以用其它诸如残差平方和作为选择变量的准则。</p>
-<p>上述的这些信息显示在上图中（不过只显示了均值），然后计算机程度在每个自变量中选择一个数值分割点，使得在该节点的整个数据在这个分割点比在其它分割点分成两部分之后的偏差之和都小，对每个自变量都选择这样的一个分割点，并对不同自变量的分割结果做比较，得到一个使得分割后总偏差最小的变量，这个变量就是该节点的分割变量（或称为拆分变量）。</p>
-<p>根据输出的文本信息，在这个案例中，根节点的分割变量为x2，其分割点为0.9894983，x2小于该值的观测值分到左边（节点2），大于该值的则分到右边（节点3）。在每个节点都展示出观测值数目、偏差及因变量均值这三项内容（不过决策树的图形中只有均值），这样数据就分成了两个部分。然后，对每一部分数据，选择分割变量及其分割点的程序重新开始。如此下去，根据一些按照拟合程度和避免决策树无限制长下去的准则，到一定节点就不再分割，这些节点就是终节点（也称为叶节点），也就是文本信息中带有星号(<code>*</code>)的为叶节点。</p>
-<h3 id="决策树的使用">决策树的使用</h3>
-<p>使用决策树很简单，如果有新的（只知道自变量的）观测值，就可以根据决策树以及各个变量大小，从根节点一直走到一个终节点，那里因变量的均值就是该观测值的因变量预测值。决策树本身受数据影响较大，但许多决策树结果起来就可以构成很好的方法，例如boosting，bagging以及随机森林等组合方法就是以决策树作为基本决策单元构造出来的。</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>复杂数据统计方法：基于R的应用.第三版.吴喜之</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-17聚类分析笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1516,6 +1287,235 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
 <li><p>多元统计分析及R语言建模.王斌会</p></li>
 <li><p><a href="https://blog.csdn.net/Anna_datahummingbird/article/details/79912348" target="_blank" rel="external">R语言聚类分析-kmeans聚类分析实战</a></p></li>
 <li><p><a href="https://mp.weixin.qq.com/s/M_rJqcHz6HUlGIHVeN4RkQ" target="_blank" rel="external">R语言学习笔记之聚类分析</a></p></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/19/BioStatistics/生物统计-16决策树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/19/BioStatistics/生物统计-16决策树/" itemprop="url">决策树笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-19T12:02:00+08:00">
+                2018-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,377
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="决策树的原理">决策树的原理</h2>
+<p>决策树的原理可以参考这篇笔记<a href="http://rvdsd.top/2018/07/01/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B019-%E5%86%B3%E7%AD%96%E6%A0%91/">《StatQuest学习笔记19——决策树》</a>。</p>
+<h2 id="决策树的计算过程">决策树的计算过程</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)。这里我们先看一批数据，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/Dh8fddjd9h.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>原始数据很多，有1000多行。这个数据来自于Flake and lawrence(2002)，可以在<a href="https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/mg" target="_blank" rel="external">网上下载</a>，这且数据是做什么的，我也不清楚。这个数据集有6个自变量和1个因变量，一共有1385个观测值。书上说之所以用这个数据是因为这里的所有变量都是数量变量，因此这个数据集也可以用经典线性回归来做，从而可以对各种方法进行比较。</p>
+<h3 id="线性回归">线性回归</h3>
+<p>现在先对全部数据做一个简单的 线性回归，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_dt &lt;- read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/mg.csv"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>)</div><div class="line">result_dt &lt;- lm(y~.,raw_dt)</div><div class="line">summary(result_dt)</div><div class="line">pairs(raw_dt)<span class="comment">#查看不同变量之间的相关关系</span></div><div class="line"><span class="comment"># 或plot(raw_dt)</span></div><div class="line">cor(raw_dt)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&gt; summary(result_dt)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = y ~ ., data = raw_dt)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-0.40866 -0.09516  0.01098  0.09645  0.40011 </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)  0.95582    0.07142  13.384  &lt; 2e-16 ***</div><div class="line">x1           0.28512    0.02773  10.282  &lt; 2e-16 ***</div><div class="line">x2           0.17263    0.02655   6.502 1.10e-10 ***</div><div class="line">x3          -0.37956    0.02769 -13.709  &lt; 2e-16 ***</div><div class="line">x4          -0.36756    0.02764 -13.298  &lt; 2e-16 ***</div><div class="line">x5           0.07165    0.02656   2.697  0.00707 ** </div><div class="line">x6           0.19003    0.02778   6.841 1.18e-11 ***</div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class="line"></div><div class="line">Residual standard error: 0.1459 on 1378 degrees of freedom</div><div class="line">Multiple R-squared:  0.5868,	Adjusted R-squared:  0.585 </div><div class="line">F-statistic: 326.2 on 6 and 1378 DF,  p-value: &lt; 2.2e-16</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/egLil2EEmc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>mg数据各个变量之间的相关系数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; cor(raw_dt)</div><div class="line">            y         x1         x2         x3         x4         x5         x6</div><div class="line">y   <span class="number">1.0000000</span>  <span class="number">0.2620280</span>  <span class="number">0.5441721</span> -<span class="number">0.5006887</span> -<span class="number">0.4355964</span>  <span class="number">0.5510561</span>  <span class="number">0.1511016</span></div><div class="line">x1  <span class="number">0.2620280</span>  <span class="number">1.0000000</span> -<span class="number">0.1465800</span> -<span class="number">0.6543690</span>  <span class="number">0.4333849</span>  <span class="number">0.4543362</span> -<span class="number">0.6277910</span></div><div class="line">x2  <span class="number">0.5441721</span> -<span class="number">0.1465800</span>  <span class="number">1.0000000</span> -<span class="number">0.1475594</span> -<span class="number">0.6539043</span>  <span class="number">0.4367584</span>  <span class="number">0.4515753</span></div><div class="line">x3 -<span class="number">0.5006887</span> -<span class="number">0.6543690</span> -<span class="number">0.1475594</span>  <span class="number">1.0000000</span> -<span class="number">0.1471907</span> -<span class="number">0.6537680</span>  <span class="number">0.4397873</span></div><div class="line">x4 -<span class="number">0.4355964</span>  <span class="number">0.4333849</span> -<span class="number">0.6539043</span> -<span class="number">0.1471907</span>  <span class="number">1.0000000</span> -<span class="number">0.1494223</span> -<span class="number">0.6524989</span></div><div class="line">x5  <span class="number">0.5510561</span>  <span class="number">0.4543362</span>  <span class="number">0.4367584</span> -<span class="number">0.6537680</span> -<span class="number">0.1494223</span>  <span class="number">1.0000000</span> -<span class="number">0.1498846</span></div><div class="line">x6  <span class="number">0.1511016</span> -<span class="number">0.6277910</span>  <span class="number">0.4515753</span>  <span class="number">0.4397873</span> -<span class="number">0.6524989</span> -<span class="number">0.1498846</span>  <span class="number">1.0000000</span></div></pre></td></tr></table></figure>
+<p>从前面的线性回归结果可以看出来，<span class="math inline">\(R^2=0.5868\)</span>，这个数值并不太好，再加上两两散点图与相关系数的结果，我们看不出各个变量之间的任何模式。现在我们使用其它的几种算法建模方法，同时使用交叉验证（利用均方误差或标准化均方误差）对各种方法时行比较。</p>
+<p>下面我们对各种方法都用10折交叉验证的方法来判断其结果的可靠性（关于10折交叉验证的一些知识，可以看这笔记<a href="http://rvdsd.top/2018/07/05/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。对于每种方法，按照随机建立的10个训练集通过计算建立10个模型，对测试集分别得到10个标准化均方误差(NMSE)，再得出10次平均的NMSE。令<span class="math inline">\(\bar{y}\)</span>为因变量均值，<span class="math inline">\(\hat{y}\)</span>为从训练集得到的模型对一个测试数据集的预测值，这里NMSE的定义如下所示：</p>
+<p><span class="math inline">\(NMSE=\bar{(y-\hat{y})^2}/=\bar{(y-\bar{y})^2}=\sum(y-\hat{y})^2/\sum(y-\bar{y})^2\)</span></p>
+<p>显然，如果什么模型都不用，仅仅用均值来做预测，那么NMSE应该等于1.所以，如果在回归时得到NMSE大于1，这个模型就很糟糕了，还不如没有模型。仅仅对于训练集来说，其NMSE等于<span class="math inline">\(1-R^2\)</span>，这里的<span class="math inline">\(R^2\)</span>为回归的确定系数，但是对于测试集来说，其NMSE与测试集回归的<span class="math inline">\(R^2\)</span>没有什么关系，交叉验证主要关心测试集的NMSE。</p>
+<h3 id="构建训练集和测试集">构建训练集和测试集</h3>
+<p>现在构建为交叉验证服务的10个训练集和测试集，具体过程是：随机把下标分配给1,2,…10这10个数字，也就是把数据下标随机分成10份，然后每次提取一份作为测试集，其它9份放在一起作为训练集，用模型进行拟合，记下结果和误差，如此下去，一共做10次，最后把误差平均起来。这里所用的随机选Z折下标集的函数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">CV=<span class="keyword">function</span>(n,Z=<span class="number">10</span>,seed=<span class="number">1000</span>)&#123;</div><div class="line">  z=rep(<span class="number">1</span>:Z,ceiling(n/Z))[<span class="number">1</span>:n]</div><div class="line">  set.seed(seed)</div><div class="line">  z=sample(z,n)</div><div class="line">  mm=list()</div><div class="line">  <span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:Z)</div><div class="line">    mm[[i]]=(<span class="number">1</span>:n)[z==i]</div><div class="line">  <span class="keyword">return</span>(mm)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的<code>n</code>是样本量，<code>Z</code>为折的数目（也就是训练集加测试集的数目，这里默认是10），<code>seed</code>为随机种子，这里设为了1000，转出为<code>Z</code>个下标集，<code>mm[[i]]</code>为第i（i=1,2,…,Z)个下标集，根据这个函数对这个mg数据集求10个下标集的代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n&lt;-nrow(raw_dt)</div><div class="line">Z=<span class="number">10</span></div><div class="line">mm=CV(n,Z)</div><div class="line">D=<span class="number">1</span></div></pre></td></tr></table></figure>
+<p>在这段代码中，<code>mm</code>存储了10个下标集，而D说明因变量是第一个变量，这些值在后面对每种方法都要用。</p>
+<p>为了和其它方法进行地比较，先对数据mg求简单的线性回归的10折交叉验证的测试集的NMSE，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(MSE)</div><div class="line">[1] 0.4222689</div></pre></td></tr></table></figure>
+<p>结果表明，测试集的NMSE为0.4222689</p>
+<h2 id="决策树回归">决策树回归</h2>
+<p>决策树(decision tree)用于回归时称为回归树(regression tree)，用于分类时则称为分类树(classification tree)，现在我们先用数据集mg做一棵回归树，然后解释其意义。这里要使用到<code>rpart</code>包中的<code>rpart()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rpart)</div><div class="line"><span class="keyword">library</span>(rpart.plot)</div><div class="line">a=rpart(y~.,raw_dt)</div><div class="line">rpart.plot(a,type=<span class="number">2</span>,faclen=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; a</div><div class="line">n= 1385 </div><div class="line"></div><div class="line">node), split, n, deviance, yval</div><div class="line">      * denotes terminal node</div><div class="line"></div><div class="line"> 1) root 1385 70.9545100 0.9301440  </div><div class="line">   2) x2&lt; 0.9894983 736 31.9699900 0.8017888  </div><div class="line">     4) x3&gt;=0.8423859 551 16.4573000 0.7288982  </div><div class="line">       8) x2&gt;=0.5178963 483 13.3868900 0.7068909  </div><div class="line">        16) x2&lt; 0.7999875 263  4.7064590 0.6422662  </div><div class="line">          32) x3&lt; 1.092533 185  3.3567710 0.6073434 *</div><div class="line">          33) x3&gt;=1.092533 78  0.5889238 0.7250958 *</div><div class="line">        17) x2&gt;=0.7999875 220  6.2689860 0.7841468 *</div><div class="line">       9) x2&lt; 0.5178963 68  1.1749050 0.8852150 *</div><div class="line">     5) x3&lt; 0.8423859 185  3.8660570 1.0188850  </div><div class="line">      10) x4&gt;=1.062353 71  1.8511830 0.9239636 *</div><div class="line">      11) x4&lt; 1.062353 114  0.9767496 1.0780020 *</div><div class="line">   3) x2&gt;=0.9894983 649 13.1077400 1.0757060  </div><div class="line">     6) x3&gt;=1.056185 206  3.5797200 0.9644841  </div><div class="line">      12) x4&gt;=0.9107852 23  0.5746155 0.7823564 *</div><div class="line">      13) x4&lt; 0.9107852 183  2.1462980 0.9873744 *</div><div class="line">     7) x3&lt; 1.056185 443  5.7947760 1.1274250 *</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180828/hG48FgC33C.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>计算的结果有2个，一个是文本描述的结果，一个是图形结果，这两个结果是等价的，我们可以了解这个决策树的构造过程。现在解释一下这个决策树。</p>
+<p>决策树就像一棵倒长的树，有很多分叉，分叉点叫节点(node)，其中1号节点为根节点，也就是上图中最高的那个节点，输出的文本信息则是全部数据的信息，其中在1号节点上，n=1385，偏差(deviance)=70.9545100，在该节点的因变量的均值为0.9301440。</p>
+<p>这里的偏差是批在每个节点的偏差，它的定义为：在该节点的数据中的因变量与其均值之差的平方和，即<span class="math inline">\(\sum_{i}(y_{i}-\bar{y})^2\)</span>这里回归树用偏差大小来选择变量，当然也可以用其它诸如残差平方和作为选择变量的准则。</p>
+<p>上述的这些信息显示在上图中（不过只显示了均值），然后计算机程度在每个自变量中选择一个数值分割点，使得在该节点的整个数据在这个分割点比在其它分割点分成两部分之后的偏差之和都小，对每个自变量都选择这样的一个分割点，并对不同自变量的分割结果做比较，得到一个使得分割后总偏差最小的变量，这个变量就是该节点的分割变量（或称为拆分变量）。</p>
+<p>根据输出的文本信息，在这个案例中，根节点的分割变量为x2，其分割点为0.9894983，x2小于该值的观测值分到左边（节点2），大于该值的则分到右边（节点3）。在每个节点都展示出观测值数目、偏差及因变量均值这三项内容（不过决策树的图形中只有均值），这样数据就分成了两个部分。然后，对每一部分数据，选择分割变量及其分割点的程序重新开始。如此下去，根据一些按照拟合程度和避免决策树无限制长下去的准则，到一定节点就不再分割，这些节点就是终节点（也称为叶节点），也就是文本信息中带有星号(<code>*</code>)的为叶节点。</p>
+<h3 id="决策树的使用">决策树的使用</h3>
+<p>使用决策树很简单，如果有新的（只知道自变量的）观测值，就可以根据决策树以及各个变量大小，从根节点一直走到一个终节点，那里因变量的均值就是该观测值的因变量预测值。决策树本身受数据影响较大，但许多决策树结果起来就可以构成很好的方法，例如boosting，bagging以及随机森林等组合方法就是以决策树作为基本决策单元构造出来的。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>复杂数据统计方法：基于R的应用.第三版.吴喜之</li>
 </ol>
 
           
@@ -2429,7 +2429,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/24/BioTools/各种基因名转换/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/30/StatQuest/生物统计-StatQuest学习笔记18-K邻近算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -2448,7 +2448,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/06/24/BioTools/各种基因名转换/" itemprop="url">各种基因名笔记</a></h1>
+                <a class="post-title-link" href="/2018/06/30/StatQuest/生物统计-StatQuest学习笔记18-K邻近算法/" itemprop="url">StatQuest学习笔记18——K邻近算法</a></h1>
         
 
         <div class="post-meta">
@@ -2460,347 +2460,8 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-24T12:00:00+08:00">
-                2018-06-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信工具/" itemprop="url" rel="index">
-                    <span itemprop="name">生信工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,757
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  17
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="基因名">基因名</h2>
-<p>不同的数据据中的对于一个基因的描述不同，例如p53，它又叫P53，又叫TP53，或BCC7，或ENSG00000141510或OTTHUMG00000162125。通常来说，对p53的描述使用的是Official Gene Symbol（例如TP53）。</p>
-<p>另外，在NCBI数据库中我们查找TP53，会出现下面这些信息：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303173528.png">
-
-</div>
-<p>现在我们从第一行开始解释：</p>
-<ol style="list-style-type: decimal">
-<li><code>TP53 tumor protein p53 [ Homo sapiens (human) ]</code>：它表示这个基因是TP53肿瘤蛋白53，TP表示的是tumor protein，p表示的是protein，53的意思是这个蛋白的分子量是53kDa（其实当初在跑SDS-PAGE胶时，这个蛋白位于53kDa附近，就命名为p53，其实后来发现，这个蛋白中富含脯氨酸，在SDS-PAGE胶中迁移速度偏慢，它表示出来的分子量要比实际的分子量大，此蛋白的实际分子量是43.7kDa，不过由于命名太久了，也就将错就错了），后面的<code>Homo sapiens (human)</code>是人类的意思，它表示这个基因是人源的。</li>
-<li><code>Gene ID</code>：7157，表示的是基因的entrez的系统代号，Entrez 是美国国家生物技术信息中心所提供的在线资源检索器。该资源将GenBank序列与其原始文献出处链接在一起。如果我们在Entrez中直接检索7157，也能直接搜索到TP53。Entrez ID实际上是指的Entrez gene ID，是对应于染色体上一个gene location的。每一个发现的基因都会被编制一个统一的编号，而Entrez ID是指的来自于NCBI旗下的Entrez gene数据库所使用的编号。每个基因的编号具有唯一性，包括不同种属生物间的同源基因编号也不相同，例如同样是TP53基因，人源TP53的Entrez ID为7157，zebrafish源的Entrez ID为30590，chichen源的Entrez ID为396200。EntrezID标记的基因具有唯一性，可以理解为它就是基因的身份证，通过一串数字就能区分每个基因。</li>
-<li><code>Official Symbol</code>，这个是我们常用的这个基因的名称，即TP53，这个命名是由HGNC批准的，HGNC的全称是HUGO Gene Nomenclature Committee，其中HUGO的全称是Human Genome Organisation，即国际人类基因组组织，而HGNC则是HUGO基因命名委员会。</li>
-<li><code>Official Full Name</code>，官方的全称。</li>
-<li><code>Ensembl:ENSG00000141510</code>：ENSEMBL是一个由由英国Sanger研究所Wellcome基金会及欧洲分子生物学实验室所属分部欧洲生物信息学研究所共同协作运营的一个数据库。Ensembl数据库的基因名称后面有的还有个小数点，这个表示基因的版本号，没多少用处，在进行生信分析的时候，可以去掉。</li>
-<li>MIM:191170。OMIM 为“0nline Mendelian Inheritance in Man”的简称，即在线《人类孟德尔遗传》，是一个关于人类基因和遗传紊乱的数据库（持续更新）。主要着眼于遗传性的基因疾病，包括文本信息和相关参考信息、序列纪录、图谱和相关其他数据库。其中MIM号就是在OMIM数据库中的基因编号。</li>
-<li><code>Vega:OTTHUMG00000162125</code>。脊椎动物基因组注释（Vertebrate Genome Annotation，Vega）数据库已经被设计为浏览来自各种脊椎动物基因组的完结序列的人工注释的一个社区资源。它的核心数据库是基于Ensembl样式的模式，扩展到包含精选-特异的元数据。</li>
-</ol>
-<p>常用的基因名转换工具：</p>
-<ol style="list-style-type: decimal">
-<li><p>DAVID：https://david.ncifcrf.gov/</p></li>
-<li><p>Absolute Gene ID Conversion Tools：http://bioinformatics.louisville.edu/abid/</p></li>
-<li><p>bioDBnet：（https://biodbnet-abcc.ncifcrf.gov/db/db2db.php）</p></li>
-<li><p>ENSEMBL biomart：（http://asia.ensembl.org/biomart/martview/bbd9fa2dd0eac95aa098be3514472b0e）</p></li>
-</ol>
-<h2 id="r包转换基因名">R包转换基因名</h2>
-<p>使用R包来转换基因通常有三种方法。</p>
-<h3 id="clusterprofiler包的bitr函数">clusterProfiler包的bitr函数</h3>
-<p>bitr<code>是</code>clusterProfiler`包中的一个函数，它用于生物ID的转换，用法如下所示:</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bitr(geneID, fromType, toType, OrgDb, drop = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>其中，geneID是输入的基因ID，fromType是输入的ID类型，<code>toType</code>是输出的ID类型，<code>OrgDb</code>注释的db文件，<code>drop</code>剔除NA数据与否。</p>
-<p><code>bitr</code>中的各种基因ID参数名称如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; keytypes(org.Mm.eg.db)</div><div class="line"> [<span class="number">1</span>] <span class="string">"ACCNUM"</span>       <span class="string">"ALIAS"</span>        <span class="string">"ENSEMBL"</span>      <span class="string">"ENSEMBLPROT"</span>  <span class="string">"ENSEMBLTRANS"</span></div><div class="line"> [<span class="number">6</span>] <span class="string">"ENTREZID"</span>     <span class="string">"ENZYME"</span>       <span class="string">"EVIDENCE"</span>     <span class="string">"EVIDENCEALL"</span>  <span class="string">"GENENAME"</span>    </div><div class="line">[<span class="number">11</span>] <span class="string">"GO"</span>           <span class="string">"GOALL"</span>        <span class="string">"IPI"</span>          <span class="string">"MGI"</span>          <span class="string">"ONTOLOGY"</span>    </div><div class="line">[<span class="number">16</span>] <span class="string">"ONTOLOGYALL"</span>  <span class="string">"PATH"</span>         <span class="string">"PFAM"</span>         <span class="string">"PMID"</span>         <span class="string">"PROSITE"</span>     </div><div class="line">[<span class="number">21</span>] <span class="string">"REFSEQ"</span>       <span class="string">"SYMBOL"</span>       <span class="string">"UNIGENE"</span>      <span class="string">"UNIPROT"</span></div></pre></td></tr></table></figure>
-<p>首先需要加载注释文件，小鼠使用<code>org.Mm.eg.db</code>文件，人类使用<code>org.Hs.eg.db</code>文件。如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">source</span>(<span class="string">"http://bioconductor.org/biocLite.R"</span>)</div><div class="line">options(BioC_mirror=<span class="string">"http://mirrors.ustc.edu.cn/bioc/"</span>)</div><div class="line">biocLite(<span class="string">"clusterProfiler"</span>)</div><div class="line">biocLite(<span class="string">'org.Hs.eg.db'</span>)</div><div class="line">biocLite(<span class="string">'org.Mn.eg.db'</span>)</div><div class="line"><span class="keyword">library</span>(<span class="string">"clusterProfiler"</span>)</div><div class="line">gene.df &lt;- bitr(gene, fromType = <span class="string">"ENTREZID"</span>, <span class="comment">#fromType是指你的数据ID类型是属于哪一类的</span></div><div class="line">                toType = c(<span class="string">"ENSEMBL"</span>, <span class="string">"SYMBOL"</span>), <span class="comment">#toType是指你要转换成哪种ID类型，可以写多种，也可以只写一种</span></div><div class="line">                OrgDb = org.Hs.eg.db)<span class="comment">#Orgdb是指对应的注释包是哪个</span></div><div class="line">head(gene.df)</div></pre></td></tr></table></figure>
-<p>上面的代码运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(gene.df)</div><div class="line">  ENTREZID         ENSEMBL SYMBOL</div><div class="line"><span class="number">1</span>     <span class="number">4312</span> ENSG00000196611   MMP1</div><div class="line"><span class="number">2</span>     <span class="number">8318</span> ENSG00000093009  CDC45</div><div class="line"><span class="number">3</span>    <span class="number">10874</span> ENSG00000109255    NMU</div><div class="line"><span class="number">4</span>    <span class="number">55143</span> ENSG00000134690  CDCA8</div><div class="line"><span class="number">5</span>    <span class="number">55388</span> ENSG00000065328  MCM10</div><div class="line"><span class="number">6</span>      <span class="number">991</span> ENSG00000117399  CDC20</div></pre></td></tr></table></figure>
-<h2 id="使用mget函数">使用mget函数</h2>
-<p>如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(AnnotationDbi)</div><div class="line">mySymbols &lt;- mget(gene,</div><div class="line">                  org.Hs.egSYMBOL, <span class="comment">#这个是可以选择的，选择不同，转换的ID类型也不一样</span></div><div class="line">                  ifnotfound=<span class="literal">NA</span>)</div><div class="line">head(mySymbols)</div><div class="line">class(mySymbols)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; head(mySymbols)</div><div class="line">$`4312`</div><div class="line">[<span class="number">1</span>] <span class="string">"MMP1"</span></div><div class="line"></div><div class="line">$`8318`</div><div class="line">[<span class="number">1</span>] <span class="string">"CDC45"</span></div><div class="line"></div><div class="line">$`10874`</div><div class="line">[<span class="number">1</span>] <span class="string">"NMU"</span></div><div class="line"></div><div class="line">$`55143`</div><div class="line">[<span class="number">1</span>] <span class="string">"CDCA8"</span></div><div class="line"></div><div class="line">$`55388`</div><div class="line">[<span class="number">1</span>] <span class="string">"MCM10"</span></div><div class="line"></div><div class="line">$`991`</div><div class="line">[<span class="number">1</span>] <span class="string">"CDC20"</span></div><div class="line"></div><div class="line">&gt; class(mySymbols)</div><div class="line">[<span class="number">1</span>] <span class="string">"list"</span></div></pre></td></tr></table></figure>
-<h3 id="select函数">select()函数</h3>
-<p>如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">geneIDselect &lt;-select(org.Hs.eg.db, <span class="comment">#.db是这个芯片数据对应的注释包</span></div><div class="line">                      keys=gene,</div><div class="line">                      columns=c(<span class="string">"SYMBOL"</span>,<span class="string">"ENSEMBL"</span>,<span class="string">"GENENAME"</span>), <span class="comment">#clolumns参数是你要转换的ID类型是什么，这里选择三个。</span></div><div class="line">                      keytype=<span class="string">"ENTREZID"</span> )<span class="comment">#函数里面的keytype与keys参数是对应的，keys是你输入的那些数据，keytype是指这些数据是属于什么类型的数据。 </span></div><div class="line">head(geneIDselect)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; head(geneIDselect)</div><div class="line">  ENTREZID SYMBOL         ENSEMBL</div><div class="line"><span class="number">1</span>     <span class="number">4312</span>   MMP1 ENSG00000196611</div><div class="line"><span class="number">2</span>     <span class="number">8318</span>  CDC45 ENSG00000093009</div><div class="line"><span class="number">3</span>    <span class="number">10874</span>    NMU ENSG00000109255</div><div class="line"><span class="number">4</span>    <span class="number">55143</span>  CDCA8 ENSG00000134690</div><div class="line"><span class="number">5</span>    <span class="number">55388</span>  MCM10 ENSG00000065328</div><div class="line"><span class="number">6</span>      <span class="number">991</span>  CDC20 ENSG00000117399</div><div class="line">                                                     GENENAME</div><div class="line"><span class="number">1</span>                                   matrix metallopeptidase <span class="number">1</span></div><div class="line"><span class="number">2</span>                                      cell division cycle <span class="number">45</span></div><div class="line"><span class="number">3</span>                                                neuromedin U</div><div class="line"><span class="number">4</span>                            cell division cycle associated <span class="number">8</span></div><div class="line"><span class="number">5</span> minichromosome maintenance <span class="number">10</span> replication initiation factor</div><div class="line"><span class="number">6</span>                                      cell division cycle <span class="number">20</span></div></pre></td></tr></table></figure>
-<h2 id="使用biomart包来转换基因名">使用<code>biomaRt</code>包来转换基因名</h2>
-<p><code>biomaRt</code>工具包是一个连接<code>bioMart</code>数据库的R语言接口，能够通过这个软件包自由地链接到bioMart数据库，方便得读取该数据库的数据，并进一步进行数据处理，从名称中的<code>Mart</code>这个英文字符就可以知道，这是一个有数据中心类似功能的包（注：Mart在英文中有中心，集市的意思）。</p>
-<p>bioMart是一个集成了生物学数据的大型集成数据库，包括Ensemble，Uniprot，NCBI，EBI，TAIR等常用的数据库。具体说来，使用这个工具包可以做以下几个工作：</p>
-<ol style="list-style-type: decimal">
-<li><p>查找某个基因在染色体上的位置。反之，给定染色体每一区间，返回该区间的基因s；</p></li>
-<li><p>通过EntrezGene的ID查找到相关序列的GO注释。反之，给定相关的GO注释，获取相关的EntrezGene的ID；</p></li>
-<li><p>通过EntrezGene的ID查找到相关序列的上游100bp序列（可能包含启动子等调控元件）；</p></li>
-<li><p>查找人类染色体上每一段区域中已知的SNPs；</p></li>
-<li><p>给定一组的序列ID，获得其中具体的序列。</p></li>
-</ol>
-<h3 id="biomart包中函数"><code>biomaRt</code>包中函数</h3>
-<p>先了解几个这个包中的函数。</p>
-<h4 id="usemart函数"><code>useMart()</code>函数</h4>
-<p><code>useMart()</code>函数是<code>biomaRt</code>包中的函数，其功能在于选择BioMart数据库，如果要查看能使用BioMart的哪个数据库，可以使用<code>listMarts</code>函数，这个函数后面会有介绍。</p>
-<p><code>useMart()</code>参数为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">useMart(biomart, dataset, host=<span class="string">"www.ensembl.org"</span>,</div><div class="line">path=<span class="string">"/biomart/martservice"</span>, port=<span class="number">80</span>, archive=<span class="literal">FALSE</span>, ssl.verifypeer =</div><div class="line"><span class="literal">TRUE</span>, ensemblRedirect = <span class="literal">NULL</span>, version, verbose = <span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
-<ol style="list-style-type: decimal">
-<li><code>biomart</code>：BioMart所用的数据库名称；</li>
-<li><code>dataset</code>：biomart参数选中的大数据中的小数据库，使用我们先选ENSMBL数据库，再选人的数据库，语句就是如下所示：</li>
-</ol>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(biomaRt)</div><div class="line"></div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>, dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line"><span class="comment"># Or as the same following command lines:</span></div><div class="line"><span class="comment"># ensembl &lt;- useMart("ensembl")</span></div><div class="line">ensembl</div><div class="line">class(ensembl)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">library</span>(biomaRt)</div><div class="line">&gt; ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>, dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">&gt; <span class="comment"># Or as the same following command lines:</span></div><div class="line">&gt; <span class="comment"># ensembl &lt;- useMart("ensembl")</span></div><div class="line">&gt; ensembl</div><div class="line">Object of class <span class="string">'Mart'</span>:</div><div class="line">  Using the ENSEMBL_MART_ENSEMBL BioMart database</div><div class="line">  Using the hsapiens_gene_ensembl dataset</div><div class="line">&gt; class(ensembl)</div><div class="line">[<span class="number">1</span>] <span class="string">"Mart"</span></div><div class="line">attr(,<span class="string">"package"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"biomaRt"</span></div></pre></td></tr></table></figure>
-<p>从中可以发现，<code>ensembl</code>是一个<code>Mart</code>类型的对象。</p>
-<h4 id="listmarts函数"><code>listMarts()</code>函数</h4>
-<p><code>listMarts</code>：返回BioMart的数据库名称，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; listMarts()</div><div class="line">               biomart               version</div><div class="line"><span class="number">1</span> ENSEMBL_MART_ENSEMBL      Ensembl Genes <span class="number">97</span></div><div class="line"><span class="number">2</span>   ENSEMBL_MART_MOUSE      Mouse strains <span class="number">97</span></div><div class="line"><span class="number">3</span>     ENSEMBL_MART_SNP  Ensembl Variation <span class="number">97</span></div><div class="line"><span class="number">4</span> ENSEMBL_MART_FUNCGEN Ensembl Regulation <span class="number">97</span></div></pre></td></tr></table></figure>
-<p>在使用<code>useMart()</code>创建一个查询对象时，可以使用<code>test_gene_id &lt;- useMart(biomart = &quot;ensembl&quot;)</code>这个语句来创建，它就相当于<code>test_gene_id &lt;- useMart(biomart = &quot;ENSEMBL_MART_ENSEMBL&quot;)</code>。</p>
-<p>另外，<code>ENSEMBL_MART_MOUSE</code>是不同品系小鼠的数据库。<code>ENSEMBL_MART_SNP</code>这个从字面上应该是SNP数据库，<code>ENSEMBL_MART_FUNCGEN</code>应该是基因调控元件的一些数据库。</p>
-<h4 id="listdatasets函数"><code>listDatasets()</code>函数</h4>
-<p>当我们使用<code>useMart()</code>函数选择了总数据库（例如ensembl这个大数据为）后，就可以使用<code>listDatasets()</code>函数来查看可用的数据库的子数据库（小鼠的，还是人的），如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">test_ensembl &lt;- useMart(<span class="string">"ensembl"</span>)</div><div class="line">list_dataset &lt;- listDatasets(test_ensembl)</div><div class="line">head(list_dataset)</div><div class="line">str(list_dataset)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; head(list_dataset)</div><div class="line">                       dataset                           description     version</div><div class="line"><span class="number">1</span> abrachyrhynchus_gene_ensembl Pink-footed goose genes (ASM259213v1) ASM259213v1</div><div class="line"><span class="number">2</span>     acalliptera_gene_ensembl      Eastern happy genes (fAstCal1.2)  fAstCal1.2</div><div class="line"><span class="number">3</span>   acarolinensis_gene_ensembl        Anole lizard genes (AnoCar2.0)   AnoCar2.0</div><div class="line"><span class="number">4</span>    acitrinellus_gene_ensembl        Midas cichlid genes (Midas_v5)    Midas_v5</div><div class="line"><span class="number">5</span>        ahaastii_gene_ensembl    Great spotted kiwi genes (aptHaa1)     aptHaa1</div><div class="line"><span class="number">6</span>    amelanoleuca_gene_ensembl                 Panda genes (ailMel1)     ailMel1</div><div class="line">&gt; str(list_dataset)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">190</span> obs. of  <span class="number">3</span> variables:</div><div class="line"> $ dataset    : <span class="string">'AsIs'</span> chr  <span class="string">"abrachyrhynchus_gene_ensembl"</span> <span class="string">"acalliptera_gene_ensembl"</span> <span class="string">"acarolinensis_gene_ensembl"</span> <span class="string">"acitrinellus_gene_ensembl"</span> <span class="keyword">...</span></div><div class="line"> $ description: <span class="string">'AsIs'</span> chr  <span class="string">"Pink-footed goose genes (ASM259213v1)"</span> <span class="string">"Eastern happy genes (fAstCal1.2)"</span> <span class="string">"Anole lizard genes (AnoCar2.0)"</span> <span class="string">"Midas cichlid genes (Midas_v5)"</span> <span class="keyword">...</span></div><div class="line"> $ version    : <span class="string">'AsIs'</span> chr  <span class="string">"ASM259213v1"</span> <span class="string">"fAstCal1.2"</span> <span class="string">"AnoCar2.0"</span> <span class="string">"Midas_v5"</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>从结果中我们可以看出来，使用<code>useMart()</code>函数创建的<code>ensemebl</code>这个变量是一个<code>Mart</code>类型的变量。</p>
-<p>而<code>listDatasets(ensembl)</code>返回的结果则是查看在Ensembl这个数据库中，有多少能用的子数据库列表，从结果可以看出，有190个数据库能用，部分表格如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190710185051.png">
-
-</div>
-<p>其中第1列是数据库名，第2列是对数据库的描述，第3列是版本信息，现在来查看一下人类与小鼠的有关数据库，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">number_data &lt;- grep(<span class="string">"[Mm]ouse|[Hm]uman"</span>, list_dataset$description)</div><div class="line">list_dataset[number_data,]</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; list_dataset[number_data,]</div><div class="line">                     dataset                                      description         version</div><div class="line"><span class="number">76</span>     hsapiens_gene_ensembl                         Human genes (GRCh38.p12)      GRCh38.p12</div><div class="line"><span class="number">92</span>      mcaroli_gene_ensembl             Ryukyu mouse genes (CAROLI_EIJ_v1.1) CAROLI_EIJ_v1.1</div><div class="line"><span class="number">102</span>    mmurinus_gene_ensembl                     Mouse Lemur genes (Mmur_3.0)        Mmur_3.0</div><div class="line"><span class="number">103</span>   mmusculus_gene_ensembl                          Mouse genes (GRCm38.p6)       GRCm38.p6</div><div class="line"><span class="number">106</span>     mpahari_gene_ensembl              Shrew mouse genes (PAHARI_EIJ_v1.1) PAHARI_EIJ_v1.1</div><div class="line"><span class="number">107</span> mspicilegus_gene_ensembl                     Steppe mouse genes (MUSP714)         MUSP714</div><div class="line"><span class="number">108</span>    mspretus_gene_ensembl              Algerian mouse genes (SPRET_EiJ_v1)    SPRET_EiJ_v1</div><div class="line"><span class="number">135</span>    pbairdii_gene_ensembl Northern American deer mouse genes (HU_Pman_2.1)     HU_Pman_2.1</div></pre></td></tr></table></figure>
-<p>从上面的结果我们可以知道，人类基因数据库只有1个，即<code>hsapiens_gene_ensembl</code>，这也是前面的那个使用<code>useMart</code>来要创建查询语句中的<code>dataset</code>参数，即<code>ensembl= useMart(&quot;ENSEMBL_MART_ENSEMBL&quot;,dataset=&quot;hsapiens_gene_ensembl&quot;)</code>。</p>
-<p>而小鼠的数据库有7个，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190710191821.png">
-
-</div>
-<p>不过，就我们常用的小鼠而言，通常是C57BL/6小鼠，使用的数据库是<code>mmusculus_gene_ensembl</code>这个，也就是版本号为<code>GRCm38.p6</code>的数据库。</p>
-<p>也可以使用<code>searchDatasets()</code>函数来检索子数据库的类型，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">searchDatasets(mart = ensembl, pattern = <span class="string">"mouse"</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; searchDatasets(mart = ensembl, pattern = <span class="string">"mouse"</span>)</div><div class="line">                     dataset                                      description         version</div><div class="line"><span class="number">92</span>      mcaroli_gene_ensembl             Ryukyu mouse genes (CAROLI_EIJ_v1.1) CAROLI_EIJ_v1.1</div><div class="line"><span class="number">106</span>     mpahari_gene_ensembl              Shrew mouse genes (PAHARI_EIJ_v1.1) PAHARI_EIJ_v1.1</div><div class="line"><span class="number">107</span> mspicilegus_gene_ensembl                     Steppe mouse genes (MUSP714)         MUSP714</div><div class="line"><span class="number">108</span>    mspretus_gene_ensembl              Algerian mouse genes (SPRET_EiJ_v1)    SPRET_EiJ_v1</div><div class="line"><span class="number">135</span>    pbairdii_gene_ensembl Northern American deer mouse genes (HU_Pman_2.1)     HU_Pman_2.1</div></pre></td></tr></table></figure>
-<p>总之，如果我们要使用人数据库时，在构建一个检索对象时，就如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ensembl= useMart(<span class="string">"ENSEMBL_MART_ENSEMBL"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div></pre></td></tr></table></figure>
-<p>小鼠的话，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mus = useMart(<span class="string">"ENSEMBL_MART_ENSEMBL"</span>,dataset=<span class="string">"mmusculus_gene_ensembl"</span>)</div></pre></td></tr></table></figure>
-<h4 id="参数选择相关函数">参数选择相关函数</h4>
-<p>在选中数据库后，就可以进行基因名的转换了，在转换之前，我们可以看一下要输入什么参数，以及能输出什么参数。</p>
-<p><code>listFilters()</code>可以得到所有的输入结果：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; listFilters(ensembl)[<span class="number">1</span>:<span class="number">5</span>,]</div><div class="line">             name              description</div><div class="line"><span class="number">1</span> chromosome_name Chromosome/scaffold name</div><div class="line"><span class="number">2</span>           start                    Start</div><div class="line"><span class="number">3</span>             end                      End</div><div class="line"><span class="number">4</span>      band_start               Band Start</div><div class="line"><span class="number">5</span>        band_end                 Band End</div></pre></td></tr></table></figure>
-<p><code>listAttributes</code>获得所有输出结果：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; listAttributes(ensembl)[<span class="number">1</span>:<span class="number">5</span>,]</div><div class="line">                           name                  description         page</div><div class="line"><span class="number">1</span>               ensembl_gene_id               Gene stable ID feature_page</div><div class="line"><span class="number">2</span>       ensembl_gene_id_version       Gene stable ID version feature_page</div><div class="line"><span class="number">3</span>         ensembl_transcript_id         Transcript stable ID feature_page</div><div class="line"><span class="number">4</span> ensembl_transcript_id_version Transcript stable ID version feature_page</div><div class="line"><span class="number">5</span>            ensembl_peptide_id            Protein stable ID feature_page</div></pre></td></tr></table></figure>
-<p><code>searchFilters</code>与<code>searchAttributes</code>定向搜索想要结果的关键词：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; searchFilters(mart = ensembl, <span class="string">'entrez|hgnc'</span>)</div><div class="line">                         name                                                description</div><div class="line"><span class="number">19</span> with_entrezgene_trans_name                      With EntrezGene transcript name ID(s)</div><div class="line"><span class="number">25</span>                  with_hgnc                                     With HGNC Symbol ID(s)</div><div class="line"><span class="number">26</span>       with_hgnc_trans_name                            With HGNC transcript name ID(s)</div><div class="line"><span class="number">37</span>            with_entrezgene                                       With NCBI gene ID(s)</div><div class="line"><span class="number">76</span>      entrezgene_trans_name EntrezGene transcript name ID(s) [e.g. ARMCX5-GPRASP2-<span class="number">211</span>]</div><div class="line"><span class="number">82</span>                    hgnc_id                                 HGNC ID(s) [e.g. HGNC:<span class="number">100</span>]</div><div class="line"><span class="number">83</span>                hgnc_symbol                                 HGNC symbol(s) [e.g. A1BG]</div><div class="line"><span class="number">84</span>            hgnc_trans_name                 HGNC transcript name ID(s) [e.g. A1BG-<span class="number">201</span>]</div><div class="line"><span class="number">97</span>       entrezgene_accession                         NCBI gene accession(s) [e.g. A1BG]</div><div class="line"><span class="number">98</span>              entrezgene_id                                   NCBI gene ID(s) [e.g. <span class="number">1</span>]</div></pre></td></tr></table></figure>
-<h4 id="getbm函数"><code>getBM()</code>函数</h4>
-<p><code>getBM()</code>函数的参数如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">getBM(attributes, filters = <span class="string">""</span>, values = <span class="string">""</span>, mart, curl = <span class="literal">NULL</span>, </div><div class="line">checkFilters = <span class="literal">TRUE</span>, verbose = <span class="literal">FALSE</span>, uniqueRows = <span class="literal">TRUE</span>, bmHeader = <span class="literal">FALSE</span>,</div><div class="line">quote = <span class="string">"\""</span>)</div></pre></td></tr></table></figure>
-<p>参数如下：</p>
-<ul>
-<li><code>attributes</code>：输出的数据；</li>
-<li><code>filters</code>：输入数据的类型，例如<code>hgnc_symbol</code>就是说我们输入的基因名是HGNC协会指定的基因名。</li>
-</ul>
-<blockquote>
-<p>HGNC是指雨果基因命名委员会，它负责制定人类基因命名标准，HGNC的全称是hugo gene nomenclature committee，而其中hugo的全称则是 Human Genome Organisation，即人类基因组组织。</p>
-</blockquote>
-<ul>
-<li><code>values</code>：想要转换的基因名，例如在下面的案例中，我们想转换3个基因的名称，即<code>trans_gene_id &lt;- c(&quot;TP53&quot;, &quot;SMAD4&quot;, &quot;BRCA1&quot;)</code>。</li>
-<li><code>mart</code>：检索的数据库。</li>
-</ul>
-<p>第一个案例：将HGNC基因名转换为<code>Entrez</code>名称，使用案例如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">result_gene_entrez &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>, <span class="string">'entrezgene_id'</span>))</div><div class="line">result_gene_entrez</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_entrez</div><div class="line">  hgnc_symbol entrezgene_id</div><div class="line"><span class="number">1</span>       BRCA1           <span class="number">672</span></div><div class="line"><span class="number">2</span>       SMAD4          <span class="number">4089</span></div><div class="line"><span class="number">3</span>        TP53          <span class="number">7157</span></div></pre></td></tr></table></figure>
-<p>第二个案例：将HGNC基因名转换为Ensembl名称，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">result_gene_emsembl &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>))</div><div class="line">result_gene_emsembl</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_emsembl</div><div class="line">  hgnc_symbol ensembl_gene_id</div><div class="line"><span class="number">1</span>       BRCA1 ENSG00000012048</div><div class="line"><span class="number">2</span>       SMAD4 ENSG00000141646</div><div class="line"><span class="number">3</span>        TP53 ENSG00000141510</div></pre></td></tr></table></figure>
-<p>如果是想输出多个结果，就在<code>attributes</code>中添加多个参数即可：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">result_gene_emsembl2 &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">'entrezgene_id'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>))</div><div class="line">result_gene_emsembl2</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_emsembl2</div><div class="line">  hgnc_symbol entrezgene_id ensembl_gene_id</div><div class="line"><span class="number">1</span>       BRCA1           <span class="number">672</span> ENSG00000012048</div><div class="line"><span class="number">2</span>       SMAD4          <span class="number">4089</span> ENSG00000141646</div><div class="line"><span class="number">3</span>        TP53          <span class="number">7157</span> ENSG00000141510</div></pre></td></tr></table></figure>
-<p>第三个案例：将HGNC基因名转换为转录本名称，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"OTUD1"</span>, <span class="string">"SMAD4"</span>, <span class="string">"IRAK1"</span>,<span class="string">"EPHA2"</span>,<span class="string">"RAB32"</span>)</div><div class="line">result_gene_transcript &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">'entrezgene_id'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>,</div><div class="line">                                     <span class="string">"ensembl_transcript_id"</span>,</div><div class="line">                                     <span class="string">"refseq_mrna"</span>))</div><div class="line">result_gene_transcript</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_transcript</div><div class="line">   hgnc_symbol entrezgene_id ensembl_gene_id ensembl_transcript_id  refseq_mrna</div><div class="line"><span class="number">1</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000358432 NM_001329090</div><div class="line"><span class="number">2</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000358432    NM_004431</div><div class="line"><span class="number">3</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000462805             </div><div class="line"><span class="number">4</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000480202             </div><div class="line"><span class="number">5</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000461614             </div><div class="line"><span class="number">6</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369980    NM_001569</div><div class="line"><span class="number">7</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369974 NM_001025243</div><div class="line"><span class="number">8</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000444230             </div><div class="line"><span class="number">9</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000477274             </div><div class="line"><span class="number">10</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000455690             </div><div class="line"><span class="number">11</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369973             </div><div class="line"><span class="number">12</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000444254             </div><div class="line"><span class="number">13</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000437278             </div><div class="line"><span class="number">14</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000393687 NM_001025242</div><div class="line"><span class="number">15</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000429936             </div><div class="line"><span class="number">16</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000443220             </div><div class="line"><span class="number">17</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000467236             </div><div class="line"><span class="number">18</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000463031             </div><div class="line"><span class="number">19</span>       OTUD1        <span class="number">220213</span> ENSG00000165312       ENST00000376495 NM_001145373</div><div class="line"><span class="number">20</span>       RAB32         <span class="number">10981</span> ENSG00000118508       ENST00000367495    NM_006834</div><div class="line"><span class="number">21</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000588860             </div><div class="line"><span class="number">22</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000398417             </div><div class="line"><span class="number">23</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589076             </div><div class="line"><span class="number">24</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000590061             </div><div class="line"><span class="number">25</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000591914             </div><div class="line"><span class="number">26</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000592911             </div><div class="line"><span class="number">27</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589941             </div><div class="line"><span class="number">28</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000588745             </div><div class="line"><span class="number">29</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000592186             </div><div class="line"><span class="number">30</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589706             </div><div class="line"><span class="number">31</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000585448             </div><div class="line"><span class="number">32</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000591126             </div><div class="line"><span class="number">33</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000611848             </div><div class="line"><span class="number">34</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000590499             </div><div class="line"><span class="number">35</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000593223             </div><div class="line"><span class="number">36</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000586253             </div><div class="line"><span class="number">37</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000342988    NM_005359</div></pre></td></tr></table></figure>
-<p>## <code>biomaRt</code>包转换代码总结</p>
-<p>总结一下代码：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(biomaRt)</div><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">result_gene_entrez &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>, <span class="string">'entrezgene_id'</span>))</div><div class="line">result_gene_entrez</div></pre></td></tr></table></figure>
-<h2 id="在线转换工具">在线转换工具</h2>
-<ol style="list-style-type: decimal">
-<li>g:profiler：https://biit.cs.ut.ee/gprofiler/gost</li>
-</ol>
-<p>这个貌似有R包，学习完补充笔记。</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://blog.csdn.net/liufeichendi/article/details/78819884" target="_blank" rel="external">各类基因ID转换</a></li>
-<li>简述几种Gene ID的转换方法<br>
-</li>
-<li><a href="https://www.douban.com/note/544090098/" target="_blank" rel="external">OMIM数据库</a></li>
-<li><a href="https://vip.biotrainee.com/d/109-entrez-id" target="_blank" rel="external">浅谈Entrez ID</a></li>
-<li><a href="https://blog.csdn.net/weixin_40739969/article/details/89354167" target="_blank" rel="external">Gene id 转换(三种基因各种id转换方法)</a></li>
-<li><a href="https://mp.weixin.qq.com/s/wsiceQmNVveoggiqeDSlmQ" target="_blank" rel="external">如何让基因名称在多个数据库间随意转换？</a></li>
-<li><a href="https://www.jianshu.com/p/f284e5a2069e" target="_blank" rel="external">g:profiler-富集分析/ID转换神器</a></li>
-<li><a href="https://blog.csdn.net/jiuyizhizhu/article/details/5649834" target="_blank" rel="external">R语言biomaRt工具包（package）的使用</a></li>
-<li><a href="https://www.jianshu.com/p/33093fc4f2ca" target="_blank" rel="external">biomaRt:基因类型转换R包使用</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/23/StatQuest/生物统计-StatQuest学习笔记14-PCA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/23/StatQuest/生物统计-StatQuest学习笔记14-PCA/" itemprop="url">StatQuest学习笔记14——PCA</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-23T12:10:54+08:00">
-                2018-06-23
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-30T12:10:54+08:00">
+                2018-06-30
               </time>
             
 
@@ -2855,7 +2516,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  8,396
+                  1,378
                 </span>
               
 
@@ -2871,7 +2532,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  32
+                  5
                 </span>
               
             </div>
@@ -2894,874 +2555,735 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
       
         
           
-            <h2 id="前言主要内容">前言——主要内容</h2>
-<p>这篇笔记是StatQuest系列视频教程的第39-43节，其中39节的内容是PCA；第40节的内容是PCA的基本思想；第41小节的内容还是PCA，此处与第39小节的内容重复，不记笔记，略过；第42节的内容是R语言与PCA；第43节的内容是Python与PCA。为了使笔记更有条理，笔记的顺序是按照视频教程40，39，42，43节的顺序进行的。</p>
-<h2 id="pca的基本思想">PCA的基本思想</h2>
-<p>我们先从最简单的案例入手，先看下面的一堆绿色的圆圈，如下所示：</p>
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是StatQuest系列视频教程的第50节，主要内容是讲K邻近算法（K-Nearest neighbors algorithm，缩写为KNN）。K邻近算法是一种对数据进行分类的，非常简单的算法。例如我们已经有了很多对细胞进行分类的数据，那么我们要研究某个细胞属于这些分类中的哪个类别，就需要使用这种算法，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153157.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172134.jpg">
 
 </div>
-<p>我们可以把这些绿色圆圈当成一群正常的细胞，当然了，如果你不是学生物的，你也可以把它们理解成一群人，一群卡车，一群城市等，总之是一群事物。虽然这一群细胞看上去是一样的（至少表面上一样），但是，它们本质上也有可能不一样，例如像下面的这个样子：</p>
+<h2 id="k邻近算法基本思想">K邻近算法基本思想</h2>
+<p>先看一个简单的案例。</p>
+<p>第一步，我们拥有一批数据，这批数据已经进行了分类，在下图中，来源于小肠肿瘤中的这些细胞拥有不同的分类，我们使用PCA对这些细胞进行聚类，如下图所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153204.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172138.jpg">
 
 </div>
-<p>这群细胞分成了三群，不过从直观上来看，你太不容易能看出这一群细胞划分成了三群。</p>
-<p>为了能够严格地划分这些细胞，我们可以对这些细胞进行测序，确认这些细胞中有哪些基因处于活跃状态，我们就能知道这些细胞的功能，这样就知道了这些细胞的种类，当然了，如果这是一群人，我们可以测量他们的身高，血压等，如下所示：</p>
+<p>第二步，当我们再往这批数据中添加一个新的细胞时，我们此时并不清楚这个新细胞的分类，因为这个细胞是从另外的一个肿瘤中取出来的，不好归类，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153208.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172143.jpg">
 
 </div>
-<p>现在我们测了这些细胞的基因，如下所示：</p>
+<p>第三步：我们计算这个新的细胞离它最近的那个分类（也就是最近的领居“nearest neighbors”），这个细胞就属于这个分类。如果“K最近的邻居（K-nearest neighbors）”中的这个K等于1（这个K表示的是邻居的数目），那么我们就能把这个新的细胞归于这个离它最近的分类中，在这个案例中，这个最近的分类是绿色的。如果K等于11，那我们就需要使用11个最近的邻居，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153212.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172146.jpg">
 
 </div>
-<p>假设，我们此时没有那么多细胞，只有2个细胞，那么我们就可以把这两个细胞的所有基因画在一个坐标上，如下所示：</p>
+<p>假如这个新的细胞在其它的地方，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153217.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172149.jpg">
 
 </div>
-<p>就像上图显示的这样，基因1在细胞1中的高表达，而在细胞2中低表达，而基因9正好相反，在细胞1中低表达，而在细胞2中高表达，如下所示：</p>
+<p>如果K=11（这个意思表示，最这个点最近的邻居有11个），那么这个新的细胞就位于两类或更多的类中间，我们就把它归于得到“票数”最多的那个类别，那么在这个案例中，有7个最近的邻居是红色，3个最近的邻居是橘黄色，有1个最近的邻居是绿色，由于红色得到的票数最多，那么这个新的细胞就属于红色这一类，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153221.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172154.jpg">
 
 </div>
-<p>从我们所列出的数据来看，细胞1和细胞2的基因表达水平很多呈相反的水平，那么我们很容易就知道，这两个细胞必定不是同一种类的细胞，如下所示：</p>
+<h2 id="热图案例">热图案例</h2>
+<p>K邻近算法同样适用于热图，下面的这个热图是用采用层次聚类算法得到的，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153225.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172159.jpg">
 
 </div>
-<p>此时，我们把问题升级一下，我们有3个细胞，现在利用二维坐标系分别绘制出这三个细胞两两之间的基因表达水平，如下所示：</p>
+<p>此时如果我们有一个新的细胞，它的基因表达模式位于热图中浅蓝色区域的中央，如果K=1，那么我们仅仅需要看一下离它最近的细胞，我们就知道这个新的细胞是属于哪个类型的，这种情况下，它属于浅蓝色区域的分类，如果K=5，我们看一下离个细胞最近的邻居，它还是属于这个浅蓝色区域（仔细数一下，浅蓝色区域中有17列），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153229.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172202.jpg">
 
 </div>
-<p>但这种两两之间的比较太麻烦了，我们可以直接把它们放到一个三维坐标系中进行比较，如下所示：</p>
+<p>假如这个新的细胞的基因表达模式位于浅蓝色区域的偏左侧的话，如果此时K=11，我们就需要进行一个投票，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153233.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172205.jpg">
 
 </div>
-<p>在这个三维坐标系中，它的三个坐标轴分别表示细胞1，细胞2，细胞3，我们通过旋转坐标轴就可以发现每两个细胞之间的关系。</p>
-<p>现在把问题再进一步，如果我们有4个细胞，比较直观的手段就是分别画出这4个细胞两两的平面坐标系，如下所示：</p>
+<p>经过投票发现，在这11个最近的邻居中，有7个位于浅蓝色区域，有4个位于浅绿色区域，因此，我们把这个新细胞类型归于浅蓝色区域，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153237.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172209.jpg">
 
 </div>
-<p>或者是画出一个四维的坐标系，像下面的这个样子：</p>
+<p>如果这个新的细胞分类正好位于两个区域中央，这个细胞的归类就有两种解决方法：</p>
+<p>第一，如果K值是奇数，那么我们就很容易进行计算；</p>
+<p>第二，（如果K值是偶数），那么我们就会得到一个比较很麻烦的投票，此时就要靠投硬币来决定这个细胞属于哪个分类了，或者就是不归类，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153241.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172213.jpg">
 
 </div>
-<p>但前面的方法就不太适用于这种情况，例如四维坐标就不太直观，此时我们可以采用主成分分析（PCA）的方法来对细胞分类。</p>
-<p>PCA可以将不同细胞之间的关系转换到一个平面坐标系中，如下所示：</p>
+<h2 id="训练数据">训练数据</h2>
+<p>在这里我们讲一些简单的机器学习方面的内容，我们把那些用于最初始聚类的数据（这些数据我们已经知道它们是什么分类了）称为“训练数据”（training data），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153245.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172217.jpg">
 
 </div>
-<p>此时我们可以发现，通过PCA这种方法，可以把一群细胞中高度相关的细胞聚集起来，像下面的这个样子：</p>
+<h2 id="如何选择k值">如何选择K值</h2>
+<p>K值只是算法意义上的数字，它无关生理学或生物学方面的意义，因此在设置K值之前，你或许会尝试设置多设几个K值。在多设几个K值时，此时假定你不清楚一部分训练数据（实际上是知道的）的分类，那么通过K邻近算法（KNN），你对这些未知的训练数据进行分类，进而查看你的数据（此处是非训练数据）的分类情况。</p>
+<p>上面的这一段是完全翻译视频中的文字，我是不太理解，但就我自己的理解而言，就先找一批训练数据，这些数据的分类已经很明确了，把这些数据分成2份，分别定义为A和B，其中A用于聚类（这部分数据通常比较大），另外一份B用KNN进行分类（也就是A中分好的类），此时能找出最佳的K值，然后再使用一批新的数据C进行KNN分类。</p>
+<p>如果K值比较低（例如K=1或K=2），那么噪音就会比较大，会受到异常值的影响。如果K值过大，虽然会解决K值过小的问题，但是，你也不会想让K值太大，因为如果你只有几个样本，那么运算时间会过长，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153249.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172221.jpg">
 
 </div>
-<p>为了能够更直观地说明这种分析方法，我们可以把不同的细胞换成不同的颜色，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153253.jpg">
-
-</div>
-<p>此时，我们再回到最初的问题上来，通过PCA方法可以把一群细胞中高度相关的细胞给区分开来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153258.jpg">
-
-</div>
-<h2 id="pca的结果解释">PCA的结果解释</h2>
-<p>此时我们来看一下，PCA的结果具体是什么含义，在PCA图中，它的坐标轴是按重要性进行排序的。其中PC1是第一主成分轴，它的重要性要强于PC2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153303.jpg">
-
-</div>
-<p>假如一个PCA长得是下面的这个样子，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153307.jpg">
-
-</div>
-<p>此时，如果左上角的绿点与左下角的红点的距离是d1，右下角的黄点与左下角红点的距离是d2，此时d1=d2的话，那么我们就可以认为，黄色点与红色点的差异要大于绿色点与红色点的差异（因为PC1的坐标是第一主成分），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153311.jpg">
-
-</div>
-<p>在我们了解了PCA之后，我们应该知道，PCA仅仅是一种划分不同数据类型的方法之一，此外，还有其他基于降维的统计学方法（dimension reduction），例如热图，t-SNE图，多维缩放（multi-dimensional scaling，MDS）等，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153315.jpg">
-
-</div>
-<h2 id="pca的计算原理">PCA的计算原理</h2>
-<h3 id="简单案例">简单案例</h3>
-<p>在这一部分，我们使用SVD（singular value decomposition，中文译名“奇异值分解”）的方法来计算PCA。我们先看一个简单的案例，在这个案例中，我们检测了6只不同小鼠的2个基因，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153325.jpg">
-
-</div>
-<p>其实我们可以把它再抽象化一下，把小鼠看成样本，基因看成2个变量，就像下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153358.jpg">
-
-</div>
-<p>我们还以小鼠的基因为例说明，如果我们只检测1个基因的话（Gene 1），那么我们根据基因1表达的情况，把小鼠的绘制到数轴上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153402.jpg">
-
-</div>
-<p>其中小鼠1，小鼠2，小鼠3的Gene 1表达水平比较高，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153406.jpg">
-
-</div>
-<p>而小鼠4，小鼠5，小鼠6的Gene 1水平则较低，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153409.jpg">
-
-</div>
-<p>虽然这个图形比较简单，但是，我们从中还是能得到一些信息的，例如小鼠1，小鼠2和小鼠3比较接近，小鼠4，小鼠5和小鼠6比较接近，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153413.jpg">
-
-</div>
-<p>如果我们检测了2个基因，那么我们可以绘制一个二维坐标系，横轴是Gene 1，纵轴是Gene 2，那么小鼠1，小鼠2和小鼠3会聚在一起，小鼠4，小鼠5和小鼠6会聚在一起，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153421.jpg">
-
-</div>
-<p>再进一步，如果我们检测了3个基因，那么我们可以绘制三维的坐标系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153425.jpg">
-
-</div>
-<p>在上图的这个3维坐系中，圆点越大，表示离你越近。</p>
-<p>再进一步，如果我们检测了4个基因，此时我们很难绘制出四维的坐标系，那么我们就需要进行PCA分析了，PCA可以把超过4个的基因降维成二维的坐标系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153429.jpg">
-
-</div>
-<p>在这个PCA的二维坐标系中，我们可以发现，小鼠4、小鼠5和小鼠6是一类，小鼠1，小鼠2和小鼠3是一类，它们的各自的基因表达模式也类似，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153433.jpg">
-
-</div>
-<p>PCA在对数据进行聚类（clustering）时有很大的价值，例如，经过PCA分析，在它的二维坐标轴上我们可以发现，Gene 3在x轴上对样本的区分有贡献最大（这里不太理解为什么直接就看出了Gene 3，我猜测可能是基因3在这两群小鼠中的分布比较明显，一组高，一组低），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153438.jpg">
-
-</div>
-<h3 id="计算原理">计算原理</h3>
-<p>为了理解PCA是如何进行计算的，我们还回最初2个基因的案例上来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153458.jpg">
-
-</div>
-<p>接着是计算过程。</p>
-<p>第一，我们根据所有的样本的这两个基因的表达情况绘制出它们的平面坐标系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153503.jpg">
-
-</div>
-<p>第二，计算Gene 1表达水平的均值，就是下图中x轴上红叉的所在位置，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153507.jpg">
-
-</div>
-<p>第三，计算Gene 2表达水平的均值，就是下图中y轴上红叉的所在位置，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153512.jpg">
-
-</div>
-<p>第四，有了Gene 1和Gene 2的这两个数值，我们就得到了整体数值的中心，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153516.jpg">
-
-</div>
-<p>此时，我们有了这个点（蓝叉所在位置）后，我们此时就不需要再看原始数据了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153521.jpg">
-
-</div>
-<p>第五，我们把所有的数据点各左下角移动，将数据的中心与原点<code>(0,0)</code>重合，就像下面的这个样子，从左图移成右图的样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153527.jpg">
-
-</div>
-<p>此时，虽然所有的数据点都移动了，但是每个点之间的相对距离是不变的，整体数据的中心就变成了原点<code>(0,0)</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153531.jpg">
-
-</div>
-<p>第六，我们找一条通过原点的直线，就像下面的这个样子，具体这条直线做什么的，先不用管：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153535.jpg">
-
-</div>
-<p>第七，旋转这条直线（红色虚线），使这条直线尽量匹配这些数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153539.jpg">
-
-</div>
-<p>第八，最终，最匹配数据的直线就是下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153545.jpg">
-
-</div>
-<h4 id="第1主成分的计算原理">第1主成分的计算原理</h4>
-<p>此时，我们可能有疑问，为什么这条直线是最匹配数据的，它的计算原理是什么，那么接着看。</p>
-<p>我们先回到最初的直线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153606.jpg">
-
-</div>
-<p>为了准确地找出最佳匹配所有数据的直线，PCA会将所有数据点都役射到这条直线上来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153610.jpg">
-
-</div>
-<p>此时，可以计算这些数据点到投射到这条直线上的距离，并且使这些距离最小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153614.jpg">
-
-</div>
-<p>除了可以计算数据点到直线的距离最小外，还要计算所有数据点投射到这条直线上的点（图中绿叉位置所在点）到原点的距离，使这个距离最大，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153618.jpg">
-
-</div>
-<p>如果你不理解上述的这种描述，那么还可以这么理解，当这条直线（红色虚线）尽量匹配这些数据点时，这些数据点到这条直线的距离是在缩小的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153623.jpg">
-
-</div>
-<p>同样的，这些数据点投射到直线上的点到原点的距离是加大的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153627.jpg">
-
-</div>
-<p>为了更好地以数学思维来理解这个过程，此时我们先看一个点的情况，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153631.jpg">
-
-</div>
-<p>这个点是固定的，它到原点的距离也是固定的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153635.jpg">
-
-</div>
-<p>换句话讲，当直线（红色虚线）在旋转的过程中，这个点到原点的距离是不会变的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153640.jpg">
-
-</div>
-<p>当直线旋转到某一位置时，我们将这个点投射到直线上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153644.jpg">
-
-</div>
-<p>此时，我们会得到一个直角，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153648.jpg">
-
-</div>
-<p>有了直角，我们就能得到如下的直角三角形，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153653.jpg">
-
-</div>
-<p>此时，我们把这个直角三角形的三条边命名为<code>a</code>，<code>b</code>,<code>c</code>，那么根据勾股定理，我们就会得到这个公式，即<span class="math inline">\({a}^2={b}^2+{c}^2\)</span>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153657.jpg">
-
-</div>
-<p>三角形的斜边<code>a</code>是不会变的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153701.jpg">
-
-</div>
-<p>如果直角边<code>b</code>变大的话，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153709.jpg">
-
-</div>
-<p>那么直角边<code>c</code>就会变小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153714.jpg">
-
-</div>
-<p>反之，也成立。而PCA计算的则是降低直角边<code>b</code>，也就是降低数据点投射到直线上的距离，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153718.jpg">
-
-</div>
-<p>同时，PCA还要保证投到到直线上的点到原点的距离最大，也就是说要求<code>c</code>边最大，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153722.jpg">
-
-</div>
-<p>通过上面利用直角三角形的解释，就比较容易理解PCA计算最佳匹配直线的思路了。此时，再回到起点，将所有的数据点投射到直线上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153727.jpg">
-
-</div>
-<p>然后计算某个点到原点为的距离，我们把它命名为<span class="math inline">\({d}_1\)</span>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153731.jpg">
-
-</div>
-<p>同理，计算第2点投射到直线上的点到原点的距离，命名为<span class="math inline">\({d}_2\)</span>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153735.jpg">
-
-</div>
-<p>计算剩余的点投射到直线上的点到原点的距离，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153740.jpg">
-
-</div>
-<p>然后把这些值的平方加起来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153744.jpg">
-
-</div>
-<p>此时，我们旋转直线，直到最终这个<code>SS</code>的距离最大（这个距离最大，也就是说数据点到直线的距离最小）为止，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153749.jpg">
-
-</div>
-<p>最终，得到了我们想要的直线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153754.jpg">
-
-</div>
-<p>此时，这条直线就叫第一主成分（Principal Component 1，简称PC1），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153758.jpg">
-
-</div>
-<p>有了这个直线，它的斜率就很容易计算出来了，经计算，PC1的斜率为0.25，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153805.jpg">
 
-</div>
-<p>这个斜率0.25如何理解呢？它表示的意思就是，每当我们在Gene 1（x轴坐标）前进4个单位时，在这个直线上的数据点在Gene 2上就增加1个单位，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153809.jpg">
-
-</div>
-<p>如果按照生物学意义来理解就是，这几个样本在Gene 1坐标轴上更加分散，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153813.jpg">
-
-</div>
-<p>而在Gene 2上的分散程度则较小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153818.jpg">
-
-</div>
-<p>我们可以根据鸡尾酒配方（cocktail recipe）来思考这个PC1（注：鸡尾酒是一种混合酒品，掺杂有不同的酒），例如为了生成PC1，我们可以加入4份的Gene 1，再加入1份的Gene 2，另外，我们可以发现，Gene 1与Gene 2的比值是4，它就说明在描述数据的分散程度方面，Gene 1这个基因更加重要，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153823.jpg">
+          
+        
+      
+    </div>
+    
+    
+    
 
-</div>
-<p>但在数学上，把这种鸡尾酒配方（cocktail recipe）称为是Gene 1和Gene 2的线性组合（linear combination），在统计学上，描述PC1也可以这样，即“PC1是几个变量的一个线性组合”，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153827.jpg">
+    
 
-</div>
-<h4 id="第1主成分的特征值">第1主成分的特征值</h4>
-<p>紧接上面的案例，继续进行，还要计算一些东西。对于PC1来说，它的斜率是0.25，那么我们在Gene 1增加4个单位，在Gene 2上就会增加1个单位，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153831.jpg">
+    
 
-</div>
-<p>那么根据勾股定理，我们就可以计算出红色箭头的长度，长度为4.12，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153846.jpg">
+    
 
-</div>
-<p>当我们使用SVD（全称是Singular-value decomposition，中文是奇异值分解）进行PCA计算时，我们需要把这个红色箭头定义为1个单位，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153854.jpg">
+    <footer class="post-footer">
+      
 
-</div>
-<p>为了将这个红色箭头定义为1个单位，那么我们就要把这个三角形的各个连长都除以4.12，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153900.jpg">
+      
 
-</div>
-<p>那么，除以4.12后，各个三角形的连长就成了这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153904.jpg">
+      
 
-</div>
-<p>也就是说三角形的三个边长分别变成了1，0.242，0.97，不过构成PC1的线性组合，即Gene 1和Gene 2的比值还是不变的，仍旧为4，那么此时我们就可以说取0.97份的Gene 1和0.242份的Gene 2，就构成了PC1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153909.jpg">此时，我们再回想一下我们计算PC1的整个过程：</p>
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/29/StatQuest/生物统计-StatQuest学习笔记17-聚类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/29/StatQuest/生物统计-StatQuest学习笔记17-聚类/" itemprop="url">StatQuest学习笔记17——聚类</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-29T12:10:54+08:00">
+                2018-06-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
+                    <span itemprop="name">生统之StatQuest</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5,272
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是StatQuest系列教程的第47，48，49节。第47节与第48节有很在一部分内容是重复的，主要讲的是层次聚类，第49节讲提K-means聚类。</p>
+<h2 id="热图简单案例">热图简单案例</h2>
+<p>平时在读一个测序文章时，我们可能会经常看到热图，就像现在的这种图：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164818.jpg">
+
+</div>
+<p>现在我们来解释一下这张图：</p>
 <ol style="list-style-type: decimal">
-<li>原始数据；</li>
-<li>最佳匹配直线；</li>
-<li>单位向量计算，如下所示：</li>
+<li>这是一张热图（heatmap），为什么要叫热图呢，因为它用不同的颜色来表示数值的大小，通常来说，用暖色（红色）表示数值大，冷色（蓝色）表示数值小。</li>
+<li>这个热图的行（row）是基因名（可能太小看不清楚），列是RNA-seq的样本名。</li>
+<li>当原始数据通过热图来展现时，数据经过了两种修饰来展示出来。第一种修饰就是相对丰度（relative abundances），以这种方式展示的数据，它研究的是一个基因在不同样本中的相对表达情况，这种展示方式，需要对同一行（也就是相同的基因在不同样本中的表达水平）的数据进行缩放（scaled），也就是Z转换。从下面的图中，我们就可以看到，样本1的某基因表达量明显高于其它样本（因为样本1的颜色最红，根据图例，它的表达值就最高），如下所示：</li>
 </ol>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153914.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164825.jpg">
 
 </div>
-<p>图中的红色箭头是1个长度单位，它由0.97个Gene 1和0.242个Gene 2构成，它称为PC1的奇异向量（Singular vector），或者是特征向量（Eigenvector），而每个基因的比例则被称为载荷得分（Loading Scores），如下所示：</p>
+<p>为了方便理解，我随手用Excel做了一下简陋的热图，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153932.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164828.png">
 
 </div>
-<p>此外，在PCA中，将SS（也就是各个点投射到最佳匹配的直线上的点到原点的距离的平方和）称为PC1的特征值（Eigenvalue），如下所示：</p>
+<p>可以看出，基因4在样本1中的表达量很高。不过按照第一种展示数据的方式，无法比较不同基因的表达水平差异，例如，在上图的黑色方框中，基因4显红色，这只能表达，样本1中基因4的表达水平比其它的样本高，不能说明样本1中的其它基因（例如基因3）的水平也比其它样本高，这种数据的展示方式只用于研究同一个基因在不同的样本中的表达水平差异。</p>
+<p>第二处修饰后的展示方式就是根据这些基因表达的相似性，把它们放到一块，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153936.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164833.png">
 
 </div>
-<p>PC1特征向量的值（Eigenvalue for PC1）的平方根被称为PC1的奇异值（Singular Value for PC1），如下所示：</p>
+<p>再看下面的图形：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153941.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164837.jpg">
 
 </div>
-<h4 id="第2主成分的计算原理">第2主成分的计算原理</h4>
-<p>前面是第1主成分（PC1）的计算，此时进行第2主成分的计算（PC2）。由于我们使用的二维坐标，PC2仅仅是一条通过了原点，并且与PC1垂直的直线，PC2并没有像PC1那样复杂的优化，如下所示：</p>
+<p>从上到下，我们可以看到这些基因的表达的模式。</p>
+<p>在第一个紫红色的方框中，我们可以看到，这些基因在第2个样本中表达水平最高，而在第4个样本中表达水平最低。</p>
+<p>在第二个黑色的方框中，我们可以看到，这些基因在第1个样本中表达水平最高，而在第4个样本中表达水平最低。</p>
+<p>在第三个橙色方框中中，我们可以看到，这些基因在第2个样本中的表达水平最高，而在第3个栖中的表达水平最低。</p>
+<p>根据不同基因表达模式的相似性进行的“聚类”（clustering）并不是偶然的，而是通过一定的算法实现的，这些算法会将那些表达模式类似的基因放到一块，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153945.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164845.png">
 
 </div>
-<p>由于PC2与PC1垂直，那么很容易地就能计算出PC2的斜率为-4，这也就是说，PC2是由-1个Gene 1和4个Gene 2构成的，如下所示：</p>
+<p>如果不进行聚类（clustering），那么用热图展示出来就是下图右边的那个样子，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153950.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164852.jpg">
 
 </div>
-<p>当我们在PC2所在直线上定义一个单位长度的向量时，那么PC2就是由-0.242个Gene 1和0.97个Gene 2构成了，此时这个单位向量（蓝色箭头）就被称为PC2的奇异向量（Singular Vector）或特征向量（Eigenvector），如下所示：</p>
+<p>如果热图中既不进行聚类（clustering），也不进行缩放（scaling），那么热图就变成了如下的这个样子：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153954.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164858.jpg">
 
 </div>
-<p>而-0.242和0.97就是PC2的载荷分数，它表示的就是，基因2相当于4位的基因1，如下所示：</p>
+<p>从图上我们可以看到，红色部分的这个基因表达水平最高（比其他的基因表达高太多了），可以把它视为一个异常值。</p>
+<h2 id="热图复杂案例">热图复杂案例</h2>
+<p>现在我们再看一下比较复杂的热图案例，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153958.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164914.jpg">
 
 </div>
-<p>PC2的特征值则是数据点投到到PC2上的点到原点的距离，如下所示：</p>
+<p>从这个图的标题上我们可以看出，这个貌似是一个结肠的单细胞测序数据的热图。这个热图的数据经过了缩放（scaled）与聚类（clustered），它的缩放是全局的，因此，这一组数据中并没有异常值，这里的缩放要与前面热图的缩放区分开来，前面的前面是按照某个基因进行缩放的，也就是把同一行的数据当成整体，进行了缩放（也就是z转换），而这个数据是把所有的数据当作整体，进行缩放。</p>
+<p>再看聚类。这个热图的聚类是按照列（column，也就是样本）和行（row，也就是基因）同时进行的聚类，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154002.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714165212.png">
 
 </div>
-<p>此时，PC1和PC2的计算结束，绘制最终的PCA图，如下所示：</p>
+<p>在上图中，我们可以看到，纵矩形的部分表示基因表达模式相似的样本聚在了一起，横矩形表示的是，表达模式相似的基因聚集在了一起。它们的交集表示，这些样本的基因表达模式相似，以及有哪些基因相似。</p>
+<p>如果不进行聚类，也不进行数据缩放（scaling），那么下图的右上表示的就是不聚类的热图，右下表示的就是即不进行聚类，又不进行缩放的热图，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154005.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714165248.jpg">
 
 </div>
-<p>然后旋转这个坐标，让PC1水平，PC2垂直，如下所示：</p>
+<p>此时我们再回到前面的那个简单热图案例中来，我们试想一个问题，在那张热图中，如果我们对所有的基因进行整体的缩放（global scaling），而非单个基因的缩放，那么这个热图会怎么样，我们看下图：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154010.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164924.jpg">
 
 </div>
-<p>在这个新的坐标系中，图中黑色的叉就表示原始的样本6（Sample 6），如下所示：</p>
+<p>经过全局缩放（global scaling）后，得到下面的图形，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154015.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171141.jpg">
 
 </div>
-<p>而Sample 6位于这个点上：</p>
+<p>此时，我们会发现，这些聚类的结果就会发生了改变，并且新生成的图形中出面了异常高的热图，它是异常值，这个异常值会导致热图整体上出来严重的偏离，并且不容易观察基因的变化，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154019.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171147.jpg">
 
 </div>
-<p>同理，Sample 2在这里：</p>
+<p>因此，我们从上面的结果可以知道，缩放（scaling）会影响两个结果，第一，不同表达水平基因的颜色，这会影响你比较不同样本中的相同基因的表达水平，第二，影响聚类（clustering），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154023.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171156.jpg">
 
 </div>
-<h3 id="各主成分的变异">各主成分的变异</h3>
-<p>此时，再讲一些术语，先回忆一下前面的PC1的特征值和PC2的特征值，如下所示：</p>
+<h2 id="如何对数据进行缩放scale">如何对数据进行缩放（scale）</h2>
+<p>此时，我们再回到数据的缩放这个话题上，无论你对相同基因在不同样本中进行缩放，还是对全局的基因进行缩放，最常用的方法就是Z值缩放法（Z-Score Scaling），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154027.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171208.jpg">
 
 </div>
-<p>我们把原始的数据点投射到主成分上，如下所示：</p>
+<p>接着，我们具体看一下这种方法是如何实现数据的缩放的。在下图中，我们看到一个数轴上分布了几个样本的reads数，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154042.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171212.jpg">
 
 </div>
-<p>计算投射到PC1上的点到原点的距离，如下所示：</p>
+<p>第一步：计算其均值（均值为16.5），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154047.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171216.jpg">
 
 </div>
-<p>所有的这些数值的平方和就是PC1的特征值，如下所示：</p>
+<p>第二步：每个样本的数值减去均值，此时，如果这个数值大，就表示此样本的某基因转录水平高；如果数值小，就表示此样本的某基因转录水平低，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154051.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171219.jpg">
 
 </div>
-<p>我们也可以将特征值转为PC1到原点的变异，方法就是SS除以样本数减1，如下所示：</p>
+<p>第三步：计算标准差（标准差为6.28）；</p>
+<p>第四步：将第2步中的数值除以标准差，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154055.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171225.jpg">
 
 </div>
-<p>以这个案例为例说明，假如PC1的变异（Variation）为15，PC2的变异为3，这就表明主成分的总变异为18，那么也就是说PC1在总变异中所占的比值为83%（15/18=0.83），如下所示：</p>
+<p>经过上述的处理后，无论原始数据的变异程度如何，这些数据的范围最终会缩小，之所以这样处理，就是因为如果原始数据之间差异过大，那么不同基因表达水平就会变化程度（more subtle）更高的色度（shade）来表示，经过这样的处理，用较小程度的色度（shade）就能表示出基因水平的差异，方便观察，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154059.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171232.jpg">
 
 </div>
-<p>而PC2占的总变异为17%（3/18=0.17），如下所示：</p>
+<p>此时，我们可能会遇到这样的一种情况，例如，如果数据中出现异常值时，数据会怎么样，就像下面的这个样子：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154103.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171240.jpg">
 
 </div>
-<p>此时，我们把这两个主成分所占的比例画出来，这种图与条形图很像，不过在PCA中，这叫碎石图（scree plot），每个矩形表示每个PC所占总变异的比值，如下所示：</p>
+<p>此时如果进行Z转换的话，标准差会很大，也就是Z值的分子会很大，最终得到的值会有一部分集中在0附近，只能用很少的色度来进行区分，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154107.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171245.jpg">
 
 </div>
-<h2 id="一个复杂案例">一个复杂案例</h2>
-<p>我们看一个比较复杂的案例，在这个案例中，6只小鼠，检测了3个基因，如下所示：</p>
+<p>例如，我们如果采用全局缩放来处理原始数据中，在第一个案例中，我们就会得到下面这样的图形，其中有一个基因明显表达水平非常高，使得其它的基因差异很难看出来，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154122.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171251.jpg">
 
 </div>
-<p>按照前面的思路，找到数据的中心，并将其移到原点，如下所示：</p>
+<h2 id="如何聚类">如何聚类</h2>
+<p>原始数据经过缩放后（scaling），此时就可以进行聚类了，聚类有2种方法，分别是层次聚类（hierarchical clustering）和K-均值（K-means）聚类，我们先讲层次聚类（hierarchical clustering），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154126.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171300.jpg">
 
 </div>
-<p>找到最佳的匹配数据的直线，也就是PC1，如下所示：</p>
+<h2 id="层次聚类hierarchical-clustering">层次聚类（hierarchical clustering）</h2>
+<p>先看一个简单的案例，在这个案例中，有3个样本，每个样本4个基因，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154130.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171317.jpg">
 
 </div>
-<p>不过这个PC1有3个成分，分别是0.62个Gene 1，0.15个Gene 2和0.77个Gene 3，如下所示：</p>
+<p>这种聚类方法的思路是这样的：</p>
+<p>第一步，计算出哪些基因与基因1最为接近，基因2明显与基因1表达模式不同，基因3与基因1的表达形式比较类似，基因4与基因1的表达模式也比较类似，但是，在这几个基因中，与基因1表达模式最接近的还是基因3，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154134.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171322.jpg">
 
 </div>
-<p>其中，Gene3 是最主要的组成部分，如下所示：</p>
+<p>第二步，计算出哪些基因的表达模式与基因2最为接近（然后是基因3，基因4），经计算发现，基因4与基因2的表达模式最相似，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154141.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171328.jpg">
 
 </div>
-<p>然后寻找PC2，PC2通过原点，并与PC1垂直，如下所示：</p>
+<p>第三步，我们在前面找到基因1和基因3的表达模式相似，基因2和基因4的表达模式相似，但是，基因1和基因3的相似程度要比基因2和基因4的相似程度高，我们把前面的组合（基因1和基因3）放到一个簇（cluster）中，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154145.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171334.jpg">
 
 </div>
-<p>最终，PC2的成分为0.77个Gene 1，0.62个Gene 2和0.15个Gene 3，如下所示：</p>
+<p>第四步：此时再回到第一步，把基因1和基因3构成的簇（Cluster # 1）当作一个基因，然后再按照第二步，第三步来计算，经计算，此时，基因2和基因4最相似，把它们再放到一个簇中（Cluster #2），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154149.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171338.jpg">
 
 </div>
-<p>在PC2中，Gene 1是最主要的组成部分，如下所示：</p>
+<p>通常情况下，层次聚类（Hierarchical Clustering）通常会用一个树形图（dendrogram）连接起来，用于表明聚类成员之间的相似性和聚类次序，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154154.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171346.jpg">
 
 </div>
-<p>最后，我们寻找PC3，PC3通过原点，同时与PC1和PC2垂直，如下所示：</p>
+<p>在右侧的树形中，我们可以发现，<code>Cluster #1</code>是最先形成的聚类，它们的相似性最高，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154159.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171353.jpg">
 
 </div>
-<p>如果我们有更多的基因，那么我们就会不断地寻找更多的主成分，也就是说不断地往这个坐标中加入与前一个主成分垂直的直线，从理论上讲，一个基因就有一个主成分（例如这个案例中，3个基因，最终找到了3个主成分），因此，主成分的数目要么跟变量相等，要么跟样本的数目相等（这个数目还是比较小的），如下所示：</p>
+<p><code>Cluster #2</code>是第二个形成的聚类，它们的相似性次高，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155622.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171357.jpg">
 
 </div>
-<p>不过，真正在进行PCA的时候，最终的主成分数目是有限的，这个马上就要讲到。一旦计算出来了所有的主成分，那么我们就可以使用特征值来计算每个主成分的变异占总变异的比例，如下所示：</p>
+<p>而第三个聚类<code>Cluster #3</code>则包含了所有的基因，它是最后形成的，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154206.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171403.jpg">
 
 </div>
-<p>在这个案例中，PC1的变异占总变异的79%，PC2占15%，PC3占6%，把这些主成分绘制成碎石图，就是下图左图的样子，如下所示：</p>
+<h2 id="层次聚类的原理">层次聚类的原理</h2>
+<p>前面我们提到过，层次聚类的第一步就是计算两组基因的相似性，此时我们详细介绍一下如何进行计算。</p>
+<p>在计算相似性方面并没有一个统计的标准，但有一些常用的手段。第一种计算相似性的方法就是欧氏距离（Euclidian distance），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154211.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171417.jpg">
 
 </div>
-<p>从碎石图中我们可以看到，PC1和PC2占了变异的绝大比例，如下所示：</p>
+<p>为了简单地说明欧氏距离（Euclidian distance），我们以最简单的例子来说明，在这个例子中，有2个样本，每个样本有2个基因，然后两个样本的相同基因的差值的平方相加，并开平方，得到的数值就是欧氏距离，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154216.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171423.jpg">
 
 </div>
-<p>这就表明了，在二维图中，我们基本上只使用PC1和PC2就能解释三维图中的数据，因为二维图中的PC1和PC2占据了整体的变异的94%，如下所示：</p>
+<p>除了欧氏距离可以计算相似性外，还可以使用曼哈顿距离（Manhattan distance）和坎贝拉距离（Canberra distance）来计算相似性，其中曼哈顿距离只是不同样本之间相同基因差值的绝对值之和，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154220.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171430.jpg">
 
 </div>
-<p>我们将三维图转换为二维图，画出PC1和PC2，以及原始数据点，如下所示：</p>
+<p>我们看一下用不同的方法计算相似性的区别，下图的左侧图使用的欧氏距离（Euclidian distance）来得到的热图，右图使用的是曼哈顿距离（Manhattan distance）得到的热图，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154225.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171434.jpg">
 
 </div>
-<p>将数据投射到这个新坐标的PC1上，如下所示：</p>
+<p>从图上来看，使用这两种不同的相似性计算方法得到的热图略有差异，具体要使用哪种方法来计算相似性，并没有一个统计的标准，它们也没有什么生物学意义。</p>
+<p>此时，我们再回到原来的案例中来，在前面部分中我们提到，基因1和基因3的相似程度最高，把它们都放到一个簇（Cluster #1）中，此时，我们如何计算Cluster #1和基因2，基因4的相似性呢？有几种方法。</p>
+<p>其中最简单的一种方法就是求出Cluster #1中的两个基因的平均值，然后进行计算。但还有其它的方法，这些方法同样会影响聚类，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154229.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171439.jpg">
 
 </div>
-<p>再投射到PC2上，如下所示：</p>
+<p>为了简单地说明簇（Cluster #1）与其它基因相似性计算的问题，我们假设有一批数据，分布在X-Y轴上，此时，我们已经生成了2个簇，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154233.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171443.jpg">
 
 </div>
-<p>然后，我们把这个坐标旋转一下，方便查看，如下所示：</p>
+<p>此时，我们仅需要计算最后一个点属于哪个簇，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154238.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171448.jpg">
 
 </div>
-<p>下面的这个点就是Sample 4对应的点，如下所示：</p>
+<p>此时我们可以采用以下这些方法进行计算：</p>
+<p>第一，计算这个点与两个簇平均值的距离（centroid），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154242.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171452.jpg">
 
 </div>
-<p>我们再来回顾一下这个案例，首先我们把所有的数据点绘制到三维坐标中，如下所示：</p>
+<p>第二，计算这个点到两个簇最近的点的距离（single-linkage），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154249.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171501.jpg">
 
 </div>
-<p>再计算主成分，如下所示：</p>
+<p>第三，计算这个点到两个簇中最远的点的距离（complete-linkage），如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155852.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171504.jpg">
 
 </div>
-<p>再计算主成分的特征值与变异比例，如下所示：</p>
+<p>我们用前面的单细胞测序的热图来说明一下这三种方法，从左到右分别是：某点到某簇最远点的距离（在R中默认的就是这个选项），某点到某簇均值的距离，某点到某簇最近的点的距离，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155856.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171521.jpg">
 
 </div>
-<p>最后，我们使用PC1和PC2这个二维坐标来描述原始数据，如下所示：</p>
+<h2 id="k-means聚类">K-means聚类</h2>
+<h3 id="什么是k-means">什么是K-means</h3>
+<p>先看一个场景，例如我们手中有这样的一批数据，把它们绘制到一个数轴上，此时你的目的就是把它们分成3个簇（cluster），这三个数据或许是来源于三种不同的细胞或都是三种不同的肿瘤，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155900.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171528.jpg">
 
 </div>
-<p>如果我们检测了6个样本的4个基因，那么我们并不需要绘制出4维坐标图，如下所示：</p>
+<p>我们仅从肉眼观察，就知道这一批数据明显可以分成3个簇，但是，如果我们不用肉眼来观察，用计算机来计算，如何得到这3个簇呢？此时就需要用到一种算法，即K-means聚类，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155905.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171533.jpg">
 
 </div>
-<p>我们可以计算出它们的主成分，画出碎石图，其中我们可以发现，PC1和PC2占据了变异的90%，那么我们仅使用PC1和PC2构成的二维PCA图就可以表示原始数据，如下所示：</p>
+<h3 id="k-means的基本思想">K-means的基本思想</h3>
+<p>此时，我们先了解一下K-means聚类的基本思想。</p>
+<p>第一步：选择你要聚类的个数，K-means聚类中的这个<code>K</code>就是你要聚类的数目的意思，此时，你们选择<code>K=3</code>，这也就是说，我们想把这些数据取成3个簇（cluster），对这个<code>K</code>值如何选择，我们后文会提到，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155911.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171538.jpg">
 
 </div>
-<p>将原始数据分别投射到PC1和PC2上，如下所示：</p>
+<p>第二步，随机选择3个不同的数据点当成3个簇，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155918.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171542.jpg">
 
 </div>
-<p>下面的这两个点就对应了Sample 2，如下所示：</p>
+<p>第三步：计算第1个点到这三个簇的距离，先计算第1个点到蓝簇的距离，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155922.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171542.jpg">
 
 </div>
-<p>也就是这个点：</p>
+<p>接着，计算第1个点到绿簇的距离，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155926.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171549.jpg">
 
 </div>
-<p>那么，所有的点就是这个样子：</p>
+<p>最后，计算第1个点到橘黄簇的距离，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155930.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171554.jpg">
 
 </div>
-<p>如果我们遇到下面的这种碎石图，在这种碎石图中，PC3和PC4也占据了相当比例的总变异，那么我们仅使用2个主成分（也就是PC1和PC2）就无法精确地代表原始数据，如下所示：</p>
+<p>第四步：将第1个点归于离它最近的簇，在这个案例中，第1个点就属于蓝簇，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155935.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171558.jpg">
 
 </div>
-<p>不过，即使是有瑕玼的PCA二维图，也可以用于数据的分类，如下所示：</p>
+<p>接着，重复前面的步骤，只是这次计算的第2个点，第2个点最终的计算结果它属于绿簇，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155939.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171601.jpg">
 
 </div>
-<p>在这个图中，黑色的点仍然可以被视为比较接近的类似，如下所示：</p>
+<p>再计算第3个点，它属于橘黄簇，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155944.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171608.jpg">
 
 </div>
-<h2 id="r语言与pca">R语言与PCA</h2>
-<p>计算PCA的工具很多，这里我们介绍一下用R来计算PCA，在R中，计算PCA的函数是<code>prcomp()</code>，绘图包是<code>ggplot2</code>，使用R，我们可以知道每个主成分的变异占总变异的比值，以及计算载荷得分（loading scores），发现哪个变量对图形的影响最大，如下所示：</p>
+<p>经过最终计算，第3个点到最后的点都属于橘黄簇，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155949.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171616.jpg">
 
 </div>
-<h3 id="生成数据集">生成数据集</h3>
-<p>我们先生成一个数据集，代码如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">data.matrix &lt;- matrix(nrow=<span class="number">100</span>, ncol=<span class="number">10</span>)</div><div class="line">colnames(data.matrix) &lt;- c(</div><div class="line">  paste(<span class="string">"wt"</span>,<span class="number">1</span>:<span class="number">5</span>,sep=<span class="string">""</span>),</div><div class="line">  paste(<span class="string">"ko"</span>,<span class="number">1</span>:<span class="number">5</span>,sep=<span class="string">""</span>))</div><div class="line">rownames(data.matrix) &lt;- paste(<span class="string">"gene"</span>, <span class="number">1</span>:<span class="number">100</span>, sep=<span class="string">""</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">100</span>)&#123;</div><div class="line">  wt.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size=<span class="number">1</span>))</div><div class="line">  ko.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size=<span class="number">1</span>))</div><div class="line"></div><div class="line">  data.matrix[i,] &lt;- c(wt.values, ko.values)</div><div class="line">&#125;</div><div class="line"></div><div class="line">head(data.matrix)</div></pre></td></tr></table></figure>
-<p>查看一下生成的数据，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data.matrix)</div><div class="line">      wt1 wt2 wt3  wt4 wt5 ko1 ko2 ko3 ko4 ko5</div><div class="line">gene1 <span class="number">423</span> <span class="number">423</span> <span class="number">419</span>  <span class="number">423</span> <span class="number">372</span> <span class="number">582</span> <span class="number">589</span> <span class="number">563</span> <span class="number">534</span> <span class="number">566</span></div><div class="line">gene2 <span class="number">905</span> <span class="number">971</span> <span class="number">967</span> <span class="number">1031</span> <span class="number">910</span>  <span class="number">95</span>  <span class="number">96</span>  <span class="number">96</span>  <span class="number">89</span>  <span class="number">96</span></div><div class="line">gene3 <span class="number">139</span> <span class="number">177</span> <span class="number">147</span>  <span class="number">176</span> <span class="number">152</span> <span class="number">408</span> <span class="number">422</span> <span class="number">419</span> <span class="number">426</span> <span class="number">456</span></div><div class="line">gene4 <span class="number">702</span> <span class="number">712</span> <span class="number">717</span>  <span class="number">691</span> <span class="number">678</span> <span class="number">534</span> <span class="number">546</span> <span class="number">594</span> <span class="number">562</span> <span class="number">515</span></div><div class="line">gene5 <span class="number">582</span> <span class="number">572</span> <span class="number">616</span>  <span class="number">569</span> <span class="number">631</span> <span class="number">315</span> <span class="number">321</span> <span class="number">314</span> <span class="number">345</span> <span class="number">330</span></div><div class="line">gene6 <span class="number">765</span> <span class="number">853</span> <span class="number">781</span>  <span class="number">792</span> <span class="number">768</span> <span class="number">316</span> <span class="number">339</span> <span class="number">317</span> <span class="number">317</span> <span class="number">294</span></div></pre></td></tr></table></figure>
-<h3 id="计算pca">计算PCA</h3>
-<p>使用<code>prcomp</code>函数来对数据集进行PCA运算，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca &lt;- prcomp(t(data.matrix),scale=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>代码解释：由于<code>prcomp</code>函数在默认情况下，会把行识别为样本，列识别为基因，而我们生成的数据集<code>data.matrix</code>正好相反，因此用到了<code>t</code>函数，它表示把原来的数据集转置一下，将其行与列交换。</p>
-<p><code>prcomp</code>计算的结果含有主成分分析的各种信息，通过<code>str()</code>函数我们可以看一下有哪些东西，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; str(pca)</div><div class="line">List of <span class="number">5</span></div><div class="line"> $ sdev    : num [<span class="number">1</span>:<span class="number">10</span>] <span class="number">9.34</span> <span class="number">1.85</span> <span class="number">1.6</span> <span class="number">1.45</span> <span class="number">1.24</span> <span class="keyword">...</span></div><div class="line"> $ rotation: num [<span class="number">1</span>:<span class="number">100</span>, <span class="number">1</span>:<span class="number">10</span>] <span class="number">0.104</span> -<span class="number">0.107</span> <span class="number">0.106</span> -<span class="number">0.103</span> -<span class="number">0.106</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"dimnames"</span>)=List of <span class="number">2</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">100</span>] <span class="string">"gene1"</span> <span class="string">"gene2"</span> <span class="string">"gene3"</span> <span class="string">"gene4"</span> <span class="keyword">...</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">10</span>] <span class="string">"PC1"</span> <span class="string">"PC2"</span> <span class="string">"PC3"</span> <span class="string">"PC4"</span> <span class="keyword">...</span></div><div class="line"> $ center  : Named num [<span class="number">1</span>:<span class="number">100</span>] <span class="number">489</span> <span class="number">526</span> <span class="number">292</span> <span class="number">625</span> <span class="number">460</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"names"</span>)= chr [<span class="number">1</span>:<span class="number">100</span>] <span class="string">"gene1"</span> <span class="string">"gene2"</span> <span class="string">"gene3"</span> <span class="string">"gene4"</span> <span class="keyword">...</span></div><div class="line"> $ scale   : Named num [<span class="number">1</span>:<span class="number">100</span>] <span class="number">84.2</span> <span class="number">455.8</span> <span class="number">142.2</span> <span class="number">82.1</span> <span class="number">143.2</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"names"</span>)= chr [<span class="number">1</span>:<span class="number">100</span>] <span class="string">"gene1"</span> <span class="string">"gene2"</span> <span class="string">"gene3"</span> <span class="string">"gene4"</span> <span class="keyword">...</span></div><div class="line"> $ x       : num [<span class="number">1</span>:<span class="number">10</span>, <span class="number">1</span>:<span class="number">10</span>] -<span class="number">8.92</span> -<span class="number">9.15</span> -<span class="number">8.71</span> -<span class="number">8.75</span> -<span class="number">8.77</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"dimnames"</span>)=List of <span class="number">2</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">10</span>] <span class="string">"wt1"</span> <span class="string">"wt2"</span> <span class="string">"wt3"</span> <span class="string">"wt4"</span> <span class="keyword">...</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">10</span>] <span class="string">"PC1"</span> <span class="string">"PC2"</span> <span class="string">"PC3"</span> <span class="string">"PC4"</span> <span class="keyword">...</span></div><div class="line"> - attr(*, <span class="string">"class"</span>)= chr <span class="string">"prcomp"</span></div></pre></td></tr></table></figure>
-<p>从这个结果中我们可以发现，有<code>sdev</code>，<code>rotation</code>，<code>center</code>，<code>scale</code>，<code>x</code>。其中<code>x</code>含有主成分，我们查看一下，如下所示：</p>
+<p>此时，所有的点都进行了聚类，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155956.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171620.jpg">
 
 </div>
-<p>我们可以发现，<code>x</code>中有10个主成分（这是因为有10个样本），第1主成分占据了原始数据总变异的大部分，第2主成分占据了总变异的次大部分等。为了绘制二维图，我们通常使用PC1和PC2（个别情况下也会使用PC2和PC3），如下所示：</p>
+<p>第五步：计算每个簇的均值，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160001.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171625.jpg">
 
 </div>
-<p>我们此时，使用<code>x</code>的前2列（即PC1和PC2）绘制一个二维图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plot(pca)</div></pre></td></tr></table></figure>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160007.png">其中，<code>pca$x[,1]</code>是PC1，<code>pca$x[,2]</code>是PC2，如下所示：</p>
+<p>此时，我们还按照前面的方法，计算每个点到这三个簇的均值的距离，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160024.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171629.jpg">
 
 </div>
-<p>10个样本，分别位于图形的左右两侧，此时我们再看一下PC1占的总变异的比例，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pca.var &lt;- pca$sdev^<span class="number">2</span></div><div class="line">pca.var.per &lt;- round(pca.var/sum(pca.var)*<span class="number">100</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; pca.var</div><div class="line"> [<span class="number">1</span>] <span class="number">8.727308e+01</span> <span class="number">3.432450e+00</span> <span class="number">2.546956e+00</span> <span class="number">2.094293e+00</span> <span class="number">1.534746e+00</span> <span class="number">1.230408e+00</span></div><div class="line"> [<span class="number">7</span>] <span class="number">8.259253e-01</span> <span class="number">6.435822e-01</span> <span class="number">4.185583e-01</span> <span class="number">1.134741e-29</span></div><div class="line">&gt; pca.var.per</div><div class="line"> [<span class="number">1</span>] <span class="number">87.3</span>  <span class="number">3.4</span>  <span class="number">2.5</span>  <span class="number">2.1</span>  <span class="number">1.5</span>  <span class="number">1.2</span>  <span class="number">0.8</span>  <span class="number">0.6</span>  <span class="number">0.4</span>  <span class="number">0.0</span></div></pre></td></tr></table></figure>
-<p>绘制出各个主成分对应的碎石图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">barplot(pca.var.per, </div><div class="line">        main=<span class="string">"Scree Plot"</span>, </div><div class="line">        xlab=<span class="string">"Principal Component"</span>, </div><div class="line">        ylab=<span class="string">"Percent Variation"</span>)</div></pre></td></tr></table></figure>
+<p>最终计算结果如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160030.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171633.jpg">
 
 </div>
-<p>上图中最长的那个就是PC1所占的总变异的比例，也就是说PC1就能在很大程度上解释两组数据的区分，我们在PC1和PC2的二维图上也能看出来，这两组数据之间主要是由PC1分开的，如下所示：</p>
+<p>经过最终的计算，我们发现，这些聚类结果并没有发生改变，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160034.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171637.jpg">
 
 </div>
-<h3 id="ggplot2">ggplot2</h3>
-<p>ggplot2也能绘制类似的图形，先把数据转换为ggplot2能识别的格式，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">pca.data &lt;- data.frame(Sample=rownames(pca$x),</div><div class="line">                       X=pca$x[,<span class="number">1</span>],</div><div class="line">                       Y=pca$x[,<span class="number">2</span>])</div><div class="line"><span class="comment"># one column with the sample ids</span></div><div class="line"><span class="comment"># Tow columns for the X and Y coordinates for each sample</span></div><div class="line">pca.data</div></pre></td></tr></table></figure>
-<p>生成的数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; pca.data</div><div class="line">    Sample         X          Y</div><div class="line">wt1    wt1 -<span class="number">8.920074</span>  <span class="number">0.9049750</span></div><div class="line">wt2    wt2 -<span class="number">9.154298</span> -<span class="number">0.8467998</span></div><div class="line">wt3    wt3 -<span class="number">8.712942</span> -<span class="number">1.0756417</span></div><div class="line">wt4    wt4 -<span class="number">8.746978</span>  <span class="number">2.6207842</span></div><div class="line">wt5    wt5 -<span class="number">8.771551</span> -<span class="number">1.5756187</span></div><div class="line">ko1    ko1  <span class="number">8.854899</span>  <span class="number">2.7689355</span></div><div class="line">ko2    ko2  <span class="number">8.976103</span> -<span class="number">1.7855946</span></div><div class="line">ko3    ko3  <span class="number">9.077341</span>  <span class="number">0.2534441</span></div><div class="line">ko4    ko4  <span class="number">8.767547</span>  <span class="number">1.2557291</span></div><div class="line">ko5    ko5  <span class="number">8.629953</span> -<span class="number">2.5202131</span></div></pre></td></tr></table></figure>
-<p>接着使用<code>ggplot</code>绘图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ggplot(data=pca.data, aes(x=X, y=Y, label=Sample))+</div><div class="line">  geom_text() +</div><div class="line">  xlab(paste(<span class="string">"PC1 - "</span>, pca.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"PC2 - "</span>, pca.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  theme_bw()+</div><div class="line">  ggtitle(<span class="string">"My PCA Graph"</span>)</div></pre></td></tr></table></figure>
+<p>也就是说，K-means的聚类结果似乎比我们肉眼进行的聚类的结果还要差，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160042.png">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171643.jpg">
 
 </div>
-<p>从这个图形中，我们可以发现，X轴上标记了PC1所占总变异的比例为87.3%。Y轴上标记了PC2所占总变异的比例为3.4%。</p>
-<h3 id="loading-scores计算">loading scores计算</h3>
-<p><code>prcomp()</code>函数计算的结果中含有loading score，即<code>rotation</code>这一部分的内容，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">loading_score &lt;- pca$rotation[,<span class="number">1</span>]</div></pre></td></tr></table></figure>
-<p>由于PC1占所了总变异的大部分，因此我们只需要看PC1中的loading score，如下所示：</p>
+<p>此时，我们需要对聚类的结果进行评估，其方法就是计算每个簇的变异，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160050.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171647.jpg">
 
 </div>
-<p>由于loading_score有负数，因此我们需要用<code>abs()</code>函数取它们的绝对值，如下所示：</p>
+<p>由于K-means的聚类过程并不能“看”到最佳的聚类，只能追踪这些簇与这些簇的总变异，然后通过不断更改起始的数据点进行迭代。</p>
+<p>此时我们回到起点，再将随机选择3个初始数据点作为初始的簇，按照前面同样的自救，计算剩余的点到这三个簇的距离，计算每个簇的均值，然后基于新的均值进行聚类，直接这些簇不再改变为止，如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160057.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171652.jpg">
 
 </div>
-<p>取完绝对值，对所有的loading score进行排序，从高到低，代码如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gene_scores &lt;- abs(loading_score)</div><div class="line">gene_score_ranked &lt;- sort(gene_scores, decreasing = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>此时，还要获排名前10的loading score基因的名称，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">top_10_genes &lt;- names(gene_score_ranked[<span class="number">1</span>:<span class="number">10</span>])</div><div class="line">top_10_genes</div></pre></td></tr></table></figure>
-<p>结果如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; top_10_genes &lt;- names(gene_score_ranked[<span class="number">1</span>:<span class="number">10</span>])</div><div class="line">&gt; top_10_genes</div><div class="line"> [<span class="number">1</span>] <span class="string">"gene10"</span> <span class="string">"gene98"</span> <span class="string">"gene34"</span> <span class="string">"gene94"</span> <span class="string">"gene95"</span> <span class="string">"gene99"</span> <span class="string">"gene76"</span> <span class="string">"gene47"</span> <span class="string">"gene49"</span></div><div class="line">[<span class="number">10</span>] <span class="string">"gene72"</span></div></pre></td></tr></table></figure>
-<p>最后，我们看一下这些基因的loading score的数值，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca$rotation[top_10_genes,<span class="number">1</span>]</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; pca$rotation[top_10_genes,<span class="number">1</span>]</div><div class="line">    gene10     gene98     gene34     gene94     gene95     gene99     gene76     gene47 </div><div class="line"> <span class="number">0.1069736</span>  <span class="number">0.1069637</span>  <span class="number">0.1069535</span>  <span class="number">0.1069478</span> -<span class="number">0.1069281</span>  <span class="number">0.1069267</span>  <span class="number">0.1069243</span> -<span class="number">0.1069209</span> </div><div class="line">    gene49     gene72 </div><div class="line"> <span class="number">0.1069161</span>  <span class="number">0.1069037</span></div></pre></td></tr></table></figure>
-<h2 id="python与pca">Python与PCA</h2>
-<p>利用Python也可以进行PCA分析，在这一部分中，我们会介绍如何这些内容：</p>
+<p>计算的结果如下所示，此时这些数据已经进行了聚类，再计算这三个簇的变异，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171659.jpg">
+
+</div>
+<p>这一轮迭代结束，然后再来一轮，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171703.jpg">
+
+</div>
+<p>我们把这三次的聚类结果放一块儿，我们可以发现，第二次的聚类结果最好，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171707.jpg">
+
+</div>
+<p>但是我们并不清楚这个结果是不是所有可能的聚类结果中最好的（总变异最小），因此我们需要进行更多次的聚类，然后才能下结论。</p>
+<p>此时我们提出一个问题，<code>K</code>值应该如何选？在这个案例中，明显可以知道K值为3，但是，有的时候，这个K值并不像本案例中这么明显，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171713.jpg">
+
+</div>
+<p>其中一种确定K值的方法就是不断地使用不同的K值，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171719.jpg">
+
+</div>
+<p>我们先使用K=1这个数值，通过计算总的变异程度，明显这个结果不行，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171726.jpg">
+
+</div>
+<p>再使用K=2，此时我们计算一下总变异，这个结果比K=1的时候要好一些，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171731.jpg">
+
+</div>
+<p>接着，我们使用K=3，通过计算它的总变异，我们发现K=3的结果要比K=2更好，因为它的总变异更低，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171746.jpg">
+
+</div>
+<p>再继续，使K=4，我们发现，K=4的总变异比K=3的总变异还要小，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171751.jpg">
+
+</div>
+<p>从前面的这些计算结果来看，我们能总结出一个规律，每当我们添加一个新的簇时，总变异就会降低，当簇的数目等于总的数据点的数目时，总变异就是0，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171756.jpg">
+
+</div>
+<p>如果我们把K值与变异降低的程度绘制成曲线，那么就能得到下面的这条曲线：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171800.jpg">
+
+</div>
+<p>从这个曲线上我们可以看到，当K=3时，它之后的K值每增加1，总变异的降低幅度就没有前面的快，我们把K=3这个点称为拐点（elbow plot）。</p>
+<h3 id="k-mean聚类与层次聚类的区别">K-mean聚类与层次聚类的区别</h3>
+<p>此时，我们再提出一个问题：K-mean聚类与层次聚类有什么区别？</p>
+<p>K-means聚类会把数据聚成你所期望的簇的数目，而层次聚类则中介告诉你，哪两个数据是最相似的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171803.jpg">
+
+</div>
+<h2 id="二维坐标的k-means">二维坐标的K-means</h2>
+<p>如果我们的数据无法绘制到一条数轴上时，如何进行K-means聚类呢，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171808.jpg">
+
+</div>
+<p>这种情况下，它的聚类原理跟一维数轴的原理一样，第一步就是随机找到三个点（前提是你想聚成3个簇），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171812.jpg">
+
+</div>
+<p>然后，计算不同的点到这三个簇的欧氏距离（Euclidean distance），在二维坐标中，计算这个欧氏距离就是采用勾股定理，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171816.jpg">
+
+</div>
+<p>接着，就像前面讲的那样，距离最近的就属于某个簇，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171821.jpg">
+
+</div>
+<p>第一次的聚类结果如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171825.jpg">
+
+</div>
+<p>再接着，我们会像前面是找到的那样，计算出每个族的中心点（也就是均值），然后再聚类，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171832.jpg">
+
+</div>
+<p>最后，得到比较满意的聚类图，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171837.jpg">
+
+</div>
+<h2 id="热图的k-means">热图的K-means</h2>
+<p>如果我们的数据是热图，那么如何进行K-means聚类呢？</p>
+<p>为了方便描述，我们就以下面的案例说明一下，两个样本（sample 1和sample 2），分别有4个基因，现在把这两个样本分别命令为X，Y，把它们的基因放到二维坐标轴上，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171855.jpg">
+
+</div>
+<p>然后像前面那样进行聚类，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171858.jpg">
+
+</div>
+<p>事实上，在实际的计算过程中，我们并不需要把数据投射到二维坐标上，只用计算不同样本之间的距离即可，例如欧氏距离，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171902.jpg">
+
+</div>
+<h2 id="r的kmeans函数备注">R的kmeans()函数备注</h2>
+<p>在R中，进行K-menas聚类的函数是<code>kmeans()</code>，它有一些注意事项。</p>
 <ol style="list-style-type: decimal">
-<li>利用Python生成一些我们要分析的数据；</li>
-<li>利用sklearn模块中的<code>PCA()</code>来进行分析，其中sklearn是scikit-learn的简称，它是一个机器学习的模块，支持包括分类、回归、降维和聚类四大机器学习算法。还包含了特征提取、数据处理和模型评估三大模块；</li>
-<li>计算每个主成分占总变异的比例；</li>
-<li>利用<code>matplotlib</code>来绘制PCA图；</li>
-<li>计算变量的loading scores。</li>
+<li>此函数会对每个距离加上权重，因此那些大簇（large clusters）的权重要略高于小簇（small clusters）的权重。</li>
+<li>默认情况下，此函数只有一组原始的簇，如果你要使用多个不同的起始数据点，那么你需要设定参数<code>nclust=25</code>或者是25左右的数字，例如（<code>kmans(data, k=3, nclust=25)</code>)。</li>
 </ol>
 <p>如下所示：</p>
 <div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160106.jpg">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171906.jpg">
 
 </div>
-<h3 id="第一步导入各种函数与包">第一步，导入各种函数与包</h3>
-<p>在进行PCA分析之前，Python需要导入各种包与函数，如果没有这些包，可以查一下如何下载，我使用的是Anaconda发行版，里面已经内置了各种有关数据分析的包，不用再下载各种包，直接导入即可，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd </div><div class="line"><span class="comment"># import pandas package,</span></div><div class="line"><span class="comment"># pandas is short for "panel data"</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="comment"># numpy package will generate random numbers </span></div><div class="line"></div><div class="line"><span class="keyword">import</span> random <span class="keyword">as</span> rd</div><div class="line"><span class="comment"># random package will generate an example dataset</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> sklearn.decomposition <span class="keyword">import</span> PCA</div><div class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> preprocessing</div><div class="line"><span class="comment"># usr a function PCA() from sklearn.decomposition </span></div><div class="line"><span class="comment"># PCA() use to perform PCA</span></div><div class="line"><span class="comment"># preprocessing uses to scaling the data before perform PCA</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</div><div class="line"><span class="comment"># draw PCA graphd</span></div></pre></td></tr></table></figure>
-<h3 id="第二步生成模拟的数据">第二步：生成模拟的数据</h3>
-<p>这一步与R中生成模拟数据集的目的一样，就是生成一个数据集，用于PCA分析，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">genes = [<span class="string">'gene'</span> + str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">101</span>)]</div><div class="line">wt = [<span class="string">'wt'</span> + str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>)]</div><div class="line">ko = [<span class="string">'ko'</span> + str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>)]</div><div class="line">data = pd.DataFrame(columns=[*wt, *ko], index=genes)</div><div class="line"><span class="keyword">for</span> gene <span class="keyword">in</span> data.index:</div><div class="line">    data.loc[gene, <span class="string">'wt1'</span>:<span class="string">'wt5'</span>] = np.random.poisson(lam=rd.randrange(<span class="number">10</span>,<span class="number">1000</span>),size=<span class="number">5</span>)</div><div class="line">    data.loc[gene, <span class="string">'ko1'</span>:<span class="string">'ko5'</span>] = np.random.poisson(lam=rd.randrange(<span class="number">10</span>,<span class="number">1000</span>),size=<span class="number">5</span>)</div><div class="line"></div><div class="line">print(data.head())</div><div class="line">print(data.shape)</div><div class="line"></div><div class="line"><span class="comment"># generate simulation dataset</span></div></pre></td></tr></table></figure>
-<h3 id="第三进行pca分析">第三，进行PCA分析</h3>
-<p>在进行PCA分析之前，先对数据进行中心化（我的理解是Z转换，转换后的数据均值是0，标准差是1），如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scaled_data = preprocessing.scale(data.T)</div></pre></td></tr></table></figure>
-<p>需要注意的是，上述代码中使用了<code>data.T</code>，这是对表达的数据集进行转换，将其行与列交换，跟R中类似。此处我们使用的<code>sklearn</code>包中的preprocessing函数，我们还可以使用另外的函数进行转换，就是<code>StandardScaler().fit_transform(data.T)</code>。第二个函数在机器学习使用更加广泛，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160118.jpg">
-
-</div>
-<p>此外，我们需要注意的是，<code>sklearn</code>中利用<code>preprocessing.scale</code>计算变异与R中利用<code>scale()</code>和<code>prcomp()</code>计算变异的公式略有不同，区别就在于前者的分子是测量值的数目，后者是这个数目减1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160126.jpg">
-
-</div>
-<p>后者的分子是测量值的数目减1，这会导致最终的结果变大，这是一种无偏含估计，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160132.jpg">
-
-</div>
-<p>不过这两种方法都不影响PCA的分析，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160139.jpg">
-
-</div>
-<p>它的局限就在于，它们会对最终的绘图造成一定的影响，因为最终绘图中的坐标来源于scaled后的数值乘以loading scores，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160149.jpg">继续Python计算PCA，此时我们要创建一个PCA对象，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca = PCA()</div></pre></td></tr></table></figure>
-<p>这里要提一下，PCA不仅是一个函数，能够返回计算结果，在sklearn中，它还用于创建一个对象，使用一个数据集进行训练，进行对另外一个数据集进行计算。不过在这里，我们只用PCA计算这个数据集（我们不涉及机器学习的环境设置），其他的步骤非常繁琐，但也由此，我们也能了解一下机器学习的内容，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160154.jpg">
-
-</div>
-<p>计算PCA的所有结果，例如loading scores和每个主成分的变量占总变异的比例，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca.fit(scaled_data)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; pca.fit(scaled_data)</div><div class="line">PCA(copy=True, iterated_power=<span class="string">'auto'</span>, n_components=None, random_state=None,</div><div class="line">  svd_solver=<span class="string">'auto'</span>, tol=<span class="number">0.0</span>, whiten=False)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160200.jpg">
-
-</div>
-<p>接着，基于loading scores和scaled data来生成PCA图形中的坐标系，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca_data = pca.transform(scaled_data)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160205.jpg">
-
-</div>
-<h3 id="第四绘图">第四，绘图</h3>
-<p>首先，绘制一个碎石图（Scree plot），看一下应该使用多少个主成分比较合适，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">per_var = np.round(pca.explained_variance_ratio_*<span class="number">100</span>,decimals=<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<p>这段代码主要是用于计算每个主成分所占总变量的比例，接着添加坐标轴的标签，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">labels = [<span class="string">'PC'</span> + str(x) <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">1</span>, len(per_var)+<span class="number">1</span>)]</div></pre></td></tr></table></figure>
-<p>其次，使用<code>matplotlib</code>来绘制相应的图形，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">plt.bar(x=range(<span class="number">1</span>,len(per_var)+<span class="number">1</span>), height=per_var, tick_label=labels)</div><div class="line">plt.ylabel(<span class="string">'Percentage of Explained Variance'</span>)</div><div class="line">plt.xlabel(<span class="string">'Principal Component'</span>)</div><div class="line">plt.title(<span class="string">'Scree Plot'</span>)</div><div class="line">plt.show()</div></pre></td></tr></table></figure>
-<p>图形如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160211.png">
-
-</div>
-<p>最后，我们绘制PCA图，我们使用<code>pd.DataFrame</code>函数把新的坐标系放到一个矩阵中来，它的行表示样本名称，列表示PC的标签，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca_df = pd.DataFrame(pca_data, index=[*wt, *ko], columns=labels)</div></pre></td></tr></table></figure>
-<p>继续绘制含有标题名与坐标标签的散点图，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">plt.scatter(pca_df.PC1,pca_df.PC2)</div><div class="line">plt.title(<span class="string">'My PCA Graph'</span>)</div><div class="line">plt.xlabel(<span class="string">'PC1 - &#123;0&#125;%'</span>.format(per_var[<span class="number">0</span>]))</div><div class="line">plt.ylabel(<span class="string">'PC2 - &#123;0&#125;%'</span>.format(per_var[<span class="number">1</span>]))</div></pre></td></tr></table></figure>
-<p>最后，把样本名也添加上去，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> sample <span class="keyword">in</span> pca_df.index:</div><div class="line">    plt.annotate(sample, (pca_df.PC1.loc[sample],pca_df.PC2.loc[sample]))</div><div class="line"></div><div class="line">plt.show()</div></pre></td></tr></table></figure>
-<p>最终的结果图如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160216.jpg">
-
-</div>
-<p>从这张图中我们可以看到，wt组的数据集中在右侧，ko组都集中在了左侧。</p>
-<h3 id="计算loading-score">计算loading score</h3>
-<p>我们还可以计算一下PC1的loading scores，从而找出哪些基因在不同的分类方面发挥了主要作用，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160221.jpg">
-
-</div>
-<p>首先，我们要创建一个pandas的series对象，这个对象用于计算loading scores，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">loading_scores = pd.Series(pca.components_[<span class="number">0</span>], index=genes)</div><div class="line"><span class="comment"># in python, first  number in index is 0, not 1</span></div><div class="line">sorted_loading_scores = loading_scores.abs().sort_values(ascending=<span class="keyword">False</span>)</div><div class="line"><span class="comment"># achieve absolute value using abs() function and sort them</span></div><div class="line">top_10_genes = sorted_loading_scores[<span class="number">0</span>:<span class="number">10</span>].index.values</div><div class="line">print(loading_scores[top_10_genes])</div></pre></td></tr></table></figure>
-<p>最终结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(loading_scores[top_10_genes])</div><div class="line">gene31   <span class="number">-0.107133</span></div><div class="line">gene32    <span class="number">0.107131</span></div><div class="line">gene34    <span class="number">0.107070</span></div><div class="line">gene10   <span class="number">-0.107065</span></div><div class="line">gene45    <span class="number">0.107065</span></div><div class="line">gene28   <span class="number">-0.107064</span></div><div class="line">gene30   <span class="number">-0.107062</span></div><div class="line">gene39    <span class="number">0.107053</span></div><div class="line">gene93   <span class="number">-0.107041</span></div><div class="line">gene79    <span class="number">0.107036</span></div><div class="line">dtype: float64s</div></pre></td></tr></table></figure>
-<p>计算结束。</p>
 
           
         
@@ -3801,7 +3323,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3847,7 +3369,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">178</span>
+                  <span class="site-state-item-count">182</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3869,7 +3391,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3945,7 +3467,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共672.2k字</span>
+  <span class="post-count">博客全站共685.6k字</span>
 </div>
 
         
