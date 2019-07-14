@@ -259,6 +259,668 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/17/Perl/Perl学习笔记（6）-函数设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/17/Perl/Perl学习笔记（6）-函数设计/" itemprop="url">Perl学习笔记（6）-函数设计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-17T12:00:00+08:00">
+                2018-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Perl/" itemprop="url" rel="index">
+                    <span itemprop="name">Perl</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,457
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="perl的函数">Perl的函数</h2>
+<p>Perl函数也叫子程序，就是用户定义的函数。为了方便，我一律称为函数，不称子程序。Perl函数的语法格式如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">subroutine</span></span>&#123;</div><div class="line">statements;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>调用函数的语法格式为<code>subroutine( 参数列表 )</code>，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">Hello</span></span>&#123;</div><div class="line"><span class="keyword">print</span> <span class="string">"Hello, World!\n"</span>;</div><div class="line">&#125;</div><div class="line">Hello();</div></pre></td></tr></table></figure></p>
+<p>由于在设计<code>Hello</code>函数时，并没有设计相应的参数，因此在运行时就不需要加参数，但是还需要加上括号。</p>
+<h2 id="向函数传递参数">向函数传递参数</h2>
+<p>Perl 函数可以和其他编程语言一样接受多个参数，函数参数使用特殊数组<code>@_</code>标明。因此函数第一个参数为<code>_[0]</code>, 第二个参数为<code>_[1]</code>, 以此类推，用户可以通过改变<code>@_</code>数组中的值来改变相应实际参数的值。。不论参数是标量型还是数组型的，用户把参数传给函数时，perl默认按引用的方式调用它们，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat function_parameter.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">mean</span></span>&#123;</div><div class="line">    $n = <span class="keyword">scalar</span>(@_);</div><div class="line">    $sum = <span class="number">0</span>;</div><div class="line">    <span class="keyword">foreach</span> $item(@_)&#123;</div><div class="line">    $sum = $sum + $item;</div><div class="line">&#125;</div><div class="line">$average = $sum/$n;</div><div class="line"><span class="keyword">print</span> <span class="string">'Input parameter is : '</span>,<span class="string">"@_\n"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"The first parameter is $_[0]\n"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"The average of inputed parameters is $average\n"</span>;</div><div class="line">&#125;</div><div class="line">mean(<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl function_parameter.pl </div><div class="line">Input parameter is : <span class="number">10</span> <span class="number">20</span> <span class="number">30</span></div><div class="line">The first parameter is <span class="number">10</span></div><div class="line">The average of inputed parameters is <span class="number">20</span></div></pre></td></tr></table></figure></p>
+<p>代码解释：scalar不是求元素个数，它用来产生一个标量环境，对数组进行操作时，会返回元素个数。<code>$n = scalar(@_)</code>就是获取所有传入的参数的个数，在这段代码中，n值就是3。</p>
+<h2 id="向函数传递列表">向函数传递列表</h2>
+<p>由于<code>@_</code>变量是一个数组，所以它可以向函数中传递列表。但如果我们需要传入标量和数组参数，需要把列表放在最后一个参数上，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat print_list.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintList</span></span>&#123;</div><div class="line"><span class="keyword">my</span> @list = @_;</div><div class="line"><span class="keyword">print</span> <span class="string">"List is @list\n"</span>;</div><div class="line">&#125;</div><div class="line">$a = <span class="number">10</span>;</div><div class="line">@b = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>);</div><div class="line">PrintList($a, @b);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl print_list.pl </div><div class="line">List is <span class="number">10</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span></div></pre></td></tr></table></figure></p>
+<h2 id="向函数传递哈希">向函数传递哈希</h2>
+<p>当向函数传递哈希表时，它将复制到<code>@_</code>中，哈希表将被展开为键/值组合的列表，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat print_hash.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintHash</span></span>&#123;</div><div class="line">    <span class="keyword">my</span>(%hash) = @_;</div><div class="line">    <span class="keyword">foreach</span> <span class="keyword">my</span>$key (<span class="keyword">keys</span> %hash)&#123;</div><div class="line">    <span class="keyword">my</span> $value =$hash&#123;$key&#125;;</div><div class="line">    <span class="keyword">print</span> <span class="string">"$key:$value\n"</span>;</div><div class="line">   &#125;</div><div class="line">&#125;</div><div class="line">%hash = (<span class="string">'name'</span> =&gt; <span class="string">'Baidu'</span>, <span class="string">'age'</span> =&gt;<span class="number">11</span>);</div><div class="line">PrintHash(%hash);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl print_hash.pl </div><div class="line">name:Baidu</div><div class="line">age:<span class="number">11</span></div></pre></td></tr></table></figure></p>
+<h2 id="函数返回值">函数返回值</h2>
+<p>函数可以向其他编程语言一样使用<code>retur</code> 语句来返回函数值。如果没有使用<code>return</code>语句，则函数的最后一行语句将作为返回值，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat <span class="keyword">return</span>.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">add_a_b</span></span>&#123;</div><div class="line">    $_[<span class="number">0</span>] + $_[<span class="number">1</span>];</div><div class="line">&#125;</div><div class="line"><span class="keyword">print</span> add_a_b(<span class="number">1</span>,<span class="number">12</span>).<span class="string">"\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl <span class="keyword">return</span>.pl </div><div class="line"><span class="number">13</span></div></pre></td></tr></table></figure></p>
+<h2 id="函数的局部变量">函数的局部变量</h2>
+<p>默认情况下，Perl 中所有的变量都是全局变量，这就是说变量在程序的任何地方都可以调用。如果我们需要设置私有变量（私有变量其实与其他编程语言中的局部变量是一样的，后文一律称为局部变量），可以使 <code>my</code>操作符来设置。<code>my</code>操作符用于创建作用域变量，通过<code>my</code>创建的变量，存活于声明开始的地方，直到闭合作用域的结尾。<code>闭合作用域</code>指的可以是一对花括号中的区域，可以是一个文件，也可以是一个<code>if, while, for, foreach, eval</code>字符串。它的用法如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">somefunc</span> </span>&#123;</div><div class="line">   <span class="keyword">my</span> $variable; <span class="comment"># $variable在函数somefunc()之外不可见</span></div><div class="line">   <span class="keyword">my</span> ($another, @an_array, %a_hash); <span class="comment">#  同时声明多个变量</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>以下案例就演示了如何声明一个或多个局部变量： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat local_variable.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$variable_global = <span class="string">"Hello, World!\n"</span>;</div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintHello</span></span>&#123;</div><div class="line">    <span class="keyword">my</span> $variable_global;</div><div class="line">    $variable_global = <span class="string">"Hello, Learner!\n"</span>;</div><div class="line">    <span class="keyword">print</span> <span class="string">"Strings in function is :$variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line">PrintHello();</div><div class="line"><span class="keyword">print</span> <span class="string">"Strings beyond function is : $variable_global\n"</span>;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl local_variable.pl </div><div class="line">Strings in function is :Hello, Learner!</div><div class="line">Strings beyond function is : Hello, World!</div></pre></td></tr></table></figure></p>
+<h2 id="变量的临时赋值">变量的临时赋值</h2>
+<p>我们可以使用 local 为全局变量提供临时的值，在退出作用域后将原来的值还回去。local定义的变量不存在于主程序中，但存在于该函数和该函数调用的函数中。定义时可以给其赋值，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat local_temp.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$variable_global = <span class="string">"Hello, World!\n"</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintLocal</span></span>&#123;</div><div class="line"><span class="keyword">local</span> $variable_global;</div><div class="line">$variable_global = <span class="string">"Hello, Learner!\n"</span>; <span class="comment">#临时赋值</span></div><div class="line">PrintMe();</div><div class="line"><span class="keyword">print</span> <span class="string">"PrintLocal function has strings: $variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintMe</span></span>&#123;</div><div class="line"><span class="keyword">print</span> <span class="string">"PrintMe function has strings: $variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">sub</span> <span class="title">PrintHello</span></span>&#123;</div><div class="line"><span class="keyword">print</span> <span class="string">"PrintHello function has strings: $variable_global\n"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">PrintLocal();</div><div class="line">PrintHello();</div><div class="line"><span class="keyword">print</span> <span class="string">"Strings beyond function is : $variable_global\n"</span>;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl local_temp.pl </div><div class="line"></div><div class="line">PrintMe function has strings: Hello, Learner!</div><div class="line"></div><div class="line">PrintLocal function has strings: Hello, Learner!</div><div class="line"></div><div class="line">PrintHello function has strings: Hello, World!</div><div class="line"></div><div class="line">Strings beyond function is : Hello, World!</div></pre></td></tr></table></figure></p>
+<h2 id="静态变量">静态变量</h2>
+<p><code>state</code>关键字将局部变量永久存在。state也是词法变量，所以只在定义该变量的词法作用域中有效，如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/perl/05function$ cat state.pl </div><div class="line">#!/usr/bin/perl</div><div class="line"></div><div class="line">use feature &apos;state&apos;;</div><div class="line">sub PrintCount&#123;</div><div class="line">state $count = 0;</div><div class="line">print &quot;counter value is : $count\n&quot;;</div><div class="line">$count++;</div><div class="line">&#125;</div><div class="line">for (1..5)&#123;</div><div class="line">PrintCount();</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~/perl/05function$ perl state.pl </div><div class="line">counter value is : 0</div><div class="line">counter value is : 1</div><div class="line">counter value is : 2</div><div class="line">counter value is : 3</div><div class="line">counter value is : 4</div></pre></td></tr></table></figure></p>
+<p>注1：state仅能创建闭合作用域为函数内部的变量。 注2：state是从Perl 5.9.4开始引入的，所以使用前必须加上 use。 注3：state可以声明标量、数组、哈希。但在声明数组和哈希时，不能对其初始化（至少Perl 5.14不支持）。</p>
+<h2 id="函数调用上下文">函数调用上下文</h2>
+<p>函数调用过程中，会根据上下文来返回不同类型的值，比如<code>localtime()</code>函数，在标量上下文返回字符串，在列表上下文返回列表，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ cat function_context.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">my</span> $variable = <span class="keyword">localtime</span>(<span class="keyword">time</span>);</div><div class="line"><span class="keyword">print</span> $variable;</div><div class="line"></div><div class="line"><span class="keyword">print</span> <span class="string">"\n"</span>;</div><div class="line"></div><div class="line">($sec,$min,$hour,$mday,$mon, $year,$wday,$yday,$isdst) = <span class="keyword">localtime</span>(<span class="keyword">time</span>);</div><div class="line"><span class="keyword">printf</span>(<span class="string">"%d-%d-%d %d:%d:%d\n"</span>,$year+<span class="number">1990</span>,$mon+<span class="number">1</span>,$mday,$hour,$min,$sec);</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">05</span>function$ perl function_context.pl </div><div class="line">Fri May <span class="number">18</span> <span class="number">16</span>:<span class="number">53</span>:<span class="number">48</span> <span class="number">2018</span></div><div class="line"><span class="number">2108</span>-<span class="number">5</span>-<span class="number">18</span> <span class="number">16</span>:<span class="number">53</span>:<span class="number">48</span></div></pre></td></tr></table></figure></p>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="http://www.runoob.com/perl/perl-tutorial.html" target="_blank" rel="external">Perl教程|菜鸟教程</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/16/Perl/Perl学习笔记（5）-时间日期处理与格式化输出/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/16/Perl/Perl学习笔记（5）-时间日期处理与格式化输出/" itemprop="url">Perl学习笔记（5）-格式化输出与时间日期的处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-16T12:00:00+08:00">
+                2018-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Perl/" itemprop="url" rel="index">
+                    <span itemprop="name">Perl</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,291
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="格式化输出">格式化输出</h2>
+<p>Perl 是一个非常强大的文本数据处理语言。Perl 中可以使用 format 来定义一个模板，然后使用 write 按指定模板输出数据。Perl 格式化定义语法格式如下</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">format</span> FormatName =</div><div class="line">fieldline</div><div class="line">value_one, value_two, value_three</div><div class="line">fieldline</div><div class="line">value_one, value_two</div><div class="line">.</div></pre></td></tr></table></figure>
+<p>参数解释：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FormatName ：格式化名称。</div><div class="line">fieldline ：一个格式行，用来定义一个输出行的格式,类似 @,^,&lt;,&gt;,| 这样的字符。</div><div class="line">value_one,value_two…… ：数据行，用来向前面的格式行中插入值,都是perl的变量。</div><div class="line">. ：结束符号。</div></pre></td></tr></table></figure>
+<p>看一个简单的案例：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat format01.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$text=<span class="string">"google runoob taobao"</span>;</div><div class="line"><span class="keyword">format</span> STDOUT = </div><div class="line">first:^&lt;&lt;&lt;&lt;&lt; <span class="comment"># left-justified 6 characters</span></div><div class="line">    $text</div><div class="line">second: ^&lt;&lt;&lt;&lt;&lt; <span class="comment"># left-justified 6 characters</span></div><div class="line">    $text</div><div class="line">third: ^&lt;&lt;&lt;&lt; <span class="comment"># left-justified 5 characters, last "o" will be removed</span></div><div class="line">    $text</div><div class="line">.</div><div class="line"><span class="keyword">write</span></div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl format01.pl </div><div class="line">first:google</div><div class="line">second: runoob</div><div class="line">third: taoba</div></pre></td></tr></table></figure>
+<h2 id="格式行语法">格式行语法</h2>
+<ol style="list-style-type: decimal">
+<li>格式行以<code>@</code>或者<code>^</code>开头，这些行不作任何形式的变量代换。</li>
+<li><code>@</code>字段(不要同数组符号<code>@</code>相混淆)是普通的字段。</li>
+<li><code>@,^</code>后的<code>&lt;, &gt;,|</code>长度决定了字段的长度，如果变量超出定义的长度,那么它将被截断。</li>
+<li><code>&lt;, &gt;,|</code>还分别表示,左对齐,右对齐,居中对齐。</li>
+<li><code>^</code>字段用于多行文本块填充。</li>
+</ol>
+<h2 id="值域格式">值域格式</h2>
+<table>
+<thead>
+<tr class="header">
+<th>格式</th>
+<th>值域含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>@&lt;&lt;&lt;</code></td>
+<td>左对齐输出</td>
+</tr>
+<tr class="even">
+<td><code>@&gt;&gt;&gt;</code></td>
+<td>右对齐输出</td>
+</tr>
+<tr class="odd">
+<td><code>@|||</code></td>
+<td>中对齐输出</td>
+</tr>
+<tr class="even">
+<td><code>@##.##</code></td>
+<td>固定精度数字</td>
+</tr>
+<tr class="odd">
+<td><code>@*</code></td>
+<td>多行文本</td>
+</tr>
+</tbody>
+</table>
+<p>每个值域的第一个字符是行填充符，当使用<code>@</code>字符时，不做文本格式化。在上表中，除了多行值域<code>@*</code>，域宽都等于其指定的包含字符<code>@</code>在内的字符个数，例如<code>@###.##</code>表示7个字符的宽度，小数点前4个，小数点后2个，如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat format02.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">format</span> EMPLOYEE = </div><div class="line">=============================</div><div class="line">@&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;@&lt;&lt;</div><div class="line">$name,$age</div><div class="line">@#<span class="comment">####.##</span></div><div class="line">$salary</div><div class="line">=============================</div><div class="line">.</div><div class="line"></div><div class="line"><span class="keyword">select</span>(STDOUT);</div><div class="line">$~=EMPLOYEE;</div><div class="line"></div><div class="line">@n=(<span class="string">"Ali"</span>,<span class="string">"Runoob"</span>,<span class="string">"Tencent"</span>);</div><div class="line">@a=(<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>);</div><div class="line">@s=(<span class="number">2000.00</span>,<span class="number">2500.00</span>,<span class="number">4000.00</span>);</div><div class="line"></div><div class="line">$i=<span class="number">0</span>;</div><div class="line"><span class="keyword">foreach</span>(@n)&#123;</div><div class="line">    $name=$_;</div><div class="line">    $age=$a[$i];</div><div class="line">    $salary=$s[$i++];</div><div class="line">    <span class="keyword">write</span>;</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl format02.pl </div><div class="line">=============================</div><div class="line">Ali                    <span class="number">20</span></div><div class="line">  <span class="number">2000.00</span></div><div class="line">=============================</div><div class="line">=============================</div><div class="line">Runoob                 <span class="number">30</span></div><div class="line">  <span class="number">2500.00</span></div><div class="line">=============================</div><div class="line">=============================</div><div class="line">Tencent                <span class="number">40</span></div><div class="line">  <span class="number">4000.00</span></div><div class="line">=============================</div></pre></td></tr></table></figure>
+<h2 id="格式变量">格式变量</h2>
+<ol style="list-style-type: decimal">
+<li><code>$~ ($FORMAT_NAME)</code> ：格式名字；</li>
+<li><code>$^ ($FORMAT_TOP_NAME)</code> ：当前的表头格式名字存储；</li>
+<li><code>$% ($FORMAT_PAGE_NUMBER)</code> ：当前输出的页号；</li>
+<li><code>$= ($FORMAT_LINES_PER_PAGE)</code> ：每页中的行数；</li>
+<li><code>$| ($FORMAT_AUTOFLUSH)</code> ：是否自动刷新输出缓冲区存储；</li>
+<li><code>$^L ($FORMAT_FORMFEED)</code> ：在每一页(除了第一页)表头之前需要输出的字符串存储。</li>
+</ol>
+<p>在下面的案例中，使用了<code>$~进行格式化，</code>案例如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>如果不指定<code>$~</code>的情况下，会输出名为<code>STDOUT</code>的格式，如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat format04.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">write</span>; <span class="comment"># 没有指定$~，程序会会寻找名为STDOUT的格式</span></div><div class="line"><span class="keyword">format</span> STDOUT=</div><div class="line">----------------</div><div class="line">STDOUT formats</div><div class="line">----------------</div><div class="line">.</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl format04.pl </div><div class="line">----------------</div><div class="line">STDOUT formats</div><div class="line">----------------</div></pre></td></tr></table></figure>
+<p>在下面的案例中，添加报表头部信息来说明<code>$^</code>或<code>$FORMAT_TOP_NAME</code>变量的使用：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat format05.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">format</span> EMPLOYEE =</div><div class="line">====================================</div><div class="line">@&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; @&lt;&lt;</div><div class="line">$name, $age</div><div class="line">@#<span class="comment">####.##</span></div><div class="line">$salary</div><div class="line">====================================</div><div class="line">.</div><div class="line"></div><div class="line"><span class="keyword">format</span> EMPLOYEE_TOP=</div><div class="line">====================================</div><div class="line">Name                     Age Page @&lt;</div><div class="line">                         $%</div><div class="line">====================================</div><div class="line">.</div><div class="line"></div><div class="line"><span class="keyword">select</span>(STDOUT);</div><div class="line">$~ = EMPLOYEE;</div><div class="line">$^ = EMPLOYEE_TOP;</div><div class="line"></div><div class="line">@n=(<span class="string">"Ali"</span>,<span class="string">"Runoob"</span>,<span class="string">"Tencent"</span>);</div><div class="line">@a=(<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>);</div><div class="line">@s=(<span class="number">2000.00</span>,<span class="number">2500.00</span>,<span class="number">4000.000</span>);</div><div class="line"></div><div class="line">$i=<span class="number">0</span>;</div><div class="line"><span class="keyword">foreach</span>(@n)&#123;</div><div class="line">    $name=$_;</div><div class="line">    $age=$a[$i];</div><div class="line">    $salary=$s[$i++];</div><div class="line">    <span class="keyword">write</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl format05.pl </div><div class="line">====================================</div><div class="line">Name                     Age Page <span class="number">1</span></div><div class="line">====================================</div><div class="line">====================================</div><div class="line">Ali                      <span class="number">20</span></div><div class="line">  <span class="number">2000.00</span></div><div class="line">====================================</div><div class="line">====================================</div><div class="line">Runoob                   <span class="number">30</span></div><div class="line">  <span class="number">2500.00</span></div><div class="line">====================================</div><div class="line">====================================</div><div class="line">Tencent                  <span class="number">40</span></div><div class="line">  <span class="number">4000.00</span></div><div class="line">====================================</div></pre></td></tr></table></figure>
+<h2 id="输出到其它文件">输出到其它文件</h2>
+<p>默认情况下函数<code>write</code>将结果输出到标准输出文件<code>STDOUT</code>，我们也可以使它将结果输出到任意其它的文件中。最简单的方法就是把文件变量作为参数传递给<code>write</code>，例如<code>write(MYFILE)</code>，此时write就用缺省的名为MYFILE的打印格式输出到文件MYFILE中。但是这样就不能用<code>$~</code>变量来改变所使用的打印格式。系统变量<code>$~</code>只对默认文件变量起作用，我们可以改变默认文件变量，改变<code>$~</code>，再调用<code>write</code>，如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat myfile.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">if</span>(<span class="keyword">open</span>(MYFILE,<span class="string">"&gt;tmp"</span>))&#123;</div><div class="line">$~=<span class="string">"MYFORMAT"</span>;</div><div class="line"><span class="keyword">write</span> MYFILE;</div><div class="line"></div><div class="line"><span class="keyword">format</span> MYFILE=</div><div class="line">========================</div><div class="line">Input into file</div><div class="line">========================</div><div class="line">.</div><div class="line"><span class="keyword">close</span> MYFILE;</div><div class="line">&#125;</div><div class="line"></div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl myfile.pl </div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat tmp </div><div class="line">========================</div><div class="line">Input into file</div><div class="line">========================</div></pre></td></tr></table></figure>
+<p>以使用<code>select</code>改变默认文件变量时，它返回当前默认文件变量的内部表示，这样我们就可以创建子程序，按自己的想法输出，又不影响程序的其它部分，如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat select.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line"><span class="keyword">if</span>(<span class="keyword">open</span>(MYFILE,<span class="string">"&gt;&gt;tmp"</span>))&#123;</div><div class="line"><span class="keyword">select</span>(MYFILE);</div><div class="line">$~=<span class="string">"OTHER"</span>;</div><div class="line"><span class="keyword">write</span>;</div><div class="line"></div><div class="line"><span class="keyword">format</span> OTHER=</div><div class="line">========================</div><div class="line">input something into file</div><div class="line">========================</div><div class="line">.</div><div class="line"><span class="keyword">close</span> MYFILE;</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl select.pl </div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat tmp</div><div class="line">========================</div><div class="line">Input into file</div><div class="line">========================</div><div class="line">========================</div><div class="line">input something into file</div><div class="line">========================</div></pre></td></tr></table></figure>
+<h2 id="perl中处理时间的函数">Perl中处理时间的函数</h2>
+<p>Perl中处理时间的函数有以下这些： 1. time() 函数：返回从1970年1月1日起累计的秒数 2. localtime() 函数：获取本地时区时间 3. gmtime() 函数： 获取格林威治时间</p>
+<h2 id="当前时间和日期">当前时间和日期</h2>
+<p><code>localtime()</code>函数返回当前的时间和日期。 以下 9 个符号代表不同的时间日期参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sec,     # 秒， 0 到 61</div><div class="line">min,     # 分钟， 0 到 59</div><div class="line">hour,    # 小时， 0 到 24</div><div class="line">mday,    # 天， 1 到 31</div><div class="line">mon,     # 月， 0 到 11</div><div class="line">year,    # 年，从 1900 开始</div><div class="line">wday,    # 星期几，0-6,0表示周日</div><div class="line">yday,    # 一年中的第几天,0-364,365</div><div class="line">isdst    # 如果夏令时有效，则为真</div></pre></td></tr></table></figure>
+<p>使用案例如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat time.pl </div><div class="line">@months = <span class="string">qw(Janurary February March April May June July August September October November December)</span>;</div><div class="line">@days = <span class="string">qw(Sunday Saturday Monday Tuesday Wednesday Friday)</span>;</div><div class="line"></div><div class="line">($sec, $min, $hour, $mday,$mon,$year, $wday, $yday, $isdst) = <span class="keyword">localtime</span>() ;</div><div class="line"></div><div class="line"><span class="keyword">print</span><span class="string">"$mday $months[$mon] $days[$wday]\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl time.pl </div><div class="line"><span class="number">18</span> May Friday</div></pre></td></tr></table></figure>
+<p>如果直接调用 localtime() ，它返回系统当期设置时区的时间，如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat localtime.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$datenow=<span class="keyword">localtime</span>();</div><div class="line"><span class="keyword">print</span> <span class="string">"Now time is $datenow\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl localtime.pl </div><div class="line">Now <span class="keyword">time</span> is Fri May <span class="number">18</span> <span class="number">16</span>:<span class="number">05</span>:<span class="number">51</span> <span class="number">2018</span></div></pre></td></tr></table></figure>
+<h2 id="格林威治时间-gmt">格林威治时间 (GMT)</h2>
+<p>函数 gmtime() 与 localtime() 类似，但它返回标准格林威治时间，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat gmt.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$Chongqing_time = <span class="keyword">localtime</span>();</div><div class="line">$gmt_time = <span class="keyword">gmtime</span>();</div><div class="line"></div><div class="line"><span class="keyword">print</span> <span class="string">"Chongqing time is $Chongqing_time\n"</span>;</div><div class="line"><span class="keyword">print</span> <span class="string">"GMT time is $gmt_time\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl gmt.pl </div><div class="line">Chongqing <span class="keyword">time</span> is Fri May <span class="number">18</span> <span class="number">16</span>:<span class="number">07</span>:<span class="number">05</span> <span class="number">2018</span></div><div class="line">GMT <span class="keyword">time</span> is Fri May <span class="number">18</span> <span class="number">23</span>:<span class="number">07</span>:<span class="number">05</span> <span class="number">2018</span></div></pre></td></tr></table></figure></p>
+<p>运行结果可以看出，中国当地时间和格林威治时间相差了8小时，中国是东八区。</p>
+<h2 id="格式化日期和时间">格式化日期和时间</h2>
+<p>使用<code>localtime()</code>函数的 9 个时间元素来可以输出需要制定的格式时间。格式化输出使用 printf() 函数，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat format_time.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=<span class="keyword">localtime</span>();</div><div class="line"></div><div class="line"><span class="keyword">printf</span>(<span class="string">"Formated time is HH:MM:SS\n"</span>);</div><div class="line"><span class="keyword">printf</span>(<span class="string">"%02d:%02d:%02d\n"</span>, $hour, $min, $sec);</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl format_time.pl </div><div class="line">Formated <span class="keyword">time</span> is HH:MM:SS</div><div class="line"><span class="number">16</span>:<span class="number">10</span>:<span class="number">03</span></div></pre></td></tr></table></figure></p>
+<h2 id="新纪元时间epoch-time">新纪元时间(Epoch Time)</h2>
+<p>使用 time() 函数来获取新纪元时间，该函数返回从1970年1月1日起累计的秒数，如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat epoch_time.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">$epoch_time = <span class="keyword">time</span>();</div><div class="line"><span class="keyword">print</span> <span class="string">"Accumulated seconds from 1970.1.1. is $epoch_time\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl epoch_time.pl </div><div class="line">Accumulated seconds from <span class="number">1970.1</span>.<span class="number">1</span>. is <span class="number">1526685082</span></div></pre></td></tr></table></figure>
+<p>也可以输出一个用户想要的时间格式，如下所示： <figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat custom_time.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"></div><div class="line">($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = <span class="keyword">localtime</span>();</div><div class="line"><span class="keyword">print</span> <span class="string">"Current time and date"</span>;</div><div class="line"><span class="keyword">printf</span> (<span class="string">"%d-%d-%d %d:%d:%d"</span>, $year+<span class="number">1900</span>, $mon +<span class="number">1</span>, $mday, $hour, $min, $sec);</div><div class="line"></div><div class="line"><span class="keyword">print</span> <span class="string">"\n"</span>;</div><div class="line"></div><div class="line">$epoch_time = <span class="keyword">time</span>();</div><div class="line">$epoch_time = $epoch_time - <span class="number">24</span>*<span class="number">60</span>*<span class="number">60</span>; </div><div class="line">($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = <span class="keyword">localtime</span>($epoch_time);</div><div class="line"></div><div class="line"><span class="keyword">print</span> <span class="string">"Yesterady time and date is: "</span>;</div><div class="line"><span class="keyword">printf</span> (<span class="string">"%d-%d-%d %d:%d:%d"</span>, $year+<span class="number">1900</span>, $mon +<span class="number">1</span>, $mday, $hour, $min, $sec);</div><div class="line"></div><div class="line"><span class="keyword">print</span> <span class="string">"\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl custom_time.pl </div><div class="line">Current <span class="keyword">time</span> <span class="keyword">and</span> date2018-<span class="number">5</span>-<span class="number">18</span> <span class="number">16</span>:<span class="number">12</span>:<span class="number">46</span></div><div class="line">Yesterady <span class="keyword">time</span> <span class="keyword">and</span> date is: <span class="number">2018</span>-<span class="number">5</span>-<span class="number">17</span> <span class="number">16</span>:<span class="number">12</span>:<span class="number">46</span></div></pre></td></tr></table></figure></p>
+<h2 id="posix-函数-strftime">POSIX 函数 strftime()</h2>
+<p>函数<code>strftime()</code>可以将时间格式化为我们想要的格式。 下表列出了一些格式化的符号，<code>*</code> 号表示想要依赖本地时间：</p>
+<table>
+<thead>
+<tr class="header">
+<th>符号</th>
+<th>描述</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>%a</td>
+<td>星期几的简称（ Sun..Sat） <code>*</code></td>
+<td>Thu</td>
+</tr>
+<tr class="even">
+<td>%A</td>
+<td>星期几的全称（ Sunday..Saturday） <code>*</code></td>
+<td>Thursday</td>
+</tr>
+<tr class="odd">
+<td>%b</td>
+<td>月的简称（Jan..Dec） <code>*</code></td>
+<td>Aug</td>
+</tr>
+<tr class="even">
+<td>%B</td>
+<td>月的全称（January..December） <code>*</code></td>
+<td>August</td>
+</tr>
+<tr class="odd">
+<td>%c</td>
+<td>日期和时间 *</td>
+<td>Thu Aug 23 14:55:02 2001</td>
+</tr>
+<tr class="even">
+<td>%C</td>
+<td>年份除于100，并取整 (00-99)</td>
+<td>20</td>
+</tr>
+<tr class="odd">
+<td>%d</td>
+<td>一个月的第几天 (01-31)</td>
+<td>23</td>
+</tr>
+<tr class="even">
+<td>%D</td>
+<td>日期, MM/DD/YY 相等于%m/%d/%y</td>
+<td><code>08/23/01</code></td>
+</tr>
+<tr class="odd">
+<td>%e</td>
+<td>一个月的第几天，使用空格填充个位数 ( 1-31)</td>
+<td>23</td>
+</tr>
+<tr class="even">
+<td>%F</td>
+<td>YYYY-MM-DD 的简写类似于 %Y-%m-%d</td>
+<td>2001/8/23</td>
+</tr>
+<tr class="odd">
+<td>%g</td>
+<td>年份的最后两位数 (00-99)</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>%g</td>
+<td>年</td>
+<td>2001</td>
+</tr>
+<tr class="odd">
+<td>%h</td>
+<td>月的简称 <code>*</code>(和%b选项相同)</td>
+<td>Aug</td>
+</tr>
+<tr class="even">
+<td>%H</td>
+<td>24 小时制 (00-23)</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td>%I</td>
+<td>12 小时制 (01-12)</td>
+<td><code>02</code></td>
+</tr>
+<tr class="even">
+<td>%j</td>
+<td>一年的第几天 (001-366)</td>
+<td>235</td>
+</tr>
+<tr class="odd">
+<td>%m</td>
+<td>月 (01-12)</td>
+<td><code>08</code></td>
+</tr>
+<tr class="even">
+<td>%M</td>
+<td>分钟 (00-59)</td>
+<td>55</td>
+</tr>
+<tr class="odd">
+<td>%n</td>
+<td>新行 (‘’)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>%p</td>
+<td>显示出AM或PM</td>
+<td>PM</td>
+</tr>
+<tr class="odd">
+<td>%r</td>
+<td>时间（hh：mm：ss AM或PM），12小时 <code>*</code></td>
+<td><code>02:55:02 pm</code></td>
+</tr>
+<tr class="even">
+<td>%R</td>
+<td>24 小时 HH:MM 时间格式,相等于 %H:%M</td>
+<td>14:55</td>
+</tr>
+<tr class="odd">
+<td>%S</td>
+<td>秒数 (00-61)</td>
+<td><code>02</code></td>
+</tr>
+<tr class="even">
+<td>%t</td>
+<td>水平制表符 (‘’)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>%T</td>
+<td>时间（24小时制）（hh:mm:ss），相等于%H:%M:%S</td>
+<td>14:55</td>
+</tr>
+<tr class="even">
+<td>%u</td>
+<td>ISO 8601 的星期几格式，星期一为1 (1-7)</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>%U</td>
+<td>一年中的第几周，星期天为第一天(00-53)</td>
+<td>33</td>
+</tr>
+<tr class="even">
+<td>%V</td>
+<td>ISO 8601 第几周 (00-53)</td>
+<td>34</td>
+</tr>
+<tr class="odd">
+<td>%w</td>
+<td>一个星期的第几天（0代表星期天） (0-6)</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>%W</td>
+<td>一年的第几个星期，星期一为第一天 (00-53)</td>
+<td>34</td>
+</tr>
+<tr class="odd">
+<td>%x</td>
+<td>显示日期的格式（mm/dd/yy） <code>*</code></td>
+<td>08/23/01</td>
+</tr>
+<tr class="even">
+<td>%X</td>
+<td>显示时间格式 <code>*</code></td>
+<td>14:55:02</td>
+</tr>
+<tr class="odd">
+<td>%y</td>
+<td>年，两位数 (00-99)</td>
+<td><code>01</code></td>
+</tr>
+<tr class="even">
+<td>%Y</td>
+<td>年</td>
+<td>2018</td>
+</tr>
+<tr class="odd">
+<td>%z</td>
+<td>ISO 8601与UTC的时区偏移(1 minute=1, 1 hour=100)</td>
+<td><code>+100</code></td>
+</tr>
+<tr class="even">
+<td>%Z</td>
+<td>当前时区的名称,如“中国标准时间” <code>*</code></td>
+<td>CDT</td>
+</tr>
+<tr class="odd">
+<td>%%</td>
+<td>% 符号</td>
+<td>%</td>
+</tr>
+</tbody>
+</table>
+<p>使用案例如下所示：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ cat strftime.pl </div><div class="line"><span class="comment">#!/usr/bin/perl</span></div><div class="line"><span class="keyword">use</span> POSIX <span class="string">qw(strftime)</span>;</div><div class="line"></div><div class="line">$current_time = strftime <span class="string">"%Y-%m-%d %H:%M:%S"</span>, <span class="keyword">localtime</span>;</div><div class="line"><span class="keyword">printf</span> (<span class="string">"Time and Date - $current_time\n"</span>);</div><div class="line"></div><div class="line">$current_time = strftime <span class="string">"%Y-%m-%d %H:%M:%S"</span>, <span class="keyword">gmtime</span>;</div><div class="line"><span class="keyword">printf</span> <span class="string">"Time and Date - $current_time\n"</span>;</div><div class="line">biotest@ubuntu:~<span class="regexp">/perl/</span><span class="number">04</span><span class="keyword">time</span>$ perl strftime.pl </div><div class="line">Time <span class="keyword">and</span> Date - <span class="number">2018</span>-<span class="number">05</span>-<span class="number">18</span> <span class="number">16</span>:<span class="number">20</span>:<span class="number">05</span></div><div class="line">Time <span class="keyword">and</span> Date - <span class="number">2018</span>-<span class="number">05</span>-<span class="number">18</span> <span class="number">23</span>:<span class="number">20</span>:<span class="number">05</span></div></pre></td></tr></table></figure>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="http://www.runoob.com/perl/perl-tutorial.html" target="_blank" rel="external">Perl教程|菜鸟教程</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/15/Perl/Perl学习笔记（4）-运算符/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4246,704 +4908,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/06/Linux/Linux-shell08-sed与gawk(1)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/06/Linux/Linux-shell08-sed与gawk(1)/" itemprop="url">Shell学习笔记（8）——sed与gawk基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-06T12:12:54+08:00">
-                2018-05-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/正则表达式/" itemprop="url" rel="index">
-                    <span itemprop="name">正则表达式</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  9,874
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  41
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="sed与gawk的基本用法">sed与gawk的基本用法</h2>
-<p>Linux系统中有两个常用的命令行编辑器，分别为<code>sed</code>和<code>gawk</code>。</p>
-<h3 id="sed编辑器">sed编辑器</h3>
-<p>sed编辑器被称作流编辑器（streameditor），和普通的交互式文本编辑器有所不同。在交互式文本编辑器中（比如vim），用户可以用键盘命令来交互式地插入、删除或替换数据中的文本。而流编辑器则会在编辑器处理数据之前基于预先提供的一组规则来编辑数据流。sed编辑器可以根据命令来处理数据流中的数据，这些命令要么从命令行中输入，要么存储在一个命令文本文件中。可以简单地理解为，流编辑器像一种滤器，数据进入后，会以一定标准的格式出来，sed编辑器会执行下列操作：</p>
-<ol style="list-style-type: decimal">
-<li>一次从输入中读取一行数据。</li>
-<li>根据所提供的编辑器命令匹配数据。</li>
-<li>按照命令修改流中的数据。</li>
-<li>将新的数据输出到STDOUT。</li>
-</ol>
-<p>在流编辑器将所有命令与一行数据匹配完毕后，它会读取下一行数据并重复这个过程。在流编辑器处理完流中的所有数据行后，它就会终止。由于命令是按顺序逐行给出的，sed编辑器只需对数据流进行一遍处理就可以完成编辑操作。</p>
-<p>sed命令的格式如下为<code>sed options script file</code>，其中sed的选项如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>选项</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>-e script</td>
-<td>在处理输入时，将script中指定的命令添加到已有的命令中</td>
-</tr>
-<tr class="even">
-<td>-f file</td>
-<td>在处理输入时，将file中指定的命令添加到已有的命令中</td>
-</tr>
-<tr class="odd">
-<td>-n</td>
-<td>不产生命令输出，使用print命令来完成输出</td>
-</tr>
-</tbody>
-</table>
-<p>script参数指定了应用于流数据上的单个命令。如果需要用多个命令，要么使用-e选项在命令行中指定，要么使用-f选项在单独的文件中指定。</p>
-<h4 id="在命令行定义编辑器命令">在命令行定义编辑器命令</h4>
-<p>默认情况下，sed编辑器会将指定的命令应用到STDIN输入流上。这样你可以直接将数据通过管道输入sed编辑器处理，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "This is a test"|sed 's/test/big test/'</div><div class="line">This is a big test</div></pre></td></tr></table></figure>
-<p>在这个例子中，sed编辑器使用了s命令。s命令会用斜线间指定的第二个文本字符串（这里是big test）来替换第一个文本字符串（test）模式。在本例中是big test替换了test。在运行这个例子时，结果应该立即就会显示出来，再看一个案例：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dogs.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed 's/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
-<p>sed命令几乎瞬间就执行完并返回数据。在处理每行数据的同时，结果也显示出来了。可以在sed编辑器处理完整个文件之前就开始观察结果。需要注意的是，sed编辑器并不会修改文本文件的数据。它只会将修改后的数据发送到STDOUT，也可以发送到某个文件。如果你查看原来的文本文件，它仍然保留着原始数据，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/dog/cat/' data1.txt &gt; data1b.txt</div><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">biotest@ubuntu:~/sed$ cat data1b.txt</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
-<h4 id="在命令行使用多个编辑器命令">在命令行使用多个编辑器命令</h4>
-<p>要在sed命令行上执行多个命令时，只要用-e选项就可以了，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -e 's/brown/green/;s/dog/cat/' data1.txt</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div><div class="line">The quick green fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
-<p>两个命令都作用到文件中的每行数据上。命令之间必须用分号隔开，并且在命令末尾和分号之间不能有空格。如果不想用分号，也可以用bash shell中的次提示符来分隔命令。只要输入第一个单引号标示出sed程序脚本的起始（sed编辑器命令列表），bash会继续提示你输入更多命令，直到输入了标示结束的单引号，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -e '</div><div class="line"><span class="meta">&gt;</span> s/brown/green/</div><div class="line"><span class="meta">&gt;</span> s/fox/elephant/</div><div class="line"><span class="meta">&gt;</span> s/dog/cat/' data1.txt</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div></pre></td></tr></table></figure>
-<h4 id="从文件中读取编辑器命令">从文件中读取编辑器命令</h4>
-<p>如果有大量要处理的sed命令，那么将它们放进一个单独的文件中，可以在sed命令中用-f选项来指定文件，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script1.sed</div><div class="line">s/brown/green/</div><div class="line">s/fox/elephant/</div><div class="line">s/dog/cat/</div><div class="line">biotest@ubuntu:~/sed$ sed -f script1.sed data1.txt</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div><div class="line">The quick green elephant jumps over the lazy cat.</div></pre></td></tr></table></figure>
-<p>在这种情况下，不用在每条命令后面放一个分号。sed编辑器知道每行都是一条单独的命令。跟在命令行输入命令一样，sed编辑器会从指定文件中读取命令，并将它们应用到数据文件中的每一行上。</p>
-<h3 id="gawk-程序">gawk 程序</h3>
-<p>gawk程序是另外的一个处理文本文件的工具，它是Unix原始awk程序的GUN版本，它能提供一个类编程环境来修改和重新组织文件中的数据。 gawk的强大之处在于程序脚本，用户可以写脚本来读取文本行的数据，然后处理并显示数据，创 建任何类型的输出报告。 Ubuntu本身并没有带gawk工具，需要自己安装，即<code>get apt install gawk</code>。在gawk编程语言中，用户可以做下面的事情：</p>
-<ol style="list-style-type: decimal">
-<li>定义变量来保存数据；</li>
-<li>使用算术和字符串操作符来处理数据；</li>
-<li>使用结构化编程概念（比如 if-then 语句和循环）来为数据处理增加处理逻辑；</li>
-<li>通过提取数据文件中的数据元素，将其重新排列或格式化，生成格式化报告。</li>
-</ol>
-<p>gawk程序通常用来从大文本文件中提取数据元素，并将它们格式化成可读的报告。其中最常用的就是格式化日志文件。在日志文件中找出错误行会很难，gawk程序可以让用户从日志文件中过滤出需要的数据元素，然后将其格式化，使得重要的数据更易于阅读。</p>
-<h4 id="gawk的用法">gawk的用法</h4>
-<p>gawk的使用格式为<code>gawk options program file</code>，可用选项如下表所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>选项</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>-F fs</td>
-<td>指定行中划分数据字段的字段分隔符</td>
-</tr>
-<tr class="even">
-<td>-f file</td>
-<td>从指定的文件中读取程序</td>
-</tr>
-<tr class="odd">
-<td>-v var=value</td>
-<td>定义gawk程序中的一个变量及其默认值</td>
-</tr>
-<tr class="even">
-<td>-mf N</td>
-<td>指定要处理的数据文件中的最大字段数</td>
-</tr>
-<tr class="odd">
-<td>-mr N</td>
-<td>指定数据文件中的最大数据行数</td>
-</tr>
-<tr class="even">
-<td>-W keyword</td>
-<td>指定gawk的兼容模式或警告等级</td>
-</tr>
-</tbody>
-</table>
-<h4 id="从命令行读取程序脚本">从命令行读取程序脚本</h4>
-<p>gawk程序脚本用一对花括号来定义。你必须将脚本命令放到两个花括号（{}）中。如果你错误地使用了圆括号来包含gawk脚本，就会得到一条类似于下面的错误提示，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk '(print "Hello World!"&#125;'</div><div class="line">gawk: cmd. line:1: (print "Hello World!"&#125;</div><div class="line">gawk: cmd. line:1:                     ^ syntax error</div></pre></td></tr></table></figure>
-<p>由于gawk命令行假定脚本是单个文本字符串，必须将脚本放到单引号中。下面的例子在命令行上指定了一个简单的gawk程序脚本：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk '&#123;print "Hello World!"&#125;'</div><div class="line">Hello World!</div><div class="line">Hello World!</div></pre></td></tr></table></figure>
-<p>这个程序脚本定义了一个命令：print命令。这个命令会将文本打印到STDOUT。如果尝试运行这个命令，什么都不会发生。原因在于没有在命令行上指定文件名，所以gawk程序会从STDIN接收数据。在运行这个程序时，它会一直等待从STDIN输入的文本。如果输入一行文本并按下回车键，gawk会对这行文本运行一遍程序脚本。跟sed编辑器一样，gawk程序会针对数据流中的每行文本执行程序脚本。由于程序脚本被设为显示一行固定的文本字符串，因此不管在数据流中输入什么文本，都会得到同样的文本输出。</p>
-<p>要终止这个gawk程序，你必须表明数据流已经结束了。bash shell提供了一个组合键来生成EOF（End-of-File）字符。Ctrl+D组合键会在bash中产生一个EOF字符。这个组合键能够终止该gawk程序并返回到命令行界面提示符下。</p>
-<h4 id="使用数据字段变量">使用数据字段变量</h4>
-<p>gawk的主要特性之一是其处理文本文件中数据的能力。它会自动给一行中的每个数据元素分配一个变量。默认情况下，gawk会将如下变量分配给它在文本行中发现的数据字段：</p>
-<ol style="list-style-type: decimal">
-<li><code>$0</code> 代表整个文本行；</li>
-<li><code>$1</code> 代表文本行中的第1个数据字段；</li>
-<li><code>$2</code> 代表文本行中的第2个数据字段；</li>
-<li><code>$n</code> 代表文本行中的第n个数据字段。</li>
-</ol>
-<p>在文本行中，每个数据字段都是通过字段分隔符划分的。gawk在读取一行文本时，会用预定义的字段分隔符划分每个数据字段。gawk中默认的字段分隔符是任意的空白字符（例如空格或制表符）。在下面的例子中，gawk程序读取文本文件，只显示第1个数据字段的值。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data2.txt</div><div class="line">One line of test text.</div><div class="line">Two lines of test text.</div><div class="line">Three lines of test text.</div><div class="line">biotest@ubuntu:~/sed$ gawk '&#123;print $1&#125;' data2.txt</div><div class="line">One</div><div class="line">Two</div><div class="line">Three</div></pre></td></tr></table></figure>
-<p>该程序用$1字段变量来仅显示每行文本的第1个数据字段。如果你要读取采用了其他字段分隔符的文件，可以用-F选项指定，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk -F: '&#123;print $1&#125;' /etc/passwd</div><div class="line">root</div><div class="line">daemon</div><div class="line">bin</div><div class="line">sys</div><div class="line">sync</div><div class="line">games</div><div class="line">man</div><div class="line">lp</div><div class="line">mail</div><div class="line">...</div></pre></td></tr></table></figure>
-<p>这个简短的程序显示了系统中密码文件的第1个数据字段。由于/<code>etc/passwd</code>文件用冒号来分隔数字字段，因而如果要划分开每个数据元素，则必须在gawk选项中将冒号指定为字段分隔符，其中<code>-F:</code>就是指定冒号为分隔符。</p>
-<h4 id="在程序脚本中使用多个命令">在程序脚本中使用多个命令</h4>
-<p>gawk编程语言允许多条命令组合成一个正常的程序。要在命令行上的程序脚本中使用多条命令，只要在命令之间放个分号即可，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "My name is Zhang" |gawk '&#123;$4="Li";print $0&#125;'</div><div class="line">My name is Li</div></pre></td></tr></table></figure>
-<p>第一条命令会给字段变量<code>$4</code>赋值。第二条命令会打印整个数据字段。注意，gawk程序在输出中已经将原文本中的第四个数据字段替换成了新值。也可以用次提示符一次一行地输入程序脚本命令。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk '&#123;</div><div class="line"><span class="meta">&gt;</span> $4="Li"</div><div class="line"><span class="meta">&gt;</span> print $0&#125;'</div><div class="line">My name is Zhang</div><div class="line">My name is Li</div></pre></td></tr></table></figure>
-<p>在用了表示起始的单引号后，bashs hell会使用次提示符来提示你输入更多数据。可以每次在每行加一条命令，直到输入了结尾的单引号。因为没有在命令行中指定文件名，gawk程序会从STDIN中获得数据。当运行这个程序的时候，它会等着读取来自STDIN的文本。要退出程序，只需按下Ctrl+D组合键来表明数据结束。</p>
-<h4 id="从文件中读取程序">从文件中读取程序</h4>
-<p>gawk编辑器允许将程序存储到文件中，然后再在命令行中引用，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script2.gawk</div><div class="line">&#123;print $1 "'s home directory is " $6&#125;</div><div class="line">biotest@ubuntu:~/sed$ gawk -F: -f script2.gawk /etc/passwd</div><div class="line">root's home directory is /root</div><div class="line">daemon's home directory is /usr/sbin</div><div class="line">bin's home directory is /bin</div><div class="line">sys's home directory is /dev</div><div class="line">sync's home directory is /bin</div><div class="line">......</div></pre></td></tr></table></figure>
-<p>在这个案例中，script2.gawk程序脚本会再次使用print命令打印/etc/passwd文件的主目录数据字段（字段变量<code>$6），以及userid数据字段（字段变量</code>$1`）。可以在程序文件中指定多条命令。要这么做的话，只要一条命令放一行即可，不需要用分号，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script3.gawk </div><div class="line">&#123;</div><div class="line">text = "'s home directory is " # 变量未使用美元符号，需要注意</div><div class="line">print $1 text $6</div><div class="line">&#125;</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ gawk -F: -f script3.gawk /etc/passwd</div><div class="line">root's home directory is /root</div><div class="line">daemon's home directory is /usr/sbin</div><div class="line">bin's home directory is /bin</div><div class="line">sys's home directory is /dev</div><div class="line">sync's home directory is /bin</div></pre></td></tr></table></figure>
-<p>script3.gawk程序脚本定义了一个变量来保存print命令中用到的文本字符串。注意，gawk程序在引用变量值时并未像shell脚本一样使用美元符。</p>
-<h4 id="在处理数据前运行脚本">在处理数据前运行脚本</h4>
-<p>gawk可以指定程序脚本何时运行。默认情况下，gawk会从输入中读取一行文本，然后针对该行的数据执行程序脚本。有时可能需要在处理数据前运行脚本，比如为报告创建标题。BEGIN关键字就是用来做这个的。它会强制gawk在读取数据前执行BEGIN关键字后指定的程序脚本。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk 'BEGIN &#123;print "Hello World!"&#125;'</div><div class="line">Hello World!</div></pre></td></tr></table></figure>
-<p>这次print命令会在读取数据前显示文本。但在它显示了文本后，它会快速退出，不等待任何数据。如果想使用正常的程序脚本中处理数据，必须用另一个脚本区域来定义程序，看下面的案例：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data3.txt</div><div class="line">Line 1</div><div class="line">Line 2</div><div class="line">Line 3</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ gawk 'BEGIN &#123;pirnt "The data3 File Contents:"&#125;</div><div class="line"><span class="meta">&gt;</span> &#123;print $0&#125;' data3.txt</div><div class="line">Line 1</div><div class="line">Line 2</div><div class="line">Line 3</div></pre></td></tr></table></figure>
-<p>在gawk执行了BEGIN脚本后，它会用第二段脚本来处理文件数据。这么做时要小心，两段脚本仍然被认为是gawk命令行中的一个文本字符串。你需要相应地加上单引号。</p>
-<h4 id="在处理数据后运行脚本">在处理数据后运行脚本</h4>
-<p>与BEGIN关键字类似，END关键字允许你指定一个程序脚本，gawk会在读完数据后执行它，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ gawk 'BEGIN &#123;pirnt "The data3 File Contents:"&#125;</div><div class="line"><span class="meta">&gt;</span> &#123;print $0&#125;</div><div class="line"><span class="meta">&gt;</span> END &#123;print "End of FIle"&#125;' data3.txt</div><div class="line">Line 1</div><div class="line">Line 2</div><div class="line">Line 3</div><div class="line">End of FIle</div></pre></td></tr></table></figure>
-<p>当gawk程序打印完文件内容后，它会执行END脚本中的命令。这是在处理完所有正常数据后给报告添加页脚的最佳方法。可以将所有这些内容放到一起组成一个脚本文件，用它从一个简单的数据文件中创建一份完整的报告，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat script4.gawk </div><div class="line">BEGIN &#123;</div><div class="line">print "The latest list of users and shells"</div><div class="line">print " UserID \t Shell"</div><div class="line">print "-------- \t --------"</div><div class="line">FS=":"</div><div class="line">&#125;</div><div class="line"></div><div class="line">&#123;</div><div class="line">print $1 "        \t " $7</div><div class="line">&#125;</div><div class="line"></div><div class="line">END &#123;</div><div class="line">print "This concludes the listing"</div><div class="line">&#125;</div><div class="line">biotest@ubuntu:~/sed$ gawk -f script4.gawk /etc/passwd</div><div class="line">The latest list of users and shells</div><div class="line"> UserID 	 Shell</div><div class="line">-------- 	 --------</div><div class="line">root        	 /bin/bash</div><div class="line">daemon        	 /usr/sbin/nologin</div><div class="line">bin        	 /usr/sbin/nologin</div></pre></td></tr></table></figure>
-<p>这个脚本用BEGIN脚本来为报告创建标题。它还定义了一个叫作FS的特殊变量。这是定义字段分隔符的另一种方法。这样就不用依靠脚本用户在命令行选项中定义字段分隔符了。BEGIN脚本创建了标题，程序脚本处理特定数据文件（<code>/etc/passwd）</code>中的信息，END脚本生成页脚。</p>
-<h2 id="sed-编辑器基础">sed 编辑器基础</h2>
-<h3 id="更多的替换选项">更多的替换选项</h3>
-<p>s命令（substitute）用来在行中替换文本。这个命令还有另外一些选项。</p>
-<h4 id="替换标记">替换标记</h4>
-<p>先看一个案例，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data4.txt </div><div class="line">This is a test of the test script.</div><div class="line">This is the second test of the test script.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/' data4.txt </div><div class="line">This is a trial of the test script.</div><div class="line">This is the second trial of the test script.</div></pre></td></tr></table></figure>
-<p>替换命令在替换多行中的文本时能正常工作，但默认情况下它只替换每行中出现的第一处。要让替换命令能够替换一行中不同地方出现的文本必须使用替换标记（substitution flag）。替换标记会在替换命令字符串之后设置，格式为<code>s/pattern/replacement/flags</code>，有4种可用的替换标记：</p>
-<ol style="list-style-type: decimal">
-<li>数字，表明新文本将替换第几处模式匹配的地方；</li>
-<li>g ，表明新文本将会替换所有匹配的文本；</li>
-<li>p ，表明原先行的内容要打印出来；</li>
-<li>w file ，将替换的结果写到文件中。</li>
-</ol>
-<h5 id="数字替换标记">数字替换标记</h5>
-<p>在第一类替换中，可以指定sed编辑器用新文本替换第几处模式匹配的地方，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/2' data4.txt </div><div class="line">This is a test of the trial script.</div><div class="line">This is the second test of the trial script.</div></pre></td></tr></table></figure>
-<p>这个脚本运行的结果是：sed编辑器只替换每行中第2次出现的匹配模式。</p>
-<h5 id="g替换标记">g替换标记</h5>
-<p>g替换标记使你能替换文本中匹配模式所匹配的每处地方，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/g' data4.txt</div><div class="line">This is a trial of the trial script.</div><div class="line">This is the second trial of the trial script.</div></pre></td></tr></table></figure>
-<p>如结果所示，使用了g替换标记后，文本中所有的地方都被替换了。</p>
-<h5 id="p替换标记">p替换标记</h5>
-<p>p替换标记会打印与替换命令中指定的模式匹配的行。这通常会和sed的-n选项一起使用，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test5.txt</div><div class="line">This is a test line.</div><div class="line">This is a different line.</div><div class="line">biotest@ubuntu:~/sed$ sed -n 's/test/trial/p' test5.txt</div><div class="line">This is a trial line.</div></pre></td></tr></table></figure>
-<p>-n选项将禁止sed编辑器输出。但p替换标记会输出修改过的行。将二者配合使用的效果就是只输出被替换命令修改过的行，第二行并没有被替换，也就不输出了。</p>
-<h5 id="w替换标记">w替换标记</h5>
-<p>w 替换标记会产生同样的输出，不过会将输出保存到指定文件中，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/test/trial/w test.txt' test5.txt </div><div class="line">This is a trial line.</div><div class="line">This is a different line.</div><div class="line">biotest@ubuntu:~/sed$ cat test.txt</div><div class="line">This is a trial line.</div></pre></td></tr></table></figure>
-<p>sed编辑器的正常输出是在STDOUT中，而只有那些包含匹配模式的行才会保存在指定的输出文件中。</p>
-<h4 id="替换字符">替换字符</h4>
-<p>有时会在文本字符串中遇到一些不太方便在替换模式中使用的字符。Linux中一个常见的例子就是正斜线（/）。替换文件中的路径名会比较麻烦。比如想用C shell替换/etc/passwd文件中的bash shell，必须这么做：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's/\/bin\/bash/\/bin\/csh/' /etc/passwd</div><div class="line">root:x:0:0:root:/root:/bin/csh</div><div class="line">daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin</div><div class="line">bin:x:2:2:bin:/bin:/usr/sbin/nologin</div><div class="line">sys:x:3:3:sys:/dev:/usr/sbin/nologin</div></pre></td></tr></table></figure>
-<p>由于正斜线通常用作字符串分隔符，因而如果它出现在了模式文本中的话，必须用反斜线来转义。这通常会带来一些困惑和错误。 要解决这个问题，sed编辑器允许选择其他字符来作为替换命令中的字符串分隔符：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed 's!/bin/bash!/bin/csh!' /etc/passwd</div><div class="line">root:x:0:0:root:/root:/bin/csh</div><div class="line">daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin</div><div class="line">bin:x:2:2:bin:/bin:/usr/sbin/nologin</div></pre></td></tr></table></figure>
-<p>在这个例子中，感叹号被用作字符串分隔符，这样路径名就更容易阅读和理解了。</p>
-<h4 id="使用地址">使用地址</h4>
-<p>默认情况下，在sed编辑器中使用的命令会作用于文本数据的所有行。如果只想将命令作用于特定行或某些行，则必须用行寻址（lineaddressing）。在sed编辑器中有两种形式的行寻址：第一，以数字形式表示区间；第二，用文本模式来过滤出行。两种形式都使用相同的格式来指定地址：</p>
-<p><code>[address] command</code>或者是将特定地址的多个命令分组，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">address &#123;</div><div class="line">    command1</div><div class="line">    command2</div><div class="line">    command3</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>sed编辑器会将指定的每条命令作用到匹配指定地址的行上。本节将会演示如何在sed编辑器脚本中使用两种寻址方法。</p>
-<h5 id="第一数字方式的行寻址">第一，数字方式的行寻址。</h5>
-<p>当使用数字方式的行寻址时，可以用行在文本流中的行位置来引用。sed编辑器会将文本流中的第一行编号为1，然后继续按顺序为接下来的行分配行号。在命令中指定的地址可以是单个行号，或是用起始行号、逗号以及结尾行号指定的一定区间范围内的行。这里有个sed命令作用到指定行号的例子，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2s/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
-<p>sed编辑器只修改地址指定的第二行的文本。这里有另一个例子，这次使用了行地址区间，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2,3s/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
-<p>如果需要将命令作用到文本从某行开始的所有行，可以使用美元符号，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2,$s/dog/cat/' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy cat.</div></pre></td></tr></table></figure>
-<h5 id="第二使用文本模式过滤器">第二，使用文本模式过滤器</h5>
-<p>另一种限制命令作用到哪些行上的方法会稍稍复杂一些。sed编辑器允许指定文本模式来过滤出命令要作用的行。格式为<code>/pattern/command，</code>必须用正斜线将要指定的pattern封起来。sed编辑器会将该命令作用到包含指定文本模式的行上。举个例子，如果你想只修改用户test001的默认shell，可以使用sed命令，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ grep biotest /etc/passwd</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/bash</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/csh</div></pre></td></tr></table></figure>
-<p>该命令只作用到匹配文本模式的行上。虽然使用固定文本模式能帮你过滤出特定的值，就跟上面这个用户名的例子一样，但其作用难免有限。sed编辑器在文本模式中支持正则表达式（regular expression）。</p>
-<h5 id="第三命令组合">第三，命令组合</h5>
-<p>如果需要在单行上执行多条命令，可以用花括号将多条命令组合在一起，sed编辑器会处理地址行处列出的每条命令，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed '2&#123;</div><div class="line"><span class="meta">&gt;</span> s/fox/elephant/</div><div class="line"><span class="meta">&gt;</span> s/dog/cat/</div><div class="line"><span class="meta">&gt;</span> &#125;' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown elephant jumps over the lazy cat.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
-<p>两条命令都会作用到该地址上，也可以在一组命令前指定一个地址区间，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '3,$&#123;</div><div class="line"><span class="meta">&gt;</span> s/brown/green/</div><div class="line"><span class="meta">&gt;</span> s/lazy/active/</div><div class="line"><span class="meta">&gt;</span> &#125;' data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick green fox jumps over the active dog.</div><div class="line">The quick green fox jumps over the active dog.</div></pre></td></tr></table></figure>
-<h3 id="删除行">删除行</h3>
-<p>在sed中，删除使用的是<code>d</code>参数，使用此命令需要谨慎，如果用户忘记加入寻址模式的话，流中所有的文都会被删除，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test6.txt # 原始文本</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '3d' test6.txt # 删除第3行</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '2,3d' test6.txt # 删除第2，3行</div><div class="line">This is line number 1.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '3,$d' test6.txt # 删除第3行及3行以下</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">biotest@ubuntu:~/sed$ sed '/number 1/d' test6.txt # 删除第1行</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed '/1/,/3/d' test6.txt # 删除1到3行</div><div class="line">This is line number 4.</div><div class="line"><span class="meta">#</span> 指定的第一个模式会“打开”行删除功能，第二个模式会“关闭”行删除功能。sed编辑器会删除两个指定行之间的所有行</div></pre></td></tr></table></figure>
-<p>只要sed编辑器在数据流中匹配到了开始模式，删除功能就会打开。这可能会导致意外的结果，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test7.txt </div><div class="line">This is line number 1.</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">This is line number 1 again.</div><div class="line">THis is text you want to keep.</div><div class="line">This is the last line in the file.</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ sed '/1/,/3/d' test7.txt</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>在这段代码中，第二个出现数字“1”的行再次触发了删除命令，因为没有找到停止模式，所以就将数据流中的剩余行全部删除了。如果你指定了一个从未在文本中出现的停止模式，显然会出现另外一个问题，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/1/,/5/d' test7.txt</div><div class="line">biotest@ubuntu:~/sed$</div></pre></td></tr></table></figure>
-<p>在这段代码中，因为删除功能在匹配到第一个模式的时候打开了，但一直没匹配到结束模式，所以整个数据流都被删掉了。</p>
-<h3 id="插入和附加文本">插入和附加文本</h3>
-<p>sed编辑器可以向数据流插入和附加文本行。它有两种操作：第一，插入（insert）：命令（i）会在指定行前增加一个新行；第二，追加（append）命令（a）会在指定行后增加一个新行。这两条命令在使用格式上有些特殊，它们不能在单个命令行上使用。用户必须指定是要将行插入还是附加到另一行。格式如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sed '[address] command\</div><div class="line">new line'</div></pre></td></tr></table></figure>
-<p>其中，<code>new line</code>中的文本将会出现在sed编辑器输出中指定的位置。记住，当使用插入命令时，文本会出现在数据流文本的前面，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "Test Line2"|sed 'i\Test Line 1' # 在第2行之前插入文本</div><div class="line">Test Line 1</div><div class="line">Test Line2</div><div class="line"></div><div class="line">biotest@ubuntu:~/sed$ echo "Test Line2"|sed 'a\Test Line 1' # 在第2行之后插入文本 </div><div class="line">Test Line2</div><div class="line">Test Line 1</div></pre></td></tr></table></figure>
-<p>在命令行界面提示符上使用sed编辑器时，用户会看到次提示符来提醒输入新的行数据。用户必须在该行完成sed编辑器命令。一旦你输入了结尾的单引号，bash shell就会执行该命令，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "Test Line 2"|sed 'i\</div><div class="line"><span class="meta">&gt;</span> Test Line 1'</div><div class="line">Test Line 1</div><div class="line">Test Line 2</div></pre></td></tr></table></figure>
-<p>前面所述的方法只能给数据流中的文本前面或后面添加文本，但有时候还需要向一行的前后添加文本，要向数据流行内部插入或附加数据，必须用寻址来告诉sed编辑器想让数据出现在什么位置。可以在用这些命令时只指定一个行地址。可以匹配一个数字行号或文本模式，但不能用地址区间（因为用户只能将文本插入或附加到单个行的前面或后面，而不是行区间的前面或后面），在下面的例子中，用户将一个新行插入到数据流第三行前。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test6.txt </div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line"></div><div class="line"><span class="meta">#</span> 将一个新行插入到数据流第三行前</div><div class="line">biotest@ubuntu:~/sed$ sed '3i\ </div><div class="line"><span class="meta">&gt;</span> This is an inserted line.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is an inserted line.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line"></div><div class="line"><span class="meta">#</span>将一个新行附加到数据流中第三行后</div><div class="line">biotest@ubuntu:~/sed$ sed '3a\ </div><div class="line"><span class="meta">&gt;</span> This is an appended line.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is an appended line.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>如果有一个多行数据流，需要将新行追加到数据流的末决，只要用代表数据最后一行的美元符号即可，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '$a\</div><div class="line"><span class="meta">&gt;</span> This is a new line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">This is a new line of text.</div></pre></td></tr></table></figure>
-<p>同样的方法也适用于要在数据流起始位置增加一个新行。只要在第一行之前插入新行即可。要插入或附加多行文本，就必须对要插入或附加的新文本中的每一行使用反斜线，直到最后一行。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '1i\</div><div class="line"><span class="meta">&gt;</span> This ia one line of new text.\</div><div class="line"><span class="meta">&gt;</span> This is another line of new text.' test6.txt</div><div class="line">This ia one line of new text.</div><div class="line">This is another line of new text.</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<h3 id="修改行">修改行</h3>
-<p>sed可以对文本进行修改，使用的参数是<code>c</code>，意思为修改（change）。这个参数允许修改数据流中整行文本的内容。它跟插入和附加命令的工作机制一样，必须在sed命令中单独指定新行，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '3c\</div><div class="line"><span class="meta">&gt;</span> This is a change line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is a change line of text.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>在这个例子中，sed编辑器会修改第三行中的文本。也可以用文本模式来寻址，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/number 3/c\</div><div class="line"><span class="meta">&gt;</span> This is a changed line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is a changed line of text.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>文本模式修改命令会修改它匹配的数据流中的任意文本行，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test8.txt</div><div class="line">This is line number 1. </div><div class="line">This is line number 2. </div><div class="line">This is line number 3. </div><div class="line">This is line number 4. </div><div class="line">This is line number 1 again. </div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file. </div><div class="line">biotest@ubuntu:~/sed$ sed '/number 1/c\</div><div class="line"><span class="meta">&gt;</span> This is a changed line of text.' test8.txt</div><div class="line">This is a changed line of text.</div><div class="line">This is line number 2. </div><div class="line">This is line number 3. </div><div class="line">This is line number 4. </div><div class="line">This is a changed line of text.</div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file.</div></pre></td></tr></table></figure>
-<p>在修改命令中使用地址区间，结果就会出问题，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '2,3c\</div><div class="line"><span class="meta">&gt;</span> This is a new line of text.' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is a new line of text.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>sed编辑器会用这一行文本来替换数据流中的两行文本，而不是逐一修改这两行文本。</p>
-<h3 id="转换命令">转换命令</h3>
-<p>sed中还有一个转换命令，参数是<code>y</code>，转换（ transform ）可以处理单个字符。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[address]y/inchars/outchars/</div></pre></td></tr></table></figure>
-<p>转换命令会对inchars和outchars值进行一对一的映射。inchars中的第一个字符会被转换为outchars中的第一个字符，第二个字符会被转换成outchars中的第二个字符。这个映射过程会一直持续到处理完指定字符。如果inchars和outchars的长度不同，则sed编辑器会产生一条错误消息，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test8.txt</div><div class="line">This is line number 1. </div><div class="line">This is line number 2. </div><div class="line">This is line number 3. </div><div class="line">This is line number 4. </div><div class="line">This is line number 1 again. </div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file. </div><div class="line">biotest@ubuntu:~/sed$ sed 'y/123/789/' test8.txt</div><div class="line">This is line number 7. </div><div class="line">This is line number 8. </div><div class="line">This is line number 9. </div><div class="line">This is line number 4. </div><div class="line">This is line number 7 again. </div><div class="line">This is yet another line. </div><div class="line">This is the last line in the file.</div></pre></td></tr></table></figure>
-<p>在这个案例中，<code>inchars</code>械中指定的字符的每个实例都会被替换成<code>outchars</code>模式中相同位置的那个字符，转换命令是一个全局命令，它会在文本行中找到所有指定字符自动进行转换，而不会考虑它们出现的位置，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "This 1 is a test of 1 try."|sed 'y/123/456/'</div><div class="line">This 4 is a test of 4 try.</div></pre></td></tr></table></figure>
-<p>sed编辑器转换了在文本行中匹配到的字符1的两个实例。你无法限定只转换在特定地方出现的字符。</p>
-<h3 id="回顾打印">回顾打印</h3>
-<p>有3个命令可以打印文本行，分别为：</p>
-<ol style="list-style-type: decimal">
-<li>p命令用来打印文本行；</li>
-<li>等号（=）用于打印行号；</li>
-<li>l（小写的L）用于列出行。</li>
-</ol>
-<h4 id="打印行">打印行</h4>
-<p>这里的<code>p</code>参业与替换中的<code>p</code>参数类似，它可以打印sed编译器输出中的一行，如果只使用这个命令，就是显示这一行命令，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ echo "This is a test"|sed 'p'</div><div class="line">This is a test</div><div class="line">This is a test</div></pre></td></tr></table></figure>
-<p><code>p</code>参数就是打印已有的数据文本，打印命令常用的用法就是打印包含匹配文本模式的行，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ sed -n '/number 3/p' test6.txt</div><div class="line">This is line number 3.</div></pre></td></tr></table></figure>
-<p>在命令行上用-n选项，你可以禁止输出其他行，只打印包含匹配文本模式的行。也可以用它来快速打印数据流中的某些行，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -n '2,3p' test6.txt</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div></pre></td></tr></table></figure>
-<p>如果需要在修改之前查看行，也可以使用打印命令，比如与替换或修改命令一起使用。可以创建一个脚本在修改行之前显示该行，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -n '/3/&#123;</div><div class="line"><span class="meta">&gt;</span> p</div><div class="line"><span class="meta">&gt;</span> s/line/test/p</div><div class="line"><span class="meta">&gt;</span> &#125;' test6.txt</div><div class="line">This is line number 3.</div><div class="line">This is test number 3.</div></pre></td></tr></table></figure>
-<p>sed编辑器命令会查找包含数字3的行，然后执行两条命令。首先，脚本用 p 命令来打印出原始行；然后它用 s 命令替换文本，并用 p 标记打印出替换结果。输出同时显示了原来的行文本和新的行文本。</p>
-<h4 id="打印行号">打印行号</h4>
-<p>等号命令会打印行在数据流中的当前行号。行号由数据流中的换行符决定。每次数据流中出现一个换行符，sed编辑器会认为一行文本结束了，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data1.txt</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">biotest@ubuntu:~/sed$ sed '=' data1.txt</div><div class="line">1</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">2</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">3</div><div class="line">The quick brown fox jumps over the lazy dog.</div><div class="line">4</div><div class="line">The quick brown fox jumps over the lazy dog.</div></pre></td></tr></table></figure>
-<p>sed编辑器在实际的文本行出现前打印了行号。如果你要在数据流中查找特定文本模式的话，等号命令用起来非常方便，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed -n '/number 4/&#123;</div><div class="line"><span class="meta">&gt;</span> =</div><div class="line"><span class="meta">&gt;</span> p</div><div class="line"><span class="meta">&gt;</span> &#125;' test6.txt</div><div class="line">4</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>利用 -n 选项，你就能让sed编辑器只显示包含匹配文本模式的行的行号和文本。</p>
-<h4 id="列出行">列出行</h4>
-<p>列出（list）命令（l）可以打印数据流中的文本和不可打印的ASCII字符。任何不可打印字符要么在其八进制值前加一个反斜线，要么使用标准C风格的命名法（用于常见的不可打印字符），比如，来代表制表符。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data9.txt </div><div class="line">This	line	contains	tabs.</div><div class="line">biotest@ubuntu:~/sed$ sed -n 'l' data9.txt</div><div class="line">This\tline\tcontains\ttabs.$</div></pre></td></tr></table></figure>
-<p>制表符的位置使用。行尾的美元符表示换行符。</p>
-<h3 id="使用sed处理文件">使用sed处理文件</h3>
-<h4 id="写入文件">写入文件</h4>
-<p><code>w</code>选项用于向文件写入行，该选项的命令格式为<code>[address] w filename</code>，其中<code>filename</code>可以使用相对路径或绝对路径，并且用户要有文件的写权限，地址可以是sed中支持的任意类型的寻址方式，例如单个行号、文本模式、行区间或文本模式。</p>
-<p>下面的例子是将数据流中的前两行打印到一个文本文件中。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '1,2w test.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ cat test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">biotest@ubuntu:~/sed$ cat test.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div></pre></td></tr></table></figure>
-<p>如果不想让行显示到STDOUT上，可以用sed命令的-n选项。如果要根据一些公用的文本值从主文件中创建一份数据文件，比如下面的邮件列表中的，那么w命令会非常好用，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data11.txt</div><div class="line">Zhang San</div><div class="line">Li Si</div><div class="line">Wang Er</div><div class="line">Liu Qi</div><div class="line">biotest@ubuntu:~/sed$ sed -n '/Zhang/w Zhang.txt' data11.txt</div><div class="line">biotest@ubuntu:~/sed$ cat Zhang.txt </div><div class="line">Zhang San</div></pre></td></tr></table></figure>
-<p>sed编辑器会只将包含文本模式的数据写入目标文件。</p>
-<h4 id="从文件读取数据">从文件读取数据</h4>
-<p>取（read）命令（r）允许用户将一个独立文件中的数据插入到数据流中。读取命令的格式为<code>[address]r filename</code>，其中filename参数指定了数据文件的绝对路径或相对路径，在读取命令中使用地址区间，只能指定单独一个行号或文本模式地址。sed编辑器会将文件中的文本插入到指定地址后，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat data12.txt</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div><div class="line">biotest@ubuntu:~/sed$ sed '3r data12.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>使用文本模式进行读取，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/number 2/r data12.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div></pre></td></tr></table></figure>
-<p>如果需要在数据流的末尾添加文件，需要使用美元符号，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '$r data12.txt' test6.txt</div><div class="line">This is line number 1.</div><div class="line">This is line number 2.</div><div class="line">This is line number 3.</div><div class="line">This is line number 4.</div><div class="line">This is an added line.</div><div class="line">This is the second added line.</div></pre></td></tr></table></figure>
-<p>读取命令的另一个很有用的用法是和删除命令配合使用：利用另一个文件中的数据来替换文件中的占位文本。举例来说，假定你有一份套用信件保存在文本文件中，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ cat notice.std </div><div class="line">Would the following people:</div><div class="line">LIST</div><div class="line">please report to the ship's captain.</div></pre></td></tr></table></figure>
-<p>套用信件将通用占位文本 LIST 放在人物名单的位置。要在占位文本后插入名单，只需读取 命令就行了。但这样的话，占位文本仍然会留在输出中。要删除占位文本的话，你可以用删除命 令。结果如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ sed '/LIST/&#123;</div><div class="line"><span class="meta">&gt;</span> r data11.txt</div><div class="line"><span class="meta">&gt;</span> d</div><div class="line"><span class="meta">&gt;</span> &#125;' notice.std</div><div class="line">Would the following people:</div><div class="line">Zhang San</div><div class="line">Li Si</div><div class="line">Wang Er</div><div class="line">Liu Qi</div><div class="line">please report to the ship's captain.</div></pre></td></tr></table></figure>
-<p>现在占位文本已经被替换成了数据文件中的名单。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/06/Experiment/病毒包装笔记(7)-第三代慢病毒包装笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/06/Experiment/病毒包装笔记(7)-第三代慢病毒包装笔记/" itemprop="url">病毒包装笔记(7)-第三代慢病毒</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-06T12:02:00+08:00">
-                2018-05-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,283
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>最近在国内某公司买了一个慢病毒质粒，公司的人说可以用来包慢病毒，也可以用来瞬转。但是我发现这个质粒上没有<code>3'UTR</code>和<code>5' UTR</code>，我怀疑不能用来包慢病毒，公司说可以，但要用他们的试剂盒。我问了一下师兄，师兄说，这种质粒可能是第三代慢病毒包装质粒，试剂盒里的主要试剂就是包含三种包装质粒的混合液。我们实验室用的是第二代病毒包装系统，两个包装质粒，一个目的质粒，因此我对这种质粒包装系统并不清楚。现在查了一些三代包装系统的资料，现在总结如下。</p>
-<h2 id="慢病毒的成分">慢病毒的成分</h2>
-<p>现在的慢病毒包装系统通常包括几个质粒，这几个质粒上分别含有慢病毒复制的成分，这样做的目的就是为了增加安全性，毕竟如果只用一个成分的话，危险系数很高，人一旦接触这种病毒就有可能遇到危险。而把这几个成分分散在几个质粒中，很难在体外形成危险的病毒颗粒。第二代慢病毒包装系统含有3个质粒，第3代慢病毒包装系统含有4个质粒。这两代病毒包装系统都含有以下相同的成分：</p>
-<p>第一，编码目的蛋白或转录目的基因的转移质粒。其实就是你自己的目的质粒，也就是通常需要自己做载体的质粒。目的基因的两侧都含有长末端重复序列（LTR，long terminal repeat），LTR的作用就是辅助目的基因插入到宿主细胞的基因组。许多慢病毒质粒都是基于HIV-1病毒改造的。为了安全目的，这些目的质粒的复能能力并不完全，它们的<code>3'LTR</code>有所删减，这样病毒插入到基因组后会自我失活（self-inactivating）（SIN）。</p>
-<p>第二，包装质粒，毒包装的结构蛋白编码质粒。</p>
-<p>第三，包膜质粒，编码蛋白质外壳。</p>
-<p>第二代慢病毒利用病毒的LTR启动子用于基因的表达，第三代慢病毒利用一个杂合的LTR启动子进行基因表达。</p>
-<h2 id="第二代慢病毒">第二代慢病毒</h2>
-<p>下图是第二代慢病毒系统：</p>
-<div class="figure">
-<img src="https://media.addgene.org/data/easy-thumbnails/filer_public/cms/filer_public/56/36/563610a3-a100-4f87-9d10-309cf106dfe7/geneticorganizationoflentiviruses_1.jpg__450x255_q85_subsampling-2_upscale.png">
-
-</div>
-<p>这个系统含有3个质粒，第1个质粒：包装质粒，它编码Gag，PoI，Rev与Tat基因。第2个质粒：包膜质粒，含有VSV-G，编码蛋白Env。第3个质粒：目的质粒，含有病毒的LTRs和psi包装信号（图片未画出），除非有内部启动子，否则这个目的质粒的目的基因是由<code>5'LTR</code>驱动的，它是一个弱启动子，需要Tat元件 的来激活它。所有的第2代慢病毒目的质粒必须要用第2代慢病毒包装系统，因此它的LTR是Tat依赖性的。</p>
-<h2 id="第三代慢病毒">第三代慢病毒</h2>
-<p>第3代慢病毒如下所示：</p>
-<div class="figure">
-<img src="https://media.addgene.org/data/easy-thumbnails/filer_public/cms/filer_public/7f/54/7f549fd8-1c37-4448-a2d3-227e5c24c550/3rdgenerationplasmids.png__350x194_q85_subsampling-2_upscale.png">
-
-</div>
-<p>设计第3代病毒的目的主要还是提高安全性。在第3代病毒中，将第2代病毒的包装质粒分成了2个质粒，一个编码Rev，另外一个编码Gag和PoI。虽然第3代病毒更加安全了，但是它的效率却降低了。除此之外，第3代病毒删除了Tat元件，并且在目的质粒中引入了一个嵌合了<code>5'LTR</code>的异源启动子。这种目的质粒基因的启动子并不依赖于Tat元件。第3代病毒的目的质粒可以使用第2代或第3代的包装质粒，也就是说第3代慢病毒的目的质粒兼容第2代的包装系统。</p>
-<h2 id="第二代慢病毒与第第三代病毒的区别">第二代慢病毒与第第三代病毒的区别</h2>
-<table>
-<colgroup>
-<col width="10%">
-<col width="41%">
-<col width="47%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>特点</th>
-<th>第2代慢病毒</th>
-<th>第3代慢病毒</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>目的质粒</td>
-<td>只能被含有TAT的2代病毒包装</td>
-<td>可以被第2代和第3代病毒包装系统包装</td>
-</tr>
-<tr class="even">
-<td>包装质粒</td>
-<td>一个质粒上含有Gag，PoI，Rev，Tat（也就是psPAX2）</td>
-<td>2个质粒，一个编码Gag和PoI；另外一个质粒编码Rev（也就是pMDLg/pRRE和pRSV-Rev）</td>
-</tr>
-<tr class="odd">
-<td>包膜质粒</td>
-<td>可替换，通常用于编码VSV-G（pMD2G）</td>
-<td>可替换，通常用于编码VSV-G（pMD2G）</td>
-</tr>
-<tr class="even">
-<td>案例性</td>
-<td>安全。复能能力不完全，使用编码各种HIV基因的3个质粒。</td>
-<td>更安全，复制能力不完全，有自身失活性（SIN）。使用4个质粒来替换2代慢病毒的3个质粒，删除了Tat元件。</td>
-</tr>
-<tr class="odd">
-<td>LTR病毒启动子</td>
-<td>广泛型</td>
-<td>杂合：删除了部分的5’LTR，与另外一个异源增强子/启动子融合，例如CMV或RSV。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="第三代病毒包装系统的过程">第三代病毒包装系统的过程</h2>
-<p>其实买的目的质粒虽然是三代病毒包装系统的，但是完全可以用二代慢病毒包装系统来替代，用PMD2G和psPAX2，外加目的质粒进行转染。</p>
-<h2 id="参考资料">参考资料</h2>
-<p>https://www.addgene.org/viral-vectors/lentivirus/lenti-guide/</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4994,7 +4958,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">187</span>
+                  <span class="site-state-item-count">189</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -5016,7 +4980,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -5092,7 +5056,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共710.8k字</span>
+  <span class="post-count">博客全站共725.3k字</span>
 </div>
 
         

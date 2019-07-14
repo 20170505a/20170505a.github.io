@@ -259,6 +259,1003 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/06/StatQuest/生物统计-StatQuest学习笔记23-RNA-seq简介/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/06/StatQuest/生物统计-StatQuest学习笔记23-RNA-seq简介/" itemprop="url">StatQuest学习笔记23——RNA-seq简介</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-06T12:10:54+08:00">
+                2018-07-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
+                    <span itemprop="name">生统之StatQuest</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,512
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  16
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言主要内容">前言——主要内容</h2>
+<p>这篇笔记是StatQuest系列笔记的第58节，主要内容是讲RNA-seq的原理。StatQuest系列教程的58到62节是协录组测序的内容。</p>
+<h2 id="rna-seq研究的是什么">RNA-seq研究的是什么</h2>
+<p>我们先来看一个案例，在下面的这个案例中，蓝色的细胞是一群正常的神经细胞，红色的细胞是一群突变的神经细胞。其中，突变的神经细胞表型与正常的神经细胞表型不同，此时，我们想知道，是什么遗传机制导致了这两群细胞表型的差异，这就意味着，我们要研究一下这两种细胞基因表达的差异，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182928.jpg">
+
+</div>
+<p>接下来，我们就来看一下，怎么找出这两群细胞基因表达的差异。</p>
+<p>首先，根据高中的生物知识我就知道，一个细胞都有一群染色体（其数目因物种的不同而异），每条染色体上都有一些基因，在这些基因中，有些基因处于活跃状态，在下图中，这些活跃基因上面的波形图案表示这些基因mRNA的转录本，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182933.jpg">
+
+</div>
+<p>但是，还有一些基因是不活跃的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182938.jpg">
+
+</div>
+<p>而高通量测序技术就能告诉我们，哪些基因是活跃的，以及它们的转录水平是多少，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182945.jpg">
+
+</div>
+<p>那么我们就可以通过RNA-Seq技术检测一下正常细胞的基因表达，再检测一下突变细胞的基因表达，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182949.jpg">
+
+</div>
+<p>然后我们比较一下这两种细胞基因表达的差异，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182952.jpg">
+
+</div>
+<p>例如，在这个案例中，我们就可以发现，经过RNA-Seq检测后，基因1的转录水平在这两种细胞内是没有差异的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182956.jpg">
+
+</div>
+<p>但是，基因2的转录则有很大的差异，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183002.jpg">
+
+</div>
+<p>基因3的转录水平也有差异，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183005.jpg">
+
+</div>
+<h2 id="rna-seq的步骤">RNA-Seq的步骤</h2>
+<p>RNA-Seq主要有三个步骤，分别是第一：建库；第二，测序；第三，数据分析，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183019.jpg">
+
+</div>
+<h3 id="第一步建库">第一步：建库</h3>
+<p>在这一步，我们就以Illumina的实验流程和测序仪为标准进行讲解，其他公司的流程和测序仪可能略有出入，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183025.jpg">
+
+</div>
+<p>建库又分这些步骤：</p>
+<p>第一步，提取RNA；</p>
+<p>第二步，将RNA打断成小的片段，打断的目的主要是因为RNA的长度有几千个碱基，而测序仪的读长只有200到300个bp，因此要进行打断，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183028.jpg">
+
+</div>
+<p>第三步，将RNA反转录为DNA，这一步的目的在于，双链DNA比RNA更加稳定，双链DNA更容易扩增与修饰，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183032.jpg">
+
+</div>
+<p>第四步，添加接头。接头主要发挥两个作用，第一，使测序仪识别加了接头的片段，因为接头上的序列与测序仪芯片上序列互补；第二，添加接头可以在一次测序中区分不同的样本，因为不同的样本可以使用不同的接头，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183036.jpg">
+
+</div>
+<p>但我们需要注意的是，在加接头这个步骤中，它的效率并不是100%的，有些片段并不会被加上接头，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183045.jpg">
+
+</div>
+<p>第五步：PCR扩增，这一步的扩增引物是接头上序列，只有那些加上了接头的序列才能扩增，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183050.jpg">
+
+</div>
+<p>第六步：质控。这一步主要是看两个指标：第一，确定文库的浓度，第二，确定文库的长度。确定文库的浓度方法就是（根据我们实验室自己的流程），用Qubit检测一下文库的浓度，这个浓度比较粗略，不能当成精确的数值，接着，使用qPCR的方法，对文库进行绝对定量，经过qPCR绝对定量方法得到的文库浓度才是最终的文库浓度。在确定文库片段的长度方面，通常是使用Agilent 2100进行检测，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183053.jpg">
+
+</div>
+<h3 id="第二步测序">第二步：测序</h3>
+<p>测序测的其实就是文库，我们假设DNA片段的序列是下图的左侧部分，它是垂直的，因为在测序仪的芯片上，文库就是垂直排列的，在测序芯片上的一个小方格（grid）中将近有4亿条这样的序列，为了方便讲解，我们在下图的右侧只列出4条这样的序列，这样的一个小方格被称为flowcell，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183111.jpg">
+
+</div>
+<p>下图是一个flowcell：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183117.jpg">
+
+</div>
+<p>在测序仪所使用的测序试剂中，含有一些特殊的碱基，这些碱基带有荧光探针，这些荧光探针按其结合碱基的不同，其颜色也不同，当测序仪开始测序时，这些带有荧光探针的碱基就会结合到DNA片段上第1个碱基，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183121.jpg">
+
+</div>
+<p>一旦这些带有荧光探针的碱基结合到DNA片段的碱基上，此时测序仪就会拍下一张照片，如果从上往下看，就是下图中红框所示的图片，这张图片会告诉测序仪，左下角的碱基是A，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183127.jpg">
+
+</div>
+<p>右下角的碱基就是G，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183130.jpg">
+
+</div>
+<p>左上角与右上角的碱基就是C，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183134.jpg">
+
+</div>
+<p>拍照结束后，测序仪会把这些这些碱基上的探针给冲走（测序试剂中有其他的成分，可以切掉这些荧光探针），此时，这些携带有探针的碱基就成了普通碱基，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183138.jpg">
+
+</div>
+<p>然后再加入含有荧光探针的碱基，再次与片段结合，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183142.jpg">
+
+</div>
+<p>在第二次结合后，测序仪会拍照，从上往下看，就是下图红框内的图片，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183152.jpg">
+
+</div>
+<p>这样测序仪就知道，左下角的碱基是C，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183156.jpg">
+
+</div>
+<p>右下角的碱基是G，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183203.jpg">
+
+</div>
+<p>左上与右上的碱基是T，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183218.jpg">
+
+</div>
+<p>第2张图片识别后，再次用试剂切掉这些碱基上的荧光探针，并冲走，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183223.jpg">
+
+</div>
+<p>再进行第3次反应，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183228.jpg">
+
+</div>
+<p>总之，测序仪会不断地循环这个过程，直到测完所有的碱基，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183233.jpg">
+
+</div>
+<p>不过在实际的测序过程，这些DNA链的密度非常大，构成了一个密度极高的颜色矩阵，这个过程中也会产生一些问题，在下面我们就用一个简单的矩阵来说明这个问题，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183237.jpg">
+
+</div>
+<p>有时候，一个荧光探针的亮度可能不够，此时测序仪就没有足够的把握能够识别这种颜色，而在测序的过程中，根据这些探针的亮度，会生成一个质量评分（Quality score），这个质量评分反映了测序仪对这个颜色识别的可信程度，像在下面的这个图片中，这个比较暗的点可能就会得到一个比较低的质量评分，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183240.jpg">
+
+</div>
+<p>还有另外一种情况可能会得到一个质量评分，就是在某个区域内，相同的碱基数目太多，都呈现出一种颜色，如下图绿框所示部分，这种现象称为多样性差（low diversity），这种情况下，由于存在着大量的单一荧光，测序仪很难识别单独的碱基，这些颜色会混到一起。当测序仪测序时，对于文库中前几个碱基的识别很容易出现多样性差的问题，这是因为在刚开始的时候，测序仪要识别DNA片段位于芯片上的位置时，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183244.jpg">
+
+</div>
+<p>我们看一下测序后的原始数据，下图是测序的一个read的信息，它由4行构成，如下所示</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183251.jpg">
+
+</div>
+<p>第1行通常是由<code>@</code>开头的，它对于每条read，它都有唯一的ID，如下所示；</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183256.jpg">
+
+</div>
+<p>第2行是测序的文库片段的碱基序列，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183300.jpg">
+
+</div>
+<p>第3行是一个加号，它通常是空的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183300.jpg">
+
+</div>
+<p>第4行是质量信息，它用一个字符表示这个字符对应的碱基的质量评分，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183309.jpg">
+
+</div>
+<p>一次测序通常有4亿条reads数，一共会产生16亿行信息，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183315.jpg">
+
+</div>
+<h3 id="数据预处理">数据预处理</h3>
+<p>我们现在已经知道了原始数据，以及原始数据如何产生的，那么我们下面要做这三件事情：</p>
+<p>第一， 过滤掉垃圾reads；</p>
+<p>第二，将高质量的reads比对到基因组上；</p>
+<p>第三，对每个基因的reads数进行统计，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183330.jpg">
+
+</div>
+<h4 id="过滤垃圾reads">过滤垃圾reads</h4>
+<p>垃圾reads是指：第一，某些reads的碱基质量低；第二，这些reads是明显的结合错误（第二种低质量的reads我不太清楚，原文我也看不太懂，我个人理解就是两个接头直接连接在一起的read）。</p>
+<p>一条典型的read是一个DNA片段加上两个接头，但是在某些情况下，两个接头会直接加在一起，这就是垃圾reads，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183335.jpg">
+
+</div>
+<h4 id="将read比对到基因组">将read比对到基因组</h4>
+<p>我们先看一下基因组上的碱基序列，由于基因组的碱基序列很长，我们只截取一段出来，如下图中的红框所示，把这条基因组的碱基打断，会生成这些短的碱基序列，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183339.jpg">
+
+</div>
+<p>此时，我们把基因组的这些片段加上索引，并记录下它们在染色体上的位置，就是下图蓝框中的部分，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183342.jpg">
+
+</div>
+<p>此时，我们把我们的测序read也打成小片段，就像上面的基因组打成小片段一样，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183347.jpg">
+
+</div>
+<p>然后把reads的小片段与基因组的小片段进行匹配，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183351.jpg">
+
+</div>
+<p>那些与reads的小片段匹配的基因组小片段就是这些read小片段在基因组上的位置（哪条染色体上，染色体的哪个位置），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183355.jpg">
+
+</div>
+<p>此时，我们可能有一个问题，为什么要把这些序列打断成小片段，这是因为即使reads与参考基因组在不是特别精确匹配的情况下，也能进行匹配，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183359.jpg">
+
+</div>
+<p>我们来看一个简单的例子，在下图中，某条read最左侧是A，而对应的基因组上并没有这个A（打个很简单的案例，我自己的基因组肯定与别人的基因组略有差异），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183403.jpg">
+
+</div>
+<p>即使这个小片段无法与基因组上相匹配，那么其它的小片段还是能够匹配的，此时我们仍然可以找到这条read来源于基因组的哪个位置，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714183407.jpg">
+
+</div>
+<h4 id="每个基因的reads计数">每个基因的reads计数</h4>
+<p>一旦我们知道了某条read的位置（也就是说知道了这条read在哪条染色体上，以及在染色体的哪个位置上），那么我们就可以看一下这条read是否能够落在某个基因的坐标中（或者是某些其它感兴趣的区域），例如在下图中，我们列出了<code>Xkr4</code>和<code>Rp1</code>这两个基因的坐标，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185221.jpg">
+
+</div>
+<p>当我们统计了每个基因的reads数后，我们就会得到下面这样的矩阵，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185225.jpg">
+
+</div>
+<p>第1列是基因名，在人类中，人类大概有20000个基因，因此这个矩阵的大概有2万行（下图中并没列完所有的基因），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185229.jpg">
+
+</div>
+<p>剩余的几列是每个样本对应的基因的reads数，这里的样本数目大概是6到800个，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185232.jpg">
+
+</div>
+<p>对于大部分的RNA-Seq来说，一个“样本”通常是一群细胞的平均值（通常是600万个细胞），一次实验，一般有3个正常的样本，3个疾病状态的样本，总共就是6个样本，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185238.jpg">
+
+</div>
+<p>而对于单细胞测序（Single-cell RNA-Seq）来说，每个细胞就是一个样本，因此这个矩阵中会出现有几百个样本，例如800多个，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185242.jpg">
+
+</div>
+<p>我们现在看某一行数据，如下所示，在这行数据中，我们可以看到每个样本中，每个特定基因的reads数，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185246.jpg">
+
+</div>
+<p>如果这个矩阵是单细胞测序的数据，那么这个矩阵有2万行（基因数目），800多列（样本数），大概有1600万个数值，这是一个极大的矩阵，并且随着测序技术发展，所测样本数目的增多，这样的矩阵会越来越大，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185249.jpg">
+
+</div>
+<p>在进行最终的数据分析之前，我们还要对数据进行均一化，这是因为每个样本比对到基因组上的reads数都不同，这可能是由于在测序时，有些样本的reads质量低，而另外某些样本的浓度略大，导致其总的reads数略高，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185253.jpg">
+
+</div>
+<p>例如，在下图中，Sample 1有635个reads比对上了，而Sample 2则有1270个reads数比对上了，Sample 2是Sample 1的两倍。但是这无法说明，Sample 2转录的基因是Sample 1的2倍，相反，这只能说明，Sample 2中的低质量reads数少，它在测序时，被测序仪识别的荧光更多而已，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185256.jpg">
+
+</div>
+<p>但是，我们发现，Sample 2中基因的reads数貌似是Sample 1中的基因reads数的2倍，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185259.jpg">
+
+</div>
+<p>A2M基因也是如此，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185303.jpg">
+
+</div>
+<p>因此，我们需要调整每个基因的reads数，从这样才能真正反映出不同样本中比对上的reads数之间的差异，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185307.jpg">
+
+</div>
+<p>均一化最简单的方法就是在每个样本中，每个基因的reads数除以总的比对上的reads数，不过，还有其他更复杂的方法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185310.jpg">
+
+</div>
+<p>我们再回到最初的正常细胞与突变细胞的比较，我们先有了这两群细胞，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185315.jpg">
+
+</div>
+<p>然后提取RNA，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185319.jpg">
+
+</div>
+<p>随后，进行测序，比对，统计每个基因的reads数，然后均一化，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185324.jpg">
+
+</div>
+<p>此时，开始数据处理。</p>
+<h3 id="第三步数据处理">第三步：数据处理</h3>
+<p>数据处理的第一步通常都是相同，那就是绘图，我们要记住，这个表达矩阵非常大，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185339.jpg">
+
+</div>
+<p>如果每个样本只有2基因，那么绘图非常简单，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185345.jpg">
+
+</div>
+<h4 id="第1步绘图">第1步：绘图</h4>
+<p>首先我们用XY来替代这两个基因，根据它们的表达水平来绘图，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185350.jpg">
+
+</div>
+<p>但是，我们有2万个基因，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185354.jpg">
+
+</div>
+<p>因此我们会用PCA或者是类似的方法来绘图，PCA能够降低坐标轴的数目（也就是把2万个基因对应的2万个坐标轴给降低到3个或2个），从而更加直观地表现数据，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185359.jpg">
+
+</div>
+<p>下图是我们利用PCA绘制的图形，正常的细胞是<code>wt</code>，突变的 细胞是<code>ko</code>，其中正常的细胞集中在左下角，敲除的细胞集中在右下方，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185402.jpg">
+
+</div>
+<p>从图中我们可以发现，这两类数据的差异主要体现在x轴上，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185406.jpg">
+
+</div>
+<p>相反，Y轴的差异没那么大，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185412.jpg">
+
+</div>
+<p>这就说明，<code>wt</code>组与<code>ko</code>组的差异主要集中于X轴，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185416.jpg">
+
+</div>
+<p>但是，当我们进行下一步的分析时，就需要排除<code>wt2</code>这个样本了，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185419.jpg">
+
+</div>
+<p>下图是单细胞测序的PCA图，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185424.jpg">
+
+</div>
+<p>上面的不同颜色绘图依据是这些细胞行为的不同，绿色表示的是静止的细胞，橘黄色表示的是迁移到培养皿周围的细胞，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185429.jpg">
+
+</div>
+<p>大多数橘黄色的细胞与绿色的细胞是不同的，但是在左侧绿色的细胞中，也有几个是橘黄色的细胞，这说明这几个细胞的表型与绿色细胞更接近，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185435.jpg">
+
+</div>
+<p>如果我们想要研究上面两个大群细胞的差异，那么此时我们就要排除左下那几个橘黄色的细胞，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185438.jpg">
+
+</div>
+<p>总之，在对数据绘图后，我们可以从中得到这些信息：</p>
+<ol style="list-style-type: decimal">
+<li>找到感兴趣的差异部分；</li>
+<li>在进行下游的分析之前，应该排除哪些数据，如下所示：</li>
+</ol>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185441.jpg">
+
+</div>
+<h4 id="第2步寻找差异基因">第2步：寻找差异基因</h4>
+<p>绘图后，我们就需要找到正常样本与突变样本有哪些差异表达基因，在分析差异基因时，通常使用R中的<code>edgeR</code>或<code>DESeq2</code>，它们通常以下图进行展示，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185446.jpg">
+
+</div>
+<p>其中红色部分是正常样本与突变样本的差异基因，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185449.jpg">
+
+</div>
+<p>中间的黑色部分是没有差异的基因，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185454.jpg">
+
+</div>
+<p>其中X轴表示的是基因的转录水平，它的单位是logCPM，其中CPM是counts per million的缩写，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185458.jpg">
+
+</div>
+<p>Y轴则是表示在正常样本与突变样本之间，差异基因的差异程度有多大，单位是logFC，即log(fold change)，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185501.jpg">
+
+</div>
+<p>此时我们已经找到了感兴趣的基因（也就是差异基因），此时我们要做哪些事情呢？</p>
+<p>第一，如果你知道你找的是什么（我的理解就是找的是具体的哪个基因），那么就要做实验，看能否验证你的假设；</p>
+<p>第二，如果你不知道你接下来做什么，那么就你可以看一下这些差异基因集能否在某些通路上富集，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185504.jpg">
+
+</div>
+<p>每个样本对于每个特定的基因，它的reads数都不同，</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/05/StatQuest/生物统计-StatQuest学习笔记22-交叉验证/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/05/StatQuest/生物统计-StatQuest学习笔记22-交叉验证/" itemprop="url">StatQuest学习笔记22——交叉验证</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-05T12:10:54+08:00">
+                2018-07-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
+                    <span itemprop="name">生统之StatQuest</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,320
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言主要内容">前言——主要内容</h2>
+<p>这篇笔记是StatQuest系列视频的第57节，主要内容是交叉验证。</p>
+<h2 id="选择哪些方法">选择哪些方法</h2>
+<p>我们先看一个简单的数据，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181835.jpg">
+
+</div>
+<p>我们要使用下面左侧的这些变量来预测右侧的心脏病，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181840.jpg">
+
+</div>
+<p>当我们遇到一个新的病人时，检测这些指标（左侧）来预测是否得了心脏病（右侧），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181844.jpg">
+
+</div>
+<p>此时，我们就面临一个问题，使用哪种方法来预测这个病人是否得有心脏病？如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181847.jpg">
+
+</div>
+<p>是采用逻辑回归，还是KNN（K邻近算法），支持向量机（SVM）等等，如下所示：</p>
+<h2 id="交叉验证">交叉验证</h2>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181853.jpg">
+
+</div>
+<p>此时就需要进行交叉验证（cross validation），用于比较不同的机器学习方法，然后在实际中运用，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181858.jpg">
+
+</div>
+<p>我们看下面的蓝色柱子，它代表了我们收集到的，没有心脏病患者的数据，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181901.jpg">
+
+</div>
+<p>对于这个数据，我们需要做2件事情，如下所示：</p>
+<p>第一，估计机器学习方法的参数。例如对于逻辑回归来说，我们需要使用一些数据来估计这个曲线的形状，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181905.jpg">
+
+</div>
+<p>用机器学习的术语来说，用于估计参数的过程叫做“训练算法”（training the algorithm），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181911.jpg">
+
+</div>
+<p>第二件事情就是，我们要评估一下所选的这个方法工作起来到底行不行。也就是说，我们需要评估一下，找出的这条曲线能否对新的数据进行很好地归类，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181915.jpg">
+
+</div>
+<p>用机器学习的术语来讲，评估一个方法的好坏叫做“检验算法”（testing the algorithm），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181920.jpg">
+
+</div>
+<p>综上所述，我们对于选定的方法，需要做两件事情，第一，训练机器学习方法；第二，检验机器学习方法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181925.jpg">
+
+</div>
+<p>比较麻烦的一点就是如果使用所有的数据来估计参数（例如训练算法），那么就没有余下的数据来测试这个算法的好坏，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181930.jpg">
+
+</div>
+<p>如果重新使用相同的数据用于训练，也用于检验，也不合适，因为我们要测试算法所使用的数据不能是训练数据，简单来说，就是不能同一批数据既用于训练，也用于检验，这样你无法判断这个算法是好是坏，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181935.jpg">
+
+</div>
+<p>一种比较好的思路就是，对于同一批数据，使用这批数据的75%用于训练，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181939.jpg">
+
+</div>
+<p>剩下的25%用于检验，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181943.jpg">
+
+</div>
+<p>然后我们就能通过查看测试数据中的归类情况来比较算法的好坏，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714181947.jpg">
+
+</div>
+<h2 id="交叉验证原理">交叉验证原理</h2>
+<p>但是，我们是怎么知道把数据分为前75%和后25%是一种最好的方法呢，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182012.jpg">
+
+</div>
+<p>为什么不使用前25%的数据用于检验算法，或者是使用中间25%的数据来检验算法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182016.jpg">
+
+</div>
+<p>对此，不用多虑，因为无论选择哪一部分数据，交叉验证都会使用到这些数据，最终会把结果汇总出来，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182020.jpg">
+
+</div>
+<p>例如，交叉验证在开始的时候，使用前75%的数据来训练算法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182025.jpg">
+
+</div>
+<p>用剩下的25%数据来检验算法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182028.jpg">
+
+</div>
+<p>然后我们看一下这个算法对于测试数据的归类情况，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182032.jpg">
+
+</div>
+<p>然后，我们再看一下，使用其他的75%数据来训练算法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182036.jpg">
+
+</div>
+<p>使用中间偏下的那25%数据用于检验，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182040.jpg">
+
+</div>
+<p>记录一下测试的结果，4个正确，2个错误，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182045.jpg">
+
+</div>
+<p>就像上面的过程一样，不断地采用各种75%的数据来训练，25%的数据来检验，同时记录下每次检验的结果，等等，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182048.jpg">
+
+</div>
+<p>最终，每一部分数据都用于了检验，然后我们就可以比较不同的算法检验的结果，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182051.jpg">
+
+</div>
+<p>从上面的结果来，SVM这个算法最好，因为它的正确率最高，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182055.jpg">
+
+</div>
+<p>我们需要注意的是，在这个案例中，我们把数据分成了4份，这种方法称为四重交叉验证（Four-Fold Cross Validation），不过个数字不一定是4，也可以是其他的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182059.jpg">
+
+</div>
+<p>我们看一个比较极端的案例，在这个案例中，我们把每一个数据都当成一份，这种方法称为留一法交叉验证（Leave One Out Cross Validation），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182106.jpg">
+
+</div>
+<p>但在实际计算过程中，把数据分成10份也是常见的方法，这种方法称为十重交叉验证（Ten-Fold Cross Validation），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182110.jpg">
+
+</div>
+<p>调整参数不是估计值，是某种猜测值，当我们要使用某个涉及一个“调整参数”（tuning parameter）的方法时，例如岭回归（ridge regression）就有一个调整参数，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182114.jpg">
+
+</div>
+<p>此时，我们就可以使用十重交叉验证来找到这个最佳的调整参数，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714182120.jpg">
+
+</div>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/04/StatQuest/生物统计-StatQuest学习笔记21-逻辑回归/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4724,1362 +5721,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/23/StatQuest/生物统计-StatQuest学习笔记14-PCA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/23/StatQuest/生物统计-StatQuest学习笔记14-PCA/" itemprop="url">StatQuest学习笔记14——PCA</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-23T12:10:54+08:00">
-                2018-06-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  8,396
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  32
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言主要内容">前言——主要内容</h2>
-<p>这篇笔记是StatQuest系列视频教程的第39-43节，其中39节的内容是PCA；第40节的内容是PCA的基本思想；第41小节的内容还是PCA，此处与第39小节的内容重复，不记笔记，略过；第42节的内容是R语言与PCA；第43节的内容是Python与PCA。为了使笔记更有条理，笔记的顺序是按照视频教程40，39，42，43节的顺序进行的。</p>
-<h2 id="pca的基本思想">PCA的基本思想</h2>
-<p>我们先从最简单的案例入手，先看下面的一堆绿色的圆圈，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153157.jpg">
-
-</div>
-<p>我们可以把这些绿色圆圈当成一群正常的细胞，当然了，如果你不是学生物的，你也可以把它们理解成一群人，一群卡车，一群城市等，总之是一群事物。虽然这一群细胞看上去是一样的（至少表面上一样），但是，它们本质上也有可能不一样，例如像下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153204.jpg">
-
-</div>
-<p>这群细胞分成了三群，不过从直观上来看，你太不容易能看出这一群细胞划分成了三群。</p>
-<p>为了能够严格地划分这些细胞，我们可以对这些细胞进行测序，确认这些细胞中有哪些基因处于活跃状态，我们就能知道这些细胞的功能，这样就知道了这些细胞的种类，当然了，如果这是一群人，我们可以测量他们的身高，血压等，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153208.jpg">
-
-</div>
-<p>现在我们测了这些细胞的基因，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153212.jpg">
-
-</div>
-<p>假设，我们此时没有那么多细胞，只有2个细胞，那么我们就可以把这两个细胞的所有基因画在一个坐标上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153217.jpg">
-
-</div>
-<p>就像上图显示的这样，基因1在细胞1中的高表达，而在细胞2中低表达，而基因9正好相反，在细胞1中低表达，而在细胞2中高表达，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153221.jpg">
-
-</div>
-<p>从我们所列出的数据来看，细胞1和细胞2的基因表达水平很多呈相反的水平，那么我们很容易就知道，这两个细胞必定不是同一种类的细胞，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153225.jpg">
-
-</div>
-<p>此时，我们把问题升级一下，我们有3个细胞，现在利用二维坐标系分别绘制出这三个细胞两两之间的基因表达水平，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153229.jpg">
-
-</div>
-<p>但这种两两之间的比较太麻烦了，我们可以直接把它们放到一个三维坐标系中进行比较，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153233.jpg">
-
-</div>
-<p>在这个三维坐标系中，它的三个坐标轴分别表示细胞1，细胞2，细胞3，我们通过旋转坐标轴就可以发现每两个细胞之间的关系。</p>
-<p>现在把问题再进一步，如果我们有4个细胞，比较直观的手段就是分别画出这4个细胞两两的平面坐标系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153237.jpg">
-
-</div>
-<p>或者是画出一个四维的坐标系，像下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153241.jpg">
-
-</div>
-<p>但前面的方法就不太适用于这种情况，例如四维坐标就不太直观，此时我们可以采用主成分分析（PCA）的方法来对细胞分类。</p>
-<p>PCA可以将不同细胞之间的关系转换到一个平面坐标系中，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153245.jpg">
-
-</div>
-<p>此时我们可以发现，通过PCA这种方法，可以把一群细胞中高度相关的细胞聚集起来，像下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153249.jpg">
-
-</div>
-<p>为了能够更直观地说明这种分析方法，我们可以把不同的细胞换成不同的颜色，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153253.jpg">
-
-</div>
-<p>此时，我们再回到最初的问题上来，通过PCA方法可以把一群细胞中高度相关的细胞给区分开来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153258.jpg">
-
-</div>
-<h2 id="pca的结果解释">PCA的结果解释</h2>
-<p>此时我们来看一下，PCA的结果具体是什么含义，在PCA图中，它的坐标轴是按重要性进行排序的。其中PC1是第一主成分轴，它的重要性要强于PC2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153303.jpg">
-
-</div>
-<p>假如一个PCA长得是下面的这个样子，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153307.jpg">
-
-</div>
-<p>此时，如果左上角的绿点与左下角的红点的距离是d1，右下角的黄点与左下角红点的距离是d2，此时d1=d2的话，那么我们就可以认为，黄色点与红色点的差异要大于绿色点与红色点的差异（因为PC1的坐标是第一主成分），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153311.jpg">
-
-</div>
-<p>在我们了解了PCA之后，我们应该知道，PCA仅仅是一种划分不同数据类型的方法之一，此外，还有其他基于降维的统计学方法（dimension reduction），例如热图，t-SNE图，多维缩放（multi-dimensional scaling，MDS）等，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153315.jpg">
-
-</div>
-<h2 id="pca的计算原理">PCA的计算原理</h2>
-<h3 id="简单案例">简单案例</h3>
-<p>在这一部分，我们使用SVD（singular value decomposition，中文译名“奇异值分解”）的方法来计算PCA。我们先看一个简单的案例，在这个案例中，我们检测了6只不同小鼠的2个基因，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153325.jpg">
-
-</div>
-<p>其实我们可以把它再抽象化一下，把小鼠看成样本，基因看成2个变量，就像下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153358.jpg">
-
-</div>
-<p>我们还以小鼠的基因为例说明，如果我们只检测1个基因的话（Gene 1），那么我们根据基因1表达的情况，把小鼠的绘制到数轴上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153402.jpg">
-
-</div>
-<p>其中小鼠1，小鼠2，小鼠3的Gene 1表达水平比较高，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153406.jpg">
-
-</div>
-<p>而小鼠4，小鼠5，小鼠6的Gene 1水平则较低，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153409.jpg">
-
-</div>
-<p>虽然这个图形比较简单，但是，我们从中还是能得到一些信息的，例如小鼠1，小鼠2和小鼠3比较接近，小鼠4，小鼠5和小鼠6比较接近，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153413.jpg">
-
-</div>
-<p>如果我们检测了2个基因，那么我们可以绘制一个二维坐标系，横轴是Gene 1，纵轴是Gene 2，那么小鼠1，小鼠2和小鼠3会聚在一起，小鼠4，小鼠5和小鼠6会聚在一起，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153421.jpg">
-
-</div>
-<p>再进一步，如果我们检测了3个基因，那么我们可以绘制三维的坐标系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153425.jpg">
-
-</div>
-<p>在上图的这个3维坐系中，圆点越大，表示离你越近。</p>
-<p>再进一步，如果我们检测了4个基因，此时我们很难绘制出四维的坐标系，那么我们就需要进行PCA分析了，PCA可以把超过4个的基因降维成二维的坐标系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153429.jpg">
-
-</div>
-<p>在这个PCA的二维坐标系中，我们可以发现，小鼠4、小鼠5和小鼠6是一类，小鼠1，小鼠2和小鼠3是一类，它们的各自的基因表达模式也类似，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153433.jpg">
-
-</div>
-<p>PCA在对数据进行聚类（clustering）时有很大的价值，例如，经过PCA分析，在它的二维坐标轴上我们可以发现，Gene 3在x轴上对样本的区分有贡献最大（这里不太理解为什么直接就看出了Gene 3，我猜测可能是基因3在这两群小鼠中的分布比较明显，一组高，一组低），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153438.jpg">
-
-</div>
-<h3 id="计算原理">计算原理</h3>
-<p>为了理解PCA是如何进行计算的，我们还回最初2个基因的案例上来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153458.jpg">
-
-</div>
-<p>接着是计算过程。</p>
-<p>第一，我们根据所有的样本的这两个基因的表达情况绘制出它们的平面坐标系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153503.jpg">
-
-</div>
-<p>第二，计算Gene 1表达水平的均值，就是下图中x轴上红叉的所在位置，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153507.jpg">
-
-</div>
-<p>第三，计算Gene 2表达水平的均值，就是下图中y轴上红叉的所在位置，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153512.jpg">
-
-</div>
-<p>第四，有了Gene 1和Gene 2的这两个数值，我们就得到了整体数值的中心，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153516.jpg">
-
-</div>
-<p>此时，我们有了这个点（蓝叉所在位置）后，我们此时就不需要再看原始数据了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153521.jpg">
-
-</div>
-<p>第五，我们把所有的数据点各左下角移动，将数据的中心与原点<code>(0,0)</code>重合，就像下面的这个样子，从左图移成右图的样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153527.jpg">
-
-</div>
-<p>此时，虽然所有的数据点都移动了，但是每个点之间的相对距离是不变的，整体数据的中心就变成了原点<code>(0,0)</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153531.jpg">
-
-</div>
-<p>第六，我们找一条通过原点的直线，就像下面的这个样子，具体这条直线做什么的，先不用管：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153535.jpg">
-
-</div>
-<p>第七，旋转这条直线（红色虚线），使这条直线尽量匹配这些数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153539.jpg">
-
-</div>
-<p>第八，最终，最匹配数据的直线就是下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153545.jpg">
-
-</div>
-<h4 id="第1主成分的计算原理">第1主成分的计算原理</h4>
-<p>此时，我们可能有疑问，为什么这条直线是最匹配数据的，它的计算原理是什么，那么接着看。</p>
-<p>我们先回到最初的直线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153606.jpg">
-
-</div>
-<p>为了准确地找出最佳匹配所有数据的直线，PCA会将所有数据点都役射到这条直线上来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153610.jpg">
-
-</div>
-<p>此时，可以计算这些数据点到投射到这条直线上的距离，并且使这些距离最小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153614.jpg">
-
-</div>
-<p>除了可以计算数据点到直线的距离最小外，还要计算所有数据点投射到这条直线上的点（图中绿叉位置所在点）到原点的距离，使这个距离最大，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153618.jpg">
-
-</div>
-<p>如果你不理解上述的这种描述，那么还可以这么理解，当这条直线（红色虚线）尽量匹配这些数据点时，这些数据点到这条直线的距离是在缩小的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153623.jpg">
-
-</div>
-<p>同样的，这些数据点投射到直线上的点到原点的距离是加大的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153627.jpg">
-
-</div>
-<p>为了更好地以数学思维来理解这个过程，此时我们先看一个点的情况，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153631.jpg">
-
-</div>
-<p>这个点是固定的，它到原点的距离也是固定的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153635.jpg">
-
-</div>
-<p>换句话讲，当直线（红色虚线）在旋转的过程中，这个点到原点的距离是不会变的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153640.jpg">
-
-</div>
-<p>当直线旋转到某一位置时，我们将这个点投射到直线上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153644.jpg">
-
-</div>
-<p>此时，我们会得到一个直角，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153648.jpg">
-
-</div>
-<p>有了直角，我们就能得到如下的直角三角形，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153653.jpg">
-
-</div>
-<p>此时，我们把这个直角三角形的三条边命名为<code>a</code>，<code>b</code>,<code>c</code>，那么根据勾股定理，我们就会得到这个公式，即<span class="math inline">\({a}^2={b}^2+{c}^2\)</span>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153657.jpg">
-
-</div>
-<p>三角形的斜边<code>a</code>是不会变的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153701.jpg">
-
-</div>
-<p>如果直角边<code>b</code>变大的话，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153709.jpg">
-
-</div>
-<p>那么直角边<code>c</code>就会变小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153714.jpg">
-
-</div>
-<p>反之，也成立。而PCA计算的则是降低直角边<code>b</code>，也就是降低数据点投射到直线上的距离，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153718.jpg">
-
-</div>
-<p>同时，PCA还要保证投到到直线上的点到原点的距离最大，也就是说要求<code>c</code>边最大，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153722.jpg">
-
-</div>
-<p>通过上面利用直角三角形的解释，就比较容易理解PCA计算最佳匹配直线的思路了。此时，再回到起点，将所有的数据点投射到直线上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153727.jpg">
-
-</div>
-<p>然后计算某个点到原点为的距离，我们把它命名为<span class="math inline">\({d}_1\)</span>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153731.jpg">
-
-</div>
-<p>同理，计算第2点投射到直线上的点到原点的距离，命名为<span class="math inline">\({d}_2\)</span>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153735.jpg">
-
-</div>
-<p>计算剩余的点投射到直线上的点到原点的距离，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153740.jpg">
-
-</div>
-<p>然后把这些值的平方加起来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153744.jpg">
-
-</div>
-<p>此时，我们旋转直线，直到最终这个<code>SS</code>的距离最大（这个距离最大，也就是说数据点到直线的距离最小）为止，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153749.jpg">
-
-</div>
-<p>最终，得到了我们想要的直线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153754.jpg">
-
-</div>
-<p>此时，这条直线就叫第一主成分（Principal Component 1，简称PC1），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153758.jpg">
-
-</div>
-<p>有了这个直线，它的斜率就很容易计算出来了，经计算，PC1的斜率为0.25，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153805.jpg">
-
-</div>
-<p>这个斜率0.25如何理解呢？它表示的意思就是，每当我们在Gene 1（x轴坐标）前进4个单位时，在这个直线上的数据点在Gene 2上就增加1个单位，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153809.jpg">
-
-</div>
-<p>如果按照生物学意义来理解就是，这几个样本在Gene 1坐标轴上更加分散，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153813.jpg">
-
-</div>
-<p>而在Gene 2上的分散程度则较小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153818.jpg">
-
-</div>
-<p>我们可以根据鸡尾酒配方（cocktail recipe）来思考这个PC1（注：鸡尾酒是一种混合酒品，掺杂有不同的酒），例如为了生成PC1，我们可以加入4份的Gene 1，再加入1份的Gene 2，另外，我们可以发现，Gene 1与Gene 2的比值是4，它就说明在描述数据的分散程度方面，Gene 1这个基因更加重要，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153823.jpg">
-
-</div>
-<p>但在数学上，把这种鸡尾酒配方（cocktail recipe）称为是Gene 1和Gene 2的线性组合（linear combination），在统计学上，描述PC1也可以这样，即“PC1是几个变量的一个线性组合”，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153827.jpg">
-
-</div>
-<h4 id="第1主成分的特征值">第1主成分的特征值</h4>
-<p>紧接上面的案例，继续进行，还要计算一些东西。对于PC1来说，它的斜率是0.25，那么我们在Gene 1增加4个单位，在Gene 2上就会增加1个单位，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153831.jpg">
-
-</div>
-<p>那么根据勾股定理，我们就可以计算出红色箭头的长度，长度为4.12，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153846.jpg">
-
-</div>
-<p>当我们使用SVD（全称是Singular-value decomposition，中文是奇异值分解）进行PCA计算时，我们需要把这个红色箭头定义为1个单位，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153854.jpg">
-
-</div>
-<p>为了将这个红色箭头定义为1个单位，那么我们就要把这个三角形的各个连长都除以4.12，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153900.jpg">
-
-</div>
-<p>那么，除以4.12后，各个三角形的连长就成了这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153904.jpg">
-
-</div>
-<p>也就是说三角形的三个边长分别变成了1，0.242，0.97，不过构成PC1的线性组合，即Gene 1和Gene 2的比值还是不变的，仍旧为4，那么此时我们就可以说取0.97份的Gene 1和0.242份的Gene 2，就构成了PC1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153909.jpg">此时，我们再回想一下我们计算PC1的整个过程：</p>
-<ol style="list-style-type: decimal">
-<li>原始数据；</li>
-<li>最佳匹配直线；</li>
-<li>单位向量计算，如下所示：</li>
-</ol>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153914.jpg">
-
-</div>
-<p>图中的红色箭头是1个长度单位，它由0.97个Gene 1和0.242个Gene 2构成，它称为PC1的奇异向量（Singular vector），或者是特征向量（Eigenvector），而每个基因的比例则被称为载荷得分（Loading Scores），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153932.jpg">
-
-</div>
-<p>此外，在PCA中，将SS（也就是各个点投射到最佳匹配的直线上的点到原点的距离的平方和）称为PC1的特征值（Eigenvalue），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153936.jpg">
-
-</div>
-<p>PC1特征向量的值（Eigenvalue for PC1）的平方根被称为PC1的奇异值（Singular Value for PC1），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153941.jpg">
-
-</div>
-<h4 id="第2主成分的计算原理">第2主成分的计算原理</h4>
-<p>前面是第1主成分（PC1）的计算，此时进行第2主成分的计算（PC2）。由于我们使用的二维坐标，PC2仅仅是一条通过了原点，并且与PC1垂直的直线，PC2并没有像PC1那样复杂的优化，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153945.jpg">
-
-</div>
-<p>由于PC2与PC1垂直，那么很容易地就能计算出PC2的斜率为-4，这也就是说，PC2是由-1个Gene 1和4个Gene 2构成的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153950.jpg">
-
-</div>
-<p>当我们在PC2所在直线上定义一个单位长度的向量时，那么PC2就是由-0.242个Gene 1和0.97个Gene 2构成了，此时这个单位向量（蓝色箭头）就被称为PC2的奇异向量（Singular Vector）或特征向量（Eigenvector），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153954.jpg">
-
-</div>
-<p>而-0.242和0.97就是PC2的载荷分数，它表示的就是，基因2相当于4位的基因1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714153958.jpg">
-
-</div>
-<p>PC2的特征值则是数据点投到到PC2上的点到原点的距离，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154002.jpg">
-
-</div>
-<p>此时，PC1和PC2的计算结束，绘制最终的PCA图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154005.jpg">
-
-</div>
-<p>然后旋转这个坐标，让PC1水平，PC2垂直，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154010.jpg">
-
-</div>
-<p>在这个新的坐标系中，图中黑色的叉就表示原始的样本6（Sample 6），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154015.jpg">
-
-</div>
-<p>而Sample 6位于这个点上：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154019.jpg">
-
-</div>
-<p>同理，Sample 2在这里：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154023.jpg">
-
-</div>
-<h3 id="各主成分的变异">各主成分的变异</h3>
-<p>此时，再讲一些术语，先回忆一下前面的PC1的特征值和PC2的特征值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154027.jpg">
-
-</div>
-<p>我们把原始的数据点投射到主成分上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154042.jpg">
-
-</div>
-<p>计算投射到PC1上的点到原点的距离，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154047.jpg">
-
-</div>
-<p>所有的这些数值的平方和就是PC1的特征值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154051.jpg">
-
-</div>
-<p>我们也可以将特征值转为PC1到原点的变异，方法就是SS除以样本数减1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154055.jpg">
-
-</div>
-<p>以这个案例为例说明，假如PC1的变异（Variation）为15，PC2的变异为3，这就表明主成分的总变异为18，那么也就是说PC1在总变异中所占的比值为83%（15/18=0.83），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154059.jpg">
-
-</div>
-<p>而PC2占的总变异为17%（3/18=0.17），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154103.jpg">
-
-</div>
-<p>此时，我们把这两个主成分所占的比例画出来，这种图与条形图很像，不过在PCA中，这叫碎石图（scree plot），每个矩形表示每个PC所占总变异的比值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154107.jpg">
-
-</div>
-<h2 id="一个复杂案例">一个复杂案例</h2>
-<p>我们看一个比较复杂的案例，在这个案例中，6只小鼠，检测了3个基因，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154122.jpg">
-
-</div>
-<p>按照前面的思路，找到数据的中心，并将其移到原点，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154126.jpg">
-
-</div>
-<p>找到最佳的匹配数据的直线，也就是PC1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154130.jpg">
-
-</div>
-<p>不过这个PC1有3个成分，分别是0.62个Gene 1，0.15个Gene 2和0.77个Gene 3，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154134.jpg">
-
-</div>
-<p>其中，Gene3 是最主要的组成部分，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154141.jpg">
-
-</div>
-<p>然后寻找PC2，PC2通过原点，并与PC1垂直，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154145.jpg">
-
-</div>
-<p>最终，PC2的成分为0.77个Gene 1，0.62个Gene 2和0.15个Gene 3，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154149.jpg">
-
-</div>
-<p>在PC2中，Gene 1是最主要的组成部分，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154154.jpg">
-
-</div>
-<p>最后，我们寻找PC3，PC3通过原点，同时与PC1和PC2垂直，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154159.jpg">
-
-</div>
-<p>如果我们有更多的基因，那么我们就会不断地寻找更多的主成分，也就是说不断地往这个坐标中加入与前一个主成分垂直的直线，从理论上讲，一个基因就有一个主成分（例如这个案例中，3个基因，最终找到了3个主成分），因此，主成分的数目要么跟变量相等，要么跟样本的数目相等（这个数目还是比较小的），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155622.png">
-
-</div>
-<p>不过，真正在进行PCA的时候，最终的主成分数目是有限的，这个马上就要讲到。一旦计算出来了所有的主成分，那么我们就可以使用特征值来计算每个主成分的变异占总变异的比例，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154206.jpg">
-
-</div>
-<p>在这个案例中，PC1的变异占总变异的79%，PC2占15%，PC3占6%，把这些主成分绘制成碎石图，就是下图左图的样子，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154211.jpg">
-
-</div>
-<p>从碎石图中我们可以看到，PC1和PC2占了变异的绝大比例，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154216.jpg">
-
-</div>
-<p>这就表明了，在二维图中，我们基本上只使用PC1和PC2就能解释三维图中的数据，因为二维图中的PC1和PC2占据了整体的变异的94%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154220.jpg">
-
-</div>
-<p>我们将三维图转换为二维图，画出PC1和PC2，以及原始数据点，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154225.jpg">
-
-</div>
-<p>将数据投射到这个新坐标的PC1上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154229.jpg">
-
-</div>
-<p>再投射到PC2上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154233.jpg">
-
-</div>
-<p>然后，我们把这个坐标旋转一下，方便查看，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154238.jpg">
-
-</div>
-<p>下面的这个点就是Sample 4对应的点，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154242.jpg">
-
-</div>
-<p>我们再来回顾一下这个案例，首先我们把所有的数据点绘制到三维坐标中，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714154249.jpg">
-
-</div>
-<p>再计算主成分，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155852.jpg">
-
-</div>
-<p>再计算主成分的特征值与变异比例，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155856.jpg">
-
-</div>
-<p>最后，我们使用PC1和PC2这个二维坐标来描述原始数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155900.jpg">
-
-</div>
-<p>如果我们检测了6个样本的4个基因，那么我们并不需要绘制出4维坐标图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155905.jpg">
-
-</div>
-<p>我们可以计算出它们的主成分，画出碎石图，其中我们可以发现，PC1和PC2占据了变异的90%，那么我们仅使用PC1和PC2构成的二维PCA图就可以表示原始数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155911.jpg">
-
-</div>
-<p>将原始数据分别投射到PC1和PC2上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155918.jpg">
-
-</div>
-<p>下面的这两个点就对应了Sample 2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155922.jpg">
-
-</div>
-<p>也就是这个点：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155926.jpg">
-
-</div>
-<p>那么，所有的点就是这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155930.jpg">
-
-</div>
-<p>如果我们遇到下面的这种碎石图，在这种碎石图中，PC3和PC4也占据了相当比例的总变异，那么我们仅使用2个主成分（也就是PC1和PC2）就无法精确地代表原始数据，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155935.jpg">
-
-</div>
-<p>不过，即使是有瑕玼的PCA二维图，也可以用于数据的分类，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155939.jpg">
-
-</div>
-<p>在这个图中，黑色的点仍然可以被视为比较接近的类似，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155944.jpg">
-
-</div>
-<h2 id="r语言与pca">R语言与PCA</h2>
-<p>计算PCA的工具很多，这里我们介绍一下用R来计算PCA，在R中，计算PCA的函数是<code>prcomp()</code>，绘图包是<code>ggplot2</code>，使用R，我们可以知道每个主成分的变异占总变异的比值，以及计算载荷得分（loading scores），发现哪个变量对图形的影响最大，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155949.jpg">
-
-</div>
-<h3 id="生成数据集">生成数据集</h3>
-<p>我们先生成一个数据集，代码如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">data.matrix &lt;- matrix(nrow=<span class="number">100</span>, ncol=<span class="number">10</span>)</div><div class="line">colnames(data.matrix) &lt;- c(</div><div class="line">  paste(<span class="string">"wt"</span>,<span class="number">1</span>:<span class="number">5</span>,sep=<span class="string">""</span>),</div><div class="line">  paste(<span class="string">"ko"</span>,<span class="number">1</span>:<span class="number">5</span>,sep=<span class="string">""</span>))</div><div class="line">rownames(data.matrix) &lt;- paste(<span class="string">"gene"</span>, <span class="number">1</span>:<span class="number">100</span>, sep=<span class="string">""</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">100</span>)&#123;</div><div class="line">  wt.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size=<span class="number">1</span>))</div><div class="line">  ko.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size=<span class="number">1</span>))</div><div class="line"></div><div class="line">  data.matrix[i,] &lt;- c(wt.values, ko.values)</div><div class="line">&#125;</div><div class="line"></div><div class="line">head(data.matrix)</div></pre></td></tr></table></figure>
-<p>查看一下生成的数据，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data.matrix)</div><div class="line">      wt1 wt2 wt3  wt4 wt5 ko1 ko2 ko3 ko4 ko5</div><div class="line">gene1 <span class="number">423</span> <span class="number">423</span> <span class="number">419</span>  <span class="number">423</span> <span class="number">372</span> <span class="number">582</span> <span class="number">589</span> <span class="number">563</span> <span class="number">534</span> <span class="number">566</span></div><div class="line">gene2 <span class="number">905</span> <span class="number">971</span> <span class="number">967</span> <span class="number">1031</span> <span class="number">910</span>  <span class="number">95</span>  <span class="number">96</span>  <span class="number">96</span>  <span class="number">89</span>  <span class="number">96</span></div><div class="line">gene3 <span class="number">139</span> <span class="number">177</span> <span class="number">147</span>  <span class="number">176</span> <span class="number">152</span> <span class="number">408</span> <span class="number">422</span> <span class="number">419</span> <span class="number">426</span> <span class="number">456</span></div><div class="line">gene4 <span class="number">702</span> <span class="number">712</span> <span class="number">717</span>  <span class="number">691</span> <span class="number">678</span> <span class="number">534</span> <span class="number">546</span> <span class="number">594</span> <span class="number">562</span> <span class="number">515</span></div><div class="line">gene5 <span class="number">582</span> <span class="number">572</span> <span class="number">616</span>  <span class="number">569</span> <span class="number">631</span> <span class="number">315</span> <span class="number">321</span> <span class="number">314</span> <span class="number">345</span> <span class="number">330</span></div><div class="line">gene6 <span class="number">765</span> <span class="number">853</span> <span class="number">781</span>  <span class="number">792</span> <span class="number">768</span> <span class="number">316</span> <span class="number">339</span> <span class="number">317</span> <span class="number">317</span> <span class="number">294</span></div></pre></td></tr></table></figure>
-<h3 id="计算pca">计算PCA</h3>
-<p>使用<code>prcomp</code>函数来对数据集进行PCA运算，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca &lt;- prcomp(t(data.matrix),scale=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>代码解释：由于<code>prcomp</code>函数在默认情况下，会把行识别为样本，列识别为基因，而我们生成的数据集<code>data.matrix</code>正好相反，因此用到了<code>t</code>函数，它表示把原来的数据集转置一下，将其行与列交换。</p>
-<p><code>prcomp</code>计算的结果含有主成分分析的各种信息，通过<code>str()</code>函数我们可以看一下有哪些东西，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; str(pca)</div><div class="line">List of <span class="number">5</span></div><div class="line"> $ sdev    : num [<span class="number">1</span>:<span class="number">10</span>] <span class="number">9.34</span> <span class="number">1.85</span> <span class="number">1.6</span> <span class="number">1.45</span> <span class="number">1.24</span> <span class="keyword">...</span></div><div class="line"> $ rotation: num [<span class="number">1</span>:<span class="number">100</span>, <span class="number">1</span>:<span class="number">10</span>] <span class="number">0.104</span> -<span class="number">0.107</span> <span class="number">0.106</span> -<span class="number">0.103</span> -<span class="number">0.106</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"dimnames"</span>)=List of <span class="number">2</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">100</span>] <span class="string">"gene1"</span> <span class="string">"gene2"</span> <span class="string">"gene3"</span> <span class="string">"gene4"</span> <span class="keyword">...</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">10</span>] <span class="string">"PC1"</span> <span class="string">"PC2"</span> <span class="string">"PC3"</span> <span class="string">"PC4"</span> <span class="keyword">...</span></div><div class="line"> $ center  : Named num [<span class="number">1</span>:<span class="number">100</span>] <span class="number">489</span> <span class="number">526</span> <span class="number">292</span> <span class="number">625</span> <span class="number">460</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"names"</span>)= chr [<span class="number">1</span>:<span class="number">100</span>] <span class="string">"gene1"</span> <span class="string">"gene2"</span> <span class="string">"gene3"</span> <span class="string">"gene4"</span> <span class="keyword">...</span></div><div class="line"> $ scale   : Named num [<span class="number">1</span>:<span class="number">100</span>] <span class="number">84.2</span> <span class="number">455.8</span> <span class="number">142.2</span> <span class="number">82.1</span> <span class="number">143.2</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"names"</span>)= chr [<span class="number">1</span>:<span class="number">100</span>] <span class="string">"gene1"</span> <span class="string">"gene2"</span> <span class="string">"gene3"</span> <span class="string">"gene4"</span> <span class="keyword">...</span></div><div class="line"> $ x       : num [<span class="number">1</span>:<span class="number">10</span>, <span class="number">1</span>:<span class="number">10</span>] -<span class="number">8.92</span> -<span class="number">9.15</span> -<span class="number">8.71</span> -<span class="number">8.75</span> -<span class="number">8.77</span> <span class="keyword">...</span></div><div class="line">  ..- attr(*, <span class="string">"dimnames"</span>)=List of <span class="number">2</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">10</span>] <span class="string">"wt1"</span> <span class="string">"wt2"</span> <span class="string">"wt3"</span> <span class="string">"wt4"</span> <span class="keyword">...</span></div><div class="line">  .. ..$ : chr [<span class="number">1</span>:<span class="number">10</span>] <span class="string">"PC1"</span> <span class="string">"PC2"</span> <span class="string">"PC3"</span> <span class="string">"PC4"</span> <span class="keyword">...</span></div><div class="line"> - attr(*, <span class="string">"class"</span>)= chr <span class="string">"prcomp"</span></div></pre></td></tr></table></figure>
-<p>从这个结果中我们可以发现，有<code>sdev</code>，<code>rotation</code>，<code>center</code>，<code>scale</code>，<code>x</code>。其中<code>x</code>含有主成分，我们查看一下，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714155956.png">
-
-</div>
-<p>我们可以发现，<code>x</code>中有10个主成分（这是因为有10个样本），第1主成分占据了原始数据总变异的大部分，第2主成分占据了总变异的次大部分等。为了绘制二维图，我们通常使用PC1和PC2（个别情况下也会使用PC2和PC3），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160001.jpg">
-
-</div>
-<p>我们此时，使用<code>x</code>的前2列（即PC1和PC2）绘制一个二维图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plot(pca)</div></pre></td></tr></table></figure>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160007.png">其中，<code>pca$x[,1]</code>是PC1，<code>pca$x[,2]</code>是PC2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160024.jpg">
-
-</div>
-<p>10个样本，分别位于图形的左右两侧，此时我们再看一下PC1占的总变异的比例，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pca.var &lt;- pca$sdev^<span class="number">2</span></div><div class="line">pca.var.per &lt;- round(pca.var/sum(pca.var)*<span class="number">100</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; pca.var</div><div class="line"> [<span class="number">1</span>] <span class="number">8.727308e+01</span> <span class="number">3.432450e+00</span> <span class="number">2.546956e+00</span> <span class="number">2.094293e+00</span> <span class="number">1.534746e+00</span> <span class="number">1.230408e+00</span></div><div class="line"> [<span class="number">7</span>] <span class="number">8.259253e-01</span> <span class="number">6.435822e-01</span> <span class="number">4.185583e-01</span> <span class="number">1.134741e-29</span></div><div class="line">&gt; pca.var.per</div><div class="line"> [<span class="number">1</span>] <span class="number">87.3</span>  <span class="number">3.4</span>  <span class="number">2.5</span>  <span class="number">2.1</span>  <span class="number">1.5</span>  <span class="number">1.2</span>  <span class="number">0.8</span>  <span class="number">0.6</span>  <span class="number">0.4</span>  <span class="number">0.0</span></div></pre></td></tr></table></figure>
-<p>绘制出各个主成分对应的碎石图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">barplot(pca.var.per, </div><div class="line">        main=<span class="string">"Scree Plot"</span>, </div><div class="line">        xlab=<span class="string">"Principal Component"</span>, </div><div class="line">        ylab=<span class="string">"Percent Variation"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160030.png">
-
-</div>
-<p>上图中最长的那个就是PC1所占的总变异的比例，也就是说PC1就能在很大程度上解释两组数据的区分，我们在PC1和PC2的二维图上也能看出来，这两组数据之间主要是由PC1分开的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160034.jpg">
-
-</div>
-<h3 id="ggplot2">ggplot2</h3>
-<p>ggplot2也能绘制类似的图形，先把数据转换为ggplot2能识别的格式，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">pca.data &lt;- data.frame(Sample=rownames(pca$x),</div><div class="line">                       X=pca$x[,<span class="number">1</span>],</div><div class="line">                       Y=pca$x[,<span class="number">2</span>])</div><div class="line"><span class="comment"># one column with the sample ids</span></div><div class="line"><span class="comment"># Tow columns for the X and Y coordinates for each sample</span></div><div class="line">pca.data</div></pre></td></tr></table></figure>
-<p>生成的数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; pca.data</div><div class="line">    Sample         X          Y</div><div class="line">wt1    wt1 -<span class="number">8.920074</span>  <span class="number">0.9049750</span></div><div class="line">wt2    wt2 -<span class="number">9.154298</span> -<span class="number">0.8467998</span></div><div class="line">wt3    wt3 -<span class="number">8.712942</span> -<span class="number">1.0756417</span></div><div class="line">wt4    wt4 -<span class="number">8.746978</span>  <span class="number">2.6207842</span></div><div class="line">wt5    wt5 -<span class="number">8.771551</span> -<span class="number">1.5756187</span></div><div class="line">ko1    ko1  <span class="number">8.854899</span>  <span class="number">2.7689355</span></div><div class="line">ko2    ko2  <span class="number">8.976103</span> -<span class="number">1.7855946</span></div><div class="line">ko3    ko3  <span class="number">9.077341</span>  <span class="number">0.2534441</span></div><div class="line">ko4    ko4  <span class="number">8.767547</span>  <span class="number">1.2557291</span></div><div class="line">ko5    ko5  <span class="number">8.629953</span> -<span class="number">2.5202131</span></div></pre></td></tr></table></figure>
-<p>接着使用<code>ggplot</code>绘图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ggplot(data=pca.data, aes(x=X, y=Y, label=Sample))+</div><div class="line">  geom_text() +</div><div class="line">  xlab(paste(<span class="string">"PC1 - "</span>, pca.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"PC2 - "</span>, pca.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  theme_bw()+</div><div class="line">  ggtitle(<span class="string">"My PCA Graph"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160042.png">
-
-</div>
-<p>从这个图形中，我们可以发现，X轴上标记了PC1所占总变异的比例为87.3%。Y轴上标记了PC2所占总变异的比例为3.4%。</p>
-<h3 id="loading-scores计算">loading scores计算</h3>
-<p><code>prcomp()</code>函数计算的结果中含有loading score，即<code>rotation</code>这一部分的内容，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">loading_score &lt;- pca$rotation[,<span class="number">1</span>]</div></pre></td></tr></table></figure>
-<p>由于PC1占所了总变异的大部分，因此我们只需要看PC1中的loading score，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160050.jpg">
-
-</div>
-<p>由于loading_score有负数，因此我们需要用<code>abs()</code>函数取它们的绝对值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160057.jpg">
-
-</div>
-<p>取完绝对值，对所有的loading score进行排序，从高到低，代码如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gene_scores &lt;- abs(loading_score)</div><div class="line">gene_score_ranked &lt;- sort(gene_scores, decreasing = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>此时，还要获排名前10的loading score基因的名称，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">top_10_genes &lt;- names(gene_score_ranked[<span class="number">1</span>:<span class="number">10</span>])</div><div class="line">top_10_genes</div></pre></td></tr></table></figure>
-<p>结果如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; top_10_genes &lt;- names(gene_score_ranked[<span class="number">1</span>:<span class="number">10</span>])</div><div class="line">&gt; top_10_genes</div><div class="line"> [<span class="number">1</span>] <span class="string">"gene10"</span> <span class="string">"gene98"</span> <span class="string">"gene34"</span> <span class="string">"gene94"</span> <span class="string">"gene95"</span> <span class="string">"gene99"</span> <span class="string">"gene76"</span> <span class="string">"gene47"</span> <span class="string">"gene49"</span></div><div class="line">[<span class="number">10</span>] <span class="string">"gene72"</span></div></pre></td></tr></table></figure>
-<p>最后，我们看一下这些基因的loading score的数值，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca$rotation[top_10_genes,<span class="number">1</span>]</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; pca$rotation[top_10_genes,<span class="number">1</span>]</div><div class="line">    gene10     gene98     gene34     gene94     gene95     gene99     gene76     gene47 </div><div class="line"> <span class="number">0.1069736</span>  <span class="number">0.1069637</span>  <span class="number">0.1069535</span>  <span class="number">0.1069478</span> -<span class="number">0.1069281</span>  <span class="number">0.1069267</span>  <span class="number">0.1069243</span> -<span class="number">0.1069209</span> </div><div class="line">    gene49     gene72 </div><div class="line"> <span class="number">0.1069161</span>  <span class="number">0.1069037</span></div></pre></td></tr></table></figure>
-<h2 id="python与pca">Python与PCA</h2>
-<p>利用Python也可以进行PCA分析，在这一部分中，我们会介绍如何这些内容：</p>
-<ol style="list-style-type: decimal">
-<li>利用Python生成一些我们要分析的数据；</li>
-<li>利用sklearn模块中的<code>PCA()</code>来进行分析，其中sklearn是scikit-learn的简称，它是一个机器学习的模块，支持包括分类、回归、降维和聚类四大机器学习算法。还包含了特征提取、数据处理和模型评估三大模块；</li>
-<li>计算每个主成分占总变异的比例；</li>
-<li>利用<code>matplotlib</code>来绘制PCA图；</li>
-<li>计算变量的loading scores。</li>
-</ol>
-<p>如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160106.jpg">
-
-</div>
-<h3 id="第一步导入各种函数与包">第一步，导入各种函数与包</h3>
-<p>在进行PCA分析之前，Python需要导入各种包与函数，如果没有这些包，可以查一下如何下载，我使用的是Anaconda发行版，里面已经内置了各种有关数据分析的包，不用再下载各种包，直接导入即可，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd </div><div class="line"><span class="comment"># import pandas package,</span></div><div class="line"><span class="comment"># pandas is short for "panel data"</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="comment"># numpy package will generate random numbers </span></div><div class="line"></div><div class="line"><span class="keyword">import</span> random <span class="keyword">as</span> rd</div><div class="line"><span class="comment"># random package will generate an example dataset</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> sklearn.decomposition <span class="keyword">import</span> PCA</div><div class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> preprocessing</div><div class="line"><span class="comment"># usr a function PCA() from sklearn.decomposition </span></div><div class="line"><span class="comment"># PCA() use to perform PCA</span></div><div class="line"><span class="comment"># preprocessing uses to scaling the data before perform PCA</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</div><div class="line"><span class="comment"># draw PCA graphd</span></div></pre></td></tr></table></figure>
-<h3 id="第二步生成模拟的数据">第二步：生成模拟的数据</h3>
-<p>这一步与R中生成模拟数据集的目的一样，就是生成一个数据集，用于PCA分析，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">genes = [<span class="string">'gene'</span> + str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">101</span>)]</div><div class="line">wt = [<span class="string">'wt'</span> + str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>)]</div><div class="line">ko = [<span class="string">'ko'</span> + str(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>)]</div><div class="line">data = pd.DataFrame(columns=[*wt, *ko], index=genes)</div><div class="line"><span class="keyword">for</span> gene <span class="keyword">in</span> data.index:</div><div class="line">    data.loc[gene, <span class="string">'wt1'</span>:<span class="string">'wt5'</span>] = np.random.poisson(lam=rd.randrange(<span class="number">10</span>,<span class="number">1000</span>),size=<span class="number">5</span>)</div><div class="line">    data.loc[gene, <span class="string">'ko1'</span>:<span class="string">'ko5'</span>] = np.random.poisson(lam=rd.randrange(<span class="number">10</span>,<span class="number">1000</span>),size=<span class="number">5</span>)</div><div class="line"></div><div class="line">print(data.head())</div><div class="line">print(data.shape)</div><div class="line"></div><div class="line"><span class="comment"># generate simulation dataset</span></div></pre></td></tr></table></figure>
-<h3 id="第三进行pca分析">第三，进行PCA分析</h3>
-<p>在进行PCA分析之前，先对数据进行中心化（我的理解是Z转换，转换后的数据均值是0，标准差是1），如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scaled_data = preprocessing.scale(data.T)</div></pre></td></tr></table></figure>
-<p>需要注意的是，上述代码中使用了<code>data.T</code>，这是对表达的数据集进行转换，将其行与列交换，跟R中类似。此处我们使用的<code>sklearn</code>包中的preprocessing函数，我们还可以使用另外的函数进行转换，就是<code>StandardScaler().fit_transform(data.T)</code>。第二个函数在机器学习使用更加广泛，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160118.jpg">
-
-</div>
-<p>此外，我们需要注意的是，<code>sklearn</code>中利用<code>preprocessing.scale</code>计算变异与R中利用<code>scale()</code>和<code>prcomp()</code>计算变异的公式略有不同，区别就在于前者的分子是测量值的数目，后者是这个数目减1，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160126.jpg">
-
-</div>
-<p>后者的分子是测量值的数目减1，这会导致最终的结果变大，这是一种无偏含估计，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160132.jpg">
-
-</div>
-<p>不过这两种方法都不影响PCA的分析，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160139.jpg">
-
-</div>
-<p>它的局限就在于，它们会对最终的绘图造成一定的影响，因为最终绘图中的坐标来源于scaled后的数值乘以loading scores，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160149.jpg">继续Python计算PCA，此时我们要创建一个PCA对象，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca = PCA()</div></pre></td></tr></table></figure>
-<p>这里要提一下，PCA不仅是一个函数，能够返回计算结果，在sklearn中，它还用于创建一个对象，使用一个数据集进行训练，进行对另外一个数据集进行计算。不过在这里，我们只用PCA计算这个数据集（我们不涉及机器学习的环境设置），其他的步骤非常繁琐，但也由此，我们也能了解一下机器学习的内容，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160154.jpg">
-
-</div>
-<p>计算PCA的所有结果，例如loading scores和每个主成分的变量占总变异的比例，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca.fit(scaled_data)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; pca.fit(scaled_data)</div><div class="line">PCA(copy=True, iterated_power=<span class="string">'auto'</span>, n_components=None, random_state=None,</div><div class="line">  svd_solver=<span class="string">'auto'</span>, tol=<span class="number">0.0</span>, whiten=False)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160200.jpg">
-
-</div>
-<p>接着，基于loading scores和scaled data来生成PCA图形中的坐标系，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca_data = pca.transform(scaled_data)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160205.jpg">
-
-</div>
-<h3 id="第四绘图">第四，绘图</h3>
-<p>首先，绘制一个碎石图（Scree plot），看一下应该使用多少个主成分比较合适，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">per_var = np.round(pca.explained_variance_ratio_*<span class="number">100</span>,decimals=<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<p>这段代码主要是用于计算每个主成分所占总变量的比例，接着添加坐标轴的标签，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">labels = [<span class="string">'PC'</span> + str(x) <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">1</span>, len(per_var)+<span class="number">1</span>)]</div></pre></td></tr></table></figure>
-<p>其次，使用<code>matplotlib</code>来绘制相应的图形，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">plt.bar(x=range(<span class="number">1</span>,len(per_var)+<span class="number">1</span>), height=per_var, tick_label=labels)</div><div class="line">plt.ylabel(<span class="string">'Percentage of Explained Variance'</span>)</div><div class="line">plt.xlabel(<span class="string">'Principal Component'</span>)</div><div class="line">plt.title(<span class="string">'Scree Plot'</span>)</div><div class="line">plt.show()</div></pre></td></tr></table></figure>
-<p>图形如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160211.png">
-
-</div>
-<p>最后，我们绘制PCA图，我们使用<code>pd.DataFrame</code>函数把新的坐标系放到一个矩阵中来，它的行表示样本名称，列表示PC的标签，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pca_df = pd.DataFrame(pca_data, index=[*wt, *ko], columns=labels)</div></pre></td></tr></table></figure>
-<p>继续绘制含有标题名与坐标标签的散点图，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">plt.scatter(pca_df.PC1,pca_df.PC2)</div><div class="line">plt.title(<span class="string">'My PCA Graph'</span>)</div><div class="line">plt.xlabel(<span class="string">'PC1 - &#123;0&#125;%'</span>.format(per_var[<span class="number">0</span>]))</div><div class="line">plt.ylabel(<span class="string">'PC2 - &#123;0&#125;%'</span>.format(per_var[<span class="number">1</span>]))</div></pre></td></tr></table></figure>
-<p>最后，把样本名也添加上去，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> sample <span class="keyword">in</span> pca_df.index:</div><div class="line">    plt.annotate(sample, (pca_df.PC1.loc[sample],pca_df.PC2.loc[sample]))</div><div class="line"></div><div class="line">plt.show()</div></pre></td></tr></table></figure>
-<p>最终的结果图如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160216.jpg">
-
-</div>
-<p>从这张图中我们可以看到，wt组的数据集中在右侧，ko组都集中在了左侧。</p>
-<h3 id="计算loading-score">计算loading score</h3>
-<p>我们还可以计算一下PC1的loading scores，从而找出哪些基因在不同的分类方面发挥了主要作用，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714160221.jpg">
-
-</div>
-<p>首先，我们要创建一个pandas的series对象，这个对象用于计算loading scores，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">loading_scores = pd.Series(pca.components_[<span class="number">0</span>], index=genes)</div><div class="line"><span class="comment"># in python, first  number in index is 0, not 1</span></div><div class="line">sorted_loading_scores = loading_scores.abs().sort_values(ascending=<span class="keyword">False</span>)</div><div class="line"><span class="comment"># achieve absolute value using abs() function and sort them</span></div><div class="line">top_10_genes = sorted_loading_scores[<span class="number">0</span>:<span class="number">10</span>].index.values</div><div class="line">print(loading_scores[top_10_genes])</div></pre></td></tr></table></figure>
-<p>最终结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(loading_scores[top_10_genes])</div><div class="line">gene31   <span class="number">-0.107133</span></div><div class="line">gene32    <span class="number">0.107131</span></div><div class="line">gene34    <span class="number">0.107070</span></div><div class="line">gene10   <span class="number">-0.107065</span></div><div class="line">gene45    <span class="number">0.107065</span></div><div class="line">gene28   <span class="number">-0.107064</span></div><div class="line">gene30   <span class="number">-0.107062</span></div><div class="line">gene39    <span class="number">0.107053</span></div><div class="line">gene93   <span class="number">-0.107041</span></div><div class="line">gene79    <span class="number">0.107036</span></div><div class="line">dtype: float64s</div></pre></td></tr></table></figure>
-<p>计算结束。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/23/BioStatistics/生物统计-06非参数检验/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/23/BioStatistics/生物统计-06非参数检验/" itemprop="url">非参数检验笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-23T12:02:00+08:00">
-                2018-06-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,564
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  24
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>非参数检验(non-parametric test)是相对于参数检验(parametric test)而言的。如果总体分布为已知的数学形式，用参数检验，反之用非参数检验。当总体分布不能由已知的数学形式表达，没有总体参数时，就无法用参数检验，两个或多个正态总体方差不等，也不能用t检验或F检验的参数检验。对于不满足参数检验条件的数据，一是进行变量变换，使其满足参数检验条件，另外就是用非参数检验。非参检验对总体分布不作严格假定，又称任意分布检验(distribution-free test)，《医学统计学》（第三版，孙振球）书中采用的是秩转换的非参数检验，即将数值变量从小到大排列，再计算检验统计量。</p>
-<p>非参数检验在总体分布未知时有很大的优越性，在分布未时，如果还假定总体诸如正态分布那样的已知分布，在进行统计推断时就可能产生错误。非参数检验总是比传统检验案例，但是在总体分布形式已经已知时，非参数检验就不如传统方法效率高，这是因为非参数方法利用的利息要少些。往往在传统方法可以拒绝零假设的情况下，非参数检验无法拒绝。用统计的术语来说，在总体分布已知时，传统方法有较大的功效(power)，效率要高；但非参数统计在总体分布未知时，效率往往比假定了错误总体分布时的传统方法要高，有时候要高很多。</p>
-<h2 id="秩的概念">秩的概念</h2>
-<p>非参数检验中的秩(rank)是最常用的概念，秩就是该数据按照升序排列后，每个观测值的位置。例如我们有下面的数据（样本量为10），其中第一行为数据本身，第二行就是它们的秩，可以看出，3最小，秩为1，13其次，秩为2，而最大的是98，秩为10，我们使用rank(x)表示x的秩，通常也用Ri表示观测值<span class="math inline">\(x_{i}\)</span>的秩，如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th><span class="math inline">\(x_{i}\)</span></th>
-<th>98</th>
-<th>67</th>
-<th>63</th>
-<th>3</th>
-<th>38</th>
-<th>16</th>
-<th>21</th>
-<th>53</th>
-<th>13</th>
-<th>81</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(R_{i}=rank(x_{i})\)</span></td>
-<td>10</td>
-<td>8</td>
-<td>7</td>
-<td>1</td>
-<td>5</td>
-<td>3</td>
-<td>4</td>
-<td>6</td>
-<td>2</td>
-<td>9</td>
-</tr>
-</tbody>
-</table>
-<h2 id="非参数检验的原理">非参数检验的原理</h2>
-<p>如果零假设中确定了一个中位数<span class="math inline">\(M_{0}\)</span>，那么样本点应该以同样的概率出现在<span class="math inline">\(M_{0}\)</span>的两边，也就是说，如果每个样本点送去零假设的中位数，那么得到的差值有些为正，有些为负，如果零假设正确，那么正负符号数目应该差不多，如果差得很多，这就意味着零假设有问题，可以拒绝零假设。这也就是所谓的<strong>符号检验(sign test)</strong>。</p>
-<p>这里没有涉及任何总体分布，在零假设下，样本点和<span class="math inline">\(M_{0}\)</span>的差值中负号的个数（记为<span class="math inline">\(S^-\)</span>）应该服从二项分布Bin(n,α)，而正号的个数（记为<span class="math inline">\(S^+\)</span>）䚱服从二项分布Bin(n,1-α)，注意，对于已知对称的分布，由于中位数和均值相等，对中位数的检验等同于对均值的检验，我们通过一个例子来解释符号检验。</p>
-<h2 id="单样本的关于总体中位数的符号检验">单样本的关于总体中位数的符号检验</h2>
-<p>案例A，质量监督部门对商店里出售的某厂家的西洋参片进行了抽查，对于25包写明为净重100g的西洋参片的称重结果如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180819/EhJ1bCk5HA.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>这里的总体分布未知（我们只是假设未知，其实它的分布是可以计算出来的），用M表示总体中位数，容易计算出，样本中位数为m=98.36，因为人们怀疑厂家包装的西洋参片分量。由于对于重量的总体分布不清楚，决定对其进行符号检验，需要的检验如下所示：</p>
-<p><span class="math display">\[H_{0}:M=100\iff H_{1}:M&lt;100\]</span></p>
-<p>按照零假设，每个观测值（每包西洋参的净重）大于中位数<span class="math inline">\(M_{0}=100\)</span>的概率和小于100的概率都是0.5，这应该服从二项分布Bin(25,0.5)，容易计算出大于100的只有<span class="math inline">\(S^+=8\)</span>，这样的参数为n=25，p=0.5的二项分布变量小于或等于8的概率为0.05388，这就是p值，历引，对于显著性水平α=0.05，根据这个符号检验，我们没有足够的证据拒绝零假设。在R中计算的过程如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; pbinom(<span class="number">8</span>,<span class="number">25</span>,<span class="number">0.5</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.05387607</span></div><div class="line"><span class="comment"># 或者按另外一种方法：</span></div><div class="line">&gt; raw &lt;-c(<span class="number">99.05</span>,<span class="number">100.25</span>,<span class="number">102.56</span>,<span class="number">99.15</span>,<span class="number">104.89</span>,<span class="number">101.86</span>,<span class="number">96.37</span>,<span class="number">96.79</span>,<span class="number">99.37</span>,</div><div class="line">+         <span class="number">96.9</span>,<span class="number">93.94</span>,<span class="number">92.97</span>,<span class="number">108.28</span>,<span class="number">96.86</span>,<span class="number">93.94</span>,<span class="number">98.27</span>,<span class="number">98.36</span>,<span class="number">100.81</span>,<span class="number">92.99</span>,</div><div class="line">+         <span class="number">103.72</span>,<span class="number">90.66</span>,<span class="number">98.24</span>,<span class="number">97.87</span>,<span class="number">99.21</span>,<span class="number">101.79</span>)</div><div class="line">&gt; pbinom(length(raw[raw&gt;=<span class="number">100</span>]),<span class="number">25</span>,<span class="number">0.5</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.05387607</span></div></pre></td></tr></table></figure>
-<p>一般来说，根据样本中位数和零假设中的待检验总体中位数<span class="math inline">\(M_{0}\)</span>的比较，我们的检验为下面三种形式之一（记样本中位数为m），如下所示：</p>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180819/3j1H5fkEb9.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>这里的关于中位数的符号检验概率，完全可以很容易地推广到关于总体α分位数的符号检验中，如果零假设中确定了一个α分位数<span class="math inline">\(Q_{\alpha0}\)</span></p>
-<p>那么，样本点应该以概率α出现在<span class="math inline">\(Q_{\alpha0}\)</span>的左边，或者以概率1-α出现在<span class="math inline">\(Q_{\alpha0}\)</span>的右边，因此样本点减去<span class="math inline">\(Q_{\alpha0}\)</span>差值中铅的个数（记为<span class="math inline">\(S^-\)</span>）应该服从二项分布Bin(n,α)，而正号的个数（记为<span class="math inline">\(S^+\)</span>）应该服从二项分布Bin(n,1-α)。当α=0.5时，总体α分位数就是总体中位数。</p>
-<h2 id="单样本的关于对称总体中位数的wilcoxon符号秩检验">单样本的关于对称总体中位数的Wilcoxon符号秩检验</h2>
-<p>前面的符号检验仅仅用了样本点和零假设的中位数或α分位数的差的符号，我们可以看到，检验的结果p值大于0.05，但是这种检验方法没有利用这些差的大小，下面介绍的Wilcoxn符号秩检验（Wilcoxon signed-rank test）把差的绝对值的秩分别按照不同的符号相加作为其检验统计量，这里把对总体唯一假定是总体具有对称分布，这种检验方法我们可以看到，它的功效要比前面介绍的高（计算出来的p值小于0.05）。</p>
-<h3 id="wilcoxon符号秩检验原理">Wilcoxon符号秩检验原理</h3>
-<p>Wilcoxon符号秩检验的原理是这样的，假定<span class="math inline">\(x_{1},x_{2},\cdots,x_{n}\)</span>为来自连续对称总体的一个样本，如果我们的假设检验问题的零假设为中位数（均值）<span class="math inline">\(M=M_{0}\)</span>。那么，对于符号检验而言，只需计算<span class="math inline">\(x_{i}-M_{0}(i=1,2,\cdots,n)\)</span>中有多少正负符号，即可利用二项分布的概率来计算p值。但对于Wilcoxon符号秩检验，则要把<span class="math inline">\(|x_{i}-M_{0}|\)</span>排序，得到<span class="math inline">\(|x_{i}-M_{0}|\)</span>的秩。然后把<span class="math inline">\(x_{i}-M_{0}\)</span>的符号加到相应的秩上面。于是，就可以得到既带有正号的秩，又带有负号的秩，对带负号的秩的绝对值求和，即把满足<span class="math inline">\(x_{i}-M_{0}&lt;0\)</span>的<span class="math inline">\(|x_{i}-M_{0}|\)</span>的秩求和，并用<span class="math inline">\(W^+\)</span>表示。如果<span class="math inline">\(M_{0}\)</span>的确是中位娄和，那么<span class="math inline">\(W^-\)</span>和<span class="math inline">\(W^+\)</span>应该大体上差不多。如果<span class="math inline">\(W^-\)</span>或者<span class="math inline">\(W^+\)</span>过大或过小，则应该怀疑中位数<span class="math inline">\(M=M_{0}\)</span>的零假设。令<span class="math inline">\(W=min(W^-,W^+)\)</span>，则当W太小时，应该拒绝零假设。这个W就是Wilcoxon符号秩检验统计量。</p>
-<h2 id="r中的非参数检验函数">R中的非参数检验函数</h2>
-<p>在R中进行Wilcoxon检验的函数是<code>wilcoxon.test</code>，使用方法如下所示：</p>
-<p>如果总体不服从正态分布，那么T检验就不再适用，此时我们可以利用非参数方法推断中位数。wilcoxon.test函数可实现符号秩检验，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">x &lt;- rnorm(50,mean=10,sd=5)</div><div class="line">wilcox.test(x,conf.int=T) #指定conf.int让函数返回中位数的置信区间</div><div class="line">wilcox.test(x,mu=1) #指定mu让函数返回中位数为10的检验结果</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; wilcox.test(x,conf.int=T) #指定conf.int让函数返回中位数的置信区间</div><div class="line"></div><div class="line">	Wilcoxon signed rank test with continuity correction</div><div class="line"></div><div class="line">data:  x</div><div class="line">V = 1271, p-value = 9.93e-10</div><div class="line">alternative hypothesis: true location is not equal to 0</div><div class="line">95 percent confidence interval:</div><div class="line">  9.31246 12.20277</div><div class="line">sample estimates:</div><div class="line">(pseudo)median </div><div class="line">       10.7765 </div><div class="line"></div><div class="line">&gt; wilcox.test(x,mu=1) #指定mu让函数返回中位数为10的检验结果</div><div class="line"></div><div class="line">	Wilcoxon signed rank test with continuity correction</div><div class="line"></div><div class="line">data:  x</div><div class="line">V = 1269, p-value = 1.121e-09</div><div class="line">alternative hypothesis: true location is not equal to 1</div></pre></td></tr></table></figure>
-<h2 id="单个样本wilcoxon检验案例">单个样本Wilcoxon检验案例</h2>
-<h4 id="案例a">案例A</h4>
-<p>现在我们再看一下前面的那个案例A，使用Wilcoxon检验来看一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&gt; raw &lt;-c(<span class="number">99.05</span>,<span class="number">100.25</span>,<span class="number">102.56</span>,<span class="number">99.15</span>,<span class="number">104.89</span>,<span class="number">101.86</span>,<span class="number">96.37</span>,<span class="number">96.79</span>,<span class="number">99.37</span>,</div><div class="line">+         <span class="number">96.9</span>,<span class="number">93.94</span>,<span class="number">92.97</span>,<span class="number">108.28</span>,<span class="number">96.86</span>,<span class="number">93.94</span>,<span class="number">98.27</span>,<span class="number">98.36</span>,<span class="number">100.81</span>,<span class="number">92.99</span>,</div><div class="line">+         <span class="number">103.72</span>,<span class="number">90.66</span>,<span class="number">98.24</span>,<span class="number">97.87</span>,<span class="number">99.21</span>,<span class="number">101.79</span>)</div><div class="line">&gt; wilcox.test(raw,mu=<span class="number">100</span>,alternative = <span class="string">"less"</span>)</div><div class="line"></div><div class="line">	Wilcoxon signed rank test with continuity correction</div><div class="line"></div><div class="line">data:  raw</div><div class="line">V = <span class="number">100</span>, p-value = <span class="number">0.04763</span></div><div class="line">alternative hypothesis: true location is less than <span class="number">100</span></div><div class="line"></div><div class="line">Warning message:</div><div class="line">In wilcox.test.default(raw, mu = <span class="number">100</span>, alternative = <span class="string">"less"</span>) :</div><div class="line">  无法精確計算带连结的p值</div></pre></td></tr></table></figure>
-<h4 id="案例b">案例B</h4>
-<p>现在再看一个案例B，下面是随机挑选了12袋包装上写的重量是15g的干酵母粉，并进行称重所得到的重量的数据，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">12.39,15.64,14,14.17,14.08,14.16,13.94,14.61,14.7,12.81,14.12,13.37</div></pre></td></tr></table></figure>
-<p>由于总体中位数是14.1，而零假设的总体均值是15，因此我们可以怀疑这种袋装酵母粉不够分量，相应的关于中位数的检验如下所示：</p>
-<p><span class="math display">\[H_{0}:M=15\iff H_{1}:M&lt;15\]</span></p>
-<p>假定总体是对称分布的，因此可以应用Wilcoxon符号秩检验，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; raw_b &lt;- c(<span class="number">12.39</span>,<span class="number">15.64</span>,<span class="number">14</span>,<span class="number">14.17</span>,<span class="number">14.08</span>,<span class="number">14.16</span>,<span class="number">13.94</span>,<span class="number">14.61</span>,<span class="number">14.7</span>,<span class="number">12.81</span>,<span class="number">14.12</span>,<span class="number">13.37</span>)</div><div class="line">&gt; wilcox.test(raw_b,m=<span class="number">15</span>,alternative = <span class="string">"less"</span>)</div><div class="line"></div><div class="line">	Wilcoxon signed rank test</div><div class="line"></div><div class="line">data:  raw_b</div><div class="line">V = <span class="number">3</span>, p-value = <span class="number">0.001221</span></div><div class="line">alternative hypothesis: true location is less than <span class="number">15</span></div></pre></td></tr></table></figure>
-<h4 id="案例c">案例C</h4>
-<p>例8-2 已知某地正常人尿氟含量的中位数为45.30μmol/L 。今在该地某厂随机抽取12名工人，测得尿氟含量见表8-2第（1）栏。问该厂工人的尿氟含量是否高于当地正常人的尿氟含量？（《医学统计学》，第三版，孙振球，P134）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">data82 &lt;- c(44.21,45.30,46.39,49.47,51.05,53.16,53.26,54.37,57.16,67.37,71.05,87.37)</div><div class="line">wilcox.test(data82-45.30)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; wilcox.test(data82-45.30)</div><div class="line"></div><div class="line">	Wilcoxon signed rank test with continuity correction</div><div class="line"></div><div class="line">data:  data82 - 45.3</div><div class="line">V = 65, p-value = 0.005099</div><div class="line">alternative hypothesis: true location is not equal to 0</div></pre></td></tr></table></figure>
-<p>这个结果与书上有出入，书中提到，p值是小于0.005，则R的计算出来是0.005099，小于0.05，但SPSS的计算结果与R一致。</p>
-<h2 id="两个独立样本wilcoxon检验mann-whitney-u检验">两个独立样本Wilcoxon检验（Mann-Whitney U检验）</h2>
-<p>如果是比较两个正态总体均值，那么就是使用t检验（检验均值之差为<span class="math inline">\(\mu_{1}-\mu_{2}\)</span>），如果不知道两组数据是否服从哪种特定的总体分布，我们就要考虑比较两组数据的中位数大小，我们需要的唯一定义就是两个总体的分布有类似的形状，但不要求对称。这里介绍的检验的原理很简单，假定第一个样本有m个观测值<span class="math inline">\(x_{1},\cdots,x_{m}\)</span>，第二个有n个观测值，<span class="math inline">\(y_{1},\cdots,y_{n}\)</span>。把两个样本混合之后把这个m+n个观测值按照大小次序排序，然后记下每个观测值在混合排序下面的秩，之后分别把两个样本所得到的秩相加。记第一个样本观测值的秩的和为<span class="math inline">\(W_{x}\)</span>，而第二个样本秩的和为<span class="math inline">\(W_{Y}\)</span>。这两个值可以互相推算，称为Wilcoxon统计量。该统计量的分布和两个总体分布无关，，由此分布可以得到p值。直观上看，如果<span class="math inline">\(W_{x}\)</span>与<span class="math inline">\(W_{Y}\)</span>之中有一个显著地大（或显著地小），则可以选择拒绝零假设。这个检验注称为Wilcoxon秩和检验(Wilcoxon rank-sum test)，也称为Mann-Whitney检验或Mann-Whitney-Wilcoxon检验。之所以有两个名称，这是因为Wilcoxon统计量和由Mann-Whitney导出的检验统计量等价。Mann-Whitney统计量也是一对：<span class="math inline">\(W_{XY}\)</span>和<span class="math inline">\(W_{YX}\)</span>；定义为两个样本中满足<span class="math inline">\(x_{i}&gt;y_{i}\)</span>的数目，而<span class="math inline">\(W_{XY}\)</span>定义为两个样本中满足<span class="math inline">\(x_{i}&lt;y_{i}\)</span>的数目。检验时，一般使用<span class="math inline">\(W=min(W_{XY},W_{YX})\)</span>作为检验统计量。</p>
-<p>案例A：（《医学统计学》，第三版，孙振球，P136）</p>
-<p>对10例肺癌病人和12例矽肺0期工人用X光片测量肺门横径右侧距RD值（cm），结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">肺癌：2.78,3.23,4.2,4.87,5.12,6.21,7.18,8.05,8.56,9.6</div><div class="line">矽肺：3.23,3.5,4.04,4.15,4.28,4.34,4.47,4.64,4.75,4.82,4.95,5.1</div></pre></td></tr></table></figure>
-<p>问肺癌病人的RD值是否高于矽肺0期工人的RD值？</p>
-<p>思路：第一组数据的样本量为10，中位数是5.665，第二组数据的样本量为12，中位数是4.405，这两个中位数看上去有点差异，令这两组数据的总体中位数分别为<span class="math inline">\(M_{1}\)</span>和<span class="math inline">\(M_{2}\)</span>，现在进行检验，如下所示：</p>
-<p><span class="math display">\[H_{0}:M_{1}=M_{2}\iff H_{1}:M_{1}&gt;M_{2}\]</span></p>
-<p>计算过程如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">lc &lt;- c(2.78,3.23,4.2,4.87,5.12,6.21,7.18,8.05,8.56,9.6)</div><div class="line">si &lt;- c(3.23,3.5,4.04,4.15,4.28,4.34,4.47,4.64,4.75,4.82,4.95,5.1)</div><div class="line">wilcox.test(lc,si,correct=T)</div></pre></td></tr></table></figure>
-<p>从结果中我们可以看到，p值等于0.04318，同时也得到中间结果<span class="math inline">\(W_{XY}=86.5\)</span>，因此哦可以说，对于大于p值的显著必不平都可以拒绝零假设，也就是说，这两组数据的中位数有显著性的差异。</p>
-<h2 id="配对wilcoxon符号秩检验">配对Wilcoxon符号秩检验</h2>
-<p>例8-1：对12份血清分别用原方法（检测时间20分钟）和新方法（检测时间10分钟）测谷-丙转氨酶，结果见表8-1的（2）、（3）栏。问两法所得结果有无差别？（《医学统计学》，第三版，孙振球，P132） <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">old &lt;- c(60,142,195,80,242,220,190,25,198,38,236,95)</div><div class="line">new &lt;- c(76,152,243,82,240,220,205,38,243,44,190,100)</div><div class="line">wilcox.test(old,new,paired = TRUE)</div></pre></td></tr></table></figure></p>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; old &lt;- c(60,142,195,80,242,220,190,25,198,38,236,95)</div><div class="line">&gt; new &lt;- c(76,152,243,82,240,220,205,38,243,44,190,100)</div><div class="line">&gt; wilcox.test(old,new,paired = TRUE)</div><div class="line"></div><div class="line">	Wilcoxon signed rank test with continuity correction</div><div class="line"></div><div class="line">data:  old and new</div><div class="line">V = 11.5, p-value = 0.06175</div><div class="line">alternative hypothesis: true location shift is not equal to 0</div><div class="line"></div><div class="line">Warning messages:</div><div class="line">1: In wilcox.test.default(old, new, paired = TRUE) :</div><div class="line">  无法精確計算带连结的p值</div><div class="line">2: In wilcox.test.default(old, new, paired = TRUE) :</div><div class="line">  有0时无法計算精確的p值</div></pre></td></tr></table></figure>
-<h2 id="有序的秩检验">有序的秩检验</h2>
-<p>例8-4 39名吸烟工人和40名不吸烟工人的碳氧血红蛋白HbCO(%)含量见表8-6。问吸烟工人的HbCO(%)含量是否高于不吸烟工人的HbCO(%)含量？</p>
-<h3 id="例8-4第1种方法wilcox.test检验">例8-4第1种方法：Wilcox.test检验：</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">smoke &lt;- c(1,8,16,10,4)</div><div class="line">no.smoke &lt;-c(2,23,11,4,0)</div><div class="line">rank.c &lt;- c(1:5)</div><div class="line">group1 &lt;- rep(rank.c,smoke)</div><div class="line">group2 &lt;- rep(rank.c,no.smoke)</div><div class="line">data84 &lt;- c(group1,group2)</div><div class="line">group.f &lt;-factor(c(rep(1,length(group1)),rep(2,length(group2))))</div><div class="line">wilcox.test(data84~group.f)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; wilcox.test(data84~group.f)</div><div class="line"></div><div class="line">        Wilcoxon rank sum test with continuity correction</div><div class="line"></div><div class="line">data:  data84 by group.f</div><div class="line">W = <span class="number">1137</span>, p-value = <span class="number">0.0002181</span></div><div class="line">alternative hypothesis: true location shift is not equal to <span class="number">0</span></div><div class="line"></div><div class="line">Warning message:</div><div class="line">In wilcox.test.default(x = c(<span class="number">1L</span>, <span class="number">2L</span>, <span class="number">2L</span>, <span class="number">2L</span>, <span class="number">2L</span>, <span class="number">2L</span>, <span class="number">2L</span>, <span class="number">2L</span>, <span class="number">2L</span>,  :</div><div class="line">  无法精確計算带连结的p值</div></pre></td></tr></table></figure>
-<h3 id="例8-4第2种方法kruskal检验">例8-4第2种方法：Kruskal检验：</h3>
-<p>Kurskal-Wallis检验是Wilcoxon方法（其实是Mann-Whitney检验）用于多于两个样本的时候的升级版。当对两个样本进行比较的时候，Kurskal-Wallis检验与Mann-Whitney检验是等价的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kruskal.test(data84~group.f)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; kruskal.test(data84~group.f)</div><div class="line"></div><div class="line">        Kruskal-Wallis rank sum test</div><div class="line"></div><div class="line">data:  data84 by group.f</div><div class="line">Kruskal-Wallis chi-squared = <span class="number">13.707</span>, df = <span class="number">1</span>, p-value = <span class="number">0.0002137</span></div></pre></td></tr></table></figure>
-<h3 id="例8-4第2种方法ridit检验">例8-4第2种方法：Ridit检验:</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">data84 &lt;- matrix(c(1,8,16,10,4,2,23,11,4,0),nrow=5)</div><div class="line">dimnames(data84) &lt;- list(cone=c(&quot;very low&quot;,&quot;low&quot;,&quot;median&quot;,&quot;a bit high&quot;,&quot;high&quot;),</div><div class="line">worker=c(&quot;smoker&quot;,&quot;no-smoker&quot;))</div><div class="line">if(!require(&quot;Ridit&quot;))&#123;</div><div class="line">  install.packages(&quot;Ridit&quot;)</div><div class="line">  library(Ridit)</div><div class="line">&#125;</div><div class="line">ridit(data84,2)</div><div class="line">chisq.test(data84)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; ridit(data84,<span class="number">2</span>)</div><div class="line"></div><div class="line">Ridit Analysis:</div><div class="line"></div><div class="line">Group   Label           Mean Ridit</div><div class="line">-----   -----           ----------</div><div class="line"><span class="number">1</span>       smoker          <span class="number">0.6159</span></div><div class="line"><span class="number">2</span>       no-smoker       <span class="number">0.387</span></div><div class="line"></div><div class="line">Reference: Total of all groups </div><div class="line">chi-squared = <span class="number">13.707</span>, df = <span class="number">1</span>, p-value = <span class="number">0.0002137</span></div><div class="line"></div><div class="line">&gt; chisq.test(data84)</div><div class="line"></div><div class="line">        Pearson<span class="string">'s Chi-squared test</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">data:  data84</span></div><div class="line"><span class="string">X-squared = 15.079, df = 4, p-value = 0.004541</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">Warning message:</span></div><div class="line"><span class="string">In chisq.test(data84) : Chi-squared近似算法有可能不准</span></div></pre></td></tr></table></figure>
-<h2 id="例8-5">例8-5</h2>
-<p>用三种药物杀灭钉螺，每批用200只活钉螺，用药后清点每批钉螺的死亡数、再计算死亡率（%），结果见表8-9。问三种药物杀灭钉螺的效果有无差别？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">drug &lt;-rep(c(&quot;甲药&quot;,&quot;乙药&quot;,&quot;丙药&quot;),each=5)</div><div class="line">data &lt;- c(32.5,35.5,40.5,46,49,16,20.5,22.5,29,36,6.5,9.0,12.5,18,24)</div><div class="line">data85 &lt;- data.frame(drug,data)</div><div class="line">kruskal.test(data85$data~data85$drug)</div></pre></td></tr></table></figure>
-<h2 id="例8-6">例8-6</h2>
-<p>比较小白鼠接种三种不同菌型伤寒杆菌9D、11C和DSC1后存活日数，结果见表8-10。问小白鼠接种三种不同菌型伤寒杆菌的存活日数有无差别？ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mice &lt;- as.factor(c(rep(&quot;9D&quot;,10),rep(&quot;11C&quot;,9),rep(&quot;DSC1&quot;,11)))</div><div class="line">data86 &lt;- c(2,2,2,3,4,4,4,5,7,7,5,5,6,6,6,7,8,10,12,3,5,6,6,6,7,7,9,10,11,11)</div><div class="line">data86 &lt;- data.frame(mice,data)</div><div class="line">kruskal.test(data86$data~data86$mice)</div></pre></td></tr></table></figure></p>
-<h2 id="例8-7">例8-7</h2>
-<p>四种疾病患者痰液内嗜酸性白细胞的检查结果见表8-11。问四种疾病患者痰液内的嗜酸性白细胞有无差别？注：这道例题与《医学统计学及SAS应用》（上海交通大学）的9.11类似 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">x1 &lt;- c(0,2,9,6)</div><div class="line">x2 &lt;- c(3,5,5,2)</div><div class="line">x3 &lt;- c(5,7,3,2)</div><div class="line">x4 &lt;- c(3,5,3,0)</div><div class="line"> </div><div class="line">freq &lt;- function(x)&#123;</div><div class="line">count &lt;-c()</div><div class="line">for(i in 1:4)&#123;</div><div class="line">count1 &lt;-c(rep(i,x[i]))</div><div class="line">count &lt;- append(count,count1)</div><div class="line">&#125;</div><div class="line">return(count)&#125;</div><div class="line">data87 &lt;-c(freq(x1),freq(x2),freq(x3),freq(x4))</div><div class="line">group &lt;- c(rep(1,sum(x1)),rep(2,sum(x2)),rep(3,sum(x3)),rep(4,sum(x4)))</div><div class="line">kruskal.test(data87~group)</div></pre></td></tr></table></figure></p>
-<h2 id="例8-8">例8-8</h2>
-<p>对例8-6资料（表8-10）作三个样本间的两两比较，Nemenyi检验。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"># 需要安装下列包：</div><div class="line">if(!require(&quot;pgirmess&quot;))&#123;</div><div class="line">  install.packages(&quot;pgirmess&quot;)</div><div class="line">  library(pgirmess)</div><div class="line">&#125;</div><div class="line">if(!require(&quot;coin&quot;))&#123;</div><div class="line">  install.packages(&quot;coin&quot;)</div><div class="line">  library(coin)</div><div class="line">&#125;</div><div class="line">if(!require(&quot;multcomp&quot;))&#123;</div><div class="line">  install.packages(&quot;multcomp&quot;)</div><div class="line">  library(multcomp)</div><div class="line">&#125;</div><div class="line"></div><div class="line">mice &lt;- as.factor(c(rep(&quot;9D&quot;,10),rep(&quot;11C&quot;,9),rep(&quot;DSC1&quot;,11)))</div><div class="line">data &lt;- c(2,2,2,3,4,4,4,5,7,7,5,5,6,6,6,7,8,10,12,3,5,6,6,6,7,7,9,10,11,11)</div><div class="line">data88 &lt;- data.frame(mice,data)</div><div class="line">kruskal.test(data~mice,data=data88)</div><div class="line">kruskalmc(data~mice, data=data88, probs=0.05) # 使用kruskalmc函数做两两比较，但此方法不能给出具体的值</div><div class="line"># 下面构建函数计算具体的p值</div><div class="line">mult &lt;- oneway_test(data ~ mice, data = data88,</div><div class="line">ytrafo = function(data) trafo(data, numeric_trafo = rank),</div><div class="line">xtrafo = function(data) trafo(data, factor_trafo = function(x)</div><div class="line">model.matrix(~x - 1) %*% t(contrMat(table(x), &quot;Tukey&quot;))),</div><div class="line">teststat = &quot;max&quot;, distribution = approximate(B = 90000)) </div><div class="line">pvalue(mult, method = &quot;single-step&quot;) #计算具体的p值</div></pre></td></tr></table></figure>
-<h2 id="例8-9">例8-9</h2>
-<p>8名受试对象在相同实验条件下分别接受4种不同频率声音的刺激，他们的反应率（%）资料见表8-12。问4种频率声音刺激的反应率是否有差别？ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">freA &lt;- c(8.40,11.60,9.40,9.80,8.30,8.60,8.90,7.80)</div><div class="line">freB &lt;- c(9.60,12.70,9.10,8.70,8.00,9.80,9.00,8.20)</div><div class="line">freC &lt;- c(9.80,11.80,10.40,9.90,8.60,9.60,10.60,8.50)</div><div class="line">freD &lt;- c(11.70,12.00,9.80,12.00,8.60,10.60,11.40,10.80)</div><div class="line">matrix89 &lt;- matrix(c(freA,freB,freC,freD),nrow=8,dimnames=list(no=1:8,c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;)))</div><div class="line">friedman.test(matrix89)</div></pre></td></tr></table></figure></p>
-<p>对两个以上样本进行比较的Kruskal-Wallis 秩和检验 kruskal.test() kruskal.test(formula, data, subset, na.action, …) 例子 为了比较属于同一类的四种不同食谱的营养效果，将25只老鼠随机的氛围4组，每组分别为8只，4只，7只和6只，采用食谱甲乙丙丁喂养，假设其他条件均值相同，12周后测得体重增加量如表所示，在alpha=0.05水平上，检验各食谱的营养效果是否有显著差异。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">food&lt;-data.frame(</div><div class="line">x=c(164, 190, 203, 205, 206, 214, 228, 257,</div><div class="line">185, 197, 201, 231,</div><div class="line">187, 212, 215, 220, 248, 265, 281,</div><div class="line">202, 204, 207, 227, 230, 276),</div><div class="line">g=factor(rep(1:4, c(8,4,7,6)))</div><div class="line">)</div><div class="line">kruskal.test(x~g, data=food)</div></pre></td></tr></table></figure>
-<p>另一种写法 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kruskal.test(food$x, food$g)</div></pre></td></tr></table></figure></p>
-<p>或 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">A&lt;-c(164, 190, 203, 205, 206, 214, 228, 257)</div><div class="line">B&lt;-c(185, 197, 201, 231)</div><div class="line">C&lt;-c(187, 212, 215, 220, 248, 265, 281)</div><div class="line">D&lt;-c(202, 204, 207, 227, 230, 276)</div><div class="line">kruskal.test(list(A,B,C,D))</div></pre></td></tr></table></figure></p>
-<p>　　利用R做Nemenyi的检验方法有人介绍过，SPSS里面没有现成的方法，需要编程，这里用R来做一下这个检验，原文是在丁香园引用的，参见<a href="http://www.dxy.cn/bbs/thread/26928446#26928446" target="_blank" rel="external">（R语言）秩和检验后两两比较方法之Nemenyi 检验及其他</a>这篇帖子。　　</p>
-<p>原题：比较以下三组之间的数据，看有无差异<br>
-第一组：293,409,392,213,409,57,97,244,254,352,168； 第二组：441,538,390,589,244,409,72,168,254,374 ； 第三组：807,833,409,914,380,883,254,993,667 ； 将上面三组数据录入data20140501，分两列，第一列为cd，第2列为group，存为csv格式。</p>
-<p>源代码如下： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">datanemenyi &lt;- read.csv(&quot;D:/Tutorial/20151219Statistics/data/rdata/data20140501.csv&quot;) #导入源数据文件  </div><div class="line">str(datanemenyi) #查看数据结构</div><div class="line">datanemenyi$group &lt;- as.factor(datanemenyi$group);datanemenyi #将group转化为因子类型  </div><div class="line">kruskal.test(cd~group, data=datanemenyi)  # Kruskal-Wallis检验，类似于参数检验的ANOVA检验  </div><div class="line"></div><div class="line">library(pgirmess)</div><div class="line">library(coin)  </div><div class="line">library(multcomp) # 安装并加载要用到的包  </div><div class="line">kruskalmc(cd~group, data=datanemenyi, probs=0.05) # 使用kruskalmc函数做两两比较，此法不能给出精确p值  </div><div class="line"></div><div class="line">mult &lt;- oneway_test(cd ~ group, data = datanemenyi,</div><div class="line">   ytrafo = function(data) trafo(data, numeric_trafo = rank),</div><div class="line">  xtrafo = function(data) trafo(data, factor_trafo = function(x)</div><div class="line">  model.matrix(~x - 1) %*% t(contrMat(table(x), &quot;Tukey&quot;))),</div><div class="line">  teststat = &quot;max&quot;, distribution = approximate(B = 90000))</div><div class="line"></div><div class="line">pvalue(mult, method = &quot;single-step&quot;)</div></pre></td></tr></table></figure></p>
-<p>这个结果与原代码的运行结果不同</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>关于Nemenyi检验的方法是参照丁香园的，原贴地址如下，帖子的作者有把写过《医学统计学及SAS应用》之R语言实现这本电子书，下载地址如下:<a href="http://www.dxy.cn/bbs/thread/26928446#26928446" target="_blank" rel="external">Nemenyi检验方法</a></li>
-<li><a href="http://d.dxy.cn/detail/6143147" target="_blank" rel="external">《医学统计学及SAS应用》之R语言实现</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -6130,7 +5771,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">187</span>
+                  <span class="site-state-item-count">189</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -6152,7 +5793,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -6228,7 +5869,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共710.8k字</span>
+  <span class="post-count">博客全站共725.3k字</span>
 </div>
 
         
