@@ -259,6 +259,274 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/29/Linux/Linux-shell01-基础笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/29/Linux/Linux-shell01-基础笔记/" itemprop="url">Shell学习笔记（1）——shell脚本基础笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-29T12:10:54+08:00">
+                2018-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,088
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>本篇笔记的参考资料是（<a href="https://item.jd.com/12010266.html" target="_blank" rel="external">《Linux命令行与shell脚本编程大全》</a>（第3版），外加百度辅助，本篇笔记主要内容是Shell脚本的一些基本知识。</p>
+<p>使用命令行的一大特点就是能够写脚本，可以将一些命令写到一个脚本中，自动运行。而在Linux的命令行中，一次基本上只能运行一个或几个命令，就像下面的这样，它可以运行两个命令，只是要用分号隔开。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test/testfile$ date;who</div><div class="line">Fri Apr 27 15:56:32 CST 2018</div><div class="line">biotest  tty7         2018-04-27 11:24 (:0)</div></pre></td></tr></table></figure>
+<p>这两个命令其实也可以视为一个非常简单的脚本，虽然它只有两个命令，作用就是显示今天的日期以及当前登录到系统中的用户。</p>
+<h2 id="创建shell脚本文件">创建shell脚本文件</h2>
+<p>如果要将shell命令放到文本文件中，就需要一个文本编辑器，Linux中常用的是vim，写好的脚本文件如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line">date;who</div><div class="line"><span class="meta">#</span> this is comments</div></pre></td></tr></table></figure>
+<p>将脚本文件保存，命令为test.sh。</p>
+<p>现在解释一下这个脚本：</p>
+<p>第1行：写入的是<code>#!/bin/bash</code>，#号是用于注释的，shell并不会处理注释，注释只是起到说明的作用，但第1行是个例外，#!的意思是要告诉shell要到哪个shell来运行，这里指定的是bash。</p>
+<p>第2行：在第1行中指定了运行脚本的shell后，就可以输入命令了，输入一个命令后，回车，再输入另外一个命令，或者是用分号隔开两个命令。</p>
+<p>命令结束后，输入脚本，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test/testfile$ test.sh</div><div class="line">test.sh: command not found</div></pre></td></tr></table></figure>
+<p>这是因为，shell是通过PATH环境变量来查找命令的，现在test.sh这个脚本文件并不在环境变量PATH中，因此如果要运行这个脚本，只有2种方法：</p>
+<p>第一，将shell脚本文件所在的目录添加到PATH环境中；</p>
+<p>第二，使用绝对或相对路径引用shell脚本文件。</p>
+<p>现在使用第二种方法，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ test</div><div class="line">biotest@ubuntu:~$</div></pre></td></tr></table></figure>
+<p>发现没有反应，此时输入<code>bash test</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test/testfile$ bash test</div><div class="line">Fri Apr 27 16:19:14 CST 2018</div><div class="line">biotest  tty7         2018-04-27 11:24 (:0)</div></pre></td></tr></table></figure>
+<p>test是一个脚本文件，通过<code>ls -lF</code>命令查看发现，test不是一个可执行程序，因此运行这个脚本，需要使用bash test，如果要将它设为可执行文件，则如下操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ls -lF test</div><div class="line">-rw-rw-r-- 1 biotest biotest 42 Apr 27 01:28 test</div><div class="line">biotest@ubuntu:~$ chmod u+x test</div><div class="line">biotest@ubuntu:~$ test</div><div class="line">biotest@ubuntu:~$ ./test</div><div class="line">Fri Apr 27 01:29:38 PDT 2018</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div></pre></td></tr></table></figure>
+<p>此时输入的是相对路径<code>./test</code>，如果要直接运行，则需要将test添加到环境变量中去，如下操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ./test</div><div class="line">Fri Apr 27 01:36:50 PDT 2018</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">biotest@ubuntu:~$ pwd</div><div class="line">/home/biotest</div><div class="line">biotest@ubuntu:~$ echo 'export PATH=$PATH:/home/biotest/'&gt;&gt;~/.bashrc</div><div class="line">biotest@ubuntu:~$ source ~/.bashrc</div><div class="line">biotest@ubuntu:~$ test</div><div class="line">biotest@ubuntu:~$ mv test test.sh</div><div class="line">biotest@ubuntu:~$ test.sh</div><div class="line">Fri Apr 27 01:37:57 PDT 2018</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div></pre></td></tr></table></figure>
+<p>添加到环境变量用到了<code>echo 'export PATH=$PATH:/home/biotest/'&gt;&gt;~/.bashrc</code>命令，此外，还有一点，test是用shell写的，原来没有后缀名，输入后无法运行，当添加上上了<code>.sh</code>后，可以正常运行，原理现在还不清楚，懂了再写。</p>
+<h2 id="显示消息">显示消息</h2>
+<p>多数shell都会产生自己的输出，这些输出会显示脚本所运行的控制台显示器上。很多时候，在自己写脚本时，要添加自己的文本消息来告诉脚本用户正在做什么，需要echo命令，如果在echo命令后面加上一个字符串，就会显示出这个文本字符串，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo This is a test</div><div class="line">This is a test</div><div class="line">biotest@ubuntu:~$ echo "This is a test to see if you're paying attention"</div><div class="line">This is a test to see if you're paying attention</div><div class="line">biotest@ubuntu:~$ ^C</div><div class="line">biotest@ubuntu:~$ echo 'Rich says "scripting is easy".'</div><div class="line">Rich says "scripting is easy".</div></pre></td></tr></table></figure>
+<p>从中可以发现：第一，常规情况下字符串并不需要使用引号；第二，如果要使用引号，字符串中间的引号不能与字符串两端的引号重复（即字符串中使用单引号，整个字符串就使用双引号，反之亦然）。</p>
+<p>再看一案例，新建一个文件，命名为test1，输入以下代码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> This script displays the date and who's logged on </div><div class="line">echo The time and date are:</div><div class="line">date</div><div class="line">echo "Let's see who's logged into the system:"</div><div class="line">who</div></pre></td></tr></table></figure>
+<p>结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test1</div><div class="line">The time and date are:</div><div class="line">Fri Apr 27 03:01:29 PDT 2018</div><div class="line">Let&apos;s see who&apos;s logged into the system:</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div></pre></td></tr></table></figure></p>
+<h2 id="使用变量">使用变量</h2>
+<p>环境变量是常见的变量之一，在shell脚本中，也能使用环境变量，只需要在环境㸄前加上美元符号（$）即可，下面的脚本中就使用了一些环境变量，如下所示： <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> display user information from the system.</div><div class="line">echo "User info for userid: $USER"</div><div class="line">echo UID:$UID</div><div class="line">echo HOME: $HOME</div></pre></td></tr></table></figure></p>
+<p>运行后结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test2</div><div class="line">User info for userid: biotest</div><div class="line">UID:1000</div><div class="line">HOME: /home/biotest</div></pre></td></tr></table></figure>
+<p>如果在字符串中使用美元符号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo "The cost of the item is $15"</div><div class="line">The cost of the item is 5</div></pre></td></tr></table></figure>
+<p>这里面的美元符号就不会显示，如果要显示的话，需要添加转义字符，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo "The cost of the item is \$15"</div><div class="line">The cost of the item is $15</div></pre></td></tr></table></figure>
+<h2 id="用户变量">用户变量</h2>
+<p>用户变量是用户自己定义的一些变量，这些常见的编程语言中的变量大同小异，看下面的案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing vairbales</div><div class="line">days=10</div><div class="line">guest="Test"</div><div class="line">echo "$guest checked in $days days ago"</div><div class="line">days=5</div><div class="line">guest="Test01"</div><div class="line">echo "$guest checked in $days days ago"</div></pre></td></tr></table></figure>
+<p>运行后结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test3</div><div class="line">Test checked in 10 days ago</div><div class="line">Test01 checked in 5 days ago</div></pre></td></tr></table></figure>
+<h3 id="有关美元符号与赋值的另一案例">有关美元符号与赋值的另一案例</h3>
+<p>如果引用变量不使用美元符号，会将引用的某个变量名称识别为字符串，看下面的案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> assigning a variable value to another variable</div><div class="line"></div><div class="line">value1=10</div><div class="line">value2=$value1</div><div class="line">echo The resulting value is $value2</div><div class="line">value3=value1</div><div class="line">echo The resulting value is $value3</div></pre></td></tr></table></figure>
+<p>结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test4</div><div class="line">The resulting value is 10</div><div class="line">The resulting value is value1</div></pre></td></tr></table></figure></p>
+<p>从结果可以看出来，当value2=$value1时，就把变量value1的值10赋值给了value2，当使用value3=value1时，由于没加美元符号，就把value1这个字符串赋值给了value3。</p>
+<h2 id="命令替换">命令替换</h2>
+<p>shell脚本有一个重要的功能就是从命令输出中提取信息，并将值赋给某个变量。有2种方法可以将命令输出赋值给某个变量：</p>
+<p>第一：使用反引号（`）； 第二：使用<code>$()</code>格式。 使用这两种方法可以使shell命令的输出赋值给变量，具体用法如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">testing=`date`</div><div class="line"># 或者是</div><div class="line">testing=$(date)</div></pre></td></tr></table></figure>
+<p>具体的案例如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line">testing=$(date)</div><div class="line">echo &quot;The date and time are: &quot; $testing</div></pre></td></tr></table></figure></p>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test5</div><div class="line">The date and time are:  Fri Apr 27 07:10:16 PDT 2018</div></pre></td></tr></table></figure>
+<p>第二案例： 以下的案例就是就是通过命令替换获得当前日期，并用它来生成唯一文件名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line"># copy the /usr/bin directory listing to a log file</div><div class="line">today=$(date +%y%m%d) </div><div class="line"># there is a blank between +%y%m%d</div><div class="line">ls /usr/bin -al &gt; log.$today</div></pre></td></tr></table></figure>
+<p>运行后没有输出信息，但是它会在当前目录下生成一个log文件，名称就是log加上今天的日期（今天是2018年4月27日），则这个文件名称就是log.180427。代码的运行原理是，date命令得到当前日期，经格式化后，赋值给today。关于日期的格式化，可以看下面的案例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ date</div><div class="line">Fri Apr 27 07:21:17 PDT 2018</div><div class="line">biotest@ubuntu:~$ date +%y%m%d</div><div class="line">180427</div></pre></td></tr></table></figure>
+<h2 id="重定向输入和输出">重定向输入和输出</h2>
+<p>有时候我们会遇到这样的场景，我想把某个命令的输出结果保存到某个文件中，这个文件我可以用于查看，或者是经后来的命令处理。这就用到了重定向，重定向可以用于输入，也可以用于输出。</p>
+<h3 id="输出重定向">输出重定向</h3>
+<p>最基本的重定向就是将命令的输出发送到一个文件中，bash shell中使用大于号（&gt;）来完成，格式为<code>command &gt; outputfile</code>，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ date &gt; test7</div><div class="line">biotest@ubuntu:~$ ls -l test7</div><div class="line">-rw-rw-r-- 1 biotest biotest 29 Apr 27 07:25 test7</div><div class="line">biotest@ubuntu:~$ less test7</div><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">Fri Apr 27 07:25:44 PDT 2018</div><div class="line">biotest@ubuntu:~$ who &gt; test7</div><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">biotest@ubuntu:~$ date &gt;&gt; test7</div><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">Fri Apr 27 07:28:58 PDT 2018</div></pre></td></tr></table></figure>
+<p>使用重定向文件创建了一个文件test7，将date命令的输出结果重定向了到了test7中，如果这个文件存在，则重定向的数据会覆盖原来的数据，如果不想覆盖，只是追加，可以使用双大于号。</p>
+<h3 id="输入重定向">输入重定向</h3>
+<h4 id="常规的输入重定向">常规的输入重定向</h4>
+<p>输入重定向和输出重定向正好相反。输入重定向将文件的内容重定向到命令。 输入重定向符号是小于号（&lt;），格式为<code>command &lt; inputfile</code>。 如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">Fri Apr 27 07:28:58 PDT 2018</div><div class="line">biotest@ubuntu:~$ wc &lt; test7</div><div class="line"> 2 11 73</div></pre></td></tr></table></figure></p>
+<p>在这个案例中，将test7的内容输入到wc命令中，wc命令可以对数据中的文本进行计数（wc的全称为words count），wc的默认输出有3个值，从左到右分别为： ①文本的行数；②文本的词数；③文本的字节数，在前面的案例中，结果就是2行，11个单词，73个字节。</p>
+<h4 id="内联输入重定向">内联输入重定向</h4>
+<p>内联输入重定向的英文是inline input redirection，这种方法无需使用文件进行重定向，只需要在命令行中指定用于输入重定向的数据就可以了。内联输入重定向符号是远小于号（&lt;&lt;）。除了这个符号，必须指定一个文本标记来划分输入数据的开始和结尾。任何字符串都可作为文本标记，但在数据的开始和结尾文本标记必须一致，格式为： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">command &lt;&lt; marker </div><div class="line">data </div><div class="line">marker</div></pre></td></tr></table></figure></p>
+<p>maker是数据的开始，也是结果，data是位于maker之间的文本文件，看一个案例： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ wc &lt;&lt; EOF</div><div class="line">&gt; test string 1</div><div class="line">&gt; test string 2</div><div class="line">&gt; test string 3</div><div class="line">&gt; EOF</div><div class="line"> 3  9 42</div></pre></td></tr></table></figure></p>
+<p>当输入wc &lt;&lt; EOF时，命令行会自动变成大于号，接着输入内容，输入完毕后，再输入EOF表示结束，此时命令开始运行，结果为3，9， 42.</p>
+<h2 id="管道">管道</h2>
+<p>管道的使用场景为，将命令A的输出结果导入到命令B，使A的结果成为B的输入。其实这样可以通过重定向实现，但是太麻烦，管道就是出于此目的而设计的。</p>
+<p>举个例子：统计当前的文件数有多少个。</p>
+<p>先看一下重定向是如何实现的： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ls &gt; filename</div><div class="line">biotest@ubuntu:~$ cat filename</div><div class="line">Desktop</div><div class="line">Documents</div><div class="line">Downloads</div><div class="line">examples.desktop</div><div class="line">filename</div><div class="line">log.</div><div class="line">log.180427</div><div class="line">miniconda2</div><div class="line">Miniconda2-latest-Linux-x86_64.sh</div><div class="line">Music</div><div class="line">Pictures</div><div class="line">Public</div><div class="line">Templates</div><div class="line">test1</div><div class="line">test2</div><div class="line">test3</div><div class="line">test4</div><div class="line">test5</div><div class="line">test6</div><div class="line">test7</div><div class="line">test8</div><div class="line">test.sh</div><div class="line">Videos</div><div class="line">biotest@ubuntu:~$ wc filename</div><div class="line"> 23  23 210 filename</div></pre></td></tr></table></figure></p>
+<p>使用重定向就是，先用ls列出当前的文件名，重定向到filename文件，然后使用wc命令来统计。</p>
+<p>再看一下管道命令： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ls|wc</div><div class="line">     23      23     210</div><div class="line">biotest@ubuntu:~$</div></pre></td></tr></table></figure></p>
+<p>管道命令通过一条竖线，将ls的结果导入到wc中。</p>
+<h2 id="退出脚本">退出脚本</h2>
+<p>shell中运行的每个命令都是使用退出状态码（exit status）告诉shell它已经运行完毕，退出状态码是一个0~255的号数值，在命令结束运行时，由命令传给shell。</p>
+<h3 id="查看退出状态码">查看退出状态码</h3>
+<p>Linux提供了一个专门的变量<code>$?</code> 来保存上个已执行命令的退出状态码。对于需要进行检查的 命令，必须在其运行完毕后立刻查看或使用 $? 变量。它的值会变成由shell所执行的最后一条命令的退出状态码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ date</div><div class="line">Fri Apr 27 07:52:45 PDT 2018</div><div class="line">biotest@ubuntu:~$ echo $?</div><div class="line">0</div></pre></td></tr></table></figure>
+<p>通常一个成功结束的命令的退出状态码是0，如果命令结束时有错误，这个代码就是一个正整数，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ asd</div><div class="line">No command &apos;asd&apos; found, but there are 22 similar ones</div><div class="line">asd: command not found</div><div class="line">biotest@ubuntu:~$ echo $?</div><div class="line">127</div></pre></td></tr></table></figure>
+<h3 id="exit命令">exit命令</h3>
+<p>exit 命令允许你在脚本结束时指定一个退出状态码，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line"># testing the exit status</div><div class="line">var1=10</div><div class="line">var2=30</div><div class="line">var3=$[$var1 + $var2]</div><div class="line">echo The answer is $var3</div><div class="line">exit 5</div></pre></td></tr></table></figure>
+<p>运行后，结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test9</div><div class="line">The answer is 40</div><div class="line">biotest@ubuntu:~$ echo $?</div><div class="line">5</div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/28/Linux/Linux环境变量/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4524,318 +4792,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/11/Python/Python学习笔记（9）-迭代器与生成器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/11/Python/Python学习笔记（9）-迭代器与生成器/" itemprop="url">Python学习笔记（9）-迭代器与生成器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-11T12:00:00+08:00">
-                2018-04-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,395
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  17
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>在学Python时，我对于生成器和迭代器理解得不清楚，检索到了一篇文章，把这两个东西讲得很透，应该是我能找到的最好的理解迭代器与生成器的文章，原文是《<a href="https://foofish.net/iterators-vs-generators.html" target="_blank" rel="external">完全理解Python迭代对象、迭代器、生成器》</a>，原文章作者提到，他是参考了别人的另外一篇文章写的，另外的文章题目是<a href="http://nvie.com/posts/iterators-vs-generators/" target="_blank" rel="external">《Iterables vs. Iterators vs. Generators》</a>。</p>
-<h2 id="数据结构背景">数据结构背景</h2>
-<p>在了解迭代器与生成器之前，需要了解一下Python的一些数据结构方面的知识，下图说明了容器(container)、可迭代对象(iterable)、迭代器(iterator)、生成器(generator)、列表/集合/字典推导式(list,set,dict comprehension)这些概念的关系图：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190628194512.png">
-
-</div>
-<h3 id="容器container">容器(container)</h3>
-<p>容器是一种把多个元素组织在一起的数据结构，容器中的元素可以逐个地迭代获取，可以用in, not in关键字判断元素是否包含在容器中。通常这类数据结构把所有的元素存储在内存中（也有一些特例，并不是所有的元素都放在内存，比如迭代器和生成器对象）在Python中，常见的容器对象有：</p>
-<ol style="list-style-type: decimal">
-<li>list, deque（双端队列）, ….</li>
-<li>set, frozensets, ….</li>
-<li>dict, defaultdict, OrderedDict, Counter, ….</li>
-<li>tuple, namedtuple, …</li>
-<li>str</li>
-</ol>
-<p>容器比较容易理解，因为你就可以把它看作是一个盒子、一栋房子、一个柜子，里面可以塞任何东西。从技术角度来说，当它可以用来询问某个元素是否包含在其中时，那么这个对象就可以认为是一个容器，比如 list，set，tuples都是容器对象，看下面的案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<h4 id="assert函数">assert()函数</h4>
-<p>关于<code>assert</code>这个函数，这个函数是Python断言句，它的功能就是判断某个表达式是否为真，运行后，如果什么都不返回，它就是True，如果语句是假，就返回异常，看一个案例，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="number">1</span> <span class="keyword">in</span> [<span class="number">11</span>,<span class="number">22</span>,<span class="number">33</span>] <span class="comment"># 1不在[11,22,33]里面，这个表达式就是False，返回异常</span></div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">AssertionError</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="number">2</span> &lt; <span class="number">1</span> <span class="comment"># 2小于1，是False，返回异常</span></div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">AssertionError</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="number">1</span> <span class="keyword">in</span> [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>] <span class="comment"># 1在[1,2,3]里，是True，不返回任何信息</span></div></pre></td></tr></table></figure>
-<p>再继续看容器的相关知识。可以寻问某元素是否在dict中用dict中的key：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>d = &#123;<span class="number">1</span>:<span class="string">'foo'</span>,<span class="number">2</span>:<span class="string">'bar'</span>,<span class="number">3</span>:<span class="string">'qux'</span>&#125; <span class="comment"># dict</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(d)</div><div class="line">&#123;<span class="number">1</span>: <span class="string">'foo'</span>, <span class="number">2</span>: <span class="string">'bar'</span>, <span class="number">3</span>: <span class="string">'qux'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="number">1</span> <span class="keyword">in</span> d</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="number">1</span> <span class="keyword">in</span> d</div><div class="line"><span class="keyword">True</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="string">'foo'</span> <span class="keyword">not</span> <span class="keyword">in</span> d <span class="comment"># 'foo'不是d的元素，它只是一个值，不是key</span></div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
-<p>询问某substring是否在string中：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>s = <span class="string">'test'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="string">'a'</span> <span class="keyword">in</span> s</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">AssertionError</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="string">'a'</span> <span class="keyword">not</span> <span class="keyword">in</span> s</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">assert</span> <span class="string">'te'</span> <span class="keyword">in</span> s</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
-<p>尽管绝大多数容器都提供了某种方式来获取其中的每一个元素，但这并不是容器本身提供的能力，而是<strong>可迭代对象</strong>赋予了容器这种能力，当然并不是所有的容器都是可迭代的，比如：Bloom filter（布隆过滤器），虽然Bloom filter可以用来检测某个元素是否包含在容器中，但是并不能从容器中获取其中的每一个值，因为Bloom filter压根就没把元素存储在容器中，而是通过一个散列函数映射成一个值保存在数组中。</p>
-<blockquote>
-<p>Bloom Filter是一种空间效率很高的随机数据结构，它利用位数组很简洁地表示一个集合，并能判断一个元素是否属于这个集合。Bloom Filter的这种高效是有一定代价的：在判断一个元素是否属于某个集合时，有可能会把不属于这个集合的元素误认为属于这个集合（false positive）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
-</blockquote>
-<h3 id="可迭代对象iterable">可迭代对象（iterable）</h3>
-<p>很多容器都是可迭代对象，此外还有更多的对象同样也是可迭代对象，比如处于打开状态的files，sockets等等。但凡是可以返回一个迭代器的对象都可称之为可迭代对象，看下面的例子：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>x = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>y = iter(x) <span class="comment">#创建迭代对象</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(y)</div><div class="line">&lt;list_iterator object at <span class="number">0x000001F8308B7470</span>&gt;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>z = iter(x)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(y)</div><div class="line"><span class="number">1</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(y)</div><div class="line"><span class="number">2</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(z)</div><div class="line"><span class="number">1</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>type(x)</div><div class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">list</span>'&gt;</span></div><div class="line"><span class="class">&gt;&gt;&gt; <span class="title">type</span><span class="params">(y)</span></span></div><div class="line"><span class="class">&lt;<span class="title">class</span> '<span class="title">list_iterator</span>'&gt;</span></div></pre></td></tr></table></figure>
-<p>代码解释：在这段代码中，<code>x</code>是一个可迭代对象，可迭代对象和容器一样是一种总称，范围很大，在Python中，它并不是指某种具体的数据类型，例如list是可迭代对象，dict是可迭代对象，set也是可迭代对象。在这段代码中，<code>y</code>和<code>z</code>是两个独立的迭代器，迭代器内部持有一个状态，该状态用于记录当前迭代所在的位置，以方便下次迭代的时候获取正确的元素。迭代器有一种具体的迭代器类型，比如<code>list_iterator</code>，<code>set_iterator</code>，可迭代对象实现了<code>__iter__</code>方法，这种方法会返回一个迭代对象，现在运行以下代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">x = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line"><span class="keyword">for</span> elem <span class="keyword">in</span> x:</div><div class="line">    ...</div></pre></td></tr></table></figure>
-<p>这段代码的执行过程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190628194555.png">
-
-</div>
-<p>反编译该段代码，你可以看到解释器显示地调用<code>GET_ITER</code>指令，相当于调用<code>iter(x)</code>，<code>FOR_ITER</code>指令就是调用<code>next()</code>方法，不断地获取迭代器中的下一个元素，但是你没法直接从指令中看出来，因为他被解释器优化过了，下面是反编译的过程：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> dis</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>x = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>dis.dis(<span class="string">'for _ in x: pass'</span>)</div><div class="line">  <span class="number">1</span>           <span class="number">0</span> SETUP_LOOP              <span class="number">14</span> (to <span class="number">17</span>)</div><div class="line">              <span class="number">3</span> LOAD_NAME                <span class="number">0</span> (x)</div><div class="line">              <span class="number">6</span> GET_ITER</div><div class="line">        &gt;&gt;    <span class="number">7</span> FOR_ITER                 <span class="number">6</span> (to <span class="number">16</span>)</div><div class="line">             <span class="number">10</span> STORE_NAME               <span class="number">1</span> (_)</div><div class="line">             <span class="number">13</span> JUMP_ABSOLUTE            <span class="number">7</span></div><div class="line">        &gt;&gt;   <span class="number">16</span> POP_BLOCK</div><div class="line">        &gt;&gt;   <span class="number">17</span> LOAD_CONST               <span class="number">0</span> (<span class="keyword">None</span>)</div><div class="line">             <span class="number">20</span> RETURN_VALUE</div></pre></td></tr></table></figure>
-<p>注：dis模块主要是用来分析字节码的一个内置模块，经常会用到的方法是dis.dis，它支持对Python代码进行反汇编，生成字节码指令。</p>
-<h3 id="判断可迭代对象">判断可迭代对象</h3>
-<p>判断一个对象是否是迭代器，可以使用<code>isinstance</code>函数来判断，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> collections <span class="keyword">import</span> Iterable</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>a = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">34</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(a,Iterable)</div><div class="line"><span class="keyword">True</span></div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
-<h2 id="迭代器iterator">迭代器(iterator)</h2>
-<h3 id="迭代器协议">迭代器协议</h3>
-<p>迭代器协议是指：对象需要提供<code>next</code>方法，它要么回返迭代中的下一项，要么引起一个StopIteration异常，以终止迭代。协议是一种约定，可迭代对象实现迭代器协议，Python的内置工具，例如for循环，sum，min，max等函数都可以使用迭代器协议访问对象。</p>
-<p>在Python中可以使用for循环来遍历数组，PYhton的list底层就是一个数组，因此也可以使用for循环来遍历list，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> n <span class="keyword">in</span> [<span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">3</span>]:</div><div class="line"><span class="meta">... </span>    print(n)</div><div class="line">...</div><div class="line"><span class="number">3</span></div><div class="line"><span class="number">2</span></div><div class="line"><span class="number">4</span></div><div class="line"><span class="number">3</span></div></pre></td></tr></table></figure>
-<p>Python的for循环也可以用于遍历文件（文件位于<code>C:\Users\20161111</code>目录下，内容是1到4这四个数字）如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> os</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>os.getcwd()</div><div class="line"><span class="string">'C:\\Users\\20161111'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">with</span> open(<span class="string">'practice.py'</span>) <span class="keyword">as</span> text:</div><div class="line"><span class="meta">... </span>    <span class="keyword">for</span> line <span class="keyword">in</span> text:</div><div class="line"><span class="meta">... </span>        print(line)</div><div class="line">...</div><div class="line"><span class="number">1</span></div><div class="line"><span class="number">2</span></div><div class="line"><span class="number">3</span></div><div class="line"><span class="number">4</span></div></pre></td></tr></table></figure>
-<p>在Python中，文件也能使用for循环，这是因为在Python中，文件对象实现了迭代器协议，for循环使用迭代器协议访问即对象时，并不需要对象是否是一个文件。</p>
-<h3 id="迭代器定义">迭代器定义</h3>
-<p>那么什么迭代器呢？它是一个带状态的对象，他能在你调用next()方法的时候返回容器中的下一个值，任何实现了<code>__iter__</code>和<code>__next__()</code>方法的对象都是迭代器，<code>__iter__</code>返回迭代器自身，<code>__next__</code>返回容器中的下一个值，如果容器中没有更多元素了，则抛出Stop Iteration异常。</p>
-<p>所以，迭代器就是实现了工厂模式（什么是工厂模式？有空了补充笔记）的对象，它在你每次你询问要下一个值的时候给你返回。有很多关于迭代器的例子，比如itertools函数返回的都是迭代器对象。</p>
-<h3 id="生成无限序列">生成无限序列</h3>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> itertools <span class="keyword">import</span> count</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>counter = count(start=<span class="number">13</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(counter)</div><div class="line"><span class="number">13</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(counter)</div><div class="line"><span class="number">14</span></div></pre></td></tr></table></figure>
-<p>代码解释：<code>itertools</code>这个模块用于构建迭代器，<code>count</code>这个函数用于生成连续的整数，<code>count(start=13)</code>表示生成从13开始的整数无限序列，即13,14,15….。</p>
-<h3 id="从一个有限序列中生成无限序列">从一个有限序列中生成无限序列</h3>
-<p>代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> itertools <span class="keyword">import</span> cycle</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>colors = cycle([<span class="string">'red'</span>,<span class="string">'white'</span>,<span class="string">'blue'</span>])</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(colors)</div><div class="line"><span class="string">'red'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(colors)</div><div class="line"><span class="string">'white'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(colors)</div><div class="line"><span class="string">'blue'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(colors)</div><div class="line"><span class="string">'red'</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(colors)</div><div class="line"><span class="string">'white'</span></div></pre></td></tr></table></figure>
-<p>这段代码使用了<code>cycle</code>函数，它的功能在于生成一个循环的无限序列。</p>
-<h3 id="从无限的序列中生成有限序列">从无限的序列中生成有限序列</h3>
-<p>代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> itertools <span class="keyword">import</span> islice</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>counter = count(start=<span class="number">13</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>limited = islice(counter,<span class="number">2</span>,<span class="number">5</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> x <span class="keyword">in</span> limited:</div><div class="line"><span class="meta">... </span>    print(x)</div><div class="line">...</div><div class="line"><span class="number">15</span></div><div class="line"><span class="number">16</span></div><div class="line"><span class="number">17</span></div></pre></td></tr></table></figure>
-<p>代码解释，先用<code>count</code>生成了一个无限的整数序列，即13，14，15，16，17，18…..，接着使用<code>islice</code>从这个无限序列中提取第2到第4个元素（第2个元素是15，因为Python计数时，是从0开始的），15,16,17。</p>
-<h3 id="自定义迭代器">自定义迭代器</h3>
-<p>为了更直观地感受迭代器内部的执行过程，我们自定义一个迭代器，以斐波那契数列为例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> islice</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fib</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.prev = <span class="number">0</span></div><div class="line">        self.curr = <span class="number">1</span></div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__next__</span><span class="params">(self)</span>:</span></div><div class="line">        value = self.curr</div><div class="line">        self.curr += self.prev</div><div class="line">        self.prev = value</div><div class="line">        <span class="keyword">return</span> value</div><div class="line"></div><div class="line">f = Fib()</div><div class="line">print(list(islice(f,<span class="number">0</span>,<span class="number">10</span>)))</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>&gt;python practice.py</div><div class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>, <span class="number">21</span>, <span class="number">34</span>, <span class="number">55</span>]</div></pre></td></tr></table></figure>
-<p>Fib是一个可迭代对象，因为它有<code>__iter__</code>方法，又是一个迭代器，因为它实现了<code>__next__</code>方法，实例变量<code>prev</code>和<code>curr</code>用于维持迭代器的内部状态，每次调用<code>next()</code>方法时，做两件事情，第一：为下一次调用<code>next()</code>方法修改状态；第二：为当前这次调用生成返回结果。</p>
-<p>迭代器就像一个懒加载的工厂，等到有人需要的时候才给它生成值返回，没调用的时候就处于休眠状态等待下一次调用。</p>
-<h3 id="为什么要使用迭代器">为什么要使用迭代器？</h3>
-<p>先看一段代码，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">list = [<span class="number">3</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">5</span>]</div><div class="line">it = iter(list)</div><div class="line"><span class="keyword">for</span> x <span class="keyword">in</span> it:</div><div class="line">    print(x,end=<span class="string">" "</span>)</div><div class="line"></div><div class="line">print(<span class="string">"\n---------"</span>)</div><div class="line"><span class="keyword">for</span> y <span class="keyword">in</span> list:</div><div class="line">    print(y,end=<span class="string">" "</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>&gt;python practice.py</div><div class="line"><span class="number">3</span> <span class="number">5</span> <span class="number">1</span> <span class="number">4</span> <span class="number">5</span></div><div class="line">---------</div><div class="line"><span class="number">3</span> <span class="number">5</span> <span class="number">1</span> <span class="number">4</span> <span class="number">5</span></div></pre></td></tr></table></figure>
-<p>从运行结果来看，貌似迭代器与普通的for循环没什么区别。但Python中为什么设计出迭代器种对象？下面列出了一些迭代器的使用场景：</p>
-<h4 id="场景1访问集合中的一个元素">场景1：访问集合中的一个元素。</h4>
-<p>例如我要访问集合中的一个元素，怎么处理？</p>
-<p>思路：集合是没有顺序的，因此也没有索引，要访问元素，有两种方法：第一，将集合转换为列表；第二，使用迭代器，先看第一种方法：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>set1 = &#123;<span class="number">5</span>,<span class="number">3</span>,<span class="number">8</span>,<span class="number">4</span>,<span class="number">11</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(set1)</div><div class="line">&#123;<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">11</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>list1 = list(set1)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>print(list1)</div><div class="line">[<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">11</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>list1[<span class="number">2</span>]</div><div class="line"><span class="number">5</span></div></pre></td></tr></table></figure>
-<p>再看第2种方法：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>set1=iter(set1)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(set1)</div><div class="line"><span class="number">3</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(set1)</div><div class="line"><span class="number">4</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(set1)</div><div class="line"><span class="number">5</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(set1)</div><div class="line"><span class="number">8</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(set1)</div><div class="line"><span class="number">11</span></div></pre></td></tr></table></figure>
-<h4 id="场景2">场景2:</h4>
-<p>如果我有一个文件，例如6G的测序文件，要遍历里面的所有元素，此时如果使用列表，元组等序列明显不现实。此时就需要使用迭代器子，它的一大优点就是不需要事先准备好整个迭代过程中所有的元素 ，迭代器仅仅在迭代到某个元素时才计算该元素，而在这之前或之后，元素可以不存在或者被销毁。 这个特点使得它特别适合用于遍历一些巨大的或是无限的集合。因此，它的使用过程有点像内存，我们把正在运行的程序放进内存，运行完就退出内存，每次只放正在运行的程序进入，而不是一次把全部内容都扔进去。</p>
-<h2 id="生成器generator">生成器（generator）</h2>
-<p>在Python中，使用了<code>yield</code>的函数被称为生成器（generator），跟普通函数不同的是，生成器是一个返回迭代器的函数，只能用于迭代操作，更简单点理解生成器就是一个特殊的迭代器，调用一个生成器函数，返回的是一个迭代器对象。它不需要再像上面的类一样写<code>__iter__()</code>和<code>__next__()</code>方法了，只需要一个<code>yiled</code>关键字，每次遇到<code>yield</code>时函数会暂停并保存当前所有的运行信息，返回<code>yield</code>的值,并在下一次执行<code>next()</code>方法时从当前位置继续运行（这也是生成器的主要使用场景）。</p>
-<p>从上述描述中可以知道，生成器可以支持延迟操作，延迟操作是指，只在需要的时候产生结果，而不是立即产生结果，这是生成器的主要好处。Python有两种不同的方式提供生成器：第一，生成器函数：常规函数定义，但是，使用yield语句而不是return语句返回结果。yield语句一次返回一个结果，在每个结果中间，挂起函数的状态，以便下次重它离开的地方继续执行。第二，生成器表达式：类似于列表推导，但是，生成器返回按需产生结果的一个对象，而不是一次构建一个结果列表</p>
-<p>用生成器来实现斐波那契数列的例子是：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> islice</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fib</span><span class="params">()</span>:</span></div><div class="line">    prev, curr = <span class="number">0</span>, <span class="number">1</span></div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        <span class="keyword">yield</span> curr</div><div class="line">        prev, curr = curr, curr + prev</div><div class="line"></div><div class="line">f = fib()</div><div class="line">print(list(islice(f, <span class="number">0</span>, <span class="number">10</span>)))</div></pre></td></tr></table></figure>
-<p>代码运行如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>&gt;python practice.py</div><div class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>, <span class="number">21</span>, <span class="number">34</span>, <span class="number">55</span>]</div></pre></td></tr></table></figure>
-<p>fib就是一个普通的python函数，它特殊的地方在于函数体中没有<code>return</code>关键字，函数的返回值是一个生成器对象。当执行<code>f=fib()</code>返回的是一个生成器对象，此时函数体中的代码并不会执行，只有显示或隐示地调用<code>next</code>的时候才会真正执行里面的代码。</p>
-<h3 id="生成器表达式">生成器表达式</h3>
-<p>生成器表达式是列表推倒式的生成器版本，看起来像列表推导式，但是它返回的是一个生成器对象而不是列表对象。，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">something</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> ... <span class="keyword">in</span> ...:</div><div class="line">        result.append(x)</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
-<h3 id="生成器的优点">生成器的优点</h3>
-<p>第一，代码量更少。</p>
-<p>生成器在Python中是一个非常强大的编程结构，可以用更少地中间变量写流式代码，此外，相比其它容器对象它更能节省内存和CPU，当然它可以用更少的代码来实现相似的功能。但凡看到类似以下的代码，就能够用生成器替代：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">something</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> ... <span class="keyword">in</span> ...:</div><div class="line">        result.append(x)</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
-<p>将上述代码用生成器函数来替换：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">iter_something</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> ... <span class="keyword">in</span> ...:</div><div class="line">        <span class="keyword">yield</span> x</div></pre></td></tr></table></figure>
-<p>再看一个案例：</p>
-<p>使用生成器返回自然数的平方</p>
-<p>常规写法如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>&gt;type practice.py</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_square</span><span class="params">(n)</span>:</span></div><div class="line">    res = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</div><div class="line">        res.append(i*i)</div><div class="line">    <span class="keyword">return</span> res</div><div class="line"></div><div class="line"><span class="keyword">for</span> item <span class="keyword">in</span> get_square(<span class="number">5</span>):</div><div class="line">    print(item)</div><div class="line">    </div><div class="line">    </div><div class="line">C:\Users\<span class="number">20161111</span>&gt;python practice.py</div><div class="line"><span class="number">0</span></div><div class="line"><span class="number">1</span></div><div class="line"><span class="number">4</span></div><div class="line"><span class="number">9</span></div><div class="line"><span class="number">16</span></div></pre></td></tr></table></figure>
-<p>生成器函数写法如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>&gt;type practice.py</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_square</span><span class="params">(n)</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</div><div class="line">        <span class="keyword">yield</span> i*i</div><div class="line"></div><div class="line"><span class="keyword">for</span> item <span class="keyword">in</span> get_square(<span class="number">5</span>):</div><div class="line">    print(item)</div><div class="line">    </div><div class="line">C:\Users\<span class="number">20161111</span>&gt;python practice.py</div><div class="line"><span class="number">0</span></div><div class="line"><span class="number">1</span></div><div class="line"><span class="number">4</span></div><div class="line"><span class="number">9</span></div><div class="line"><span class="number">16</span></div></pre></td></tr></table></figure>
-<p>生成器表达式的写法如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>squares = (x*x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">5</span>))</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>squares</div><div class="line">&lt;generator object &lt;genexpr&gt; at <span class="number">0x000001F167983DB0</span>&gt;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(squares)</div><div class="line"><span class="number">0</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(squares)</div><div class="line"><span class="number">1</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(squares)</div><div class="line"><span class="number">4</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(squares)</div><div class="line"><span class="number">9</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(squares)</div><div class="line"><span class="number">16</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(squares)</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">StopIteration</div></pre></td></tr></table></figure>
-<h3 id="生成器总结">生成器总结</h3>
-<p>现在总结一下生成器函数的格式，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> 函数名:</span></div><div class="line">    statements</div><div class="line">        <span class="keyword">yield</span></div></pre></td></tr></table></figure>
-<ol style="list-style-type: decimal">
-<li>生成器函数和常规函数几乎是一样的。它们都是使用def语句进行定义，差别在于，生成器使用yield语句返回一个值，而常规函数使用return语句返回一个值。</li>
-<li>自动实现迭代器协议：对于生成器，Python会自动实现迭代器协议，以便应用到迭代背景中（如for循环，sum函数）。由于生成器自动实现了迭代器协议，所以，我们可以调用它的next方法，并且，在没有值可以返回的时候，生成器自动产生StopIteration异常。</li>
-<li>状态挂起：生成器使用yield语句返回一个值。yield语句挂起该生成器函数的状态，保留足够的信息，以便之后从它离开的地方继续执行。</li>
-</ol>
-<h2 id="结论">结论</h2>
-<ol style="list-style-type: decimal">
-<li>容器是一系列元素的集合，str、list、set、dict、file、sockets对象都可以看作是容器，容器都可以被迭代（用在for，while等语句中），因此他们被称为可迭代对象。</li>
-<li>可迭代对象实现了<code>__iter__</code>方法，该方法返回一个迭代器对象。</li>
-<li>迭代器持有一个内部状态的字段，用于记录下次迭代返回值，它实现了<code>__next__</code>和<code>__iter__</code>方法，迭代器不会一次性把所有元素加载到内存，而是需要的时候才生成返回结果。</li>
-<li>生成器是一种特殊的迭代器，它的返回值不是通过return而是用yield。</li>
-</ol>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://zhuanlan.zhihu.com/p/24499698" target="_blank" rel="external">Python 迭代器和生成器</a></li>
-<li><a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1526953288&amp;ver=890&amp;signature=o-XNyigidmZsfz1Gnqygf99H1c1gAYf1ZkBTEMtwoNrkkRfLGM4HPAjbxudh2SPkNqwb6GtXTh8QbcZS4x9Uovz8hcAIEng1iFbJfgSllVIm5mMzpuYLgWnGs2Rwquxe&amp;new=1" target="_blank" rel="external">完全理解Python迭代器对象、迭代器、生成器</a></li>
-<li><a href="http://nvie.com/posts/iterators-vs-generators/" target="_blank" rel="external">Iterables vs. Iterators vs. Generators</a></li>
-<li><a href="https://blog.csdn.net/jiaomeng/article/details/1495500" target="_blank" rel="external">Bloom Filter概念和原理</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/33662628" target="_blank" rel="external">Python进阶系列连载（4）——迭代器</a></li>
-<li><a href="https://www.zhihu.com/question/20829330" target="_blank" rel="external">如何更好地理解Python迭代器与生成器.知乎.赖明星的回答</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4886,7 +4842,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">189</span>
+                  <span class="site-state-item-count">190</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4984,7 +4940,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共725.3k字</span>
+  <span class="post-count">博客全站共726.2k字</span>
 </div>
 
         
