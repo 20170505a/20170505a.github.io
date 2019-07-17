@@ -259,6 +259,624 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/18/R/ggplot2(8) - 坐标轴/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/04/18/R/ggplot2(8) - 坐标轴/" itemprop="url">ggplot2(8)-坐标轴</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-18T12:00:00+08:00">
+                2017-04-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index">
+                    <span itemprop="name">R</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,582
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  16
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="交换x轴与y轴">交换x轴与y轴</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/lm8E3DAKd6.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在将上图中的x轴与y轴进行交换：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()+coord_flip()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/GkKFebe46g.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>逆转转换后的原x轴变量</p>
+<p>中图中交换了x轴与y轴后，发现x轴的分类变量从原来的从左向右排列变成了从下往上排列，但通过scale_x_discrete()参数可以进行逆转：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()+coord_flip()+scale_x_discrete(limits=rev(levels(PlantGrowth$group)))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/0ljd32IkHh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="设置连续型坐标轴的值域">设置连续型坐标轴的值域</h2>
+<h3 id="设置y轴的范围">设置y轴的范围：</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p &lt;- ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()</div><div class="line">p</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/2H9jKcKKGi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="将y轴的范围扩大">将y轴的范围扩大</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + ylim(<span class="number">0</span>,max(PlantGrowth$weight))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/G33bjl5Efl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="调整y轴的范围并且在0510处加上标记">调整y轴的范围，并且在0,5,10处加上标记</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_y_continuous(limits=c(<span class="number">0</span>,<span class="number">10</span>),breaks=c(<span class="number">0</span>,<span class="number">5</span>,<span class="number">10</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/HCblg7iGHb.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>breaks参数中可以加入多个标记，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/97e6ked7GH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_y_continuous(limit=c(<span class="number">5</span>,<span class="number">6.5</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/I1871D7I23.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="可以使用expand_limits来单向扩展值域">可以使用expand_limits()来单向扩展值域</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + expand_limits(y=<span class="number">4</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/LCHafLdfg8.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="反转一条连续型坐标轴">反转一条连续型坐标轴</h2>
+<p>可以用scale_y_reverse()来翻转坐标轴：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()+scale_y_reverse()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/D41CA2eFHe.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>通过指定y轴的坐标范围也可以实现以上效果，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()+ylim(<span class="number">6.5</span>,<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/AjkfHeLmk0.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>翻转坐标轴并设定值域：</p>
+<p>注意y轴数值的变化：</p>
+<p>d<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/2Ii117jCd2.png?imageslim" alt="mark"></p>
+<h2 id="修改x轴上的类别的顺序">修改x轴上的类别的顺序</h2>
+<h3 id="基础绘图">基础绘图</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p &lt;- ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()</div><div class="line">p</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/1KflEf9Jd9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="改变x轴的顺序">改变x轴的顺序</h3>
+<p>可以发现，上述图的x轴顺序是ctr1,trt1,trt2，现在改变x轴的顺序：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_x_discrete(limits=c(<span class="string">"trt1"</span>,<span class="string">"ctrl"</span>,<span class="string">"trt2"</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/0Bk7km1AEf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上述代码改变x轴的顺序，将原来的顺序ctrl，trt1,trt2改变为trt1,ctrl,trt2。</p>
+<h3 id="反转x轴有关类型的顺序">反转x轴有关类型的顺序</h3>
+<p>可以用scale_x_discrete(limits=rev())来实现，原图如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/IBBgbg1ACg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>反转后的如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_x_discrete(limits=rev(levels(PlantGrowth$group)))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/8c0gjgLBLf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="显示其中的两项">显示其中的两项</h3>
+<p>下面的代码则只显示ctrl与trt1两组的箱线图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_x_discrete(limits=c(<span class="string">"ctrl"</span>,<span class="string">"trt1"</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/798cBIa36j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="设置x轴与y轴的缩放比例">设置x轴与y轴的缩放比例</h2>
+<p>先看一下原图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">head(marathon,<span class="number">8</span>) <span class="comment"># 先查看一下数据集，数据集marathon中包括跑步者的全程马拉松和半程马拉松</span></div><div class="line"></div><div class="line"><span class="comment">##       Half     Full</span></div><div class="line"><span class="comment">## 1 66.80000 141.4833</span></div><div class="line"><span class="comment">## 2 67.88333 147.2667</span></div><div class="line"><span class="comment">## 3 68.70000 147.8833</span></div><div class="line"><span class="comment">## 4 69.90000 156.7500</span></div><div class="line"><span class="comment">## 5 69.95000 147.4333</span></div><div class="line"><span class="comment">## 6 70.11667 150.0000</span></div><div class="line"><span class="comment">## 7 70.63333 147.2333</span></div><div class="line"><span class="comment">## 8 70.65000 159.0000</span></div><div class="line"></div><div class="line">sp &lt;- ggplot(marathon,aes(x=Half,y=Full)) + geom_point()</div><div class="line">sp</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/KCa0Em2Kek.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="缩小x轴与y轴">缩小x轴与y轴</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + coord_fixed()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/D8DggLBCcH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>原图中的y轴与x轴的单位长度之比为并不为1:1,加了coord_fixed()之后，y轴长度与x轴长度的单位长度之比为1:1。通过下面的案例可以更加清楚地说明。</p>
+<p>下面的代码把x轴与y轴的单位长度设置相同，即两个刻度之间间距都是30</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sp + coord_fixed()+</div><div class="line">  scale_y_continuous(breaks=seq(<span class="number">0</span>,<span class="number">420</span>,<span class="number">30</span>))+</div><div class="line">  scale_x_continuous(breaks=seq(<span class="number">0</span>,<span class="number">420</span>,<span class="number">30</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/1m3b9d71mF.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="改变x轴与y轴的比例">改变x轴与y轴的比例</h3>
+<p>通过coord_fixed(ratio=1/2)参数实现，先看一下最基本的实现方法：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + coord_fixed(ratio=<span class="number">1</span>/<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/J02IlKiGKh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上述的图形的坐标轴表示x轴是y轴的1/2，但并不直观，接下来进行更直观的设置。</p>
+<p>把x轴的最小刻度设置为15，把y轴的最小刻度设置为30：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sp + coord_fixed(ratio=<span class="number">1</span>/<span class="number">2</span>)+</div><div class="line">  scale_y_continuous(breaks=seq(<span class="number">0</span>,<span class="number">420</span>,<span class="number">30</span>))+</div><div class="line">  scale_x_continuous(breaks=seq(<span class="number">0</span>,<span class="number">420</span>,<span class="number">15</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/J4CCb57eI9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="设置刻度线的位置">设置刻度线的位置</h2>
+<h3 id="原始绘图">原始绘图</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/8dlfdldFl3.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上述图形的坐标轴是均匀分布的，从3.5到6.0，每个间隔是0.5，现在进行更改。</p>
+<h3 id="更改y轴的位置">更改y轴的位置</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()+</div><div class="line">  scale_y_continuous(breaks=c(<span class="number">4</span>,<span class="number">4.25</span>,<span class="number">4.5</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">8</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/B0332GLjCk.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>可以看出来，上述的y轴坐刻度已经发生了改变，变成了4,4.25,4.5,5,6,8。其中scale_y_continuous()表示y轴的数据是连续型的。如果是离散型的则用scale_y_discrete()。</p>
+<h3 id="不同类型的x轴刻度">不同类型的x轴刻度</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(PlantGrowth,aes(x=group,y=weight))+geom_boxplot()+</div><div class="line">  scale_x_discrete(limits=c(<span class="string">"trt2"</span>,<span class="string">"ctrl"</span>),breaks=<span class="string">"ctrl"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/28afm5gHha.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上述的代码表示，限定x轴上只显示trt2与ctrl两组数据，但只显示ctrl这个类型的标签。</p>
+<h2 id="移除刻度线和标签">移除刻度线和标签</h2>
+<h3 id="基本图形">基本图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p &lt;- ggplot(PlantGrowth,aes(x=group,y=weight)) + geom_boxplot() <span class="comment"># 先看一下最基本的图形</span></div><div class="line">p</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/HDgEG2iF77.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="移除y轴刻度">移除y轴刻度</h3>
+<p>用到的代码是theme(axis.text.y=element_blank())，即通过主题的应用，把y轴的刻度改为空白，即axis.text.y=element_blank()。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + theme(axis.text.y=element_blank())</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/BHHCG2b70c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上面的图形把y轴的刻度标签移除了，只是把数字移除了，但刻度还存在，可以进一步把y轴的刻度线移除，如下所示，现在将x轴与y轴的上的刻度全移除，与上面的一样，即axis.ticks=element_blank()</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + theme(axis.ticks=element_blank(),axis.text.y=element_blank())</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/HLGIHFgHhi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上述图形把y轴的刻度标签（数字）与刻度线移除了。</p>
+<h3 id="移除刻度线刻度标签网格">移除刻度线，刻度标签，网格</h3>
+<p>可以通过一个参数把y轴的刻度线，刻度标签，网格线都移除，即scale_y_continuous(breaks=NULL)，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_y_continuous(breaks=<span class="literal">NULL</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/H61cFK2IAe.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="更换主题">更换主题</h2>
+<p>ggplot中的背景色默认的是灰色主题，有的时候与论文中排版不协调，可以更换为白色主题，需要的参数是theme_bw()，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_y_continuous(breaks=<span class="literal">NULL</span>)+theme_bw()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/mj1GHm17Lc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="修改刻度标签的文本">修改刻度标签的文本</h2>
+<h3 id="基本图形-1">基本图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hwp &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn))+geom_point()</div><div class="line">hwp</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/BC6KGmFE9c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="更改y轴的坐标标签">更改y轴的坐标标签</h3>
+<p>上述图形的y轴表示的是身高（heightIn），数字表示的是身高的数值，现在可以将数值更改为另外一种标签，即把50,56,60,66,72位置的刻度标签从数值改为“Tiny”,“Really”,“Short”,“Medium”,“Tallish”，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + scale_y_continuous(breaks=c(<span class="number">50</span>,<span class="number">56</span>,<span class="number">60</span>,<span class="number">66</span>,<span class="number">72</span>),labels=c(<span class="string">"Tiny"</span>,<span class="string">"Really\nshort"</span>,<span class="string">"Short"</span>,<span class="string">"Medium"</span>,<span class="string">"Tallish"</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/990jeDgBcl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上述图形的y轴表示的内容与原始图形的一样，只是标签变了，其中<code>&quot;Really\nshort&quot;</code>表示换行。</p>
+<h3 id="对标签的进一步优化">对标签的进一步优化</h3>
+<p>下面的代码是构建一个函数，将数值转化为英尺与英寸的格式</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">footinch_formatter &lt;- <span class="keyword">function</span>(x)&#123;</div><div class="line">  foot &lt;- floor(x/<span class="number">12</span>) <span class="comment"># floor()是取小数的整数部分</span></div><div class="line">  inch &lt;- x%%<span class="number">12</span> <span class="comment"># %%取余数</span></div><div class="line">  <span class="keyword">return</span>(paste(foot,<span class="string">"'"</span>,inch,<span class="string">"\""</span>,sep=<span class="string">""</span>))</div><div class="line">&#125;</div><div class="line"></div><div class="line">footinch_formatter(<span class="number">56</span>:<span class="number">64</span>) <span class="comment"># 案例</span></div><div class="line"></div><div class="line"><span class="comment">## [1] "4'8\""  "4'9\""  "4'10\"" "4'11\"" "5'0\""  "5'1\""  "5'2\""  "5'3\"" </span></div><div class="line"><span class="comment">## [9] "5'4\""</span></div></pre></td></tr></table></figure>
+<h3 id="用labels参数将上述的函数传递给标签">用labels参数将上述的函数传递给标签</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + scale_y_continuous(labels=footinch_formatter)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/lI08LlEiG9.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="设置刻度">设置刻度</h3>
+<p>从48到72，每个间隔4</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + scale_y_continuous(breaks=seq(<span class="number">48</span>,<span class="number">72</span>,<span class="number">4</span>),labels=footinch_formatter)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/2gFAaBaJ8L.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="其余的格式设定">其余的格式设定</h3>
+<p>可以把一些时间测试转化为HH:MM:SS(时:分:秒)或者其他类似的格式。如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">timeHMS_formatter &lt;- <span class="keyword">function</span>(x)&#123;</div><div class="line">  h &lt;- floor(x/<span class="number">60</span>) <span class="comment"># 小时部分</span></div><div class="line">  m &lt;- floor(x%%<span class="number">60</span>) <span class="comment"># 分钟部分</span></div><div class="line">  s &lt;- round(<span class="number">60</span>*(x%%<span class="number">1</span>)) <span class="comment"># 舍入到最接近的秒数</span></div><div class="line">  lab &lt;- sprintf(<span class="string">"%02d:%02d:%02d"</span>,h,m,s) <span class="comment"># 格式化数据</span></div><div class="line">  lab &lt;- gsub(<span class="string">"^00:"</span>,<span class="string">""</span>,lab) <span class="comment">#　如果开头存在00:则移除</span></div><div class="line">  lab &lt;- gsub(<span class="string">"^00"</span>,<span class="string">""</span>,lab) <span class="comment"># 如果形状存在0则移除</span></div><div class="line">  <span class="keyword">return</span>(lab)</div><div class="line">&#125;</div><div class="line"></div><div class="line">timeHMS_formatter(c(<span class="number">.33</span>,<span class="number">50</span>,<span class="number">51.25</span>,<span class="number">59.32</span>,<span class="number">60</span>,<span class="number">60.1</span>,<span class="number">130.23</span>))</div><div class="line"></div><div class="line"><span class="comment">## [1] ":20"      "50:00"    "51:15"    "59:19"    "01:00:00" "01:00:06"</span></div><div class="line"><span class="comment">## [7] "02:10:14"</span></div><div class="line"></div><div class="line">另外有scales包，里面有可以格式化的函数，如下所示：</div><div class="line"></div><div class="line"><span class="keyword">library</span>(scales)</div><div class="line">comma(<span class="number">1230092123</span>) <span class="comment"># 在千、百万、十亿等位置向数字添加逗号</span></div><div class="line"></div><div class="line"><span class="comment">## [1] "1,230,092,123"</span></div><div class="line"></div><div class="line">dollar(<span class="number">34.33</span>) <span class="comment"># 添加一个美元符号</span></div><div class="line"></div><div class="line"><span class="comment">## [1] "$34.33"</span></div><div class="line"></div><div class="line">percent(c(<span class="number">89.34</span>,<span class="number">0.034</span>)) <span class="comment">#　乘以100，传到到最接近的整数值，并加添一个百分号</span></div><div class="line"></div><div class="line"><span class="comment">## [1] "8,930%" "0%"</span></div><div class="line"></div><div class="line">scientific(<span class="number">1892321122232</span>) <span class="comment"># 科学计数法</span></div><div class="line"></div><div class="line"><span class="comment">## [1] "1.89e+12"</span></div></pre></td></tr></table></figure>
+<h2 id="修改刻度标签的外观">修改刻度标签的外观</h2>
+<h3 id="基本图形-2">基本图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">bp &lt;- ggplot(PlantGrowth,aes(x=group,y=weight)) +</div><div class="line">  geom_boxplot()</div><div class="line">bp</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/a4AFDa3iJ8.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>下面的命令将x轴上的三个分类变量ctrl,trt1,trt2的名称更改为Control,Treatment1,Treatment2:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">bp &lt;- ggplot(PlantGrowth,aes(x=group,y=weight)) +</div><div class="line">  geom_boxplot() +</div><div class="line">  scale_x_discrete(breaks=c(<span class="string">"ctrl"</span>,<span class="string">"trt1"</span>,<span class="string">"trt2"</span>),</div><div class="line">                   labels=c(<span class="string">"Control"</span>,<span class="string">"Treatment1"</span>,<span class="string">"Treatment2"</span>))</div><div class="line">bp</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/LjFAE6jLLd.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="对标签进行旋转">对标签进行旋转</h3>
+<p>把x轴上的标签改为垂直，上图中的标签太长，可以将其从水平位置更改到垂直位置： angle参数用于更改标签的角度，下面是将标签更改为垂直： 其中hjust用于控制纵向对齐，vjust用于控制横向对齐。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bp + theme(axis.text.x = element_text(angle=<span class="number">90</span>,hjust=<span class="number">1</span>,vjust=<span class="number">0.5</span>))</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/F98gE7HAf8.png?imageslim" alt="mark">把把x轴上的标签旋转30度：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bp + theme(axis.text.x = element_text(angle=<span class="number">30</span>,hjust=<span class="number">1</span>,vjust=<span class="number">0.5</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/kLfAfjjdA4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="更改标签的大小样式字体">更改标签的大小，样式，字体</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">bp + theme(axis.text.x = element_text(family=<span class="string">"Times"</span>,face=<span class="string">"italic"</span>,colour=<span class="string">"darkred"</span>,size=rel(<span class="number">0.9</span>)))</div><div class="line"><span class="comment">#上述命令中size=rel(0.9)表示当前主题基础字体大小的0.9</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/F2Gh50Be6E.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="设置坐标轴标签">设置坐标轴标签</h3>
+<p>下面命令是在x轴与y轴上分别添加文本：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + xlab(<span class="string">"Age in years"</span>) + ylab(<span class="string">"Height in inches"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/27CkGfgAIH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上面的命令是通过xlab()与ylab()来实现的，另外一种方法是通过labs()来实现：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + labs(x=<span class="string">"Age in years"</span>,y=<span class="string">"Height in inches"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/29FDHeA2FJ.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="坐标标签换行">坐标标签换行</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + scale_x_continuous(name=<span class="string">"Age\n(years)"</span>) <span class="comment"># 换行</span></div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/13c71HefJ0.png?imageslim" alt="mark">4</p>
+<h2 id="移除坐标轴标签">移除坐标轴标签</h2>
+<h3 id="原始图形">原始图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p &lt;- ggplot(PlantGrowth,aes(x=group,y=weight)) + geom_boxplot()</div><div class="line">p</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/l3lDKIb7BB.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="去掉坐标的标签">去掉坐标的标签</h3>
+<p>下面的命令是将x轴的坐标标签去掉，即去掉了“group”字样：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + theme(axis.title.x=element_blank())</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/9F6eB6l65j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="使用xlab去除坐标标签">使用xlab去除坐标标签</h3>
+<p>上面的代码是将x轴的坐标标签去掉，下方没有空余空间，另外一种方式是将坐标标签去空白表示，有空余空间，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + xlab(<span class="string">""</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/kJHK96Alk5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>解释：当用them()来设置axis.title.x=element_blank()时，x轴或y轴标度的名称是不会改变的，只是没有显示其文本，并且不会为其留出空间，而用xlab(“”)时，则是将标度的名称改变成了空白，还是会为名称留出空间。</p>
+<h2 id="修改坐标轴标签的外观">修改坐标轴标签的外观</h2>
+<h3 id="原始图形-1">原始图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">hwp &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn))+geom_point()</div><div class="line">hwp</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/FH5aGFe8J7.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在将上述图形中的x轴坐标标签修改为深红色(darkred)，斜体(italic)，大小为14(size=14):</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + theme(axis.title.x=element_text(face=<span class="string">"italic"</span>,colour=<span class="string">"darkred"</span>,size=<span class="number">14</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/Lma509bDJ6.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>将y轴的标签向左旋转0度（angle=0），斜体（italic）大小为14（size=14）</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hwp + ylab(<span class="string">"Height\n(inches)"</span>)+theme(axis.title.y=element_text(angle=<span class="number">0</span>,face=<span class="string">"italic"</span>,size=<span class="number">14</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/9bDHA4eJec.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>将y轴的标签向左旋转90度（angle=90,y轴标签的文字默认是水平的），斜体（italic），深红色（darkred），大小为14（size=14）</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hwp + ylab(<span class="string">"Height\n(inches)"</span>)+</div><div class="line">  theme(axis.title.y=element_text(angle=<span class="number">30</span>,face=<span class="string">"italic"</span>,colour=<span class="string">"darkred"</span>,size=<span class="number">14</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/39eae2IJD1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="沿坐标轴添加直线">沿坐标轴添加直线：</h2>
+<h3 id="初始图形">初始图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn)) + geom_point()</div><div class="line">p</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/e8ddIgbd6D.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="沿坐标轴添加直线-1">沿坐标轴添加直线：</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + theme(axis.line=element_line(colour=<span class="string">"black"</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/4jd5Kal6lG.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="更改主题">更改主题</h2>
+<p>如果绘图的主题在绘图区域的周围只有一条边，例如theme_bw()主题，则需要同时重置panel.border参数：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">p + theme_bw()+</div><div class="line">  theme(panel.border = element_blank(),</div><div class="line">        axis.line = element_line(colour=<span class="string">"black"</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/lEaIgg5dGj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果坐标轴上的直线太粗，则末端不会重合，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">p + theme_bw()+</div><div class="line">  theme(panel.border = element_blank(),</div><div class="line">        axis.line = element_line(colour=<span class="string">"black"</span>,size=<span class="number">4</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/i886m0EDD2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果需要末端进行重合，需要添加lineed=“square”命令：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">p + theme_bw()+</div><div class="line">  theme(panel.border = element_blank(),</div><div class="line">        axis.line = element_line(colour=<span class="string">"black"</span>,size=<span class="number">4</span>,lineend=<span class="string">"square"</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/L32EkKL6Bl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="使用对数坐标轴">使用对数坐标轴</h2>
+<h3 id="初始图形-1">初始图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">p &lt;- ggplot(Animals,aes(x=body,y=brain,label=rownames(Animals)))+geom_text(size=<span class="number">3</span>)</div><div class="line">p</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/8b57LgDJ64.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="修改坐标轴为对数">修改坐标轴为对数</h3>
+<p>现在将上述图形的x轴与y轴取对数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_x_log10() + scale_y_log10()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/dAfc0bL30E.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="添加刻度标签">添加刻度标签：</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_x_log10(breaks=<span class="number">10</span>^(-<span class="number">1</span>:<span class="number">5</span>))+scale_y_log10(breaks=<span class="number">10</span>^(<span class="number">0</span>:<span class="number">3</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/456L80LBdm.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="把坐标轴的标签转化为指数记数法">把坐标轴的标签转化为指数记数法：</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(scales)</div><div class="line">p + scale_x_log10(breaks=<span class="number">10</span>^(-<span class="number">1</span>:<span class="number">5</span>),</div><div class="line">                  labels=trans_format(<span class="string">"log10"</span>,math_format(<span class="number">10</span>^.x)))+</div><div class="line">  scale_y_log10(breaks=<span class="number">10</span>^(<span class="number">0</span>:<span class="number">3</span>),</div><div class="line">                labels=trans_format(<span class="string">"log10"</span>,math_format(<span class="number">10</span>^.x)))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/97gbacGD6a.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>下面的代码表示，先对x轴与y轴的坐标进行转换，将转换后的数据映射到坐标轴上，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(Animals,aes(x=log10(body),y=log10(brain),label=rownames(Animals)))+geom_text(size=<span class="number">5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/ikdkfh5E0c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>下面的代码是将x轴与y轴的坐标进行对数转换，对x轴进行自然对数变换，对y轴进行以2为底数的对数变换。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">p + scale_x_continuous(trans = log_trans(),</div><div class="line">                       breaks = trans_breaks(<span class="string">"log"</span>,<span class="keyword">function</span>(x) exp(x)),</div><div class="line">                       labels = trans_format(<span class="string">"log"</span>,math_format(e^.x)))+</div><div class="line">  scale_y_continuous(trans = log2_trans(),</div><div class="line">                     breaks = trans_breaks(<span class="string">"log2"</span>,<span class="keyword">function</span>(x) <span class="number">2</span>^x),</div><div class="line">                     labels= trans_format(<span class="string">"log2"</span>,math_format(<span class="number">2</span>^.x)))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/ligKb4hd6J.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="折线图的坐标转换">折线图的坐标转换</h3>
+<p>原始图形</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(aapl,aes(x=date,y=adj_price))+geom_line()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/Fa25hgbd3j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在对y轴进行对数变换：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(aapl,aes(x=date,y=adj_price))+geom_line()+</div><div class="line">  scale_y_log10(breaks=c(<span class="number">2</span>,<span class="number">10</span>,<span class="number">50</span>,<span class="number">250</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/KdFGj6BmmK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="为对数坐标轴添加刻度">为对数坐标轴添加刻度</h3>
+<p>用到的函数是<code>annotation_logticks()</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/gmKk6Kml7l.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="进行一步优化刻度线">进行一步优化刻度线</h3>
+<p>对x轴或y轴的刻度进一步设置时，可以用<code>minor_breaks=log10(5)+ -2:5)</code>，即<code>minor_breaks=log10(5*10^(minpow:maxpow))</code>，这个是用来调整图形中的网格线，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">ggplot(Animals,aes(x=body,y=brain,label=rownames(Animals)))+</div><div class="line">  geom_text(size=<span class="number">3</span>)+</div><div class="line">  annotation_logticks()+</div><div class="line">  scale_x_log10(breaks=trans_breaks(<span class="string">"log10"</span>,<span class="keyword">function</span>(x) <span class="number">10</span>^x),</div><div class="line">                labels=trans_format(<span class="string">"log10"</span>,math_format(<span class="number">10</span>^.x)),</div><div class="line">                minor_breaks=log10(<span class="number">5</span>)+ -<span class="number">2</span>:<span class="number">5</span>)+</div><div class="line">    scale_y_log10(breaks=trans_breaks(<span class="string">"log10"</span>,<span class="keyword">function</span>(x) <span class="number">10</span>^x),</div><div class="line">                labels=trans_format(<span class="string">"log10"</span>,math_format(<span class="number">10</span>^.x)),</div><div class="line">                minor_breaks=log10(<span class="number">5</span>)+ -<span class="number">1</span>:<span class="number">3</span>)+</div><div class="line">  coord_fixed()+</div><div class="line">  theme_bw()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/1Gi3F1f8fC.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="绘制环状图形">绘制环状图形</h2>
+<h3 id="基础图形">基础图形</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">head(wind,<span class="number">8</span>)</div><div class="line"></div><div class="line"><span class="comment">##    TimeUTC Temp WindAvg WindMax WindDir SpeedCat DirCat</span></div><div class="line"><span class="comment">## 3        0 3.54    9.52   10.39      89    10-15     90</span></div><div class="line"><span class="comment">## 4        5 3.52    9.10    9.90      92     5-10     90</span></div><div class="line"><span class="comment">## 5       10 3.53    8.73    9.51      92     5-10     90</span></div><div class="line"><span class="comment">## 6       15 3.63    8.97    9.90      94     5-10     90</span></div><div class="line"><span class="comment">## 7       20 3.71    8.51    9.41      97     5-10     90</span></div><div class="line"><span class="comment">## 8       25 3.73    8.43    9.02      95     5-10     90</span></div><div class="line"><span class="comment">## 9       30 3.56    8.12    8.92      98     5-10    105</span></div><div class="line"><span class="comment">## 10      35 3.63    8.47    9.11     101     5-10    105</span></div></pre></td></tr></table></figure>
+<p>先以直方图的形式绘制出来，x轴是DirCat，按SpeedCat进行填充，条形图的组距是15，开始位置是-7.5,x轴的位置范围是0到360。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(wind,aes(x=DirCat,fill=SpeedCat))+</div><div class="line">  geom_histogram(binwidth=<span class="number">15</span>,origin=-<span class="number">7.5</span>)+</div><div class="line">  scale_y_continuous(breaks=seq(<span class="number">0</span>,<span class="number">60</span>,<span class="number">10</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/Ld36iJ6hCk.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>极坐标只是将上述的条形图卷曲成了圆形，书中的坐标轴标记是0到60，最小单位是10，但按照书中的代码并不能绘图出来，因此，下面的代码中加入了scale_y_continuous(breaks=seq(0,60,10))。如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ggplot(wind,aes(x=DirCat,fill=SpeedCat))+</div><div class="line">  geom_histogram(binwidth=<span class="number">15</span>,origin=-<span class="number">7.5</span>)+</div><div class="line">  scale_y_continuous(breaks=seq(<span class="number">0</span>,<span class="number">60</span>,<span class="number">10</span>))+</div><div class="line">  coord_polar()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/D1EKdB2HBc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="极坐标的进一步优化">极坐标的进一步优化</h3>
+<p>改变直方图的轮廓为黑色（colour=“black”），尺寸为0.25(size=0.25)，改变图例的顺序(fill=guide_legend(reverse=TRUE))，优化颜色(scale_fill_brewer())，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ggplot(wind,aes(x=DirCat,fill=SpeedCat))+</div><div class="line">    geom_histogram(binwidth=<span class="number">15</span>,origin=-<span class="number">7.5</span>,colour=<span class="string">"black"</span>,size=<span class="number">0.25</span>)+</div><div class="line">    guides(fill=guide_legend(reverse=<span class="literal">TRUE</span>))+</div><div class="line">    coord_polar()+</div><div class="line">    scale_x_continuous(limits=c(<span class="number">0</span>,<span class="number">360</span>),breaks=seq(<span class="number">0</span>,<span class="number">360</span>,by=<span class="number">45</span>),minor_breaks=seq(<span class="number">0</span>,<span class="number">360</span>,by=<span class="number">15</span>))+scale_fill_brewer()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/g4cmDFddBK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>常肖楠, 邓一硕, 魏太云. R数据可视化手册[M]. 人民邮电出版社, 2014.</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/17/R/ggplot2(7) - 注解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2810,181 +3428,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/R/火山图笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/04/12/R/火山图笔记/" itemprop="url">R语言火山图笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-12T12:00:00+08:00">
-                2017-04-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index">
-                    <span itemprop="name">R</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  0
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/R/数据管理之dplyr与SQL笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3296,7 +3739,7 @@
 <p>数据如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; x</div><div class="line">    Name instrument</div><div class="line"><span class="number">1</span>   John     guitar</div><div class="line"><span class="number">2</span>   Paul       bass</div><div class="line"><span class="number">3</span> George     guitar</div><div class="line"><span class="number">4</span>  Ringo      drums</div><div class="line"><span class="number">5</span> Stuart       bass</div><div class="line"><span class="number">6</span>   Pete      drums</div><div class="line">&gt; y</div><div class="line">    name  band</div><div class="line"><span class="number">1</span>   John  <span class="literal">TRUE</span></div><div class="line"><span class="number">2</span>   Paul  <span class="literal">TRUE</span></div><div class="line"><span class="number">3</span> George  <span class="literal">TRUE</span></div><div class="line"><span class="number">4</span>  Ringo  <span class="literal">TRUE</span></div><div class="line"><span class="number">5</span>  Brian <span class="literal">FALSE</span></div></pre></td></tr></table></figure>
 <h4 id="inner_joinxy只包含同时出现在x和y数据框中的行"><code>inner_join(x,y)</code>：只包含同时出现在x和y数据框中的行：</h4>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; inner_join(x,y,b=c(<span class="string">"Name"</span>=<span class="string">"name"</span>))</div><div class="line">    Name instrument band</div><div class="line"><span class="number">1</span>   John     guitar <span class="literal">TRUE</span></div><div class="line"><span class="number">2</span>   Paul       bass <span class="literal">TRUE</span></div><div class="line"><span class="number">3</span> George     guitar <span class="literal">TRUE</span></div><div class="line"><span class="number">4</span>  Ringo      drums <span class="literal">TRUE</span></div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; inner_join(x,y,by=c(<span class="string">"Name"</span>=<span class="string">"name"</span>))</div><div class="line">    Name instrument band</div><div class="line"><span class="number">1</span>   John     guitar <span class="literal">TRUE</span></div><div class="line"><span class="number">2</span>   Paul       bass <span class="literal">TRUE</span></div><div class="line"><span class="number">3</span> George     guitar <span class="literal">TRUE</span></div><div class="line"><span class="number">4</span>  Ringo      drums <span class="literal">TRUE</span></div></pre></td></tr></table></figure>
 <h4 id="left_joinx-y包含所有x中以及y中匹配的行"><code>left_join(x, y)</code>：包含所有x中以及y中匹配的行</h4>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; left_join(x,y,by=c(<span class="string">"Name"</span>=<span class="string">"name"</span>))</div><div class="line">    Name instrument band</div><div class="line"><span class="number">1</span>   John     guitar <span class="literal">TRUE</span></div><div class="line"><span class="number">2</span>   Paul       bass <span class="literal">TRUE</span></div><div class="line"><span class="number">3</span> George     guitar <span class="literal">TRUE</span></div><div class="line"><span class="number">4</span>  Ringo      drums <span class="literal">TRUE</span></div><div class="line"><span class="number">5</span> Stuart       bass &lt;<span class="literal">NA</span>&gt;</div><div class="line"><span class="number">6</span>   Pete      drums &lt;<span class="literal">NA</span>&gt;</div><div class="line">Warning message:</div><div class="line">Column `Name`/`name` joining factors with different levels, coercing to character vector</div></pre></td></tr></table></figure>
 <h4 id="left_joinxy包含所有y中以及x中匹配的行"><code>left_join(x,y)</code>包含所有y中以及x中匹配的行</h4>
@@ -3315,6 +3758,181 @@
 <li><a href="https://github.com/jumanbar/Curso-R/blob/master/lecciones/manipular-tablas.R" target="_blank" rel="external">manipular-tablas.R</a></li>
 <li><a href="https://mp.weixin.qq.com/s/a_np5fI5aWx8DMqXCf9knQ" target="_blank" rel="external">数据追加与合并</a></li>
 </ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/R/火山图笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/04/12/R/火山图笔记/" itemprop="url">R语言火山图笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-12T12:00:00+08:00">
+                2017-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/R/" itemprop="url" rel="index">
+                    <span itemprop="name">R</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  0
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
 
           
         
@@ -3705,431 +4323,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/10/R/数据的导入与导出/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/04/10/R/数据的导入与导出/" itemprop="url">R语言笔记之数据的导入与导出</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-10T12:00:00+08:00">
-                2017-04-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index">
-                    <span itemprop="name">R</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,696
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  16
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="数据的导入">数据的导入</h2>
-<p>在R语言中，常常用到导入数据的源文件是Excel文件，CSV文件，文本文件等等。</p>
-<h2 id="导入csv文件"> 导入csv文件</h2>
-<p>此方法可以用以导入Excel数据，将Excel数据转化为csv格式。 CSV是（逗号分隔值）的英文缩写，通常都是纯文本文件。</p>
-<p>其导入R中的数据格式为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mydataframe&lt;-read.table(file,header=logical_value,ep=<span class="string">"delimiter"</span>,row.names=<span class="string">"name"</span>)</div><div class="line">file:csv文件</div><div class="line">header:逻辑值，首先是否包括变量名</div><div class="line">sep:分隔符</div><div class="line">row.names:指定一个或多个表示行标识符的变量</div><div class="line">grades&lt;-read.table(<span class="string">"studentgrades.csv"</span>,header=<span class="literal">TRUE</span>,sep=<span class="string">","</span>,row.names=<span class="string">"STUDENTID"</span>)</div></pre></td></tr></table></figure>
-<p>表示从当前目录中读取一个名为studentgrades.csv的逗号分隔文件，从文件的第一行取得变量名字，将STUDENTID指定为行标识符，整个结果保存到grades的数据框中。</p>
-<h3 id="read.csv"><code>read.csv()</code></h3>
-<p>另外一个导入csv文件的函数是<code>read.csv()</code>。</p>
-<h3 id="read.delim和read.delim2"><code>read.delim</code>和<code>read.delim2</code></h3>
-<p>这两个函数可以分别使用<strong>句号</strong>和<strong>逗号</strong>作为小数位来导入制表符分隔的文件。</p>
-<h2 id="导入剪切板中的数据"> 导入剪切板中的数据</h2>
-<p>通常情况下就是在Excel中复制，接着输入以下命令就可以导入数据。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">data &lt;- read.table(<span class="string">"clipboard"</span>, header = <span class="literal">T</span>, sep=<span class="string">"\t"</span>)</div></pre></td></tr></table></figure>
-<h2 id="导入文本文件"> 导入文本文件</h2>
-<p>一般采用<code>read.table()</code>函数和<code>read.csv()</code>函数实现文本文件数据的读取，对于这两个函数有几个重要的参数：</p>
-<ol style="list-style-type: decimal">
-<li><code>file</code>指定外部文件的路径和文件名；</li>
-<li><code>header</code>指定是否将原数据的第一行最为字段名，<code>read.table()</code>函数默认设置为FALSE，而read.csv()函数默认设置为TRUE；</li>
-<li><code>sep</code>指定字段之间的分割符，read.table()函数默认设置为空格“”，而read.csv()函数默认设置为逗号；</li>
-<li>除此，<code>read.table()</code>函数还可以设置读入数据集的行名、列名、字符串是否转换为因子、缺失值的形式等，详细可查看<code>read.table()</code>函数的帮助文档。</li>
-</ol>
-<h2 id="从scan导入数据"> 从scan导入数据</h2>
-<p>主要用于键盘输入数据，详细使用方法：</p>
-<h3 id="scan函数"> scan() 函数</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">scan(file = <span class="string">""</span>, what = double(<span class="number">0</span>), nmax = -<span class="number">1</span>, n = -<span class="number">1</span>, sep = <span class="string">""</span>,</div><div class="line">     quote = <span class="keyword">if</span>(identical(sep, <span class="string">"\n"</span>)) <span class="string">""</span> <span class="keyword">else</span> <span class="string">"'\""</span>, dec = <span class="string">"."</span>,</div><div class="line">     skip = <span class="number">0</span>, nlines = <span class="number">0</span>, na.strings = <span class="string">"NA"</span>,</div><div class="line">     flush = <span class="literal">FALSE</span>, fill = <span class="literal">FALSE</span>, strip.white = <span class="literal">FALSE</span>,</div><div class="line">     quiet = <span class="literal">FALSE</span>, blank.lines.skip = <span class="literal">TRUE</span>, multi.line = <span class="literal">TRUE</span>,</div><div class="line">     comment.char = <span class="string">""</span>, allowEscapes = <span class="literal">FALSE</span>, encoding = <span class="string">"unknown"</span>)</div></pre></td></tr></table></figure>
-<p><strong>参数使用如下所示：</strong> 1. what:声明读入为字符类型数据，可能指定读入的精度/类型，例如：what=integer(0)；what=numeric(0)；what=character(0)； 如果SCAN()读入有字符与数字，用what=“”来进行声明，则会把读入的数字隐式的都转变成字符； 2. sep：指定各个读入的数据之间的分隔符；默认情况下分隔符：空格、tab；如果不是其它分隔符，例如“：/”通过SEP来指定； 3. 可以通过list指定读入变量的变量名，同时生成的对象为列表，则可以同时读入字符与数字； 4. Skip 从第几行开始读入数据； 5. Nlines 指定最大读入行数； 6. 如果通过键盘输入的时候，不希望出现下标提示，则可以使用：quiet=TRUE； 7. encoding =””指定的编码格式，有时候读入的中文可能会出现乱码的时候，可能通过这个参数来指定：Latin-1 或者 UTF-8</p>
-<h2 id="使用表格输入数据"> 使用表格输入数据</h2>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mydata&lt;-data.frame(age=numeric(<span class="number">0</span>),</div><div class="line">                   gender=character(<span class="number">0</span>),</div><div class="line">                   weight=numeric(<span class="number">0</span>))</div><div class="line">mydata&lt;-edit(mydata)</div></pre></td></tr></table></figure>
-<p>创建一个名为mydata的数据框，含三个变量，age为数据型，gender为字符型，weight为数值型。edit调用文本编辑器，键入数据。其中numeric(0)创建一个指定模型但不含实际数据的变量。如果再次调用mydata&lt;-edit(mydata)能够用来修改数据，或者使用fix(mydata)也行。</p>
-<h2 id="使用readxl包来读取excel文件">使用<code>readxl</code>包来读取excel文件</h2>
-<p><code>readxl</code>包中的几个函数可以读取excel文件，主要有<code>read_excel</code>，<code>read_xls</code>，<code>read_xlsx</code>。其中各个函数的参数如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">read_excel(path, sheet = <span class="literal">NULL</span>, range = <span class="literal">NULL</span>, col_names = <span class="literal">TRUE</span>,</div><div class="line">  col_types = <span class="literal">NULL</span>, na = <span class="string">""</span>, trim_ws = <span class="literal">TRUE</span>, skip = <span class="number">0</span>,</div><div class="line">  n_max = <span class="literal">Inf</span>, guess_max = min(<span class="number">1000</span>, n_max),</div><div class="line">  progress = readxl_progress(), .name_repair = <span class="string">"unique"</span>)</div><div class="line"></div><div class="line">read_xls(path, sheet = <span class="literal">NULL</span>, range = <span class="literal">NULL</span>, col_names = <span class="literal">TRUE</span>,</div><div class="line">  col_types = <span class="literal">NULL</span>, na = <span class="string">""</span>, trim_ws = <span class="literal">TRUE</span>, skip = <span class="number">0</span>,</div><div class="line">  n_max = <span class="literal">Inf</span>, guess_max = min(<span class="number">1000</span>, n_max),</div><div class="line">  progress = readxl_progress(), .name_repair = <span class="string">"unique"</span>)</div><div class="line"></div><div class="line">read_xlsx(path, sheet = <span class="literal">NULL</span>, range = <span class="literal">NULL</span>, col_names = <span class="literal">TRUE</span>,</div><div class="line">  col_types = <span class="literal">NULL</span>, na = <span class="string">""</span>, trim_ws = <span class="literal">TRUE</span>, skip = <span class="number">0</span>,</div><div class="line">  n_max = <span class="literal">Inf</span>, guess_max = min(<span class="number">1000</span>, n_max),</div><div class="line">  progress = readxl_progress(), .name_repair = <span class="string">"unique"</span>)</div></pre></td></tr></table></figure>
-<p>参数意义如下所示：</p>
-<table>
-<colgroup>
-<col width="17%">
-<col width="82%">
-</colgroup>
-<thead>
-<tr class="header">
-<th align="right">参数</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">path</td>
-<td>xls/xlsx文件的路径</td>
-</tr>
-<tr class="even">
-<td align="right">sheet</td>
-<td>Excel文件中Sheet的参数，可以是一个字符串，也就是sheet的名称，可以是一个整数，它表示sheet的位置。如果不输入这个参数，默认输入第1个sheet的数据。</td>
-</tr>
-<tr class="odd">
-<td align="right">range</td>
-<td>sheet中单元格的范围，例如可以输入<code>range=B2:G14</code>。也可以指定某个sheet，例如<code>range=&quot;mtcars!B1:D5&quot;</code>。</td>
-</tr>
-<tr class="even">
-<td align="right">col_names</td>
-<td><code>TRUE</code> 使用第一行作为行名， <code>FALSE</code> 使用默认的名字，或者是使用一个字符串或字符串向量来表示第一行的名称。</td>
-</tr>
-<tr class="odd">
-<td align="right">col_types</td>
-<td>Either <code>NULL</code> to guess all from the spreadsheet or a character vector containing one entry per column from these options: “skip”, “guess”, “logical”, “numeric”, “date”, “text” or “list”. If exactly one <code>col_type</code> is specified, it will be recycled. The content of a cell in a skipped column is never read and that column will not appear in the data frame output. A list cell loads a column as a list of length 1 vectors, which are typed using the type guessing logic from <code>col_types = NULL</code>, but on a cell-by-cell basis.</td>
-</tr>
-<tr class="even">
-<td align="right">na</td>
-<td>Character vector of strings to interpret as missing values. By default, readxl treats blank cells as missing data.</td>
-</tr>
-<tr class="odd">
-<td align="right">trim_ws</td>
-<td>Should leading and trailing whitespace be trimmed?</td>
-</tr>
-<tr class="even">
-<td align="right">skip</td>
-<td>Minimum number of rows to skip before reading anything, be it column names or data. Leading empty rows are automatically skipped, so this is a lower bound. Ignored if <code>range</code> is given.</td>
-</tr>
-<tr class="odd">
-<td align="right">n_max</td>
-<td>Maximum number of data rows to read. Trailing empty rows are automatically skipped, so this is an upper bound on the number of rows in the returned tibble. Ignored if <code>range</code> is given.</td>
-</tr>
-<tr class="even">
-<td align="right">guess_max</td>
-<td>Maximum number of data rows to use for guessing column types.</td>
-</tr>
-<tr class="odd">
-<td align="right">progress</td>
-<td>Display a progress spinner? By default, the spinner appears only in an interactive session, outside the context of knitting a document, and when the call is likely to run for several seconds or more. See <code>readxl_progress()</code> for more details.</td>
-</tr>
-<tr class="even">
-<td align="right">.name_repair</td>
-<td>Handling of column names. By default, readxl ensures column names are not empty and are unique. If the tibble package version is recent enough, there is full support for <code>.name_repair</code> as documented in <code>tibble::tibble()</code>. If an older version of tibble is present, readxl falls back to name repair in the style of tibble v1.4.2.</td>
-</tr>
-</tbody>
-</table>
-<p>具体的可以参考<a href="https://readxl.tidyverse.org/reference/read_excel.html" target="_blank" rel="external">readxl资料</a>。</p>
-<h2 id="批量读取数据">批量读取数据</h2>
-<p>读取N个Excel文件，并将这N个Excel文件进行合并，分为四种情况，代码如下所示，其中read_excel函数所在的包为readxl。</p>
-<p>解决方案如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">setwd(<span class="string">'D:\\data file\\data1'</span>) </div><div class="line"><span class="comment"># 设置R的工作空间</span></div><div class="line"><span class="comment">#res &lt;- NULL</span></div><div class="line"></div><div class="line">data1 &lt;- data.frame()</div><div class="line"><span class="comment"># 初始化数据框，用于后面的数据合并</span></div><div class="line"><span class="comment">#通过循环完成数据合并</span></div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">4</span>)&#123;</div><div class="line">path &lt;- paste0(getwd(),<span class="string">'\\'</span>,<span class="string">'test'</span>,i,<span class="string">'.xlsx'</span>)   <span class="comment"># 构造数据路径</span></div><div class="line">res &lt;- c(res,path)</div><div class="line">data1 &lt;- rbind(data1,read_excel(path = path))   <span class="comment"># 读取并合并数据</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>对于文件没有规律的情况，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">setwd(<span class="string">'D:\\data file\\data2'</span>)  <span class="comment"># 设置工作空间</span></div><div class="line">filenames &lt;- dir()   <span class="comment"># 读取该工作空间下的所有文件名</span></div><div class="line">data2 &lt;- data.frame()   <span class="comment"># 初始化数据框，用于后面的数据合并</span></div><div class="line"></div><div class="line"><span class="comment">#通过循环完成数据合并</span></div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> filenames)&#123;</div><div class="line"><span class="comment"># 构造数据路径</span></div><div class="line">path &lt;- paste0(getwd(),<span class="string">'\\'</span>,i)</div><div class="line"><span class="comment">#res &lt;- c(res,path)</span></div><div class="line"><span class="comment"># 读取并合并数据</span></div><div class="line">data2 &lt;- rbind(data2,read_excel(path = path))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>对于文件名没有规律的情况，并且只读取某做后缀的文件，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 加载第三方扩展包，用于编写SQL语句</span></div><div class="line"> <span class="keyword">library</span>(sqldf)</div><div class="line"> <span class="comment"># 设置工作空间</span></div><div class="line"> setwd(<span class="string">'D:\\data file\\data4'</span>)</div><div class="line"> <span class="comment"># 读取该工作空间下的所有文件名</span></div><div class="line"> filenames &lt;- dir()</div><div class="line"> <span class="comment"># 通过正则，获取所有xlsx结尾的文件名</span></div><div class="line"> filenames2 &lt;- grep(<span class="string">'\\.xlsx'</span>, filenames, value = <span class="literal">TRUE</span>)</div><div class="line"> <span class="comment"># 初始化数据框，用于后面的数据合并</span></div><div class="line"> data4 &lt;- data.frame()</div><div class="line"> <span class="comment">#通过循环完成数据合并</span></div><div class="line"> <span class="keyword">for</span> (i <span class="keyword">in</span> filenames2)&#123;</div><div class="line"> <span class="comment"># 构造数据路径</span></div><div class="line"> path &lt;- paste0(getwd(),<span class="string">'\\'</span>,i)</div><div class="line"> <span class="comment">#res &lt;- c(res,path)</span></div><div class="line"> <span class="comment"># 使用read_excel函数读取xlsx文件</span></div><div class="line"> data &lt;- read_excel(path = path)</div><div class="line"> <span class="comment"># 使用sqldf函数编写SQL语句，并把结果合并起来</span></div><div class="line"> data4 &lt;- rbind(data4, sqldf(<span class="string">"select id,name,gender,age from data"</span>))</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<h2 id="导出数据"> 导出数据</h2>
-<h3 id="导出的路径"> 导出的路径</h3>
-<p>为了避免在导出路径中使用转义字符，可以使用file.path()函数来构建正确的路径，这个函数的工作原理类似于paste()，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file.path(<span class="string">"d:"</span>,<span class="string">"download"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"d:/download"</span></div></pre></td></tr></table></figure></p>
-<blockquote>
-<p> file.path(“d:”,“download”) [1] “d:/download”</p>
-</blockquote>
-<h3 id="导出为txt格式"> 导出为txt格式</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"> a</div><div class="line">[<span class="number">1</span>]  <span class="number">1</span>  <span class="number">2</span>  <span class="number">4</span> <span class="literal">NA</span>  <span class="number">5</span>  <span class="number">4</span></div><div class="line">&gt; b</div><div class="line">[<span class="number">1</span>] <span class="string">"a"</span> <span class="string">"b"</span> <span class="string">"c"</span> <span class="string">"d"</span> <span class="literal">NA</span>  <span class="string">"4"</span></div><div class="line"> c &lt;- data.frame(a,b)</div><div class="line"> c</div><div class="line">   a    b</div><div class="line"><span class="number">1</span>  <span class="number">1</span>    a</div><div class="line"><span class="number">2</span>  <span class="number">2</span>    b</div><div class="line"><span class="number">3</span>  <span class="number">4</span>    c</div><div class="line"><span class="number">4</span> <span class="literal">NA</span>    d</div><div class="line"><span class="number">5</span>  <span class="number">5</span> &lt;<span class="literal">NA</span>&gt;</div><div class="line"><span class="number">6</span>  <span class="number">4</span>    <span class="number">4</span></div><div class="line"> write.table(c,file = <span class="string">"c:\\data.txt"</span>,sep = <span class="string">","</span>,quote = <span class="literal">FALSE</span>, append = <span class="literal">FALSE</span>, na = <span class="string">"NA"</span>)</div></pre></td></tr></table></figure>
-<p>c为导出的数据，file为导出的路径，sep = “,”表示用逗号隔开数据，quote = FALSE表示消除字符串的引号标志，append = FALSE打开一个新文件，如果为TRUE则表示将此数据追加到已经存在的文件中，na=”NA”表示用NA来代表na值。</p>
-<h2 id="读取错误">读取错误</h2>
-<p>R语言读取Excel文件有时会出错，如果要读取某些Excel表格文件，操作如下所示：</p>
-<ol style="list-style-type: decimal">
-<li>用鼠标选中据，然后Ctrl+C复制；</li>
-<li>在Rstudio中输入：read.table(“clipboard”,header=T)-&gt;x1，显示以下结果：</li>
-</ol>
-<blockquote>
-<p>Error in scan(file, what, nmax, sep, dec, quote, skip, nlines, na.strings,  :    line 2 did not have 8 elements</p>
-</blockquote>
-<p>大概意思是，有两行数据的元素不满足8个（即第No.2不满足8个元素），无法读取，因此需要改变一下代码，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">x &lt;- read.table(<span class="string">"clipboard"</span>,sep=<span class="string">"\t"</span>,header=<span class="literal">T</span>)</div></pre></td></tr></table></figure>
-<p> 这样就能正常读取了，因为Excel的文件中，每个单元格就是以制表符将它们分开的，而sep=“”的意思就是，读取数据的时候，以制表符进行分割来读取。</p>
-<h2 id="r语言与目录操作">R语言与目录操作</h2>
-<h3 id="设置目录file.path">设置目录<code>file.path()</code></h3>
-<p>在R中，目录的表达方法与Windows有所不同，在Windows中，如果要表示D盘下的某个目录，就是<code>D:\biotest</code>，用的是<code>\</code>，而在R中，则是<code>/</code>或<code>\\</code>，即<code>D:/biotest</code>或<code>D:\\biotest</code>。为了避免在R中使用转义字符，可以使用<code>file.path()</code>函数来构建正确的路径。这个函数类似于<code>paste()</code>，会将传入的各个参数拼接在一起，与操作系统的设置无关，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; file.path(<span class="string">"D:"</span>,<span class="string">"biotest"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"D:/biotest"</span></div></pre></td></tr></table></figure>
-<p>使用<code>file.path()</code>来设置工作目录非常方便，可以逐一指定目录，它会将各个目录连接起来，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; getwd()</div><div class="line">[<span class="number">1</span>] <span class="string">"D:/"</span></div><div class="line">&gt; setwd(file.path(<span class="string">"D:"</span>,<span class="string">"biotest"</span>))</div><div class="line">&gt; getwd()</div><div class="line">[<span class="number">1</span>] <span class="string">"D:/biotest"</span></div></pre></td></tr></table></figure>
-<h3 id="操作文件dir或list.files">操作文件<code>dir()</code>或<code>list.files()</code></h3>
-<p>有的时候，在R中如果要遍历某个指定目录下的所有文件和文件夹，并对它们进行某种操作，如果要获得指定目录下的文件列表，可以使用<code>list.files()</code>或<code>dir()</code>函数，这两个函数的功能是一样的，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; getwd()</div><div class="line">[<span class="number">1</span>] <span class="string">"D:/biotest"</span></div><div class="line">&gt; list.files()</div><div class="line"> [<span class="number">1</span>] <span class="string">"kegg"</span>                                          </div><div class="line"> [<span class="number">2</span>] <span class="string">"Miniconda2-latest-Linux-x86_64.sh"</span>             </div><div class="line"> [<span class="number">3</span>] <span class="string">"NGS 数据过滤之 Trimmomatic 详细说明 - 简书.pdf"</span></div><div class="line"> [<span class="number">4</span>] <span class="string">"nohup.out"</span>                                     </div><div class="line"> [<span class="number">5</span>] <span class="string">"paper and manual"</span>                              </div><div class="line"><span class="keyword">...</span> <span class="keyword">...</span>                                      </div><div class="line">&gt; dir()</div><div class="line"> [<span class="number">1</span>] <span class="string">"kegg"</span>                                          </div><div class="line"> [<span class="number">2</span>] <span class="string">"Miniconda2-latest-Linux-x86_64.sh"</span>             </div><div class="line"> [<span class="number">3</span>] <span class="string">"NGS 数据过滤之 Trimmomatic 详细说明 - 简书.pdf"</span></div><div class="line"> [<span class="number">4</span>] <span class="string">"nohup.out"</span>                                     </div><div class="line"> [<span class="number">5</span>] <span class="string">"paper and manual"</span>                              </div><div class="line"><span class="keyword">...</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>也可以查看某个特定文件夹的内容：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; dir(file.path(<span class="string">"D:"</span>,<span class="string">"biotest"</span>,<span class="string">"kegg"</span>))</div><div class="line"> [<span class="number">1</span>] <span class="string">"eco00640.eco.kegg.png"</span>                       </div><div class="line"> [<span class="number">2</span>] <span class="string">"eco00640.png"</span>                                </div><div class="line"> [<span class="number">3</span>] <span class="string">"eco00640.xml"</span>                                </div><div class="line"> [<span class="number">4</span>] <span class="string">"hsa00640.gene.ensprot.cpd.cas.png"</span>           </div><div class="line"> [<span class="number">5</span>] <span class="string">"hsa00640.gene.entrez.cpd.kc.png"</span>      </div><div class="line"><span class="keyword">...</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<h3 id="返回文件目录dirname与文件名basename">返回文件目录<code>dirname</code>与文件名<code>basename</code></h3>
-<p><code>dirname</code>函数只返回文件目录，不返回文件名，而<code>basename</code>函数与之相反，只返回文件名，不返回言论的目录，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; file_name &lt;- <span class="string">"C:/Program Files/R/R-devel/bin/x64/RGui.exe"</span></div><div class="line">&gt; file_name</div><div class="line">[<span class="number">1</span>] <span class="string">"C:/Program Files/R/R-devel/bin/x64/RGui.exe"</span></div><div class="line">&gt; basename(file_name)</div><div class="line">[<span class="number">1</span>] <span class="string">"RGui.exe"</span></div><div class="line">&gt; dirname(file_name)</div><div class="line">[<span class="number">1</span>] <span class="string">"C:/Program Files/R/R-devel/bin/x64"</span></div></pre></td></tr></table></figure>
-<h3 id="文件操作函数汇总">文件操作函数汇总</h3>
-<p>常用的几个操作文件以及目录的函数，如下所示：</p>
-<table>
-<colgroup>
-<col width="19%">
-<col width="80%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>函数</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>list.files</code></td>
-<td>列出某个目录下的所有文件</td>
-</tr>
-<tr class="even">
-<td><code>list.dirs</code></td>
-<td>列出某个目录下的所有子目录</td>
-</tr>
-<tr class="odd">
-<td><code>file.exists</code></td>
-<td>检查某个特定的文件是否存在于某个目录下</td>
-</tr>
-<tr class="even">
-<td><code>file.create</code></td>
-<td>创建一个空文件</td>
-</tr>
-<tr class="odd">
-<td><code>file.rename</code></td>
-<td>重命名文件</td>
-</tr>
-<tr class="even">
-<td><code>file.copy</code></td>
-<td>复制文件</td>
-</tr>
-<tr class="odd">
-<td><code>file.remove</code></td>
-<td>删除文件</td>
-</tr>
-<tr class="even">
-<td><code>unlink</code></td>
-<td>删除目录，例如<code>unlink(&quot;tmp&quot;, recursive=F)</code> #如果文件夹tmp为空，删除文件夹tmp；<code>unlink(&quot;tmp&quot;, recursive=TRUE)</code>#删除文件夹tmp，如果其中有文件一并删除</td>
-</tr>
-<tr class="odd">
-<td><code>file_test()</code></td>
-<td>判断一个对象是目录还是文件，<code>-f</code>为判断文件，<code>-d</code>是判断目录，语法格式为：<code>file_test(&quot;-f&quot;, &quot;test&quot;)</code>。</td>
-</tr>
-<tr class="even">
-<td><code>tempfile</code></td>
-<td>返回一个临时文件的名称，例如想要在临时文件夹中创建一个文件，就可以将这个函数的返回值传入<code>file.create()</code>或<code>write.table()</code>函数中</td>
-</tr>
-<tr class="odd">
-<td><code>tempdir</code></td>
-<td>返回文件系统中临时文件目录的路径。</td>
-</tr>
-<tr class="even">
-<td><code>dir.create</code></td>
-<td>创建一个文件夹或目录，如果要创建多个目录<code>recursive = TRUE</code></td>
-</tr>
-<tr class="odd">
-<td><code>getwd()</code></td>
-<td>获取当前目录</td>
-</tr>
-<tr class="even">
-<td><code>setwd()</code></td>
-<td>设置工作目录</td>
-</tr>
-<tr class="odd">
-<td><code>choose.dir()</code></td>
-<td>以窗口的形式设置工作目录</td>
-</tr>
-<tr class="even">
-<td><code>dir()</code></td>
-<td>查看当前目录的子目录和文件，功能与<code>list.files()</code>相同</td>
-</tr>
-</tbody>
-</table>
-<h3 id="文件操作案例">文件操作案例</h3>
-<p>现在创建一个临时文件，并将<code>iris</code>数据框传入其中，然后为了测试数据是否已经写入，再读取这个文件，并将结果保存到一个变量中，然后检查这个变量，最后将这个临时文件删除。</p>
-<p>第一步，使用<code>tempfile()</code>函数得到一个字符串，它表示系统临时目录中的一个临时文件，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">my.file &lt;- tempfile()</div><div class="line">my.file</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; my.file &lt;- tempfile()</div><div class="line">&gt; my.file</div><div class="line">[<span class="number">1</span>] <span class="string">"C:\\Users\\Public\\Documents\\Wondershare\\CreatorTemp\\RtmpCWS6Kb\\file26fc52842c9e"</span></div></pre></td></tr></table></figure>
-<p>结果返回的是一个字符串，而不是文件，其实文件并不存在，现在通过<code>write.csv</code>将<code>iris</code>写入到<code>my.file</code>，然后使用<code>list.files()</code>来查看R创建的文件，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">write.csv(iris,file=my.file)</div><div class="line">list.files(tempdir())</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; write.csv(iris,file=my.file)</div><div class="line">&gt; list.files(tempdir())</div><div class="line">[<span class="number">1</span>] <span class="string">"file26fc25291904"</span>                                </div><div class="line">[<span class="number">2</span>] <span class="string">"file26fc52842c9e"</span>                                </div><div class="line">[<span class="number">3</span>] <span class="string">"libloc_185_b6156d26.rds"</span>                         </div><div class="line">[<span class="number">4</span>] <span class="string">"libloc_196_12ea9df4.rds"</span>                         </div><div class="line">[<span class="number">5</span>] <span class="string">"rs-graphics-c18658be-c44b-4ca8-b450-15a567601981"</span></div></pre></td></tr></table></figure>
-<p>其中，<code>file26fc52842c9e</code>是临时文件，使用<code>read.csv</code>将文件导入到一个名为<code>file.iris</code>的变量中，并使用<code>str()</code>查看，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file.iris &lt;- read.csv(my.file)</div><div class="line">str(file.iris)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; file.iris &lt;- read.csv(my.file)</div><div class="line">&gt; str(file.iris)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">150</span> obs. of  <span class="number">6</span> variables:</div><div class="line"> $ X           : int  <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">10</span> <span class="keyword">...</span></div><div class="line"> $ Sepal.Length: num  <span class="number">5.1</span> <span class="number">4.9</span> <span class="number">4.7</span> <span class="number">4.6</span> <span class="number">5</span> <span class="number">5.4</span> <span class="number">4.6</span> <span class="number">5</span> <span class="number">4.4</span> <span class="number">4.9</span> <span class="keyword">...</span></div><div class="line"> $ Sepal.Width : num  <span class="number">3.5</span> <span class="number">3</span> <span class="number">3.2</span> <span class="number">3.1</span> <span class="number">3.6</span> <span class="number">3.9</span> <span class="number">3.4</span> <span class="number">3.4</span> <span class="number">2.9</span> <span class="number">3.1</span> <span class="keyword">...</span></div><div class="line"> $ Petal.Length: num  <span class="number">1.4</span> <span class="number">1.4</span> <span class="number">1.3</span> <span class="number">1.5</span> <span class="number">1.4</span> <span class="number">1.7</span> <span class="number">1.4</span> <span class="number">1.5</span> <span class="number">1.4</span> <span class="number">1.5</span> <span class="keyword">...</span></div><div class="line"> $ Petal.Width : num  <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.4</span> <span class="number">0.3</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.1</span> <span class="keyword">...</span></div><div class="line"> $ Species     : Factor w/ <span class="number">3</span> levels <span class="string">"setosa"</span>,<span class="string">"versicolor"</span>,..: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>最后为了恢复文件系统原来的状态，使用<code>file.remove()</code>删除这个临时文件，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file.remove(my.file)</div><div class="line">list.files(tempdir())</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; list.files(tempdir())</div><div class="line">[<span class="number">1</span>] <span class="string">"file26fc25291904"</span>                                </div><div class="line">[<span class="number">2</span>] <span class="string">"libloc_185_b6156d26.rds"</span>                         </div><div class="line">[<span class="number">3</span>] <span class="string">"libloc_196_12ea9df4.rds"</span>                         </div><div class="line">[<span class="number">4</span>] <span class="string">"rs-graphics-c18658be-c44b-4ca8-b450-15a567601981"</span></div></pre></td></tr></table></figure>
-<p><code>file26fc52842c9e</code>这个文件已经被删除了。</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>R语言轻松入门与提高 [法]Andrie de Vries ,[比利时]Joris Mey</li>
-<li>学习R.[美] Richard，Cotton 著刘军 译</li>
-<li><a href="https://www.jianshu.com/p/19b1f97083d0" target="_blank" rel="external">R语言目录及文件操作</a></li>
-<li><a href="https://www.cnblogs.com/cloudtj/articles/6298107.html" target="_blank" rel="external">R语言-文件管理系统操作</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -4175,7 +4373,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">190</span>
+                  <span class="site-state-item-count">191</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4197,7 +4395,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-count">74</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -4273,7 +4471,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共726.3k字</span>
+  <span class="post-count">博客全站共733.0k字</span>
 </div>
 
         
