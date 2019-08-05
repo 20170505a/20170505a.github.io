@@ -112,7 +112,7 @@
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123516.jpg">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123523.jpg">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123531.jpg">
-<meta property="og:updated_time" content="2019-07-19T06:15:49.769Z">
+<meta property="og:updated_time" content="2019-07-25T11:29:23.956Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GO分析学习笔记">
 <meta name="twitter:description" content="什么是富集分析？ 当我们获得了一批生物数据时，例如转录组的数据，蛋白质组的数据，其中必然要做不同样本之间的差异基因分析这一步，例如空白对照组与实验组的差异基因或蛋白分析。在得到差异的基因或蛋白列表后，这个时候可能还会遇到一个问题，差异基因可能有很多，有几十个到上百个不等，如何对它们进行比较呢？这几十甚至上百差异基因或蛋白如何去呈现，这是一个问题，如果直接列张表，把所有的差异基因都放进去这样不合适">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  10,607
+                  10,889
                 </span>
               
 
@@ -390,7 +390,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  41
+                  42
                 </span>
               
             </div>
@@ -606,8 +606,9 @@
 <p>第三件事情就是，将对应起来的GO terms进行比较，也就是利用超几何检验，这些差异基因在某个通路中的比例是否要高于背景基因；</p>
 <p>第四件事情就是绘图，也就是文献中经常出现的GO条形图。</p>
 <h3 id="go分析所需的文件">GO分析所需的文件</h3>
-<p>进行GO分析需要下载以下数据文件。</p>
-<p>第一个文件就是注释文件，这个文件的主要用于将不同的基因与其相应的GO terms对应起来。GO中的术语如何和相对应的基因产物相联系的呢？</p>
+<p>进行GO分析需要以下数据文件。</p>
+<h4 id="第1个文件注释文件">第1个文件：注释文件</h4>
+<p><strong>第一个文件</strong>：注释文件，这个文件的主要用于将不同的基因与其相应的GO terms对应起来。GO中的术语如何和相对应的基因产物相联系的呢？</p>
 <p>这是由参与合作的数据库来完成的，它们使用GO的定义方法，对它们所包含的基因产物进行注解，并且提供支持这种注解的参考和证据。每个基因或基因产物都会有一个列表，列出与之相关的GO术语。每个数据库都会给出这些基因产物和GO术语的联系数据库，并且也可以在GO的ftp站点上和WEB方式查询到。而且，GO联合会提供了简化的本体论术语（GO slim），这样，可以在更高级的层面上研究基因组的功能。比如，粗略地估计哪一部分的基因组与信号传导、代谢合成或复制有关。GO对基因和蛋白的注释阐明了基因产物和用于定义他们的GO术语之间的关系。</p>
 <p>基因产物指一个基因编码的RNA或蛋白产物。因为一个基因可能编码多个具有很不相同性质的产物，所以GO推荐的注释是针对基因产物的而不是基因的。一个基因是和所有适用于它的术语联系在一起的。一个基因产物可以被一种本体论定义的多种分支或多种水平注释。注释需要反映在正常情况下此基因产物的功能，生物途径，定位等，而并不包括其在突变或病理状态下的情况。GO联合会的各个数据库成员采用手动或自动的方式生成注释，这两种方式共有的原理是：一.所有的注释都需要有来源,可以是文字、另一个数据库 或是计算机分析结果；二.注释必须提供支持这种基因产物和GO术语之间联系的证据，</p>
 <p>注释文件通常是以后缀<code>db</code>结尾的文件，例如<code>org.Hs.eg.db</code>文件，<code>org.Hs.eg.db</code>文件里面含有很多主流数据库的数据，例如entrez ID和Ensembl数据库的ID，在R中，可以使用一些命令提取这个文件中相应的信息，这个文件是一个AnnotationDb-objects对象，使用方法如下所示：</p>
@@ -637,19 +638,20 @@
 <p>如下所示：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; mapIds(org.Hs.eg.db,keys=c(&quot;1&quot;,&quot;2&quot;,&quot;672&quot;),column=c(&quot;ALIAS&quot;),keytype=&quot;ENTREZID&quot;)</div><div class="line">&apos;select()&apos; returned 1:many mapping between keys and columns</div><div class="line">      1       2     672 </div><div class="line">  &quot;A1B&quot;  &quot;A2MD&quot; &quot;BRCAI&quot;</div></pre></td></tr></table></figure>
 <p>现在就清楚了，ogDB这个数据库的用处在于将不同的基因与各自相应的GO terms给对应起来。</p>
+<h4 id="第2个文件go-terms之间的关系">第2个文件：GO terms之间的关系</h4>
 <p>第二个文件就是不同GO terms之间的关系文件，这个文件主要记录的是不同GO terms之间的关系，名字为<code>go-basic</code>，下载地址为：http://snapshot.geneontology.org/ontology/go-basic.obo，在进行GO分析时，就利用这个文件来将GO terms绘制成网络图的形式，现在以<code>go-basic.obo</code>为例，这些信息如下所示：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">[Term]</div><div class="line">id: GO:0000001</div><div class="line">name: mitochondrion inheritance</div><div class="line">namespace: biological_process</div><div class="line">def: &quot;The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton.&quot; [GOC:mcc, PMID:10873824, PMID:11389764]</div><div class="line">synonym: &quot;mitochondrial inheritance&quot; EXACT []</div><div class="line">is_a: GO:0048308 ! organelle inheritance</div><div class="line">is_a: GO:0048311 ! mitochondrion distribution</div><div class="line"></div><div class="line">[Term]</div><div class="line">id: GO:0000002</div><div class="line">name: mitochondrial genome maintenance</div><div class="line">namespace: biological_process</div><div class="line">def: &quot;The maintenance of the structure and integrity of the mitochondrial genome; includes replication and segregation of the mitochondrial chromosome.&quot; [GOC:ai, GOC:vw]</div><div class="line">is_a: GO:0007005 ! mitochondrion organization</div></pre></td></tr></table></figure>
+<h4 id="第3个文件背景基因文件">第3个文件：背景基因文件</h4>
 <p>第三个文件就是自己要研究的背景基因与背景基因文件。背景基因其实就是你自己所要研究物种的全部基因，前景基因就是你要研究的目的基因有哪些（例如对照组与实验组的差异基因）。</p>
-<h4 id="前景基因文件">前景基因文件</h4>
-<p>前景基因文件就是你要富集分析的基因集，例如对照组vs处理组的差异表达基因。格式为每行一个基因ID，可以是文本文件，也可以是表格，总之，就是含有一系列基因ID的文件，这个基因ID可以是EntrezID，也可以是SYMBOL等，如下所示：</p>
+<h4 id="第4个文件前景基因文件">第4个文件：前景基因文件</h4>
+<p>这具文件其实是最重要的文件，因为前3个文件基本上现在的分析工具都有，这个前景基因文件，其实就是你的差异基因列表。例如对照组vs处理组的差异表达基因。格式为每行一个基因ID，可以是文本文件，也可以是表格，总之，就是含有一系列基因ID的文件，这个基因ID可以是EntrezID，也可以是SYMBOL等，如下所示：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">NNMT</div><div class="line">MAL</div><div class="line">EEF1A2</div><div class="line">HGD</div><div class="line">TCN2</div><div class="line">CDA</div><div class="line">PCCA</div><div class="line">CRYM</div><div class="line">PDXK</div><div class="line">STC1</div><div class="line">WARS</div><div class="line">HMOX1</div><div class="line">FXYD2</div><div class="line">...</div></pre></td></tr></table></figure>
-<h4 id="背景基因文件">背景基因文件</h4>
-<p>GO背景基因文件：就是所有的基因集，例如如果对照组和处理组所有的表达基因。如果你研究的物种是有参考基因组的模式物种，那么可以直接使用数据库上已有的参考基因作为背景基因文件，背景基因文件就是这个特种所有的基因对应的GO terms，如下所示：</p>
+<p>再来回顾一下GO背景基因文件：就是所有的基因集，例如如果对照组和处理组所有的表达基因。如果你研究的物种是有参考基因组的模式物种，那么可以直接使用数据库上已有的参考基因作为背景基因文件，背景基因文件就是这个特种所有的基因对应的GO terms，如下所示：</p>
 <div class="figure">
 <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123340.jpg">
 
 </div>
-<p>第一列是基因名（这个基因名可以是基因的SYMBOL，也可以是GENENAME，也可以是ENTREZID，第2列为对应的GO term，一个基因可以对应多个GO terms。</p>
+<p>第一列是基因名（这个基因名可以是基因的SYMBOL，也可以是GENENAME，也可以是ENTREZID，第2列为对应的GO term，一个基因可以对应多个GO terms，常见的模式生物根本不需要准备背景文件。</p>
 <p>还可以是这样的形式：</p>
 <div class="figure">
 <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123347.png">
@@ -664,13 +666,20 @@
 <h4 id="第一步安装clusterprofiler">第一步：安装clusterProfiler</h4>
 <p>这个包是在bioLite上的，需要这个工具，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 1. Install clusterProfile</span></div><div class="line"><span class="keyword">source</span>(<span class="string">"https://bioconductor.org/biocLite.R"</span>)</div><div class="line">biocLite(<span class="string">'clusterProfiler'</span>)</div><div class="line">biocLite(<span class="string">'org.Hs.eg.db'</span>)</div><div class="line">biocLite(<span class="string">'DOSE'</span>)</div><div class="line">install.packages(<span class="string">"glue"</span>) </div><div class="line"><span class="comment"># 安装这个包的过程中，它还会依赖其它的包</span></div><div class="line"><span class="comment"># 可以根据R语言的提示进行安装其他包</span></div></pre></td></tr></table></figure>
-<p>注：这里提一下clusterProfiler包的gene ID转换功能，clusterProfiler包中提供了两个函数，分别为<code>bitr</code>和<code>bitr_kegg</code>，这两个函数用于转换基因ID，这里介绍一下<code>bitr</code>，bitr的参数为<code>bitr(geneID, fromType, toType, OrgDb, drop = TRUE)</code>，其中geneID是基因名，fromType表示的是基因名的类型，在下面的转换中，这个基因名的类型为<code>SYMBOL</code>，toType就是要转换为什么ID，在下面的案例中，我们将<code>SYMBOL</code>转换为<code>ENTREZID</code>，如下所示：</p>
+<p>注：这里提一下<code>clusterProfiler</code>包的gene ID转换功能，clusterProfiler包中提供了两个函数，分别为<code>bitr</code>和<code>bitr_kegg</code>，这两个函数用于转换基因ID，这里只介绍一下<code>bitr</code>，</p>
+<p><code>bitr</code>的参数为<code>bitr(geneID, fromType, toType, OrgDb, drop = TRUE)</code>，其中:</p>
+<ul>
+<li><p>geneID是基因名，就是你的原始基因ID，可以是SYMBOL，可以是ENTREZID；</p></li>
+<li><p>fromType表示的是基因名的类型，在下面的转换中，这个基因名的类型为<code>SYMBOL</code>，它表示的是第1个参数<code>geneID</code>的类型，使用<code>keytypes()</code>函数就可以查看ID类型，如下所示：</p></li>
+<li><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; keytypes(org.Mm.eg.db)</div><div class="line"> [<span class="number">1</span>] <span class="string">"ACCNUM"</span>       <span class="string">"ALIAS"</span>        <span class="string">"ENSEMBL"</span>      <span class="string">"ENSEMBLPROT"</span>  <span class="string">"ENSEMBLTRANS"</span></div><div class="line"> [<span class="number">6</span>] <span class="string">"ENTREZID"</span>     <span class="string">"ENZYME"</span>       <span class="string">"EVIDENCE"</span>     <span class="string">"EVIDENCEALL"</span>  <span class="string">"GENENAME"</span>    </div><div class="line">[<span class="number">11</span>] <span class="string">"GO"</span>           <span class="string">"GOALL"</span>        <span class="string">"IPI"</span>          <span class="string">"MGI"</span>          <span class="string">"ONTOLOGY"</span>    </div><div class="line">[<span class="number">16</span>] <span class="string">"ONTOLOGYALL"</span>  <span class="string">"PATH"</span>         <span class="string">"PFAM"</span>         <span class="string">"PMID"</span>         <span class="string">"PROSITE"</span>     </div><div class="line">[<span class="number">21</span>] <span class="string">"REFSEQ"</span>       <span class="string">"SYMBOL"</span>       <span class="string">"UNIGENE"</span>      <span class="string">"UNIPROT"</span></div></pre></td></tr></table></figure></li>
+<li><p>toType就是要转换为什么ID；</p></li>
+<li><p>OrgDb：转换所使用的数据库，动物方面常用的是人类与小鼠，小鼠使用<code>org.Mm.eg.db</code>文件，人类使用<code>org.Hs.eg.db</code>文件。</p></li>
+</ul>
+<p>在下面的案例中，我们将<code>SYMBOL</code>转换为<code>ENTREZID</code>，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(<span class="string">"GPX3"</span>,  <span class="string">"GLRX"</span>,   <span class="string">"LBP"</span>,   <span class="string">"CRYAB"</span>, <span class="string">"DEFB1"</span>, <span class="string">"HCLS1"</span>,   <span class="string">"SOD2"</span>,   <span class="string">"HSPA2"</span>,</div><div class="line">       <span class="string">"ORM1"</span>,  <span class="string">"IGFBP1"</span>, <span class="string">"PTHLH"</span>, <span class="string">"GPC3"</span>,  <span class="string">"IGFBP3"</span>,<span class="string">"TOB1"</span>,    <span class="string">"MITF"</span>,   <span class="string">"NDRG1"</span>,</div><div class="line">       <span class="string">"NR1H4"</span>, <span class="string">"FGFR3"</span>,  <span class="string">"PVR"</span>,   <span class="string">"IL6"</span>,   <span class="string">"PTPRM"</span>, <span class="string">"ERBB2"</span>,   <span class="string">"NID2"</span>,   <span class="string">"LAMB1"</span>,</div><div class="line">       <span class="string">"COMP"</span>,  <span class="string">"PLS3"</span>,   <span class="string">"MCAM"</span>,  <span class="string">"SPP1"</span>,  <span class="string">"LAMC1"</span>, <span class="string">"COL4A2"</span>,  <span class="string">"COL4A1"</span>, <span class="string">"MYOC"</span>,</div><div class="line">       <span class="string">"ANXA4"</span>, <span class="string">"TFPI2"</span>,  <span class="string">"CST6"</span>,  <span class="string">"SLPI"</span>,  <span class="string">"TIMP2"</span>, <span class="string">"CPM"</span>,     <span class="string">"GGT1"</span>,   <span class="string">"NNMT"</span>,</div><div class="line">       <span class="string">"MAL"</span>,   <span class="string">"EEF1A2"</span>, <span class="string">"HGD"</span>,   <span class="string">"TCN2"</span>,  <span class="string">"CDA"</span>,   <span class="string">"PCCA"</span>,    <span class="string">"CRYM"</span>,   <span class="string">"PDXK"</span>,</div><div class="line">       <span class="string">"STC1"</span>,  <span class="string">"WARS"</span>,  <span class="string">"HMOX1"</span>, <span class="string">"FXYD2"</span>, <span class="string">"RBP4"</span>,   <span class="string">"SLC6A12"</span>, <span class="string">"KDELR3"</span>, <span class="string">"ITM2B"</span>)</div><div class="line">eg = bitr(x, fromType=<span class="string">"SYMBOL"</span>, toType=<span class="string">"ENTREZID"</span>, OrgDb=<span class="string">"org.Hs.eg.db"</span>)</div><div class="line">head(eg)</div></pre></td></tr></table></figure>
 <p>转换结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(eg)</div><div class="line">  SYMBOL ENTREZID</div><div class="line"><span class="number">1</span>   GPX3     <span class="number">2878</span></div><div class="line"><span class="number">2</span>   GLRX     <span class="number">2745</span></div><div class="line"><span class="number">3</span>    LBP     <span class="number">3929</span></div><div class="line"><span class="number">4</span>  CRYAB     <span class="number">1410</span></div><div class="line"><span class="number">5</span>  DEFB1     <span class="number">1672</span></div><div class="line"><span class="number">6</span>  HCLS1     <span class="number">3059</span></div></pre></td></tr></table></figure>
-<p><code>bitr</code>可以转换的基因ID有很多种，可以使用<code>keytypes</code>来查看，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">library</span>(org.Hs.eg.db)</div><div class="line">&gt; keytypes(org.Hs.eg.db)</div><div class="line"> [<span class="number">1</span>] <span class="string">"ACCNUM"</span>       <span class="string">"ALIAS"</span>        <span class="string">"ENSEMBL"</span>      <span class="string">"ENSEMBLPROT"</span>  <span class="string">"ENSEMBLTRANS"</span></div><div class="line"> [<span class="number">6</span>] <span class="string">"ENTREZID"</span>     <span class="string">"ENZYME"</span>       <span class="string">"EVIDENCE"</span>     <span class="string">"EVIDENCEALL"</span>  <span class="string">"GENENAME"</span>    </div><div class="line">[<span class="number">11</span>] <span class="string">"GO"</span>           <span class="string">"GOALL"</span>        <span class="string">"IPI"</span>          <span class="string">"MAP"</span>          <span class="string">"OMIM"</span>        </div><div class="line">[<span class="number">16</span>] <span class="string">"ONTOLOGY"</span>     <span class="string">"ONTOLOGYALL"</span>  <span class="string">"PATH"</span>         <span class="string">"PFAM"</span>         <span class="string">"PMID"</span>        </div><div class="line">[<span class="number">21</span>] <span class="string">"PROSITE"</span>      <span class="string">"REFSEQ"</span>       <span class="string">"SYMBOL"</span>       <span class="string">"UCSCKG"</span>       <span class="string">"UNIGENE"</span>     </div><div class="line">[<span class="number">26</span>] <span class="string">"UNIPROT"</span></div></pre></td></tr></table></figure>
-<p>再举个例子，现在我们将<code>SYMBOL</code>转换为<code>UNIPROT</code>与<code>ENSEMBL</code>的基因名，如下所示：</p>
+<p>再举个例子，现在我们将<code>SYMBOL</code>转换为<code>UNIPROT</code>与<code>ENSEMBL</code>的基因名，在蛋白质谱中，蛋白（其实就是基因）的ID常用的是<code>UNIPROT</code>，转换过程如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ids &lt;- bitr(x, fromType=<span class="string">"SYMBOL"</span>, toType=c(<span class="string">"UNIPROT"</span>, <span class="string">"ENSEMBL"</span>), OrgDb=<span class="string">"org.Hs.eg.db"</span>)</div><div class="line">head(ids)</div></pre></td></tr></table></figure>
 <p>结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(ids)</div><div class="line">  SYMBOL    UNIPROT         ENSEMBL</div><div class="line"><span class="number">1</span>   GPX3     P22352 ENSG00000211445</div><div class="line"><span class="number">2</span>   GLRX A0A024RAM2 ENSG00000173221</div><div class="line"><span class="number">3</span>   GLRX     P35754 ENSG00000173221</div><div class="line"><span class="number">4</span>    LBP     P18428 ENSG00000129988</div><div class="line"><span class="number">5</span>    LBP     Q8TCF0 ENSG00000129988</div><div class="line"><span class="number">6</span>  CRYAB     P02511 ENSG00000109846</div></pre></td></tr></table></figure>
@@ -685,8 +694,7 @@
 <h4 id="第三步go分析函数">第三步：GO分析函数</h4>
 <p>在clusterProfiler包中有两个做GO分析的函数，一个是groupGO，一个是enrichGO，groupGO它能够指定具体要分析的GO terms的层级，而enrichGO则就是普通的GO分析，分析到哪一层就是哪一层，通常情况下，使用<code>enrichGO</code>就行。</p>
 <h5 id="groupgo">groupGO</h5>
-<p>这个函数的功能是：</p>
-<p>现在使用<code>groupGO</code>函数，对<code>gene</code>这里面的基因进行功能分析，如下所示：</p>
+<p>这个函数的功能是：基于在GO term分布的特定水平上进行GO分析，里面有一个参数<code>level = 数字</code>，这个参数就用于指定的GO分析层级，现在使用<code>groupGO</code>函数，对<code>gene</code>这里面的基因进行功能分析，在3级水平上进行，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Step4. GO analysis</span></div><div class="line"><span class="comment"># groupGO</span></div><div class="line">ggo &lt;- groupGO(gene     = gene.df$ENTREZID,</div><div class="line">               OrgDb    = org.Hs.eg.db,</div><div class="line">               ont      = <span class="string">"CC"</span>,</div><div class="line">               level    = <span class="number">3</span>,</div><div class="line">               readable = <span class="literal">TRUE</span>)</div><div class="line">write.csv(ggo,<span class="string">"D:\\ggo.csv"</span>)</div></pre></td></tr></table></figure>
 <p>现在解释一下上述代码，其中gene是一个向量，它含有要分析的基因ID，OrgDb是数据库，ont的参数为<code>CC</code>，<code>BP</code>和<code>MF</code>。level用于指定分析的GO水平，readable：逻辑值，如果为TRUE，则geneID会比对到gene symbol上，现在查看一下使用<code>groupGO</code>分析的结果，如下所示：</p>
 <div class="figure">
@@ -694,7 +702,7 @@
 
 </div>
 <h5 id="enrichgo">enrichGO</h5>
-<p>功能：过表达（over-representation）分析：</p>
+<p><code>enrichGO()</code>与<code>groupGO()</code>的区别在于：<code>enrichGO()</code>并不含有一个GO分析层级数，也就是是说不含有<code>groupGO()</code>中的<code>level=数字</code>这个参数。但是，<code>clusterprofiler</code>包中含有一个函数<code>gofilter()</code>来限制特定的GO水平，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ego &lt;- enrichGO(gene          = gene,</div><div class="line">                universe      = names(geneList),</div><div class="line">                OrgDb         = org.Hs.eg.db,</div><div class="line">                ont           = <span class="string">"CC"</span>,</div><div class="line">                pAdjustMethod = <span class="string">"BH"</span>,</div><div class="line">                pvalueCutoff  = <span class="number">0.01</span>,</div><div class="line">                qvalueCutoff  = <span class="number">0.05</span>,</div><div class="line">        readable      = <span class="literal">TRUE</span>)</div><div class="line">head(ego)</div></pre></td></tr></table></figure>
 <p>分析结果如下所示：</p>
 <div class="figure">
@@ -809,6 +817,7 @@
 <li><a href="http://www.bio-info-trainee.com/710.html" target="_blank" rel="external">Bioconductor的数据包library(org.Hs.eg.db)简介</a></li>
 <li><a href="https://www.jianshu.com/p/4910d7cec5c8?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation" target="_blank" rel="external">转录组入门（8）：差异基因结果注释</a></li>
 <li><a href="https://www.bioconductor.org/packages/devel/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html#kegg-analysis" target="_blank" rel="external">Statistical analysis and visualization of functional profiles for genes and gene clusters</a></li>
+<li><a href="https://yulab-smu.github.io/clusterProfiler-book/index.html" target="_blank" rel="external">clusterProfiler: universal enrichment tool for functional and comparative study</a></li>
 </ol>
 
       
@@ -840,8 +849,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/04/02/Python/Python学习笔记（2）-数据类型之数字与字符串与格式化输出/" rel="next" title="Python学习笔记（2）——数据类型之数字与字符串">
-                <i class="fa fa-chevron-left"></i> Python学习笔记（2）——数据类型之数字与字符串
+              <a href="/2018/04/01/Python/Python学习笔记（1）-基础语法/" rel="next" title="Python学习笔记（1）——基础语法笔记">
+                <i class="fa fa-chevron-left"></i> Python学习笔记（1）——基础语法笔记
               </a>
             
           </div>
@@ -850,8 +859,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/04/03/BioTools/KEGG笔记/" rel="prev" title="KEGG学习笔记">
-                KEGG学习笔记 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/04/02/Python/Python学习笔记（2）-数据类型之数字与字符串与格式化输出/" rel="prev" title="Python学习笔记（2）——数据类型之数字与字符串">
+                Python学习笔记（2）——数据类型之数字与字符串 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -933,7 +942,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">192</span>
+                  <span class="site-state-item-count">193</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -955,7 +964,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-count">83</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -990,7 +999,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是富集分析"><span class="nav-number">1.</span> <span class="nav-text">什么是富集分析？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#富集分析的例子"><span class="nav-number">1.1.</span> <span class="nav-text">富集分析的例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是go什么又是go分析"><span class="nav-number">2.</span> <span class="nav-text">什么是GO，什么又是GO分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go中的基因注释证据代码"><span class="nav-number">3.</span> <span class="nav-text">GO中的基因注释证据代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要做go分析"><span class="nav-number">3.1.</span> <span class="nav-text">为什么要做GO分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析的统计学基础"><span class="nav-number">3.2.</span> <span class="nav-text">GO分析的统计学基础</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go-term的查询"><span class="nav-number">4.</span> <span class="nav-text">GO term的查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go对基因的描述"><span class="nav-number">5.</span> <span class="nav-text">GO对基因的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go-term的结构"><span class="nav-number">6.</span> <span class="nav-text">GO term的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有向无环图说明"><span class="nav-number">6.1.</span> <span class="nav-text">有向无环图说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同的term之间的关系"><span class="nav-number">7.</span> <span class="nav-text">不同的term之间的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#is关系"><span class="nav-number">7.1.</span> <span class="nav-text">is关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part-of关系"><span class="nav-number">7.2.</span> <span class="nav-text">part of关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go分析流程"><span class="nav-number">8.</span> <span class="nav-text">GO分析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析的思路"><span class="nav-number">8.1.</span> <span class="nav-text">GO分析的思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析所需的文件"><span class="nav-number">8.2.</span> <span class="nav-text">GO分析所需的文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前景基因文件"><span class="nav-number">8.2.1.</span> <span class="nav-text">前景基因文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#背景基因文件"><span class="nav-number">8.2.2.</span> <span class="nav-text">背景基因文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析实战"><span class="nav-number">8.3.</span> <span class="nav-text">GO分析实战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一步安装clusterprofiler"><span class="nav-number">8.3.1.</span> <span class="nav-text">第一步：安装clusterProfiler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二步原始数据"><span class="nav-number">8.3.2.</span> <span class="nav-text">第二步：原始数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三步go分析函数"><span class="nav-number">8.3.3.</span> <span class="nav-text">第三步：GO分析函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#groupgo"><span class="nav-number">8.3.3.1.</span> <span class="nav-text">groupGO</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#enrichgo"><span class="nav-number">8.3.3.2.</span> <span class="nav-text">enrichGO</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四步绘制go图"><span class="nav-number">8.3.4.</span> <span class="nav-text">第四步：绘制GO图</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#go条形图"><span class="nav-number">8.3.4.1.</span> <span class="nav-text">GO条形图</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#go点状图"><span class="nav-number">8.3.4.2.</span> <span class="nav-text">GO点状图</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#go的有向无环图"><span class="nav-number">8.3.4.3.</span> <span class="nav-text">GO的有向无环图</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clusterprofiler包的go-basic.ogo文件"><span class="nav-number">9.</span> <span class="nav-text">ClusterProfiler包的go-basic.ogo文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">10.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是富集分析"><span class="nav-number">1.</span> <span class="nav-text">什么是富集分析？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#富集分析的例子"><span class="nav-number">1.1.</span> <span class="nav-text">富集分析的例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是go什么又是go分析"><span class="nav-number">2.</span> <span class="nav-text">什么是GO，什么又是GO分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go中的基因注释证据代码"><span class="nav-number">3.</span> <span class="nav-text">GO中的基因注释证据代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要做go分析"><span class="nav-number">3.1.</span> <span class="nav-text">为什么要做GO分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析的统计学基础"><span class="nav-number">3.2.</span> <span class="nav-text">GO分析的统计学基础</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go-term的查询"><span class="nav-number">4.</span> <span class="nav-text">GO term的查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go对基因的描述"><span class="nav-number">5.</span> <span class="nav-text">GO对基因的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go-term的结构"><span class="nav-number">6.</span> <span class="nav-text">GO term的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有向无环图说明"><span class="nav-number">6.1.</span> <span class="nav-text">有向无环图说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同的term之间的关系"><span class="nav-number">7.</span> <span class="nav-text">不同的term之间的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#is关系"><span class="nav-number">7.1.</span> <span class="nav-text">is关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part-of关系"><span class="nav-number">7.2.</span> <span class="nav-text">part of关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go分析流程"><span class="nav-number">8.</span> <span class="nav-text">GO分析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析的思路"><span class="nav-number">8.1.</span> <span class="nav-text">GO分析的思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析所需的文件"><span class="nav-number">8.2.</span> <span class="nav-text">GO分析所需的文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第1个文件注释文件"><span class="nav-number">8.2.1.</span> <span class="nav-text">第1个文件：注释文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第2个文件go-terms之间的关系"><span class="nav-number">8.2.2.</span> <span class="nav-text">第2个文件：GO terms之间的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第3个文件背景基因文件"><span class="nav-number">8.2.3.</span> <span class="nav-text">第3个文件：背景基因文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第4个文件前景基因文件"><span class="nav-number">8.2.4.</span> <span class="nav-text">第4个文件：前景基因文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go分析实战"><span class="nav-number">8.3.</span> <span class="nav-text">GO分析实战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一步安装clusterprofiler"><span class="nav-number">8.3.1.</span> <span class="nav-text">第一步：安装clusterProfiler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二步原始数据"><span class="nav-number">8.3.2.</span> <span class="nav-text">第二步：原始数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三步go分析函数"><span class="nav-number">8.3.3.</span> <span class="nav-text">第三步：GO分析函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#groupgo"><span class="nav-number">8.3.3.1.</span> <span class="nav-text">groupGO</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#enrichgo"><span class="nav-number">8.3.3.2.</span> <span class="nav-text">enrichGO</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四步绘制go图"><span class="nav-number">8.3.4.</span> <span class="nav-text">第四步：绘制GO图</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#go条形图"><span class="nav-number">8.3.4.1.</span> <span class="nav-text">GO条形图</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#go点状图"><span class="nav-number">8.3.4.2.</span> <span class="nav-text">GO点状图</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#go的有向无环图"><span class="nav-number">8.3.4.3.</span> <span class="nav-text">GO的有向无环图</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clusterprofiler包的go-basic.ogo文件"><span class="nav-number">9.</span> <span class="nav-text">ClusterProfiler包的go-basic.ogo文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">10.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -1047,7 +1056,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共733.0k字</span>
+  <span class="post-count">博客全站共767.6k字</span>
 </div>
 
         
