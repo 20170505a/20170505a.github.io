@@ -157,7 +157,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle">学习过程中的输出</p>
+        <p class="site-subtitle"></p>
       
   </div>
 
@@ -438,7 +438,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/20/DAL/DALS017_InferenceForHighDimensionalData2_/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -457,7 +457,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/20/DAL/DALS017_InferenceForHighDimensionalData2_/" itemprop="url">DALS016-高维数据推断2-统计原理</a></h1>
+                <a class="post-title-link" href="/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/" itemprop="url">DALS014-Linear Models线性模型04方差分析</a></h1>
         
 
         <div class="post-meta">
@@ -525,7 +525,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  61
+                  2,532
                 </span>
               
 
@@ -541,7 +541,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  11
                 </span>
               
             </div>
@@ -565,7 +565,75 @@
         
           
             <h2 id="前言">前言</h2>
-<p>这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/advinference/multiple_testing.Rmd" target="_blank" rel="external">Github</a>。</p>
+<p>这一部分是《Data Analysis for the life sciences》的第5章线性模型的第4小节，这一部分的主要内容涉及ANOVA，有关方差分析的笔记R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/linear/interactions_and_contrasts.Rmd" target="_blank" rel="external">Github</a>。</p>
+<h2 id="anova简介">ANOVA简介</h2>
+<p>现在考虑一种情况，如果我们想知道push与pull的差值在整体上，不同的组中是否有区别。换句话讲，我们并不想比较任意两组有差异，我们就想知道，在所有的有腿中，代表了push和pull差值的3个交互作用导致的push和pull差异是否比正常的差异大（即不考虑交互作用的情况）。</p>
+<p>通过方差分析(analysis of variance，ANOVA)就可以解决这个问题。ANOVA的本质在于比较不同复杂模型的残差平方和是被哪些因素降低的（我的理解就是，总的残差平方和都是分布在哪些变量上面，哪些变量分到的最多，哪些变量的效应就最强）。含有8个系数的模型比含有5个系数的模型要复杂的多，在5个系数的模型中，我们是假设push和pull在所有组之间的差异是相等的。最简单的模型只使用一个系数，一个截矩。在某些假设下，我们还可以执行推断，确定与我们观察到的一样大的改进概率(Under certain assumptions we can also perform inference that determines the probability of improvements as large as what we observed)。</p>
+<p>下面的ANOVA计算的结果（接前文案例）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; anova(fitX)</div><div class="line">Analysis of Variance Table</div><div class="line"></div><div class="line">Response: friction</div><div class="line">           Df Sum Sq Mean Sq  <span class="literal">F</span> value    Pr(&gt;<span class="literal">F</span>)    </div><div class="line">type        <span class="number">1</span> <span class="number">42.783</span>  <span class="number">42.783</span> <span class="number">1179.713</span> &lt; <span class="number">2.2e-16</span> ***</div><div class="line">leg         <span class="number">3</span>  <span class="number">2.921</span>   <span class="number">0.974</span>   <span class="number">26.847</span> <span class="number">2.972e-15</span> ***</div><div class="line">type:leg    <span class="number">3</span>  <span class="number">2.098</span>   <span class="number">0.699</span>   <span class="number">19.282</span> <span class="number">2.256e-11</span> ***</div><div class="line">Residuals <span class="number">274</span>  <span class="number">9.937</span>   <span class="number">0.036</span>                       </div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
+<p>结果的第一行中有一个<code>type</code>变量（表示pull或push），它对应的Sum值为42.783，这就表示，这一单一的系数减少了42.783的平方和。我们看一下总的平方和，其实就是线性模型的截矩，也可以是<code>anova(fitX)</code>的第2列的和，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">result &lt;- anova(fitX)</div><div class="line">sum(result$`Sum Sq`)</div><div class="line">mu0 &lt;- mean(spider$friction)</div><div class="line">(initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; result &lt;- anova(fitX)</div><div class="line">&gt; sum(result$`Sum Sq`)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div><div class="line">&gt; mu0 &lt;- mean(spider$friction)</div><div class="line">&gt; (initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
+<p>需要注意是的是，这个平方和的计算公式最初就是来源于样本方差的计算公式，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">N &lt;- nrow(spider)</div><div class="line">(N - <span class="number">1</span>) * var(spider$friction)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; N &lt;- nrow(spider)</div><div class="line">&gt; (N - <span class="number">1</span>) * var(spider$friction)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
+<p>现在来看一下，前面的42.783是如何得到的。我们需要计算仅包含类型信息模型的残差平方和。我们可以通过计算残差，残差的平方，并将它们加起来就能实现，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">s &lt;- split(spider$friction, spider$type)</div><div class="line">after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">residual &lt;- x - mean(x)</div><div class="line">sum(residual^<span class="number">2</span>)</div><div class="line">&#125;) )</div><div class="line">(type.ss &lt;- initial.ss - after.type.ss)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; s &lt;- split(spider$friction, spider$type)</div><div class="line">&gt; after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">+   residual &lt;- x - mean(x)</div><div class="line">+   sum(residual^<span class="number">2</span>)</div><div class="line">+ &#125;) )</div><div class="line">&gt; (type.ss &lt;- initial.ss - after.type.ss)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
+<p>这个降低的程度(就是上面的42.78307)就相当于模型<code>~type</code>和<code>~1</code>拟合值差值的平方和，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
+<p>线性模型中的各个项的顺序以及ANOVA表格中的顺序很重要：每行表示的是：当添加了一个新的系数后，残差平方和较未添加这个系数之前减少的量。</p>
+<p>在ANOVA表（这个表其实就是ANOAVA计算后的结果）还标明了自由度。当引入了<code>type</code>这一项时，它对应的<code>Df</code>就是1，<code>leg</code>变量引入了3个项（即legL2，legL3和legL4），它对应的<code>Df</code>就是3（这一段不太理解）。ANOVA还有一列是<code>F value</code>。F值表示的是包含感兴趣的项（感兴趣的项平方和除以相应自由度）除以残差（ANOVA表中的最后一行除以自自由度），以第一行为例 说明一下就是<code>(42.783/1)/(9.937/274)=1179.686</code>。</p>
+<p>书中给出的公式为：</p>
+<p><span class="math display">\[
+r_i = Y_i - \hat{Y}_i
+\]</span> <span class="math display">\[
+\mbox{Mean Sq Residuals} = \frac{1}{N - p} \sum_{i=1}^N r_i^2
+\]</span></p>
+<p>其中<code>p</code>表示模型中系数的总数（在这个模型中，包括截矩在内的系数总数是8）。</p>
+<p>在零假设成立的前提下（零假设就是添加系数的真值为0），我们会得到每行F值分布的理论结果。这种近似所需的假设类似于t分布近似的假设，例如我们在使用CLT时需要大量的样本，或者是总体的数据服从正态分布。</p>
+<p>现在我们来解释一下p值，看最后一行，即<code>type:leg</code>，内容是<code>type:leg    3  2.098   0.699   19.282 2.256e-11 ***</code>，<code>type:leg</code>表示的是3个交互作用系数。在零假设下，这3个附加项的真实值为0，例如，<span class="math inline">\(\beta_{push,L2}=0\)</span>，<span class="math inline">\(\beta_{push,L3}=0\)</span>，<span class="math inline">\(\beta_{push,L4}=0\)</span>，然后我们就计算出ANOVA表的这一行观察到的这么大的F值的概率。这里需要记住，我们只关注大的F值，因为我们有一个平方和的比，因此F值只能是正数（原文：Remember that we are only concerned with large values here, because we have a ratio of sum of squares, the F-value can only be positive. ）。<code>type:leg</code>这一行中的p值可以这么解释：在零假设下，我们认为push和pull的差值在所有组之间是没有差异的，p值表示了，在这个零假设成立时，我们观察到的如此大的方差的可能性。从计算结果中我们可以看到，我们的p值非常小，我们就可以拒绝零假设，即可以认为，push和pull的差值在不同组之间是不同的。</p>
+<p>另外，ANOVA中的F值与F分布有关，F分布有2个以参数，一个是分子的自由度（分子是研究对象的自由度，例如前面提到的交互作用），一个是分母的自由度（残差）。从结果可以看到，交互作用系数的自由度是3，残差的自由度是274。</p>
+<h2 id="anova模型的另外表示">ANOVA模型的另外表示</h2>
+<p>现在来看一下ANOVA模型的另外表示方法，在这种方式里，我们假设每一对type与leg都有自己的均值（这样，对于每一条腿来说，push与pull的效应就不会相同）。这种表述方式在某种程度上来说更加简单，但是，我们不能像前面那样构建ANOVA表，因为这种方式无法区分交互作用系数。</p>
+<p>首先我们会先构建一个因子变量，这个因子变量表示的是<code>type</code>与<code>leg</code>的组合，在公式中含有<code>~0</code>，它表示，我们不在线性模型中包含截矩，其中我们通过<code>rafalib</code>包中的<code>imagemat()</code>函数绘制了组变量的矩阵示意图，这个示意图也有8项，它针对每一个type和leg组合进行了拟合，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">##earlier, we defined the 'group' column:</span></div><div class="line">spider$group &lt;- factor(paste0(spider$leg, spider$type))</div><div class="line">X &lt;- model.matrix(~ <span class="number">0</span> + group, data=spider)</div><div class="line">colnames(X)</div><div class="line">head(X)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">summary(fitG)</div><div class="line">coefs &lt;- coef(fitG)</div><div class="line">coefs</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">&gt; colnames(X)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; head(X)</div><div class="line">  groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push</div><div class="line"><span class="number">1</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">  groupL4pull groupL4push</div><div class="line"><span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">&gt; <span class="keyword">library</span>(rafalib)</div><div class="line">&gt; imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">&gt; fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">&gt; summary(fitG)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-<span class="number">0.46385</span> -<span class="number">0.10735</span> -<span class="number">0.01111</span>  <span class="number">0.07848</span>  <span class="number">0.76853</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">groupL1pull  <span class="number">0.92147</span>    <span class="number">0.03266</span>   <span class="number">28.21</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL1push  <span class="number">0.40735</span>    <span class="number">0.03266</span>   <span class="number">12.47</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2pull  <span class="number">1.14533</span>    <span class="number">0.04917</span>   <span class="number">23.29</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2push  <span class="number">0.52733</span>    <span class="number">0.04917</span>   <span class="number">10.72</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3pull  <span class="number">1.27385</span>    <span class="number">0.02641</span>   <span class="number">48.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3push  <span class="number">0.37596</span>    <span class="number">0.02641</span>   <span class="number">14.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4pull  <span class="number">1.40075</span>    <span class="number">0.03011</span>   <span class="number">46.52</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4push  <span class="number">0.49075</span>    <span class="number">0.03011</span>   <span class="number">16.30</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">0.1904</span> on <span class="number">274</span> degrees of freedom</div><div class="line">Multiple R-squared:   <span class="number">0.96</span>,	Adjusted R-squared:  <span class="number">0.9588</span> </div><div class="line"><span class="literal">F</span>-statistic:   <span class="number">821</span> on <span class="number">8</span> and <span class="number">274</span> DF,  p-value: &lt; <span class="number">2.2e-16</span></div><div class="line"></div><div class="line">&gt; coefs &lt;- coef(fitG)</div><div class="line">&gt; coefs</div><div class="line">groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push groupL4pull </div><div class="line">  <span class="number">0.9214706</span>   <span class="number">0.4073529</span>   <span class="number">1.1453333</span>   <span class="number">0.5273333</span>   <span class="number">1.2738462</span>   <span class="number">0.3759615</span>   <span class="number">1.4007500</span> </div><div class="line">groupL4push </div><div class="line">  <span class="number">0.4907500</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824171912.jpeg">
+
+</div>
+<h2 id="计算估计系数">计算估计系数</h2>
+<p>现在我们绘制出上面计算结果的示意图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">stripchart(split(spider$friction, spider$group), </div><div class="line">           vertical=<span class="literal">TRUE</span>, pch=<span class="number">1</span>, method=<span class="string">"jitter"</span>, las=<span class="number">2</span>, xlim=c(<span class="number">0</span>,<span class="number">11</span>), ylim=c(<span class="number">0</span>,<span class="number">2</span>))</div><div class="line">cols &lt;- brewer.pal(<span class="number">8</span>,<span class="string">"Dark2"</span>)</div><div class="line">abline(h=<span class="number">0</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">8</span>) &#123;</div><div class="line">  arrows(i+a,<span class="number">0</span>,i+a,coefs[i],lwd=<span class="number">3</span>,col=cols[i],length=lgth)</div><div class="line">&#125;</div><div class="line">legend(<span class="string">"right"</span>,names(coefs),fill=cols,cex=<span class="number">.75</span>,bg=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824172337.jpeg">
+
+</div>
+<h2 id="使用contrast包进行简单比较">使用contrast包进行简单比较</h2>
+<p>虽然无法使用这个公式来进行ANOVA分析，但是可以使用<code>contrast()</code>函数对每组的估计系数进行比较，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">groupL2push.vs.pull &lt;- contrast(fitG,</div><div class="line">                                list(group = <span class="string">"L2push"</span>),</div><div class="line">                                list(group = <span class="string">"L2pull"</span>))</div><div class="line">groupL2push.vs.pull</div><div class="line">coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; groupL2push.vs.pull</div><div class="line">lm model parameter contrast</div><div class="line"></div><div class="line">  Contrast      S.E.      Lower      Upper     t  df Pr(&gt;|t|)</div><div class="line"><span class="number">1</span>   -<span class="number">0.618</span> <span class="number">0.0695372</span> -<span class="number">0.7548951</span> -<span class="number">0.4811049</span> -<span class="number">8.89</span> <span class="number">274</span>        <span class="number">0</span></div><div class="line">&gt; coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div><div class="line">groupL2push </div><div class="line">     -<span class="number">0.618</span></div></pre></td></tr></table></figure>
+<h2 id="无截矩时差值的差异">无截矩时差值的差异</h2>
+<p>我们还可以进行push和pull在各级之间的两两(pair-wise)比较。例如，现在我们想比较L3与L2的push和pull的差值，如下所示：</p>
+<p><span class="math display">\[
+(\mbox{L3push} - \mbox{L3pull}) - (\mbox{L2push} - \mbox{L2pull})
+\]</span> <span class="math display">\[
+= \mbox{L3 push} + \mbox{L2pull} - \mbox{L3pull} - \mbox{L2push}
+\]</span></p>
+<p>其过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">summary(groupL3vsL2interaction)</div><div class="line">names(coefs)</div><div class="line">(coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">&gt; groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">&gt; summary(groupL3vsL2interaction)</div><div class="line"></div><div class="line">	 Simultaneous Tests <span class="keyword">for</span> General Linear Hypotheses</div><div class="line"></div><div class="line">Fit: lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Linear Hypotheses:</div><div class="line">       Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line"><span class="number">1</span> == <span class="number">0</span> -<span class="number">0.27988</span>    <span class="number">0.07893</span>  -<span class="number">3.546</span>  <span class="number">0.00046</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line">(Adjusted p values reported -- single-step method)</div><div class="line"></div><div class="line">&gt; names(coefs)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; (coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div><div class="line">groupL3push </div><div class="line"> -<span class="number">0.2798846</span></div></pre></td></tr></table></figure>
+<h2 id="练习">练习</h2>
+<p>P230</p>
 
           
         
@@ -860,250 +928,6 @@ p_a = \mbox{Pr}(Z &lt; a \mid H_0) = \Phi(a)
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; sum(pvals&lt;<span class="number">0.05</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">40</span></div><div class="line">&gt; sum(pvals&lt;<span class="number">0.05</span>)/length(pvals)*<span class="number">100</span></div><div class="line">[<span class="number">1</span>] <span class="number">4</span></div></pre></td></tr></table></figure>
 <p><strong>问题五</strong>：这说明，就平均数而言，即使所有的饮食对小鼠的体重都没有影响，我们还能得到一些小于0.05的p值。使用相同的模拟数据来做1000次计算，我们能得到多少假阳性的比例？</p>
 <p>答：大概是5%。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/" itemprop="url">DALS014-Linear Models线性模型04方差分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T12:00:00+08:00">
-                2019-08-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,532
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  11
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这一部分是《Data Analysis for the life sciences》的第5章线性模型的第4小节，这一部分的主要内容涉及ANOVA，有关方差分析的笔记R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/linear/interactions_and_contrasts.Rmd" target="_blank" rel="external">Github</a>。</p>
-<h2 id="anova简介">ANOVA简介</h2>
-<p>现在考虑一种情况，如果我们想知道push与pull的差值在整体上，不同的组中是否有区别。换句话讲，我们并不想比较任意两组有差异，我们就想知道，在所有的有腿中，代表了push和pull差值的3个交互作用导致的push和pull差异是否比正常的差异大（即不考虑交互作用的情况）。</p>
-<p>通过方差分析(analysis of variance，ANOVA)就可以解决这个问题。ANOVA的本质在于比较不同复杂模型的残差平方和是被哪些因素降低的（我的理解就是，总的残差平方和都是分布在哪些变量上面，哪些变量分到的最多，哪些变量的效应就最强）。含有8个系数的模型比含有5个系数的模型要复杂的多，在5个系数的模型中，我们是假设push和pull在所有组之间的差异是相等的。最简单的模型只使用一个系数，一个截矩。在某些假设下，我们还可以执行推断，确定与我们观察到的一样大的改进概率(Under certain assumptions we can also perform inference that determines the probability of improvements as large as what we observed)。</p>
-<p>下面的ANOVA计算的结果（接前文案例）：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; anova(fitX)</div><div class="line">Analysis of Variance Table</div><div class="line"></div><div class="line">Response: friction</div><div class="line">           Df Sum Sq Mean Sq  <span class="literal">F</span> value    Pr(&gt;<span class="literal">F</span>)    </div><div class="line">type        <span class="number">1</span> <span class="number">42.783</span>  <span class="number">42.783</span> <span class="number">1179.713</span> &lt; <span class="number">2.2e-16</span> ***</div><div class="line">leg         <span class="number">3</span>  <span class="number">2.921</span>   <span class="number">0.974</span>   <span class="number">26.847</span> <span class="number">2.972e-15</span> ***</div><div class="line">type:leg    <span class="number">3</span>  <span class="number">2.098</span>   <span class="number">0.699</span>   <span class="number">19.282</span> <span class="number">2.256e-11</span> ***</div><div class="line">Residuals <span class="number">274</span>  <span class="number">9.937</span>   <span class="number">0.036</span>                       </div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
-<p>结果的第一行中有一个<code>type</code>变量（表示pull或push），它对应的Sum值为42.783，这就表示，这一单一的系数减少了42.783的平方和。我们看一下总的平方和，其实就是线性模型的截矩，也可以是<code>anova(fitX)</code>的第2列的和，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">result &lt;- anova(fitX)</div><div class="line">sum(result$`Sum Sq`)</div><div class="line">mu0 &lt;- mean(spider$friction)</div><div class="line">(initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; result &lt;- anova(fitX)</div><div class="line">&gt; sum(result$`Sum Sq`)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div><div class="line">&gt; mu0 &lt;- mean(spider$friction)</div><div class="line">&gt; (initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
-<p>需要注意是的是，这个平方和的计算公式最初就是来源于样本方差的计算公式，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">N &lt;- nrow(spider)</div><div class="line">(N - <span class="number">1</span>) * var(spider$friction)</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; N &lt;- nrow(spider)</div><div class="line">&gt; (N - <span class="number">1</span>) * var(spider$friction)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
-<p>现在来看一下，前面的42.783是如何得到的。我们需要计算仅包含类型信息模型的残差平方和。我们可以通过计算残差，残差的平方，并将它们加起来就能实现，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">s &lt;- split(spider$friction, spider$type)</div><div class="line">after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">residual &lt;- x - mean(x)</div><div class="line">sum(residual^<span class="number">2</span>)</div><div class="line">&#125;) )</div><div class="line">(type.ss &lt;- initial.ss - after.type.ss)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; s &lt;- split(spider$friction, spider$type)</div><div class="line">&gt; after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">+   residual &lt;- x - mean(x)</div><div class="line">+   sum(residual^<span class="number">2</span>)</div><div class="line">+ &#125;) )</div><div class="line">&gt; (type.ss &lt;- initial.ss - after.type.ss)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
-<p>这个降低的程度(就是上面的42.78307)就相当于模型<code>~type</code>和<code>~1</code>拟合值差值的平方和，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
-<p>线性模型中的各个项的顺序以及ANOVA表格中的顺序很重要：每行表示的是：当添加了一个新的系数后，残差平方和较未添加这个系数之前减少的量。</p>
-<p>在ANOVA表（这个表其实就是ANOAVA计算后的结果）还标明了自由度。当引入了<code>type</code>这一项时，它对应的<code>Df</code>就是1，<code>leg</code>变量引入了3个项（即legL2，legL3和legL4），它对应的<code>Df</code>就是3（这一段不太理解）。ANOVA还有一列是<code>F value</code>。F值表示的是包含感兴趣的项（感兴趣的项平方和除以相应自由度）除以残差（ANOVA表中的最后一行除以自自由度），以第一行为例 说明一下就是<code>(42.783/1)/(9.937/274)=1179.686</code>。</p>
-<p>书中给出的公式为：</p>
-<p><span class="math display">\[
-r_i = Y_i - \hat{Y}_i
-\]</span> <span class="math display">\[
-\mbox{Mean Sq Residuals} = \frac{1}{N - p} \sum_{i=1}^N r_i^2
-\]</span></p>
-<p>其中<code>p</code>表示模型中系数的总数（在这个模型中，包括截矩在内的系数总数是8）。</p>
-<p>在零假设成立的前提下（零假设就是添加系数的真值为0），我们会得到每行F值分布的理论结果。这种近似所需的假设类似于t分布近似的假设，例如我们在使用CLT时需要大量的样本，或者是总体的数据服从正态分布。</p>
-<p>现在我们来解释一下p值，看最后一行，即<code>type:leg</code>，内容是<code>type:leg    3  2.098   0.699   19.282 2.256e-11 ***</code>，<code>type:leg</code>表示的是3个交互作用系数。在零假设下，这3个附加项的真实值为0，例如，<span class="math inline">\(\beta_{push,L2}=0\)</span>，<span class="math inline">\(\beta_{push,L3}=0\)</span>，<span class="math inline">\(\beta_{push,L4}=0\)</span>，然后我们就计算出ANOVA表的这一行观察到的这么大的F值的概率。这里需要记住，我们只关注大的F值，因为我们有一个平方和的比，因此F值只能是正数（原文：Remember that we are only concerned with large values here, because we have a ratio of sum of squares, the F-value can only be positive. ）。<code>type:leg</code>这一行中的p值可以这么解释：在零假设下，我们认为push和pull的差值在所有组之间是没有差异的，p值表示了，在这个零假设成立时，我们观察到的如此大的方差的可能性。从计算结果中我们可以看到，我们的p值非常小，我们就可以拒绝零假设，即可以认为，push和pull的差值在不同组之间是不同的。</p>
-<p>另外，ANOVA中的F值与F分布有关，F分布有2个以参数，一个是分子的自由度（分子是研究对象的自由度，例如前面提到的交互作用），一个是分母的自由度（残差）。从结果可以看到，交互作用系数的自由度是3，残差的自由度是274。</p>
-<h2 id="anova模型的另外表示">ANOVA模型的另外表示</h2>
-<p>现在来看一下ANOVA模型的另外表示方法，在这种方式里，我们假设每一对type与leg都有自己的均值（这样，对于每一条腿来说，push与pull的效应就不会相同）。这种表述方式在某种程度上来说更加简单，但是，我们不能像前面那样构建ANOVA表，因为这种方式无法区分交互作用系数。</p>
-<p>首先我们会先构建一个因子变量，这个因子变量表示的是<code>type</code>与<code>leg</code>的组合，在公式中含有<code>~0</code>，它表示，我们不在线性模型中包含截矩，其中我们通过<code>rafalib</code>包中的<code>imagemat()</code>函数绘制了组变量的矩阵示意图，这个示意图也有8项，它针对每一个type和leg组合进行了拟合，代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">##earlier, we defined the 'group' column:</span></div><div class="line">spider$group &lt;- factor(paste0(spider$leg, spider$type))</div><div class="line">X &lt;- model.matrix(~ <span class="number">0</span> + group, data=spider)</div><div class="line">colnames(X)</div><div class="line">head(X)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">summary(fitG)</div><div class="line">coefs &lt;- coef(fitG)</div><div class="line">coefs</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">&gt; colnames(X)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; head(X)</div><div class="line">  groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push</div><div class="line"><span class="number">1</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">  groupL4pull groupL4push</div><div class="line"><span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">&gt; <span class="keyword">library</span>(rafalib)</div><div class="line">&gt; imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">&gt; fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">&gt; summary(fitG)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-<span class="number">0.46385</span> -<span class="number">0.10735</span> -<span class="number">0.01111</span>  <span class="number">0.07848</span>  <span class="number">0.76853</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">groupL1pull  <span class="number">0.92147</span>    <span class="number">0.03266</span>   <span class="number">28.21</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL1push  <span class="number">0.40735</span>    <span class="number">0.03266</span>   <span class="number">12.47</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2pull  <span class="number">1.14533</span>    <span class="number">0.04917</span>   <span class="number">23.29</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2push  <span class="number">0.52733</span>    <span class="number">0.04917</span>   <span class="number">10.72</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3pull  <span class="number">1.27385</span>    <span class="number">0.02641</span>   <span class="number">48.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3push  <span class="number">0.37596</span>    <span class="number">0.02641</span>   <span class="number">14.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4pull  <span class="number">1.40075</span>    <span class="number">0.03011</span>   <span class="number">46.52</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4push  <span class="number">0.49075</span>    <span class="number">0.03011</span>   <span class="number">16.30</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">0.1904</span> on <span class="number">274</span> degrees of freedom</div><div class="line">Multiple R-squared:   <span class="number">0.96</span>,	Adjusted R-squared:  <span class="number">0.9588</span> </div><div class="line"><span class="literal">F</span>-statistic:   <span class="number">821</span> on <span class="number">8</span> and <span class="number">274</span> DF,  p-value: &lt; <span class="number">2.2e-16</span></div><div class="line"></div><div class="line">&gt; coefs &lt;- coef(fitG)</div><div class="line">&gt; coefs</div><div class="line">groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push groupL4pull </div><div class="line">  <span class="number">0.9214706</span>   <span class="number">0.4073529</span>   <span class="number">1.1453333</span>   <span class="number">0.5273333</span>   <span class="number">1.2738462</span>   <span class="number">0.3759615</span>   <span class="number">1.4007500</span> </div><div class="line">groupL4push </div><div class="line">  <span class="number">0.4907500</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824171912.jpeg">
-
-</div>
-<h2 id="计算估计系数">计算估计系数</h2>
-<p>现在我们绘制出上面计算结果的示意图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">stripchart(split(spider$friction, spider$group), </div><div class="line">           vertical=<span class="literal">TRUE</span>, pch=<span class="number">1</span>, method=<span class="string">"jitter"</span>, las=<span class="number">2</span>, xlim=c(<span class="number">0</span>,<span class="number">11</span>), ylim=c(<span class="number">0</span>,<span class="number">2</span>))</div><div class="line">cols &lt;- brewer.pal(<span class="number">8</span>,<span class="string">"Dark2"</span>)</div><div class="line">abline(h=<span class="number">0</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">8</span>) &#123;</div><div class="line">  arrows(i+a,<span class="number">0</span>,i+a,coefs[i],lwd=<span class="number">3</span>,col=cols[i],length=lgth)</div><div class="line">&#125;</div><div class="line">legend(<span class="string">"right"</span>,names(coefs),fill=cols,cex=<span class="number">.75</span>,bg=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824172337.jpeg">
-
-</div>
-<h2 id="使用contrast包进行简单比较">使用contrast包进行简单比较</h2>
-<p>虽然无法使用这个公式来进行ANOVA分析，但是可以使用<code>contrast()</code>函数对每组的估计系数进行比较，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">groupL2push.vs.pull &lt;- contrast(fitG,</div><div class="line">                                list(group = <span class="string">"L2push"</span>),</div><div class="line">                                list(group = <span class="string">"L2pull"</span>))</div><div class="line">groupL2push.vs.pull</div><div class="line">coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; groupL2push.vs.pull</div><div class="line">lm model parameter contrast</div><div class="line"></div><div class="line">  Contrast      S.E.      Lower      Upper     t  df Pr(&gt;|t|)</div><div class="line"><span class="number">1</span>   -<span class="number">0.618</span> <span class="number">0.0695372</span> -<span class="number">0.7548951</span> -<span class="number">0.4811049</span> -<span class="number">8.89</span> <span class="number">274</span>        <span class="number">0</span></div><div class="line">&gt; coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div><div class="line">groupL2push </div><div class="line">     -<span class="number">0.618</span></div></pre></td></tr></table></figure>
-<h2 id="无截矩时差值的差异">无截矩时差值的差异</h2>
-<p>我们还可以进行push和pull在各级之间的两两(pair-wise)比较。例如，现在我们想比较L3与L2的push和pull的差值，如下所示：</p>
-<p><span class="math display">\[
-(\mbox{L3push} - \mbox{L3pull}) - (\mbox{L2push} - \mbox{L2pull})
-\]</span> <span class="math display">\[
-= \mbox{L3 push} + \mbox{L2pull} - \mbox{L3pull} - \mbox{L2push}
-\]</span></p>
-<p>其过程如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">summary(groupL3vsL2interaction)</div><div class="line">names(coefs)</div><div class="line">(coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">&gt; groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">&gt; summary(groupL3vsL2interaction)</div><div class="line"></div><div class="line">	 Simultaneous Tests <span class="keyword">for</span> General Linear Hypotheses</div><div class="line"></div><div class="line">Fit: lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Linear Hypotheses:</div><div class="line">       Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line"><span class="number">1</span> == <span class="number">0</span> -<span class="number">0.27988</span>    <span class="number">0.07893</span>  -<span class="number">3.546</span>  <span class="number">0.00046</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line">(Adjusted p values reported -- single-step method)</div><div class="line"></div><div class="line">&gt; names(coefs)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; (coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div><div class="line">groupL3push </div><div class="line"> -<span class="number">0.2798846</span></div></pre></td></tr></table></figure>
-<h2 id="练习">练习</h2>
-<p>P230</p>
 
           
         
@@ -1575,6 +1399,224 @@ c\\
 <p>这种方法呈现的是假设<span class="math inline">\(\beta\)</span>是一个固定参数（非随机）。我们提取了估计此参数的方法，以及估计过程中如何量化这些参数不确定性的标准误差。这种方法是就所谓的频率论方法(frequentist)。另一种方法是假设<span class="math inline">\(\beta\)</span>是随机的，它的分布可以对我们先前关于<span class="math inline">\(\beta\)</span>应该是什么进行量化。一旦我们观察到数据，那么我们通过计算给定数据的<span class="math inline">\(\beta\)</span>条件分布（称为后验分布,posterior)，我们就就更新我们先前的信息，这种方法称贝叶斯方法。例如，一旦我们计算了<span class="math inline">\(\beta\)</span>的后验分布，我们就可以计算出某事件最容易发生的一个区间（可信区间）。此外，许多模型可以连接在一起，也就是所谓的分层模型(hierarchical mode)。在后面的内容里，我们会介绍贝叶斯统计和层次模型。贝叶斯分层模型的一本很好的书是<a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank" rel="external">《Bayesian Data Analysis》</a>，在CRAN里，也有计算贝叶斯线性模型的包。其它的一些计算贝叶斯模型的软件是stan和BUGS。</p>
 <h3 id="惩罚线性模型penalized-linear-models">惩罚线性模型(Penalized linear models)</h3>
 <p>如果我们在模型中包含足够的参数，我们就可以实现残差平方和为0。惩罚纯情模型引入了一个惩罚项到最小化的最小二乘方程里。这些惩罚项通常是<span class="math inline">\(\lambda \sum_{j=1}^p \|\beta_j\|^k\)</span>这个形式，它们对大的绝对值以及大量的参数进行惩罚。添加这个额外的参数的目的就是避免过拟合。如果要使用这些模型，我们需要选择使用哪种模式来决定我们的惩罚程度。当<span class="math inline">\(k=2\)</span>时，这种模型称为岭回归(ridge regression)，Tikhonov正则化(regularization)L2正则化。当<span class="math inline">\(k=1\)</span>时，被称为LASSO或L1正则化。有关这些惩罚线性模型的一本书是《Elements of Statistical Learn》（网上有免费的电子版）。与这些模型有关的R函数包括<code>MASS</code>包里的<code>lm.ridge</code>函数，还有<code>lars</code>包，<code>glmnet</code>包。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/20/DAL/DALS017_InferenceForHighDimensionalData2_/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/20/DAL/DALS017_InferenceForHighDimensionalData2_/" itemprop="url">DALS016-高维数据推断2-统计原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T12:00:00+08:00">
+                2019-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  599
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/advinference/multiple_testing.Rmd" target="_blank" rel="external">Github</a>。</p>
+<h2 id="高维数据的p值">高维数据的p值</h2>
+<p>在前面我们了解了，当我们在分析高维数据时，p值就不再是一个很好的统计指标了。这是因为，我们同一次检测了许多特征值(feature)。这种检测手段被称为多重比较( multiple comparison)，或多重检测(multiple testing)，或多重性问题(multiplicity)。在此情况下，p值就不再适用。另外，当我们同时检测多个假设问题时，仅仅基于一个小p值的阈值，例如0.01，这就很容易导假阳性。针对这种情况，我们需要定义一个新的术语来研究高通量数据。</p>
+<p>为了处理多重比较的问题，我们广泛使用的方法就是定义一个程序，然后用它来估计或控制(control)计算过程中的错误率(rate error)。我们这里所说的<code>控制(control)</code>的意思是，我们会采用这个程序来保证错误率(error rate)低于某个设定的值。通过参数或截止值(cutoff)来设定的这个程度通常比较灵活，它会让我们能够控制特异性(specificity)和灵敏度(sensitivity)，这种程序的一个典型案例如下所示：</p>
+<ul>
+<li>计算每个基因的p值；</li>
+<li>计算出p值小于<span class="math inline">\(\alpha\)</span>的所有显著性基因。</li>
+</ul>
+<p>这里需要注意的是，当我们改变<span class="math inline">\(\alpha\)</span>值时，会调整相应的特异性(specificity)和灵敏度(sensitivity)。</p>
+<p>接着我们来定义错误率(error rate)，它会让我们对统计过程进行估计和控制。</p>
+<h2 id="错误率">错误率</h2>
+<p>在这一部分中，我们会了解到I类错误与II类错误，这两类错误分别代表假阳性(false positives)与假阴性(false negatives)。通常，特异性(specificity)与I类错误有关，灵敏性(sensitivity)与II类错误有关。</p>
+<p>在一次高通量实验里，我们会犯第I类错误和第II类错误。在下面的这个表格里，我们参考了Benjamini-Hochberg的论文总结了这些错误，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Called significant</th>
+<th>Not called significant</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Null True</td>
+<td><span class="math inline">\(V\)</span></td>
+<td><span class="math inline">\(m_0-V\)</span></td>
+<td><span class="math inline">\(m_0\)</span></td>
+</tr>
+<tr class="even">
+<td>Alternative True</td>
+<td><span class="math inline">\(S\)</span></td>
+<td><span class="math inline">\(m_1-S\)</span></td>
+<td><span class="math inline">\(m_1\)</span></td>
+</tr>
+<tr class="odd">
+<td>True</td>
+<td><span class="math inline">\(R\)</span></td>
+<td><span class="math inline">\(m-R\)</span></td>
+<td><span class="math inline">\(m\)</span></td>
+</tr>
+</tbody>
+</table>
 
           
         
@@ -2576,6 +2618,282 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i, 1}+\beta_{2} x_{i, 2}+\varepsilon_{i}
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/" itemprop="url">DALS009-Matrix Algebra(矩阵代数)01-简单线性回归</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-16T12:00:00+08:00">
+                2019-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,982
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第4章：矩阵代数的第1部分。这一部分的主要内容涉及线性方程的简单理解。</p>
+<h2 id="简单案例">简单案例</h2>
+<p>在这一部分中，我们将会提到3个例子，第1个来源于物理学(physics)，一个来源于遗传学(genetics)，一具是来源于小鼠实验(mouse experiment)。这3个例子明显不同，但是在分析数据中却都用了相同的统计学方法：拟合线性模型(fitting linear models)。在学习线性模型时，通常使用矩阵代数(Matrix Algebra)来进行讲解和描述。</p>
+<h2 id="第1案例-自由落体">第1案例-自由落体</h2>
+<p>先来看第1个案例，这个案例是与物理学有关。</p>
+<p>试想，你是16世纪的伽里略(Galileo)，你想要描述一个自由落体物体的速度(velocity)。此时，一个助手爬上比萨斜塔，并在上面松开手，落下一个球，同时其他的助手记录一下球在不同时间点的位置。此时，我们就来模拟一下这个过程，在模拟的这个过程里，由于我们已经知道了自由落体运动的公式，因此我们会向这个模拟数据里添加一些检测误差，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, note: we use tt because t is a base function</span></div><div class="line">d &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span> + rnorm(n,sd=<span class="number">1</span>) <span class="comment">##meters</span></div></pre></td></tr></table></figure>
+<p>现在绘制出助手们记录的不同时间点的球的位置，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">plot(tt,d,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816133037.jpeg">
+
+</div>
+<p>假如助手不知道准确的自由落体运行，但是通过观察这个图形，他大致可以推导出这个位置-时间关系应该遵循抛物线，因此可以对上述的数据进行建模，如下所示：</p>
+<p><span class="math display">\[
+Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n
+\]</span></p>
+<p>其中， <span class="math inline">\(Y_i\)</span> 代表了球的位置， <span class="math inline">\(x_i\)</span> 代表了时间， <span class="math inline">\(\varepsilon_i\)</span> 表示测量误差。这是一个线性模型，因为这个方程是一个已知量（也就是一系列的<span class="math inline">\(x\)</span>，即预测因子(predictors)或协变量(covariates)）和一个未知量（即一系列的<span class="math inline">\(\beta\)</span>）的线性组合。</p>
+<h2 id="第2案例-父子身高">第2案例-父子身高</h2>
+<p>再来看第2个案例， 这个案例与遗传学有关。</p>
+<p>试想，你是19世纪的Francis Galton，你收集了很多对父子的身高，你怀疑身高与遗传因素有关，你的数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(UsingR)</div><div class="line">x=father.son$fheight</div><div class="line">y=father.son$sheight</div><div class="line">plot(x,y,xlab=<span class="string">"Father's height"</span>,ylab=<span class="string">"Son's height"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816134929.png">
+
+</div>
+<p>从这个张图上我们大概能觉得，父亲身高在一定程度上影响了儿子的身高，此时我们就可以构建一个模型来描述这种情况，如下所示： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
+\]</span></p>
+<p>这也是一个线性模型，其中<span class="math inline">\(x_i\)</span> 表示了第<span class="math inline">\(i\)</span>对父亲的身高，<span class="math inline">\(Y_i\)</span>表示了第<span class="math inline">\(i\)</span>对儿子的身高。而 <span class="math inline">\(\varepsilon_i\)</span>表示其余变量。在这个案例中，我们认为父亲的身高是预测因素，并且是固定的（不是随机的），因此我们使用小写字母来表示父亲的身高。仅仅用测量误差是无法完全解释 <span class="math inline">\(\varepsilon_i\)</span>代表的变异程度，因为这个模型中并没有包含其它的变量，例如母亲的身高，遗传的随机因素以及环境因素也有可能影响儿子的身高。</p>
+<h2 id="第3案例-多个总体的抽样">第3案例-多个总体的抽样</h2>
+<p>第3个案例有是关小鼠实验的。还以这本书刚开始的案例说明一下，我们有两类小鼠的体重，这两类小鼠分别使用正常饲料(chow)和高脂饲料(high fat, hf)进行饲喂。现在我们从这两个种群的小鼠中各随机抽取12个样本。我们的研究重点在于，饲料的不同是否会影响小鼠的体重，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># library(devtools)</span></div><div class="line"><span class="comment"># install_github("genomicsclass/dagdata")</span></div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">list.files(dir)</div><div class="line">dir</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line"><span class="comment"># input raw data</span></div><div class="line">head(dat)</div><div class="line">str(dat)</div></pre></td></tr></table></figure>
+<p>数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; list.files(dir)</div><div class="line">[<span class="number">1</span>] <span class="string">"data"</span>        <span class="string">"DESCRIPTION"</span> <span class="string">"extdata"</span>     <span class="string">"help"</span>        <span class="string">"html"</span>       </div><div class="line">[<span class="number">6</span>] <span class="string">"Meta"</span>        <span class="string">"NAMESPACE"</span>   <span class="string">"script"</span>     </div><div class="line">&gt; dir</div><div class="line">[<span class="number">1</span>] <span class="string">"C:/Users/20161111/Documents/R/win-library/3.5/dagdata"</span></div><div class="line">&gt; filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">&gt; dat &lt;- read.csv(filename)</div><div class="line">&gt; <span class="comment"># input raw data</span></div><div class="line">&gt; head(dat)</div><div class="line">  Diet Bodyweight</div><div class="line"><span class="number">1</span> chow      <span class="number">21.51</span></div><div class="line"><span class="number">2</span> chow      <span class="number">28.14</span></div><div class="line"><span class="number">3</span> chow      <span class="number">24.04</span></div><div class="line"><span class="number">4</span> chow      <span class="number">23.45</span></div><div class="line"><span class="number">5</span> chow      <span class="number">23.68</span></div><div class="line"><span class="number">6</span> chow      <span class="number">19.79</span></div><div class="line">&gt; str(dat)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">24</span> obs. of  <span class="number">2</span> variables:</div><div class="line"> $ Diet      : Factor w/ <span class="number">2</span> levels <span class="string">"chow"</span>,<span class="string">"hf"</span>: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ Bodyweight: num  <span class="number">21.5</span> <span class="number">28.1</span> <span class="number">24</span> <span class="number">23.4</span> <span class="number">23.7</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
+<p>查看一下小鼠的体重抽样结果，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">stripchart(Bodyweight~Diet,data=dat,vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,pch=<span class="number">1</span>,main=<span class="string">"Mi\</span></div><div class="line"><span class="string">ce weights"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816143047.png">
+
+</div>
+<p>假如我们想要判断一下这饮食是否对小鼠的平均体重有所影响。我们可以使用t检验和置信区间来进行统计。同时我们也可以使用一个线性模型来进行精确的检验，如下所示： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon_{i}
+\]</span> 其中<span class="math inline">\(\beta_0\)</span>表示了正常饲料饲喂的小鼠平均体重，而<span class="math inline">\(\beta_1\)</span>则表示了高脂饲料(hf)饲喂的小鼠平均体重与正常饲料饲喂小鼠体重的差值，其中 <span class="math inline">\(x_i = 1\)</span> 表示第<span class="math inline">\(i\)</span>只小鼠吃的hf饲料，<span class="math inline">\(x_i = 0\)</span> 表示小鼠吃的是正常饲料，而<span class="math inline">\(\varepsilon_i\)</span>则是说明，源于相同总体的小鼠个体差异。</p>
+<p>## 线性模型的一般形式</p>
+<p>通过前面的3个案例我们知道了线性模型，包含了上述统计模型的线性模型的一般形式可以写为如下公式： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i, 1}+\beta_{2} x_{i, 2}+\cdots+\beta_{2} x_{i, p}+\varepsilon_{i}, i=1, \ldots, n
+\]</span> 即： <span class="math display">\[
+Y_{i}=\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}+\varepsilon_{i}, i=1, \ldots, n
+\]</span> 在这个公式里，我们使用了一个预测量<span class="math inline">\(p\)</span>，矩阵代数提供了一种精练的语言和数学框架来计算以及推导那些满足上述框架的任何线性模型。</p>
+<h2 id="估计参数estimating-parameters">估计参数(Estimating parameters)</h2>
+<p>当我们用上述的模型来估计未知量<span class="math inline">\(\beta\)</span>时非常有用。例如，在第1个案例中，我们通过线性模型来计算其中的未知的参数。在第2个案例中，通过估计其中的未知参数，我们可以更好地理解遗传因素(inheritance)在父子身高方面的影响。在第3个案例中，我们想研究饲料是否对小鼠的体重有影响，也就是说我们要计算出<span class="math inline">\(\beta_{1} \neq 0\)</span>。</p>
+<p>在科学研究中，标准的做法就是找出能拟合这些数据的线性模型中的那些数值（也就是上面的<span class="math inline">\(\beta_{j}\)</span>），找到的这个线性方向与这些点的距离最小。这个过程通常是通过最小二乘(Least Squares, LS)的思想来实现的，下面的这个公式被称为最小平方(Least squares)方程： <span class="math display">\[
+\sum_{i=1}^{n}\left\{Y_{i}-\left(\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}\right)\right\}^{2}
+\]</span></p>
+<p>一旦我们找到了这些值，我们就称这些值为最小二乘估计(Least Squares Estimates, LSE)，并将其命名为<span class="math inline">\(\hat{\beta}\)</span>。当我们在估计值处计算出了最小二乘方程后，上面的那个公式就称为残差平方和(Residual Sum of Squares, RSS)。由于RSS所有的量都是取决于Y，因此这个值是随机变量。</p>
+<h2 id="自由落体案例回顾">自由落体案例回顾</h2>
+<p>在高中物理课本中我们就知道，自由落体运行的方程为： <span class="math display">\[
+d=h_{0}+v_{0} t-0.5 \times 9.8 t^{2}
+\]</span> 其中，<span class="math inline">\(h_{0}\)</span>和<span class="math inline">\(v_{0}\)</span>分别是起始的高度与速度。在我们模拟的自由落体运行方程中，<span class="math inline">\(v_{0}=0\)</span>，<span class="math inline">\(h_{0}=56.67\)</span>，R代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">f &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line"></div><div class="line">png(file=<span class="string">"../Figs/falling.png"</span>, width=<span class="number">1200</span>, height=<span class="number">1200</span>, res=<span class="number">300</span>,</div><div class="line">    pointsize=<span class="number">10</span>)</div><div class="line">plot(tt,y,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div><div class="line">lines(tt,f,col=<span class="number">2</span>)</div><div class="line">dev.off()</div></pre></td></tr></table></figure>
+<p>我们模拟的自由落体运行图形如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816152214.png">
+
+</div>
+<p>但是，当我们假设自己是伽利略时，这个方程还没有被推导出来，因此我们并不知道其中相应的参数，这些数据只是表现得像一条抛物线，因此我们可以对这些数据进行建模，如下所示： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\varepsilon, i=1, \ldots, n
+\]</span> 此时，我们如何找到LSE？</p>
+<h2 id="lm函数">lm()函数</h2>
+<p>R中的<code>lm()</code>函数可以很好地计算线性方程，现在我们先来简单计算一下这个方程，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line">tt2 &lt;-tt^<span class="number">2</span></div><div class="line">fit &lt;- lm(y~tt+tt2)</div><div class="line">summary(fit)$coef</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; summary(fit)$coef</div><div class="line">              Estimate Std. Error     t value     Pr(&gt;|t|)</div><div class="line">(Intercept) <span class="number">57.1399311</span>  <span class="number">0.5484054</span> <span class="number">104.1928697</span> <span class="number">3.897090e-31</span></div><div class="line">tt          -<span class="number">0.1997275</span>  <span class="number">0.7470438</span>  -<span class="number">0.2673572</span> <span class="number">7.916846e-01</span></div><div class="line">tt2         -<span class="number">4.9193723</span>  <span class="number">0.2122243</span> -<span class="number">23.1800643</span> <span class="number">5.973048e-17</span></div></pre></td></tr></table></figure>
+<p>这样就计算出了LSE，以及标准误，p值。</p>
+<h2 id="最小二乘估计the-least-squares-estimate-lse">最小二乘估计(The Least squares estimate, LSE)</h2>
+<p>现在我们写一个函数，这个函数的功能在于计算任任<span class="math inline">\(\beta\)</span>的RSS，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以对于任何三维向量，我们得到一个RSS。下图是当我们保持另外两个<span class="math inline">\(\beta\)</span>固定时，关于<span class="math inline">\(\beta_{2}\)</span>的函数的RSS的曲线，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div><div class="line"></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">plot(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">55</span>,Beta1=<span class="number">0</span>),</div><div class="line">     ylab=<span class="string">"RSS"</span>,xlab=<span class="string">"Beta2"</span>,type=<span class="string">"l"</span>)</div><div class="line"><span class="comment">##Let's add another curve fixing another pair:</span></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">lines(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">65</span>,Beta1=<span class="number">0</span>),col=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155010.png">
+
+</div>
+<p>反复计算在这里行不通，相反，我们会使用微积分(calculus)的方法来进行计算，通过取偏导数(partial derivatives)，将它们设为0，然后求解。当然，如果我们有很多参数，这些方程会变得相当复杂。线性代数为这个问题提供了精练且通用的方法。</p>
+<h2 id="galton拓展">Galton拓展</h2>
+<p>Galton在研究父子身高问题时，他通过探索性数据分析有了一个新颖的发现，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155451.png">
+
+</div>
+<p>Galton发现，如果他将父子的身高数据制成表格，然后将那些x和y值的和都相同的点连接起来，就构成了一个椭圆。通过计算还会进一步发现，这些数据服从二元正态分布（具体的高尔顿图可以参考《于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.》）如下所示： <span class="math display">\[
+\operatorname{Pr}(X&lt;a, Y&lt;b)=\\ \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2 \pi \sigma_{x} \sigma_{y} \sqrt{1-\rho^{2}}} \exp \left\{\frac{1}{2\left(1-\rho^{2}\right)}\left[\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)^{2}-2 \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)+\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)^{2}\right]\right\}
+\]</span> 从上面的公式我们知道，当我们保持<span class="math inline">\(X\)</span>不变时（也就是设定好<span class="math inline">\(x\)</span>），<span class="math inline">\(Y\)</span>的分布是服从正态分布的，即服从均值为<span class="math inline">\(\mu_{x}+\sigma_{y} \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\)</span>，标准差为<span class="math inline">\(\sigma_{y} \sqrt{1-\rho^{2}}\)</span>的正态分布。<span class="math inline">\(\rho\)</span>是<span class="math inline">\(X\)</span>和<span class="math inline">\(Y\)</span>的相关系数，这就说明，如果我们设定<span class="math inline">\(X=x\)</span>，<span class="math inline">\(Y\)</span>实际上是一个线性模型。在我们的这个简单线性模型中，<span class="math inline">\(\beta_{0}\)</span>和<span class="math inline">\(\beta_{1}\)</span>参数表示为<span class="math inline">\(\mu_{x}, \mu_{y}, \sigma_{x}, \sigma_{y}\)</span>和<span class="math inline">\(\rho\)</span>。</p>
+<h2 id="练习">练习</h2>
+<p>P152</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>Rafael A Irizarry and Michael I Love.Data Analysis for the Life Sciences.This book is for sale at http://leanpub.com/dataanalysisforthelifesciences</li>
+<li>于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/16/DAL/DALS010_Matrix_Algebra02_Matrix_Notation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2907,282 +3225,6 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/" itemprop="url">DALS009-Matrix Algebra(矩阵代数)01-简单线性回归</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-16T12:00:00+08:00">
-                2019-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,982
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  12
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这篇笔记是《Data Analysis for the Life Sciences》的第4章：矩阵代数的第1部分。这一部分的主要内容涉及线性方程的简单理解。</p>
-<h2 id="简单案例">简单案例</h2>
-<p>在这一部分中，我们将会提到3个例子，第1个来源于物理学(physics)，一个来源于遗传学(genetics)，一具是来源于小鼠实验(mouse experiment)。这3个例子明显不同，但是在分析数据中却都用了相同的统计学方法：拟合线性模型(fitting linear models)。在学习线性模型时，通常使用矩阵代数(Matrix Algebra)来进行讲解和描述。</p>
-<h2 id="第1案例-自由落体">第1案例-自由落体</h2>
-<p>先来看第1个案例，这个案例是与物理学有关。</p>
-<p>试想，你是16世纪的伽里略(Galileo)，你想要描述一个自由落体物体的速度(velocity)。此时，一个助手爬上比萨斜塔，并在上面松开手，落下一个球，同时其他的助手记录一下球在不同时间点的位置。此时，我们就来模拟一下这个过程，在模拟的这个过程里，由于我们已经知道了自由落体运动的公式，因此我们会向这个模拟数据里添加一些检测误差，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, note: we use tt because t is a base function</span></div><div class="line">d &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span> + rnorm(n,sd=<span class="number">1</span>) <span class="comment">##meters</span></div></pre></td></tr></table></figure>
-<p>现在绘制出助手们记录的不同时间点的球的位置，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">plot(tt,d,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816133037.jpeg">
-
-</div>
-<p>假如助手不知道准确的自由落体运行，但是通过观察这个图形，他大致可以推导出这个位置-时间关系应该遵循抛物线，因此可以对上述的数据进行建模，如下所示：</p>
-<p><span class="math display">\[
-Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n
-\]</span></p>
-<p>其中， <span class="math inline">\(Y_i\)</span> 代表了球的位置， <span class="math inline">\(x_i\)</span> 代表了时间， <span class="math inline">\(\varepsilon_i\)</span> 表示测量误差。这是一个线性模型，因为这个方程是一个已知量（也就是一系列的<span class="math inline">\(x\)</span>，即预测因子(predictors)或协变量(covariates)）和一个未知量（即一系列的<span class="math inline">\(\beta\)</span>）的线性组合。</p>
-<h2 id="第2案例-父子身高">第2案例-父子身高</h2>
-<p>再来看第2个案例， 这个案例与遗传学有关。</p>
-<p>试想，你是19世纪的Francis Galton，你收集了很多对父子的身高，你怀疑身高与遗传因素有关，你的数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(UsingR)</div><div class="line">x=father.son$fheight</div><div class="line">y=father.son$sheight</div><div class="line">plot(x,y,xlab=<span class="string">"Father's height"</span>,ylab=<span class="string">"Son's height"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816134929.png">
-
-</div>
-<p>从这个张图上我们大概能觉得，父亲身高在一定程度上影响了儿子的身高，此时我们就可以构建一个模型来描述这种情况，如下所示： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
-\]</span></p>
-<p>这也是一个线性模型，其中<span class="math inline">\(x_i\)</span> 表示了第<span class="math inline">\(i\)</span>对父亲的身高，<span class="math inline">\(Y_i\)</span>表示了第<span class="math inline">\(i\)</span>对儿子的身高。而 <span class="math inline">\(\varepsilon_i\)</span>表示其余变量。在这个案例中，我们认为父亲的身高是预测因素，并且是固定的（不是随机的），因此我们使用小写字母来表示父亲的身高。仅仅用测量误差是无法完全解释 <span class="math inline">\(\varepsilon_i\)</span>代表的变异程度，因为这个模型中并没有包含其它的变量，例如母亲的身高，遗传的随机因素以及环境因素也有可能影响儿子的身高。</p>
-<h2 id="第3案例-多个总体的抽样">第3案例-多个总体的抽样</h2>
-<p>第3个案例有是关小鼠实验的。还以这本书刚开始的案例说明一下，我们有两类小鼠的体重，这两类小鼠分别使用正常饲料(chow)和高脂饲料(high fat, hf)进行饲喂。现在我们从这两个种群的小鼠中各随机抽取12个样本。我们的研究重点在于，饲料的不同是否会影响小鼠的体重，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># library(devtools)</span></div><div class="line"><span class="comment"># install_github("genomicsclass/dagdata")</span></div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">list.files(dir)</div><div class="line">dir</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line"><span class="comment"># input raw data</span></div><div class="line">head(dat)</div><div class="line">str(dat)</div></pre></td></tr></table></figure>
-<p>数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; list.files(dir)</div><div class="line">[<span class="number">1</span>] <span class="string">"data"</span>        <span class="string">"DESCRIPTION"</span> <span class="string">"extdata"</span>     <span class="string">"help"</span>        <span class="string">"html"</span>       </div><div class="line">[<span class="number">6</span>] <span class="string">"Meta"</span>        <span class="string">"NAMESPACE"</span>   <span class="string">"script"</span>     </div><div class="line">&gt; dir</div><div class="line">[<span class="number">1</span>] <span class="string">"C:/Users/20161111/Documents/R/win-library/3.5/dagdata"</span></div><div class="line">&gt; filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">&gt; dat &lt;- read.csv(filename)</div><div class="line">&gt; <span class="comment"># input raw data</span></div><div class="line">&gt; head(dat)</div><div class="line">  Diet Bodyweight</div><div class="line"><span class="number">1</span> chow      <span class="number">21.51</span></div><div class="line"><span class="number">2</span> chow      <span class="number">28.14</span></div><div class="line"><span class="number">3</span> chow      <span class="number">24.04</span></div><div class="line"><span class="number">4</span> chow      <span class="number">23.45</span></div><div class="line"><span class="number">5</span> chow      <span class="number">23.68</span></div><div class="line"><span class="number">6</span> chow      <span class="number">19.79</span></div><div class="line">&gt; str(dat)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">24</span> obs. of  <span class="number">2</span> variables:</div><div class="line"> $ Diet      : Factor w/ <span class="number">2</span> levels <span class="string">"chow"</span>,<span class="string">"hf"</span>: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ Bodyweight: num  <span class="number">21.5</span> <span class="number">28.1</span> <span class="number">24</span> <span class="number">23.4</span> <span class="number">23.7</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>查看一下小鼠的体重抽样结果，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">stripchart(Bodyweight~Diet,data=dat,vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,pch=<span class="number">1</span>,main=<span class="string">"Mi\</span></div><div class="line"><span class="string">ce weights"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816143047.png">
-
-</div>
-<p>假如我们想要判断一下这饮食是否对小鼠的平均体重有所影响。我们可以使用t检验和置信区间来进行统计。同时我们也可以使用一个线性模型来进行精确的检验，如下所示： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon_{i}
-\]</span> 其中<span class="math inline">\(\beta_0\)</span>表示了正常饲料饲喂的小鼠平均体重，而<span class="math inline">\(\beta_1\)</span>则表示了高脂饲料(hf)饲喂的小鼠平均体重与正常饲料饲喂小鼠体重的差值，其中 <span class="math inline">\(x_i = 1\)</span> 表示第<span class="math inline">\(i\)</span>只小鼠吃的hf饲料，<span class="math inline">\(x_i = 0\)</span> 表示小鼠吃的是正常饲料，而<span class="math inline">\(\varepsilon_i\)</span>则是说明，源于相同总体的小鼠个体差异。</p>
-<p>## 线性模型的一般形式</p>
-<p>通过前面的3个案例我们知道了线性模型，包含了上述统计模型的线性模型的一般形式可以写为如下公式： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i, 1}+\beta_{2} x_{i, 2}+\cdots+\beta_{2} x_{i, p}+\varepsilon_{i}, i=1, \ldots, n
-\]</span> 即： <span class="math display">\[
-Y_{i}=\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}+\varepsilon_{i}, i=1, \ldots, n
-\]</span> 在这个公式里，我们使用了一个预测量<span class="math inline">\(p\)</span>，矩阵代数提供了一种精练的语言和数学框架来计算以及推导那些满足上述框架的任何线性模型。</p>
-<h2 id="估计参数estimating-parameters">估计参数(Estimating parameters)</h2>
-<p>当我们用上述的模型来估计未知量<span class="math inline">\(\beta\)</span>时非常有用。例如，在第1个案例中，我们通过线性模型来计算其中的未知的参数。在第2个案例中，通过估计其中的未知参数，我们可以更好地理解遗传因素(inheritance)在父子身高方面的影响。在第3个案例中，我们想研究饲料是否对小鼠的体重有影响，也就是说我们要计算出<span class="math inline">\(\beta_{1} \neq 0\)</span>。</p>
-<p>在科学研究中，标准的做法就是找出能拟合这些数据的线性模型中的那些数值（也就是上面的<span class="math inline">\(\beta_{j}\)</span>），找到的这个线性方向与这些点的距离最小。这个过程通常是通过最小二乘(Least Squares, LS)的思想来实现的，下面的这个公式被称为最小平方(Least squares)方程： <span class="math display">\[
-\sum_{i=1}^{n}\left\{Y_{i}-\left(\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}\right)\right\}^{2}
-\]</span></p>
-<p>一旦我们找到了这些值，我们就称这些值为最小二乘估计(Least Squares Estimates, LSE)，并将其命名为<span class="math inline">\(\hat{\beta}\)</span>。当我们在估计值处计算出了最小二乘方程后，上面的那个公式就称为残差平方和(Residual Sum of Squares, RSS)。由于RSS所有的量都是取决于Y，因此这个值是随机变量。</p>
-<h2 id="自由落体案例回顾">自由落体案例回顾</h2>
-<p>在高中物理课本中我们就知道，自由落体运行的方程为： <span class="math display">\[
-d=h_{0}+v_{0} t-0.5 \times 9.8 t^{2}
-\]</span> 其中，<span class="math inline">\(h_{0}\)</span>和<span class="math inline">\(v_{0}\)</span>分别是起始的高度与速度。在我们模拟的自由落体运行方程中，<span class="math inline">\(v_{0}=0\)</span>，<span class="math inline">\(h_{0}=56.67\)</span>，R代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">f &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line"></div><div class="line">png(file=<span class="string">"../Figs/falling.png"</span>, width=<span class="number">1200</span>, height=<span class="number">1200</span>, res=<span class="number">300</span>,</div><div class="line">    pointsize=<span class="number">10</span>)</div><div class="line">plot(tt,y,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div><div class="line">lines(tt,f,col=<span class="number">2</span>)</div><div class="line">dev.off()</div></pre></td></tr></table></figure>
-<p>我们模拟的自由落体运行图形如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816152214.png">
-
-</div>
-<p>但是，当我们假设自己是伽利略时，这个方程还没有被推导出来，因此我们并不知道其中相应的参数，这些数据只是表现得像一条抛物线，因此我们可以对这些数据进行建模，如下所示： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\varepsilon, i=1, \ldots, n
-\]</span> 此时，我们如何找到LSE？</p>
-<h2 id="lm函数">lm()函数</h2>
-<p>R中的<code>lm()</code>函数可以很好地计算线性方程，现在我们先来简单计算一下这个方程，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line">tt2 &lt;-tt^<span class="number">2</span></div><div class="line">fit &lt;- lm(y~tt+tt2)</div><div class="line">summary(fit)$coef</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; summary(fit)$coef</div><div class="line">              Estimate Std. Error     t value     Pr(&gt;|t|)</div><div class="line">(Intercept) <span class="number">57.1399311</span>  <span class="number">0.5484054</span> <span class="number">104.1928697</span> <span class="number">3.897090e-31</span></div><div class="line">tt          -<span class="number">0.1997275</span>  <span class="number">0.7470438</span>  -<span class="number">0.2673572</span> <span class="number">7.916846e-01</span></div><div class="line">tt2         -<span class="number">4.9193723</span>  <span class="number">0.2122243</span> -<span class="number">23.1800643</span> <span class="number">5.973048e-17</span></div></pre></td></tr></table></figure>
-<p>这样就计算出了LSE，以及标准误，p值。</p>
-<h2 id="最小二乘估计the-least-squares-estimate-lse">最小二乘估计(The Least squares estimate, LSE)</h2>
-<p>现在我们写一个函数，这个函数的功能在于计算任任<span class="math inline">\(\beta\)</span>的RSS，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>所以对于任何三维向量，我们得到一个RSS。下图是当我们保持另外两个<span class="math inline">\(\beta\)</span>固定时，关于<span class="math inline">\(\beta_{2}\)</span>的函数的RSS的曲线，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div><div class="line"></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">plot(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">55</span>,Beta1=<span class="number">0</span>),</div><div class="line">     ylab=<span class="string">"RSS"</span>,xlab=<span class="string">"Beta2"</span>,type=<span class="string">"l"</span>)</div><div class="line"><span class="comment">##Let's add another curve fixing another pair:</span></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">lines(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">65</span>,Beta1=<span class="number">0</span>),col=<span class="number">2</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155010.png">
-
-</div>
-<p>反复计算在这里行不通，相反，我们会使用微积分(calculus)的方法来进行计算，通过取偏导数(partial derivatives)，将它们设为0，然后求解。当然，如果我们有很多参数，这些方程会变得相当复杂。线性代数为这个问题提供了精练且通用的方法。</p>
-<h2 id="galton拓展">Galton拓展</h2>
-<p>Galton在研究父子身高问题时，他通过探索性数据分析有了一个新颖的发现，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155451.png">
-
-</div>
-<p>Galton发现，如果他将父子的身高数据制成表格，然后将那些x和y值的和都相同的点连接起来，就构成了一个椭圆。通过计算还会进一步发现，这些数据服从二元正态分布（具体的高尔顿图可以参考《于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.》）如下所示： <span class="math display">\[
-\operatorname{Pr}(X&lt;a, Y&lt;b)=\\ \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2 \pi \sigma_{x} \sigma_{y} \sqrt{1-\rho^{2}}} \exp \left\{\frac{1}{2\left(1-\rho^{2}\right)}\left[\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)^{2}-2 \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)+\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)^{2}\right]\right\}
-\]</span> 从上面的公式我们知道，当我们保持<span class="math inline">\(X\)</span>不变时（也就是设定好<span class="math inline">\(x\)</span>），<span class="math inline">\(Y\)</span>的分布是服从正态分布的，即服从均值为<span class="math inline">\(\mu_{x}+\sigma_{y} \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\)</span>，标准差为<span class="math inline">\(\sigma_{y} \sqrt{1-\rho^{2}}\)</span>的正态分布。<span class="math inline">\(\rho\)</span>是<span class="math inline">\(X\)</span>和<span class="math inline">\(Y\)</span>的相关系数，这就说明，如果我们设定<span class="math inline">\(X=x\)</span>，<span class="math inline">\(Y\)</span>实际上是一个线性模型。在我们的这个简单线性模型中，<span class="math inline">\(\beta_{0}\)</span>和<span class="math inline">\(\beta_{1}\)</span>参数表示为<span class="math inline">\(\mu_{x}, \mu_{y}, \sigma_{x}, \sigma_{y}\)</span>和<span class="math inline">\(\rho\)</span>。</p>
-<h2 id="练习">练习</h2>
-<p>P152</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>Rafael A Irizarry and Michael I Love.Data Analysis for the Life Sciences.This book is for sale at http://leanpub.com/dataanalysisforthelifesciences</li>
-<li>于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3332,7 +3374,7 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\varepsilon, i=1, \ldots, n
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共831.5k字</span>
+  <span class="post-count">博客全站共832.1k字</span>
 </div>
 
         

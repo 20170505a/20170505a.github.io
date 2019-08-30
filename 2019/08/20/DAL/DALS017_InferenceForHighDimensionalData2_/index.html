@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="前言 这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的Github。">
+<meta name="description" content="前言 这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的Github。 高维数据的p值 在前面我们了解了，当我们在分析高维数据时，p值就不再是一个很好的统计指标了。这是因为，我们同一次检测了许多特征值(feature)。这种检测手段被称为多重">
 <meta name="keywords" content="高维数据">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DALS016-高维数据推断2-统计原理">
 <meta property="og:url" content="http://rvdsd.top/2019/08/20/DAL/DALS017_InferenceForHighDimensionalData2_/index.html">
 <meta property="og:site_name" content="RVDSD的个人笔记本">
-<meta property="og:description" content="前言 这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的Github。">
+<meta property="og:description" content="前言 这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的Github。 高维数据的p值 在前面我们了解了，当我们在分析高维数据时，p值就不再是一个很好的统计指标了。这是因为，我们同一次检测了许多特征值(feature)。这种检测手段被称为多重">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-29T06:17:44.155Z">
+<meta property="og:updated_time" content="2019-08-29T07:54:50.441Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DALS016-高维数据推断2-统计原理">
-<meta name="twitter:description" content="前言 这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的Github。">
+<meta name="twitter:description" content="前言 这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的Github。 高维数据的p值 在前面我们了解了，当我们在分析高维数据时，p值就不再是一个很好的统计指标了。这是因为，我们同一次检测了许多特征值(feature)。这种检测手段被称为多重">
 
 
 
@@ -161,7 +161,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle">学习过程中的输出</p>
+        <p class="site-subtitle"></p>
       
   </div>
 
@@ -348,7 +348,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  61
+                  599
                 </span>
               
 
@@ -364,7 +364,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  2
                 </span>
               
             </div>
@@ -387,6 +387,48 @@
       
         <h2 id="前言">前言</h2>
 <p>这一部分是《Data Analysis for the life sciences》的第6章线性模型的第2小节，这一部分的主要内容涉及高维数据统计的一些原理，相应的R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/advinference/multiple_testing.Rmd" target="_blank" rel="external">Github</a>。</p>
+<h2 id="高维数据的p值">高维数据的p值</h2>
+<p>在前面我们了解了，当我们在分析高维数据时，p值就不再是一个很好的统计指标了。这是因为，我们同一次检测了许多特征值(feature)。这种检测手段被称为多重比较( multiple comparison)，或多重检测(multiple testing)，或多重性问题(multiplicity)。在此情况下，p值就不再适用。另外，当我们同时检测多个假设问题时，仅仅基于一个小p值的阈值，例如0.01，这就很容易导假阳性。针对这种情况，我们需要定义一个新的术语来研究高通量数据。</p>
+<p>为了处理多重比较的问题，我们广泛使用的方法就是定义一个程序，然后用它来估计或控制(control)计算过程中的错误率(rate error)。我们这里所说的<code>控制(control)</code>的意思是，我们会采用这个程序来保证错误率(error rate)低于某个设定的值。通过参数或截止值(cutoff)来设定的这个程度通常比较灵活，它会让我们能够控制特异性(specificity)和灵敏度(sensitivity)，这种程序的一个典型案例如下所示：</p>
+<ul>
+<li>计算每个基因的p值；</li>
+<li>计算出p值小于<span class="math inline">\(\alpha\)</span>的所有显著性基因。</li>
+</ul>
+<p>这里需要注意的是，当我们改变<span class="math inline">\(\alpha\)</span>值时，会调整相应的特异性(specificity)和灵敏度(sensitivity)。</p>
+<p>接着我们来定义错误率(error rate)，它会让我们对统计过程进行估计和控制。</p>
+<h2 id="错误率">错误率</h2>
+<p>在这一部分中，我们会了解到I类错误与II类错误，这两类错误分别代表假阳性(false positives)与假阴性(false negatives)。通常，特异性(specificity)与I类错误有关，灵敏性(sensitivity)与II类错误有关。</p>
+<p>在一次高通量实验里，我们会犯第I类错误和第II类错误。在下面的这个表格里，我们参考了Benjamini-Hochberg的论文总结了这些错误，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Called significant</th>
+<th>Not called significant</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Null True</td>
+<td><span class="math inline">\(V\)</span></td>
+<td><span class="math inline">\(m_0-V\)</span></td>
+<td><span class="math inline">\(m_0\)</span></td>
+</tr>
+<tr class="even">
+<td>Alternative True</td>
+<td><span class="math inline">\(S\)</span></td>
+<td><span class="math inline">\(m_1-S\)</span></td>
+<td><span class="math inline">\(m_1\)</span></td>
+</tr>
+<tr class="odd">
+<td>True</td>
+<td><span class="math inline">\(R\)</span></td>
+<td><span class="math inline">\(m-R\)</span></td>
+<td><span class="math inline">\(m\)</span></td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
@@ -417,8 +459,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/20/DAL/DALS016_InferenceForHighDimensionalData1_Basic/" rel="next" title="DALS016-高维数据推断1-背景介绍">
-                <i class="fa fa-chevron-left"></i> DALS016-高维数据推断1-背景介绍
+              <a href="/2019/08/19/DAL/DALS013_Linear_Models03ContrastInteraction/" rel="next" title="DALS013-Linear Models线性模型03比较(contrast)与交互项">
+                <i class="fa fa-chevron-left"></i> DALS013-Linear Models线性模型03比较(contrast)与交互项
               </a>
             
           </div>
@@ -427,8 +469,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/08/21/ggplot2/gganimate/" rel="prev" title="gganimate">
-                gganimate <i class="fa fa-chevron-right"></i>
+              <a href="/2019/08/20/DAL/DALS015_Linear_Models05Collinearity/" rel="prev" title="DALS015-Linear Models线性模型05共线性">
+                DALS015-Linear Models线性模型05共线性 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -567,7 +609,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高维数据的p值"><span class="nav-number">2.</span> <span class="nav-text">高维数据的p值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误率"><span class="nav-number">3.</span> <span class="nav-text">错误率</span></a></li></ol></div>
             
 
           </div>
@@ -625,7 +667,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共831.5k字</span>
+  <span class="post-count">博客全站共832.1k字</span>
 </div>
 
         
