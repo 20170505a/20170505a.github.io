@@ -111,7 +111,7 @@
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123516.jpg">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123523.jpg">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719123531.jpg">
-<meta property="og:updated_time" content="2019-08-28T02:55:38.189Z">
+<meta property="og:updated_time" content="2019-09-03T12:15:58.801Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GO分析学习笔记">
 <meta name="twitter:description" content="什么是富集分析？ 当我们获得了一批生物数据时，例如转录组的数据，蛋白质组的数据，其中必然要做不同样本之间的差异基因分析这一步，例如空白对照组与实验组的差异基因或蛋白分析。在得到差异的基因或蛋白列表后，这个时候可能还会遇到一个问题，差异基因可能有很多，有几十个到上百个不等，如何对它们进行比较呢？这几十甚至上百差异基因或蛋白如何去呈现，这是一个问题，如果直接列张表，把所有的差异基因都放进去这样不合适">
@@ -373,7 +373,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  10,908
+                  11,126
                 </span>
               
 
@@ -389,7 +389,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  42
+                  43
                 </span>
               
             </div>
@@ -738,7 +738,13 @@ P=\frac{\left(\frac{M}{k}\right)\left(\frac{N-M}{n-k}\right)}{\left(\frac{N}{n}\
 
 </div>
 <p>这张图就是GO分析的二级分类图，它显示了差异基因在各个GO term的数目和富集情况。横坐标代表GO三个 ontology的更细一级分类，即二级分类；纵坐标代表每个分类条目所包含的基因数目。由于一个基因常常对应多个GO term，因此同一个基因会在不同分类条目下出现，即被多次统计，因此如果你把这里所有柱子的基因数目加起来，肯定是多于差异基因的总数目。</p>
+<p><code>clusterProfiler</code>包中的<code>enrichGO()</code>也可以同时计算三个层次的GO分析，也就是将<code>ont</code>参数改为<code>ont=ALL</code>，此时就可以直接计算出BP，CC，MF。</p>
 <h5 id="go点状图">GO点状图</h5>
+<p>点状图使用的<code>dotplot()</code>函数，参数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">## S4 method for signature 'enrichResult'</span></div><div class="line">dotplot(object, x = <span class="string">"GeneRatio"</span>,</div><div class="line">  color = <span class="string">"p.adjust"</span>, showCategory = <span class="number">10</span>, size = <span class="literal">NULL</span>, split = <span class="literal">NULL</span>,</div><div class="line">  font.size = <span class="number">12</span>, title = <span class="string">""</span>, <span class="keyword">...</span>)</div><div class="line"></div><div class="line"><span class="comment">## S4 method for signature 'gseaResult'</span></div><div class="line">dotplot(object, x = <span class="string">"GeneRatio"</span>,</div><div class="line">  color = <span class="string">"p.adjust"</span>, showCategory = <span class="number">10</span>, size = <span class="literal">NULL</span>, split = <span class="literal">NULL</span>,</div><div class="line">  font.size = <span class="number">12</span>, title = <span class="string">""</span>, <span class="keyword">...</span>)</div></pre></td></tr></table></figure>
+<p>其中这里要解释一下<code>split</code>参数，如果前面<code>enrichGO()</code>函数中进行了<code>ont=ALL</code>的设置，此时想要同时绘制出BP，CC，MF，可以就可以使用<code>split</code>参数，参数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dotplot(ego_all, orderBy = <span class="string">"GeneRatio"</span>, color = <span class="string">"p.adjust"</span>, showCategory = <span class="number">20</span>, size = <span class="literal">NULL</span>,     font.size = <span class="number">10</span>, title = <span class="string">"GO Analysis"</span>, split = <span class="string">"ONTOLOGY"</span>) + facet_grid(ONTOLOGY ~ ., scales = <span class="string">"free"</span>)</div></pre></td></tr></table></figure>
+<p>这里使用<code>split = &quot;ONTOLOGY&quot;</code>参数的意思就是将图片按照MF，BP，CC分开，并按照它们进行分面（<code>facet_grid(ONTOLOGY ~ ., scales = &quot;free&quot;)</code>）。</p>
 <p>如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dotplot(ego_cc,title=<span class="string">"Enrichment GO CCdot"</span>)</div></pre></td></tr></table></figure>
 <div class="figure">
@@ -939,7 +945,7 @@ P=\frac{\left(\frac{M}{k}\right)\left(\frac{N-M}{n-k}\right)}{\left(\frac{N}{n}\
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">211</span>
+                  <span class="site-state-item-count">212</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -961,7 +967,7 @@ P=\frac{\left(\frac{M}{k}\right)\left(\frac{N-M}{n-k}\right)}{\left(\frac{N}{n}\
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-count">100</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1054,7 +1060,7 @@ P=\frac{\left(\frac{M}{k}\right)\left(\frac{N-M}{n-k}\right)}{\left(\frac{N}{n}\
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共840.3k字</span>
+  <span class="post-count">博客全站共841.7k字</span>
 </div>
 
         
