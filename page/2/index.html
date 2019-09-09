@@ -527,282 +527,6 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i, 1}+\beta_{2} x_{i, 2}+\varepsilon_{i}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/" itemprop="url">DALS009-Matrix Algebra(矩阵代数)01-简单线性回归</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-16T12:00:00+08:00">
-                2019-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,982
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  12
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这篇笔记是《Data Analysis for the Life Sciences》的第4章：矩阵代数的第1部分。这一部分的主要内容涉及线性方程的简单理解。</p>
-<h2 id="简单案例">简单案例</h2>
-<p>在这一部分中，我们将会提到3个例子，第1个来源于物理学(physics)，一个来源于遗传学(genetics)，一具是来源于小鼠实验(mouse experiment)。这3个例子明显不同，但是在分析数据中却都用了相同的统计学方法：拟合线性模型(fitting linear models)。在学习线性模型时，通常使用矩阵代数(Matrix Algebra)来进行讲解和描述。</p>
-<h2 id="第1案例-自由落体">第1案例-自由落体</h2>
-<p>先来看第1个案例，这个案例是与物理学有关。</p>
-<p>试想，你是16世纪的伽里略(Galileo)，你想要描述一个自由落体物体的速度(velocity)。此时，一个助手爬上比萨斜塔，并在上面松开手，落下一个球，同时其他的助手记录一下球在不同时间点的位置。此时，我们就来模拟一下这个过程，在模拟的这个过程里，由于我们已经知道了自由落体运动的公式，因此我们会向这个模拟数据里添加一些检测误差，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, note: we use tt because t is a base function</span></div><div class="line">d &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span> + rnorm(n,sd=<span class="number">1</span>) <span class="comment">##meters</span></div></pre></td></tr></table></figure>
-<p>现在绘制出助手们记录的不同时间点的球的位置，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">plot(tt,d,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816133037.jpeg">
-
-</div>
-<p>假如助手不知道准确的自由落体运行，但是通过观察这个图形，他大致可以推导出这个位置-时间关系应该遵循抛物线，因此可以对上述的数据进行建模，如下所示：</p>
-<p><span class="math display">\[
-Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n
-\]</span></p>
-<p>其中， <span class="math inline">\(Y_i\)</span> 代表了球的位置， <span class="math inline">\(x_i\)</span> 代表了时间， <span class="math inline">\(\varepsilon_i\)</span> 表示测量误差。这是一个线性模型，因为这个方程是一个已知量（也就是一系列的<span class="math inline">\(x\)</span>，即预测因子(predictors)或协变量(covariates)）和一个未知量（即一系列的<span class="math inline">\(\beta\)</span>）的线性组合。</p>
-<h2 id="第2案例-父子身高">第2案例-父子身高</h2>
-<p>再来看第2个案例， 这个案例与遗传学有关。</p>
-<p>试想，你是19世纪的Francis Galton，你收集了很多对父子的身高，你怀疑身高与遗传因素有关，你的数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(UsingR)</div><div class="line">x=father.son$fheight</div><div class="line">y=father.son$sheight</div><div class="line">plot(x,y,xlab=<span class="string">"Father's height"</span>,ylab=<span class="string">"Son's height"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816134929.png">
-
-</div>
-<p>从这个张图上我们大概能觉得，父亲身高在一定程度上影响了儿子的身高，此时我们就可以构建一个模型来描述这种情况，如下所示： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
-\]</span></p>
-<p>这也是一个线性模型，其中<span class="math inline">\(x_i\)</span> 表示了第<span class="math inline">\(i\)</span>对父亲的身高，<span class="math inline">\(Y_i\)</span>表示了第<span class="math inline">\(i\)</span>对儿子的身高。而 <span class="math inline">\(\varepsilon_i\)</span>表示其余变量。在这个案例中，我们认为父亲的身高是预测因素，并且是固定的（不是随机的），因此我们使用小写字母来表示父亲的身高。仅仅用测量误差是无法完全解释 <span class="math inline">\(\varepsilon_i\)</span>代表的变异程度，因为这个模型中并没有包含其它的变量，例如母亲的身高，遗传的随机因素以及环境因素也有可能影响儿子的身高。</p>
-<h2 id="第3案例-多个总体的抽样">第3案例-多个总体的抽样</h2>
-<p>第3个案例有是关小鼠实验的。还以这本书刚开始的案例说明一下，我们有两类小鼠的体重，这两类小鼠分别使用正常饲料(chow)和高脂饲料(high fat, hf)进行饲喂。现在我们从这两个种群的小鼠中各随机抽取12个样本。我们的研究重点在于，饲料的不同是否会影响小鼠的体重，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># library(devtools)</span></div><div class="line"><span class="comment"># install_github("genomicsclass/dagdata")</span></div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">list.files(dir)</div><div class="line">dir</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line"><span class="comment"># input raw data</span></div><div class="line">head(dat)</div><div class="line">str(dat)</div></pre></td></tr></table></figure>
-<p>数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; list.files(dir)</div><div class="line">[<span class="number">1</span>] <span class="string">"data"</span>        <span class="string">"DESCRIPTION"</span> <span class="string">"extdata"</span>     <span class="string">"help"</span>        <span class="string">"html"</span>       </div><div class="line">[<span class="number">6</span>] <span class="string">"Meta"</span>        <span class="string">"NAMESPACE"</span>   <span class="string">"script"</span>     </div><div class="line">&gt; dir</div><div class="line">[<span class="number">1</span>] <span class="string">"C:/Users/20161111/Documents/R/win-library/3.5/dagdata"</span></div><div class="line">&gt; filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">&gt; dat &lt;- read.csv(filename)</div><div class="line">&gt; <span class="comment"># input raw data</span></div><div class="line">&gt; head(dat)</div><div class="line">  Diet Bodyweight</div><div class="line"><span class="number">1</span> chow      <span class="number">21.51</span></div><div class="line"><span class="number">2</span> chow      <span class="number">28.14</span></div><div class="line"><span class="number">3</span> chow      <span class="number">24.04</span></div><div class="line"><span class="number">4</span> chow      <span class="number">23.45</span></div><div class="line"><span class="number">5</span> chow      <span class="number">23.68</span></div><div class="line"><span class="number">6</span> chow      <span class="number">19.79</span></div><div class="line">&gt; str(dat)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">24</span> obs. of  <span class="number">2</span> variables:</div><div class="line"> $ Diet      : Factor w/ <span class="number">2</span> levels <span class="string">"chow"</span>,<span class="string">"hf"</span>: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ Bodyweight: num  <span class="number">21.5</span> <span class="number">28.1</span> <span class="number">24</span> <span class="number">23.4</span> <span class="number">23.7</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>查看一下小鼠的体重抽样结果，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">stripchart(Bodyweight~Diet,data=dat,vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,pch=<span class="number">1</span>,main=<span class="string">"Mi\</span></div><div class="line"><span class="string">ce weights"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816143047.png">
-
-</div>
-<p>假如我们想要判断一下这饮食是否对小鼠的平均体重有所影响。我们可以使用t检验和置信区间来进行统计。同时我们也可以使用一个线性模型来进行精确的检验，如下所示： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon_{i}
-\]</span> 其中<span class="math inline">\(\beta_0\)</span>表示了正常饲料饲喂的小鼠平均体重，而<span class="math inline">\(\beta_1\)</span>则表示了高脂饲料(hf)饲喂的小鼠平均体重与正常饲料饲喂小鼠体重的差值，其中 <span class="math inline">\(x_i = 1\)</span> 表示第<span class="math inline">\(i\)</span>只小鼠吃的hf饲料，<span class="math inline">\(x_i = 0\)</span> 表示小鼠吃的是正常饲料，而<span class="math inline">\(\varepsilon_i\)</span>则是说明，源于相同总体的小鼠个体差异。</p>
-<p>## 线性模型的一般形式</p>
-<p>通过前面的3个案例我们知道了线性模型，包含了上述统计模型的线性模型的一般形式可以写为如下公式： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i, 1}+\beta_{2} x_{i, 2}+\cdots+\beta_{2} x_{i, p}+\varepsilon_{i}, i=1, \ldots, n
-\]</span> 即： <span class="math display">\[
-Y_{i}=\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}+\varepsilon_{i}, i=1, \ldots, n
-\]</span> 在这个公式里，我们使用了一个预测量<span class="math inline">\(p\)</span>，矩阵代数提供了一种精练的语言和数学框架来计算以及推导那些满足上述框架的任何线性模型。</p>
-<h2 id="估计参数estimating-parameters">估计参数(Estimating parameters)</h2>
-<p>当我们用上述的模型来估计未知量<span class="math inline">\(\beta\)</span>时非常有用。例如，在第1个案例中，我们通过线性模型来计算其中的未知的参数。在第2个案例中，通过估计其中的未知参数，我们可以更好地理解遗传因素(inheritance)在父子身高方面的影响。在第3个案例中，我们想研究饲料是否对小鼠的体重有影响，也就是说我们要计算出<span class="math inline">\(\beta_{1} \neq 0\)</span>。</p>
-<p>在科学研究中，标准的做法就是找出能拟合这些数据的线性模型中的那些数值（也就是上面的<span class="math inline">\(\beta_{j}\)</span>），找到的这个线性方向与这些点的距离最小。这个过程通常是通过最小二乘(Least Squares, LS)的思想来实现的，下面的这个公式被称为最小平方(Least squares)方程： <span class="math display">\[
-\sum_{i=1}^{n}\left\{Y_{i}-\left(\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}\right)\right\}^{2}
-\]</span></p>
-<p>一旦我们找到了这些值，我们就称这些值为最小二乘估计(Least Squares Estimates, LSE)，并将其命名为<span class="math inline">\(\hat{\beta}\)</span>。当我们在估计值处计算出了最小二乘方程后，上面的那个公式就称为残差平方和(Residual Sum of Squares, RSS)。由于RSS所有的量都是取决于Y，因此这个值是随机变量。</p>
-<h2 id="自由落体案例回顾">自由落体案例回顾</h2>
-<p>在高中物理课本中我们就知道，自由落体运行的方程为： <span class="math display">\[
-d=h_{0}+v_{0} t-0.5 \times 9.8 t^{2}
-\]</span> 其中，<span class="math inline">\(h_{0}\)</span>和<span class="math inline">\(v_{0}\)</span>分别是起始的高度与速度。在我们模拟的自由落体运行方程中，<span class="math inline">\(v_{0}=0\)</span>，<span class="math inline">\(h_{0}=56.67\)</span>，R代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">f &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line"></div><div class="line">png(file=<span class="string">"../Figs/falling.png"</span>, width=<span class="number">1200</span>, height=<span class="number">1200</span>, res=<span class="number">300</span>,</div><div class="line">    pointsize=<span class="number">10</span>)</div><div class="line">plot(tt,y,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div><div class="line">lines(tt,f,col=<span class="number">2</span>)</div><div class="line">dev.off()</div></pre></td></tr></table></figure>
-<p>我们模拟的自由落体运行图形如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816152214.png">
-
-</div>
-<p>但是，当我们假设自己是伽利略时，这个方程还没有被推导出来，因此我们并不知道其中相应的参数，这些数据只是表现得像一条抛物线，因此我们可以对这些数据进行建模，如下所示： <span class="math display">\[
-Y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\varepsilon, i=1, \ldots, n
-\]</span> 此时，我们如何找到LSE？</p>
-<h2 id="lm函数">lm()函数</h2>
-<p>R中的<code>lm()</code>函数可以很好地计算线性方程，现在我们先来简单计算一下这个方程，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line">tt2 &lt;-tt^<span class="number">2</span></div><div class="line">fit &lt;- lm(y~tt+tt2)</div><div class="line">summary(fit)$coef</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; summary(fit)$coef</div><div class="line">              Estimate Std. Error     t value     Pr(&gt;|t|)</div><div class="line">(Intercept) <span class="number">57.1399311</span>  <span class="number">0.5484054</span> <span class="number">104.1928697</span> <span class="number">3.897090e-31</span></div><div class="line">tt          -<span class="number">0.1997275</span>  <span class="number">0.7470438</span>  -<span class="number">0.2673572</span> <span class="number">7.916846e-01</span></div><div class="line">tt2         -<span class="number">4.9193723</span>  <span class="number">0.2122243</span> -<span class="number">23.1800643</span> <span class="number">5.973048e-17</span></div></pre></td></tr></table></figure>
-<p>这样就计算出了LSE，以及标准误，p值。</p>
-<h2 id="最小二乘估计the-least-squares-estimate-lse">最小二乘估计(The Least squares estimate, LSE)</h2>
-<p>现在我们写一个函数，这个函数的功能在于计算任任<span class="math inline">\(\beta\)</span>的RSS，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>所以对于任何三维向量，我们得到一个RSS。下图是当我们保持另外两个<span class="math inline">\(\beta\)</span>固定时，关于<span class="math inline">\(\beta_{2}\)</span>的函数的RSS的曲线，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div><div class="line"></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">plot(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">55</span>,Beta1=<span class="number">0</span>),</div><div class="line">     ylab=<span class="string">"RSS"</span>,xlab=<span class="string">"Beta2"</span>,type=<span class="string">"l"</span>)</div><div class="line"><span class="comment">##Let's add another curve fixing another pair:</span></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">lines(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">65</span>,Beta1=<span class="number">0</span>),col=<span class="number">2</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155010.png">
-
-</div>
-<p>反复计算在这里行不通，相反，我们会使用微积分(calculus)的方法来进行计算，通过取偏导数(partial derivatives)，将它们设为0，然后求解。当然，如果我们有很多参数，这些方程会变得相当复杂。线性代数为这个问题提供了精练且通用的方法。</p>
-<h2 id="galton拓展">Galton拓展</h2>
-<p>Galton在研究父子身高问题时，他通过探索性数据分析有了一个新颖的发现，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155451.png">
-
-</div>
-<p>Galton发现，如果他将父子的身高数据制成表格，然后将那些x和y值的和都相同的点连接起来，就构成了一个椭圆。通过计算还会进一步发现，这些数据服从二元正态分布（具体的高尔顿图可以参考《于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.》）如下所示： <span class="math display">\[
-\operatorname{Pr}(X&lt;a, Y&lt;b)=\\ \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2 \pi \sigma_{x} \sigma_{y} \sqrt{1-\rho^{2}}} \exp \left\{\frac{1}{2\left(1-\rho^{2}\right)}\left[\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)^{2}-2 \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)+\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)^{2}\right]\right\}
-\]</span> 从上面的公式我们知道，当我们保持<span class="math inline">\(X\)</span>不变时（也就是设定好<span class="math inline">\(x\)</span>），<span class="math inline">\(Y\)</span>的分布是服从正态分布的，即服从均值为<span class="math inline">\(\mu_{x}+\sigma_{y} \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\)</span>，标准差为<span class="math inline">\(\sigma_{y} \sqrt{1-\rho^{2}}\)</span>的正态分布。<span class="math inline">\(\rho\)</span>是<span class="math inline">\(X\)</span>和<span class="math inline">\(Y\)</span>的相关系数，这就说明，如果我们设定<span class="math inline">\(X=x\)</span>，<span class="math inline">\(Y\)</span>实际上是一个线性模型。在我们的这个简单线性模型中，<span class="math inline">\(\beta_{0}\)</span>和<span class="math inline">\(\beta_{1}\)</span>参数表示为<span class="math inline">\(\mu_{x}, \mu_{y}, \sigma_{x}, \sigma_{y}\)</span>和<span class="math inline">\(\rho\)</span>。</p>
-<h2 id="练习">练习</h2>
-<p>P152</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>Rafael A Irizarry and Michael I Love.Data Analysis for the Life Sciences.This book is for sale at http://leanpub.com/dataanalysisforthelifesciences</li>
-<li>于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/16/DAL/DALS010_Matrix_Algebra02_Matrix_Notation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1099,6 +823,282 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
 <p>在这一部分中，我们学习了如何使用线性代数来描述线性模型。随后我们研究了几个案例，其中的一些是与实验设计有有。我们还演示了最小二乘估计。但是，我们需要记住，由于y是一个随机变量，这些估计也是随机的。在后面的章节中，我们将学习如何计算这些随机变量，以及随机变量的标准误以及统计推断。</p>
 <h2 id="练习-2">练习</h2>
 <p>P171</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/16/DAL/DALS009_Matrix_Algebra01_Motivating_Examples/" itemprop="url">DALS009-Matrix Algebra(矩阵代数)01-简单线性回归</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-16T12:00:00+08:00">
+                2019-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,982
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第4章：矩阵代数的第1部分。这一部分的主要内容涉及线性方程的简单理解。</p>
+<h2 id="简单案例">简单案例</h2>
+<p>在这一部分中，我们将会提到3个例子，第1个来源于物理学(physics)，一个来源于遗传学(genetics)，一具是来源于小鼠实验(mouse experiment)。这3个例子明显不同，但是在分析数据中却都用了相同的统计学方法：拟合线性模型(fitting linear models)。在学习线性模型时，通常使用矩阵代数(Matrix Algebra)来进行讲解和描述。</p>
+<h2 id="第1案例-自由落体">第1案例-自由落体</h2>
+<p>先来看第1个案例，这个案例是与物理学有关。</p>
+<p>试想，你是16世纪的伽里略(Galileo)，你想要描述一个自由落体物体的速度(velocity)。此时，一个助手爬上比萨斜塔，并在上面松开手，落下一个球，同时其他的助手记录一下球在不同时间点的位置。此时，我们就来模拟一下这个过程，在模拟的这个过程里，由于我们已经知道了自由落体运动的公式，因此我们会向这个模拟数据里添加一些检测误差，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, note: we use tt because t is a base function</span></div><div class="line">d &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span> + rnorm(n,sd=<span class="number">1</span>) <span class="comment">##meters</span></div></pre></td></tr></table></figure>
+<p>现在绘制出助手们记录的不同时间点的球的位置，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">plot(tt,d,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816133037.jpeg">
+
+</div>
+<p>假如助手不知道准确的自由落体运行，但是通过观察这个图形，他大致可以推导出这个位置-时间关系应该遵循抛物线，因此可以对上述的数据进行建模，如下所示：</p>
+<p><span class="math display">\[
+Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n
+\]</span></p>
+<p>其中， <span class="math inline">\(Y_i\)</span> 代表了球的位置， <span class="math inline">\(x_i\)</span> 代表了时间， <span class="math inline">\(\varepsilon_i\)</span> 表示测量误差。这是一个线性模型，因为这个方程是一个已知量（也就是一系列的<span class="math inline">\(x\)</span>，即预测因子(predictors)或协变量(covariates)）和一个未知量（即一系列的<span class="math inline">\(\beta\)</span>）的线性组合。</p>
+<h2 id="第2案例-父子身高">第2案例-父子身高</h2>
+<p>再来看第2个案例， 这个案例与遗传学有关。</p>
+<p>试想，你是19世纪的Francis Galton，你收集了很多对父子的身高，你怀疑身高与遗传因素有关，你的数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(UsingR)</div><div class="line">x=father.son$fheight</div><div class="line">y=father.son$sheight</div><div class="line">plot(x,y,xlab=<span class="string">"Father's height"</span>,ylab=<span class="string">"Son's height"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816134929.png">
+
+</div>
+<p>从这个张图上我们大概能觉得，父亲身高在一定程度上影响了儿子的身高，此时我们就可以构建一个模型来描述这种情况，如下所示： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
+\]</span></p>
+<p>这也是一个线性模型，其中<span class="math inline">\(x_i\)</span> 表示了第<span class="math inline">\(i\)</span>对父亲的身高，<span class="math inline">\(Y_i\)</span>表示了第<span class="math inline">\(i\)</span>对儿子的身高。而 <span class="math inline">\(\varepsilon_i\)</span>表示其余变量。在这个案例中，我们认为父亲的身高是预测因素，并且是固定的（不是随机的），因此我们使用小写字母来表示父亲的身高。仅仅用测量误差是无法完全解释 <span class="math inline">\(\varepsilon_i\)</span>代表的变异程度，因为这个模型中并没有包含其它的变量，例如母亲的身高，遗传的随机因素以及环境因素也有可能影响儿子的身高。</p>
+<h2 id="第3案例-多个总体的抽样">第3案例-多个总体的抽样</h2>
+<p>第3个案例有是关小鼠实验的。还以这本书刚开始的案例说明一下，我们有两类小鼠的体重，这两类小鼠分别使用正常饲料(chow)和高脂饲料(high fat, hf)进行饲喂。现在我们从这两个种群的小鼠中各随机抽取12个样本。我们的研究重点在于，饲料的不同是否会影响小鼠的体重，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># library(devtools)</span></div><div class="line"><span class="comment"># install_github("genomicsclass/dagdata")</span></div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">list.files(dir)</div><div class="line">dir</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line"><span class="comment"># input raw data</span></div><div class="line">head(dat)</div><div class="line">str(dat)</div></pre></td></tr></table></figure>
+<p>数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; list.files(dir)</div><div class="line">[<span class="number">1</span>] <span class="string">"data"</span>        <span class="string">"DESCRIPTION"</span> <span class="string">"extdata"</span>     <span class="string">"help"</span>        <span class="string">"html"</span>       </div><div class="line">[<span class="number">6</span>] <span class="string">"Meta"</span>        <span class="string">"NAMESPACE"</span>   <span class="string">"script"</span>     </div><div class="line">&gt; dir</div><div class="line">[<span class="number">1</span>] <span class="string">"C:/Users/20161111/Documents/R/win-library/3.5/dagdata"</span></div><div class="line">&gt; filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">&gt; dat &lt;- read.csv(filename)</div><div class="line">&gt; <span class="comment"># input raw data</span></div><div class="line">&gt; head(dat)</div><div class="line">  Diet Bodyweight</div><div class="line"><span class="number">1</span> chow      <span class="number">21.51</span></div><div class="line"><span class="number">2</span> chow      <span class="number">28.14</span></div><div class="line"><span class="number">3</span> chow      <span class="number">24.04</span></div><div class="line"><span class="number">4</span> chow      <span class="number">23.45</span></div><div class="line"><span class="number">5</span> chow      <span class="number">23.68</span></div><div class="line"><span class="number">6</span> chow      <span class="number">19.79</span></div><div class="line">&gt; str(dat)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">24</span> obs. of  <span class="number">2</span> variables:</div><div class="line"> $ Diet      : Factor w/ <span class="number">2</span> levels <span class="string">"chow"</span>,<span class="string">"hf"</span>: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ Bodyweight: num  <span class="number">21.5</span> <span class="number">28.1</span> <span class="number">24</span> <span class="number">23.4</span> <span class="number">23.7</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
+<p>查看一下小鼠的体重抽样结果，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">stripchart(Bodyweight~Diet,data=dat,vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,pch=<span class="number">1</span>,main=<span class="string">"Mi\</span></div><div class="line"><span class="string">ce weights"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816143047.png">
+
+</div>
+<p>假如我们想要判断一下这饮食是否对小鼠的平均体重有所影响。我们可以使用t检验和置信区间来进行统计。同时我们也可以使用一个线性模型来进行精确的检验，如下所示： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon_{i}
+\]</span> 其中<span class="math inline">\(\beta_0\)</span>表示了正常饲料饲喂的小鼠平均体重，而<span class="math inline">\(\beta_1\)</span>则表示了高脂饲料(hf)饲喂的小鼠平均体重与正常饲料饲喂小鼠体重的差值，其中 <span class="math inline">\(x_i = 1\)</span> 表示第<span class="math inline">\(i\)</span>只小鼠吃的hf饲料，<span class="math inline">\(x_i = 0\)</span> 表示小鼠吃的是正常饲料，而<span class="math inline">\(\varepsilon_i\)</span>则是说明，源于相同总体的小鼠个体差异。</p>
+<p>## 线性模型的一般形式</p>
+<p>通过前面的3个案例我们知道了线性模型，包含了上述统计模型的线性模型的一般形式可以写为如下公式： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i, 1}+\beta_{2} x_{i, 2}+\cdots+\beta_{2} x_{i, p}+\varepsilon_{i}, i=1, \ldots, n
+\]</span> 即： <span class="math display">\[
+Y_{i}=\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}+\varepsilon_{i}, i=1, \ldots, n
+\]</span> 在这个公式里，我们使用了一个预测量<span class="math inline">\(p\)</span>，矩阵代数提供了一种精练的语言和数学框架来计算以及推导那些满足上述框架的任何线性模型。</p>
+<h2 id="估计参数estimating-parameters">估计参数(Estimating parameters)</h2>
+<p>当我们用上述的模型来估计未知量<span class="math inline">\(\beta\)</span>时非常有用。例如，在第1个案例中，我们通过线性模型来计算其中的未知的参数。在第2个案例中，通过估计其中的未知参数，我们可以更好地理解遗传因素(inheritance)在父子身高方面的影响。在第3个案例中，我们想研究饲料是否对小鼠的体重有影响，也就是说我们要计算出<span class="math inline">\(\beta_{1} \neq 0\)</span>。</p>
+<p>在科学研究中，标准的做法就是找出能拟合这些数据的线性模型中的那些数值（也就是上面的<span class="math inline">\(\beta_{j}\)</span>），找到的这个线性方向与这些点的距离最小。这个过程通常是通过最小二乘(Least Squares, LS)的思想来实现的，下面的这个公式被称为最小平方(Least squares)方程： <span class="math display">\[
+\sum_{i=1}^{n}\left\{Y_{i}-\left(\beta_{0}+\sum_{j=1}^{p} \beta_{j} x_{i, j}\right)\right\}^{2}
+\]</span></p>
+<p>一旦我们找到了这些值，我们就称这些值为最小二乘估计(Least Squares Estimates, LSE)，并将其命名为<span class="math inline">\(\hat{\beta}\)</span>。当我们在估计值处计算出了最小二乘方程后，上面的那个公式就称为残差平方和(Residual Sum of Squares, RSS)。由于RSS所有的量都是取决于Y，因此这个值是随机变量。</p>
+<h2 id="自由落体案例回顾">自由落体案例回顾</h2>
+<p>在高中物理课本中我们就知道，自由落体运行的方程为： <span class="math display">\[
+d=h_{0}+v_{0} t-0.5 \times 9.8 t^{2}
+\]</span> 其中，<span class="math inline">\(h_{0}\)</span>和<span class="math inline">\(v_{0}\)</span>分别是起始的高度与速度。在我们模拟的自由落体运行方程中，<span class="math inline">\(v_{0}=0\)</span>，<span class="math inline">\(h_{0}=56.67\)</span>，R代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">n &lt;- <span class="number">25</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">f &lt;- <span class="number">56.67</span> - <span class="number">0.5</span>*g*tt^<span class="number">2</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line"></div><div class="line">png(file=<span class="string">"../Figs/falling.png"</span>, width=<span class="number">1200</span>, height=<span class="number">1200</span>, res=<span class="number">300</span>,</div><div class="line">    pointsize=<span class="number">10</span>)</div><div class="line">plot(tt,y,ylab=<span class="string">"Distance in meters"</span>,xlab=<span class="string">"Time in seconds"</span>)</div><div class="line">lines(tt,f,col=<span class="number">2</span>)</div><div class="line">dev.off()</div></pre></td></tr></table></figure>
+<p>我们模拟的自由落体运行图形如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816152214.png">
+
+</div>
+<p>但是，当我们假设自己是伽利略时，这个方程还没有被推导出来，因此我们并不知道其中相应的参数，这些数据只是表现得像一条抛物线，因此我们可以对这些数据进行建模，如下所示： <span class="math display">\[
+Y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\varepsilon, i=1, \ldots, n
+\]</span> 此时，我们如何找到LSE？</p>
+<h2 id="lm函数">lm()函数</h2>
+<p>R中的<code>lm()</code>函数可以很好地计算线性方程，现在我们先来简单计算一下这个方程，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">g &lt;- <span class="number">9.8</span> <span class="comment">##meters per second</span></div><div class="line">tt &lt;- seq(<span class="number">0</span>,<span class="number">3.4</span>,len=n) <span class="comment">##time in secs, t is a base function</span></div><div class="line">y &lt;- f + rnorm(n,sd=<span class="number">1</span>)</div><div class="line">tt2 &lt;-tt^<span class="number">2</span></div><div class="line">fit &lt;- lm(y~tt+tt2)</div><div class="line">summary(fit)$coef</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; summary(fit)$coef</div><div class="line">              Estimate Std. Error     t value     Pr(&gt;|t|)</div><div class="line">(Intercept) <span class="number">57.1399311</span>  <span class="number">0.5484054</span> <span class="number">104.1928697</span> <span class="number">3.897090e-31</span></div><div class="line">tt          -<span class="number">0.1997275</span>  <span class="number">0.7470438</span>  -<span class="number">0.2673572</span> <span class="number">7.916846e-01</span></div><div class="line">tt2         -<span class="number">4.9193723</span>  <span class="number">0.2122243</span> -<span class="number">23.1800643</span> <span class="number">5.973048e-17</span></div></pre></td></tr></table></figure>
+<p>这样就计算出了LSE，以及标准误，p值。</p>
+<h2 id="最小二乘估计the-least-squares-estimate-lse">最小二乘估计(The Least squares estimate, LSE)</h2>
+<p>现在我们写一个函数，这个函数的功能在于计算任任<span class="math inline">\(\beta\)</span>的RSS，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以对于任何三维向量，我们得到一个RSS。下图是当我们保持另外两个<span class="math inline">\(\beta\)</span>固定时，关于<span class="math inline">\(\beta_{2}\)</span>的函数的RSS的曲线，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">rss &lt;- <span class="keyword">function</span>(Beta0,Beta1,Beta2)&#123;</div><div class="line">    r &lt;- y - (Beta0+Beta1*tt+Beta2*tt^<span class="number">2</span>)</div><div class="line">    <span class="keyword">return</span>(sum(r^<span class="number">2</span>))</div><div class="line">&#125;</div><div class="line"></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">plot(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">55</span>,Beta1=<span class="number">0</span>),</div><div class="line">     ylab=<span class="string">"RSS"</span>,xlab=<span class="string">"Beta2"</span>,type=<span class="string">"l"</span>)</div><div class="line"><span class="comment">##Let's add another curve fixing another pair:</span></div><div class="line">Beta2s&lt;- seq(-<span class="number">10</span>,<span class="number">0</span>,len=<span class="number">100</span>)</div><div class="line">lines(Beta2s,sapply(Beta2s,rss,Beta0=<span class="number">65</span>,Beta1=<span class="number">0</span>),col=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155010.png">
+
+</div>
+<p>反复计算在这里行不通，相反，我们会使用微积分(calculus)的方法来进行计算，通过取偏导数(partial derivatives)，将它们设为0，然后求解。当然，如果我们有很多参数，这些方程会变得相当复杂。线性代数为这个问题提供了精练且通用的方法。</p>
+<h2 id="galton拓展">Galton拓展</h2>
+<p>Galton在研究父子身高问题时，他通过探索性数据分析有了一个新颖的发现，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816155451.png">
+
+</div>
+<p>Galton发现，如果他将父子的身高数据制成表格，然后将那些x和y值的和都相同的点连接起来，就构成了一个椭圆。通过计算还会进一步发现，这些数据服从二元正态分布（具体的高尔顿图可以参考《于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.》）如下所示： <span class="math display">\[
+\operatorname{Pr}(X&lt;a, Y&lt;b)=\\ \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2 \pi \sigma_{x} \sigma_{y} \sqrt{1-\rho^{2}}} \exp \left\{\frac{1}{2\left(1-\rho^{2}\right)}\left[\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)^{2}-2 \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)+\left(\frac{y-\mu_{y}}{\sigma_{y}}\right)^{2}\right]\right\}
+\]</span> 从上面的公式我们知道，当我们保持<span class="math inline">\(X\)</span>不变时（也就是设定好<span class="math inline">\(x\)</span>），<span class="math inline">\(Y\)</span>的分布是服从正态分布的，即服从均值为<span class="math inline">\(\mu_{x}+\sigma_{y} \rho\left(\frac{x-\mu_{x}}{\sigma_{x}}\right)\)</span>，标准差为<span class="math inline">\(\sigma_{y} \sqrt{1-\rho^{2}}\)</span>的正态分布。<span class="math inline">\(\rho\)</span>是<span class="math inline">\(X\)</span>和<span class="math inline">\(Y\)</span>的相关系数，这就说明，如果我们设定<span class="math inline">\(X=x\)</span>，<span class="math inline">\(Y\)</span>实际上是一个线性模型。在我们的这个简单线性模型中，<span class="math inline">\(\beta_{0}\)</span>和<span class="math inline">\(\beta_{1}\)</span>参数表示为<span class="math inline">\(\mu_{x}, \mu_{y}, \sigma_{x}, \sigma_{y}\)</span>和<span class="math inline">\(\rho\)</span>。</p>
+<h2 id="练习">练习</h2>
+<p>P152</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>Rafael A Irizarry and Michael I Love.Data Analysis for the Life Sciences.This book is for sale at http://leanpub.com/dataanalysisforthelifesciences</li>
+<li>于忠义, YUZhong-yi. 高尔顿发现相关与回归的历史回顾与反思[J]. 统计与信息论坛, 2009, 24(9):17-25.</li>
+</ol>
 
           
         
@@ -2111,226 +2111,6 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
-                2019-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,152
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
-<h2 id="随机数">随机数</h2>
-<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种概念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
-<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
-<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
-<p>现在我们使用Mote Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
-<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
-
-</div>
-<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
-
-</div>
-<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
-
-</div>
-<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
-
-</div>
-<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
-
-</div>
-<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
-<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
-<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
-<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="练习">练习</h2>
-<p>P88</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/Literature/文献笔记-RNA sequencing the teenage years/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2815,6 +2595,226 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon, i=1, \ldots, N
 <p>一些RRI以及所有的RNA-蛋白质结合方法对IP的依赖限制了其对有良好特征抗体蛋白质的研究，而非特异抗体的结合仍然是一个问题（虽然这一问题并非局限于这个领域）。RNA结构也会影响RNA-蛋白质之间的相互作用；一些蛋白质能识别特异的RNA二级结构或与这些结构竞争结合RNA，这使得体外的发现转向体内就变得复杂了。此外，结构和RNA-蛋白质相互作用方法通常报告一个特定转录本或位置的平均值。在实验室方法中，在计算方法和单分子测序方面的未来发展或许有助于破译一些这些生物变异。</p>
 <h2 id="结论">结论</h2>
 <p>Wang，Gerstein和Snyder关于RNA-seq将“革命性地[如何]分析真核转录体”的预测肯定是正确的。但是，即使是他们，也有可能对这种转型的规模感到惊讶。现在我们可以分析RNA生物学的许多方面，这对于基因组功能、研究开发和确定导致癌症和其他疾病的分子调控异常方面来说是必不可少的。虽然生物学发现阶段还远未结束，但是已经在临床中使用了RNA-seq方法。单细胞测序正在成为许多实验的标准配置，空间转录组学的分析可能会遵循类似的路径，使其能够在与开发当前方法的实验室范围之外使用。长读长测序方法也有可能取代当前相当大比例的研究者们默认选择的Illumina的短读长RNA-seq。对于这种情况的出现，长读长测序技术还需要在增加通量和降低错误率方面做出极大的改进。 然而，长读长mRNA异构体测序的优点是，如果它变得像现在短读长测序一样便宜和可靠，那么对于那些除了易降解材料外，长读长测序就可能是首选。考虑到这些因素，那么任何关于RNA-seq在未来十年可能如何发展的预测都有可能过于保守。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
+                2019-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,152
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
+<h2 id="随机数">随机数</h2>
+<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种概念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
+<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
+<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
+<p>现在我们使用Mote Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
+<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
+
+</div>
+<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
+
+</div>
+<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
+
+</div>
+<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
+
+</div>
+<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
+
+</div>
+<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
+<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
+<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
+<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="练习">练习</h2>
+<p>P88</p>
 
           
         
@@ -3653,7 +3653,7 @@ S E(\overline{X})=\sigma / \sqrt{N}
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共851.2k字</span>
+  <span class="post-count">博客全站共856.7k字</span>
 </div>
 
         
