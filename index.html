@@ -649,7 +649,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/23/DAL/DALS018_StatisticalModels1_binomal_Possion_MLE/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/24/DAL/DALS019_StatisticalModels2_Beyes_Hierarchical/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -668,7 +668,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/23/DAL/DALS018_StatisticalModels1_binomal_Possion_MLE/" itemprop="url">DALS018-统计模型1-二项分布与泊松分布，MLE</a></h1>
+                <a class="post-title-link" href="/2019/08/24/DAL/DALS019_StatisticalModels2_Beyes_Hierarchical/" itemprop="url">DALS019-统计模型2-贝叶斯分布与层次分析</a></h1>
         
 
         <div class="post-meta">
@@ -680,303 +680,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T12:00:00+08:00">
-                2019-08-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,870
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  16
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这一部分是《Data Analysis for the life sciences》的第7章统计模型的第1小节，这一部分的主要内容涉及高维数据统计的一些原理，例如二项分布，泊松分布，最大似然估计等。</p>
-<p>相应的R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/modeling/modeling.Rmd" target="_blank" rel="external">Github</a>。</p>
-<p>当我们在文献中看到p值的时候，它意味着使用某种概率分布来对零假设进行量化。很多时候我们很容易地就能找到使用哪种分布。例如，在女士品茶这个案例中，我们就能使用简单的概率计睡来确定零分布。文献中的大多数p值都是基于线性模型的样本均值或最小二乘估计来进行计算的，并利用CLT近似地救出它们的零分布。</p>
-<p>CLT有着理论支持，它能保证这种近似是正确的。但是，我们无法一直使用这种近似法，例如当我们的样本太少时。以前面部分中，我们提到了，当总体数据近似服从正态分布时，样本的平均近似服从t分布。但是这种假设没有理论上的支持。在这一部分里，我们就会对这种情况进行建模。在研究身高时，我们从经验中就知道，这是一个非常好的模型。</p>
-<p>但是，这并不意味着我们收集的每个数据集都服从正态分布。我们常见的一些例子，例如掷硬币，中彩票的人数，美国的收入。正态分布不是建模过程中的唯一参数分布。在这一部分里，我们会描述一些最广泛使用的参数分布以及它们在生命科学研究中的作用。我们还会介绍贝叶斯统计相关的知识，以及给出使用分层模型的使用案例。</p>
-<h2 id="二项分布">二项分布</h2>
-<p>在<span class="math inline">\(N\)</span>次实验中，成功<span class="math inline">\(S=k\)</span>次的概率，公式如下所示： <span class="math display">\[
-\mbox{Pr}(S=k) = {N \choose k}p^k (1-p)^{N-k}
-\]</span> 其中<span class="math inline">\(p\)</span>是成功的概率，二项分布的一个最有名案例就是掷硬币，当我们掷<span class="math inline">\(N\)</span>次硬币，有<span class="math inline">\(S\)</span>次是正面朝上的概率，在这个案例中，<span class="math inline">\(p=0.5\)</span>。</p>
-<p><span class="math inline">\(S/N\)</span>是独立随机变量的均值，因此CLT告诉我们，当<span class="math inline">\(N\)</span>足够大时，<span class="math inline">\(S\)</span>近似地服从正态分布。这种分布在生命科学研究中应用很广，最近，此分布在NGS检测variant callers和表型(genotyper)应用很广，它的一个特殊分布则是泊松分布(poisson distribution)（二顶分布的极限是泊松分布）。</p>
-<h2 id="泊松分布">泊松分布</h2>
-<p>由于买彩票的结果只有两个，中彩票与不中彩票，因此，那些赢得彩票的人数从理论上服从二项分布（我们是假设每个人只能买一张彩票）的。试验次数<span class="math inline">\(N\)</span>是买彩票的人数，这个数字通常非常大。但是，赢得彩票的的人数通常是0到3之间，这就表明，赢得彩票的人数是不服从正态分布的。那么，为什么CLT在这种情况下不成立呢？从数学上可以对此进行解释，但是直觉又告诉我们，如果成功的总和是如此接近，并且大于1，这种分布就不可能是正态分布，这里我们进行一个快速的模拟：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p=<span class="number">10</span>^-<span class="number">7</span> <span class="comment">##1 in 10,000,0000 chances of winning</span></div><div class="line">N=<span class="number">5</span>*<span class="number">10</span>^<span class="number">6</span> <span class="comment">##5,000,000 tickets bought</span></div><div class="line">winners=rbinom(<span class="number">1000</span>,N,p) <span class="comment">##1000 is the number of different lotto draws</span></div><div class="line">tab=table(winners)</div><div class="line">plot(tab)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190905223653.jpeg">
-
-</div>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; prop.table(tab)</div><div class="line">winners</div><div class="line">    <span class="number">0</span>     <span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span> </div><div class="line"><span class="number">0.617</span> <span class="number">0.294</span> <span class="number">0.080</span> <span class="number">0.009</span></div></pre></td></tr></table></figure>
-<p>达种情况下，<span class="math inline">\(N\)</span>会非常大，<span class="math inline">\(p\)</span>会非常小，因此我们可以计算出<span class="math inline">\(N \times p\)</span>（此时我们之为<span class="math inline">\(\lambda\)</span>）的值，例如位于0到10之间，而<span class="math inline">\(S\)</span>此时就服从泊松分布，其简单的公式如下所示： <span class="math display">\[
-\mbox{Pr}(S=k)=\frac{\lambda^k \exp{-\lambda}}{k!}
-\]</span></p>
-<p>RNA-seq分析中常常用到泊松分布。因为我们对数千个分子进行采样，并且多数基因仅仅代表了所有基因中一小部分，因此在RNA-seq分析中使用泊松分布比较合适。</p>
-<p>我们知道了泊松分布后，它对我们有什么作用？其中一个方面就是这种分布可以为我们提供实际分析过程中关于统计属性的总结信息。例如我们只从患者组和对照组中各取一个样本进行RNA-seq实验并研究基因的倍数变化。此时，在零假设成立的前提下（也就是这两个样本没有差异），利用泊松分布，我们可以计算出，统计学上的统计变异取决于基因的总丰度。我们可以从数学上来展示一下这个过程，下面是模拟这个过程：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">N=<span class="number">10000</span><span class="comment">##number of genes</span></div><div class="line">lambdas=<span class="number">2</span>^seq(<span class="number">1</span>,<span class="number">16</span>,len=N) <span class="comment">##these are the true abundances of genes</span></div><div class="line">y=rpois(N,lambdas)<span class="comment">##note that the null hypothesis is true for all genes</span></div><div class="line">x=rpois(N,lambdas)</div><div class="line">ind=which(y&gt;<span class="number">0</span> &amp; x&gt;<span class="number">0</span>)<span class="comment">##make sure no 0s due to ratio and log</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">splot(log2(lambdas),log2(y/x),subset=ind)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906202636.jpeg">
-
-</div>
-<p>对于低较的<code>lambda</code>的值，存在着更多的变异，如果我们计算出了大于2倍或更高倍数的基因，那些对于低丰度的基因来说，假阳性率也会变大。</p>
-<h3 id="ngs与poisson分布">NGS与Poisson分布</h3>
-<p>在这一部分里，我们还是要使用公共数据，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># BiocManager::install("parathyroidSE")</span></div><div class="line"><span class="keyword">library</span>(parathyroidSE) <span class="comment">##available from Bioconductor</span></div><div class="line">data(parathyroidGenesSE)</div><div class="line">se &lt;- parathyroidGenesSE</div></pre></td></tr></table></figure>
-<p>上述的这个数据包含在<code>SummarizedExperiment</code>对象中，在此不再赘述，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; class(parathyroidGenesSE)</div><div class="line">[<span class="number">1</span>] <span class="string">"RangedSummarizedExperiment"</span></div><div class="line">attr(,<span class="string">"package"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"SummarizedExperiment"</span></div></pre></td></tr></table></figure>
-<p>我们只需要知道它包含一个数据矩阵，其中每一行都是基因组特征（可以理解为基因），每列都是一个样本。我们可以使用<code>assay()</code>函数提取这个矩阵。对于这个数据集，数据矩阵中每个单元格的数值对应了一个特定样本的一个特定基因的reads数。因此，我们可以绘制出前面类似的图形，从而表明利用实验数据构建的模型的预测行为，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">x &lt;- assay(se)[,<span class="number">23</span>]</div><div class="line">y &lt;- assay(se)[,<span class="number">24</span>]</div><div class="line">ind=which(y&gt;<span class="number">0</span> &amp; x&gt;<span class="number">0</span>)<span class="comment">##make sure no 0s due to ratio and log</span></div><div class="line">splot((log2(x)+log2(y))/<span class="number">2</span>,log(x/y),subset=ind)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906203804.jpeg">
-
-</div>
-<p>如果我们计算出4个个体的标准差，它要比利用泊松模型预测的要高得多。假设大多数基因在不同的个体之间的表达不同，那么，如果泊松模型适用于此情况，那么此图中应该存在着线性关系：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line">vars=rowVars(assay(se)[,c(<span class="number">2</span>,<span class="number">8</span>,<span class="number">16</span>,<span class="number">21</span>)]) <span class="comment">##we now these four are 4</span></div><div class="line">means=rowMeans(assay(se)[,c(<span class="number">2</span>,<span class="number">8</span>,<span class="number">16</span>,<span class="number">21</span>)]) <span class="comment">##different individulsa</span></div><div class="line">splot(means,vars,log=<span class="string">"xy"</span>,subset=which(means&gt;<span class="number">0</span>&amp;vars&gt;<span class="number">0</span>)) <span class="comment">##plot a subset of data</span></div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>,col=<span class="number">2</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906204226.jpeg">
-
-</div>
-<p>上面图中的变异包括生物变异，但是泊松分布则无法对此进行建模。此时，我们需要另外一种分布，即负二项分布（negative binomial distribution)，这种分布整合了服从泊松分布的采样变异(sampling variability)和生物变异(biological variability)，它更适合对这种情况进行建模。负二项分布有两个参数，在处理计数数据(count data)方面有更大的灵活性。有关RNA-seq与负二项分布的内容可以参考这篇文献<a href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106" target="_blank" rel="external">《Differential expression analysis for sequence count data》</a>。而泊松分布只是负二项分布的一个特例。</p>
-<h2 id="最大似然估计">最大似然估计</h2>
-<p>为了说明最大似然估计(Maximum Likelihood Estimation, MLE)的概念，我们使用一个相对简单的数据集来进行演示，这个数据集包含HMCV（人巨细胞病毒，human cytomegalovirus）基因组的回文位置(palindrome location)信息。我们从HMCV基因组每4kb个间隔中读取回文序列的数目，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">datadir=<span class="string">"http://www.biostat.jhsph.edu/bstcourse/bio751/data"</span></div><div class="line">x=read.csv(file.path(datadir,<span class="string">"hcmv.csv"</span>))[,<span class="number">2</span>]</div><div class="line">breaks=seq(<span class="number">0</span>,<span class="number">4000</span>*round(max(x)/<span class="number">4000</span>),<span class="number">4000</span>)</div><div class="line">tmp=cut(x,breaks)</div><div class="line">counts=table(tmp)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">hist(counts)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906232857.jpeg">
-
-</div>
-<p>上图中的计数数据似乎服从泊松分布，但是，<span class="math inline">\(\lambda\)</span>是多少呢？常见的估计<span class="math inline">\(\lambda\)</span>的方法是最大似然估计(maximum likelihoood estimation)。最了找到最大的MLE，我们要注意这些数据是独立的，我们所观察到这些数据的概率可以用以下公式来表示： <span class="math display">\[
-\Pr(X_1=k_1,\dots,X_n=k_n;\lambda) = \prod_{i=1}^n \lambda^{k_i} / k_i! \exp ( -\lambda)
-\]</span> 当下面这个公式取最大值时候，MLE就等于<span class="math inline">\(\lambda\)</span>： <span class="math display">\[
-\mbox{L}(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right\}
-\]</span> 在实际计算过程中我们通常使用log转换后似然值(log-likehood)。下面我们使用一些代码来计算一下任意的<span class="math inline">\(\lambda\)</span>下的log-likehood，并且我们使用函数<code>optimized()</code>来计睡一下能够值得这个函数值最大的时候的<span class="math inline">\(\lambda\)</span>，最后我们绘制出log-likehood的曲线，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">l&lt;-<span class="keyword">function</span>(lambda) sum(dpois(counts,lambda,log=<span class="literal">TRUE</span>))</div><div class="line">lambdas&lt;-seq(<span class="number">3</span>,<span class="number">7</span>,len=<span class="number">100</span>)</div><div class="line">ls &lt;- exp(sapply(lambdas,l))</div><div class="line">plot(lambdas,ls,type=<span class="string">"l"</span>)</div><div class="line">mle=optimize(l,c(<span class="number">0</span>,<span class="number">10</span>),maximum=<span class="literal">TRUE</span>)</div><div class="line">abline(v=mle$maximum)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907145959.jpeg">
-
-</div>
-<p>如果进行一些微积分计算，就会发现计算MLE其实非常简单，就是计算其均值，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print( c(mle$maximum, mean(counts) ) )</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; print( c(mle$maximum, mean(counts) ) )</div><div class="line">[<span class="number">1</span>] <span class="number">5.157894</span> <span class="number">5.157895</span></div></pre></td></tr></table></figure>
-<p>我们会注意到，观察到的计数数据与通过泊松分布预测的计算数据非常吻合：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">theoretical&lt;-qpois((seq(<span class="number">0</span>,<span class="number">99</span>)+<span class="number">0.5</span>)/<span class="number">100</span>,mean(counts))</div><div class="line">qqplot(theoretical,counts)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907155849.jpeg">
-
-</div>
-<p>因此，我们可以使用泊松分布来计算回文数据，其中<span class="math inline">\(\lambda = 5.16\)</span>。</p>
-<h2 id="正连续值的分布">正连续值的分布</h2>
-<p>不同的基因在生物学重复中的变化不同。在后面我们会介绍次聚类模型(hierarchical model)，这是在分析基因组学数学中最有影响力的统计学方法之一。该方法以能够极大地改善了分析差异基因的初级方法。它是通过模拟基因变异的分布来进行建模的。在这里我们会介绍这种方法的参数模型。</p>
-<p>我们想模拟一下基因特异性标准误(gene-specific standard erros)。这些分布是正态分布吗？这里我们需要记住，我们现在模拟的是总体的标准误，因此CLT在此种情况下并不适用，即使我们我们拥有数几千个基因。</p>
-<p>下面就是案例，在这个案例中，我们会使用一个实验数据，这个数据中包含了小鼠基因表达的技术重复和生物学重复，我们会计算出技术重复和生物学重复的基因特异性样本标准误：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Biobase) <span class="comment">##available from Bioconductor</span></div><div class="line"><span class="comment"># install_github("genomicsclass/maPooling")</span></div><div class="line"><span class="keyword">library</span>(maPooling) <span class="comment">##available from course github repo</span></div><div class="line">data(maPooling)</div><div class="line">pd=pData(maPooling)</div><div class="line"><span class="comment">##determin which samples are bio reps and which are tech reps</span></div><div class="line">strain=factor(as.numeric(grepl(<span class="string">"b"</span>,rownames(pd))))</div><div class="line">pooled=which(rowSums(pd)==<span class="number">12</span> &amp; strain==<span class="number">1</span>)</div><div class="line">techreps=exprs(maPooling[,pooled])</div><div class="line">individuals=which(rowSums(pd)==<span class="number">1</span> &amp; strain==<span class="number">1</span>)</div><div class="line"><span class="comment">##remove replicates</span></div><div class="line">individuals=individuals[-grep(<span class="string">"tr"</span>,names(individuals))]</div><div class="line">bioreps=exprs(maPooling)[,individuals]</div><div class="line"><span class="comment">###now compute the gene specific standard deviations</span></div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line">techsds=rowSds(techreps)</div><div class="line">biosds=rowSds(bioreps)</div></pre></td></tr></table></figure>
-<p>下面提研究样本的标准差(sample standard deviation)：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">###now plot</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">shist(biosds,unit=<span class="number">0.1</span>,col=<span class="number">1</span>,xlim=c(<span class="number">0</span>,<span class="number">1.5</span>))</div><div class="line">shist(techsds,unit=<span class="number">0.1</span>,col=<span class="number">2</span>,add=<span class="literal">TRUE</span>)</div><div class="line">legend(<span class="string">"topright"</span>,c(<span class="string">"Biological"</span>,<span class="string">"Technical"</span>), col=c(<span class="number">1</span>,<span class="number">2</span>),lty=c(<span class="number">1</span>,<span class="number">1</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172043.jpeg">
-
-</div>
-<p>从上面的图形中我们可以发现，生物学变异(biological variability)远远大于技术变异(technical variability)。这就为我们提供了一个证据，即基因确实具有基因特异性生物学变异。如果我们想要模拟这种变异，我们首先要注意到，这些变异不服从正态分布，因为上面的曲线明显出现了拖尾现象。此外，由于SD为正数，因此上面的分布也存在着一定的限制。现在我们使用qq图来看一下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(biosds)</div><div class="line">qqline(biosds)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172353.jpeg">
-
-</div>
-<p>一些参数分布可以处理这些情况（例如严格正向右拖尾分布，strictly positive and heavy right tails）。其中比较典型的分布就是gamma分布与F分布，gamma分布的密度函数为： <span class="math display">\[
-f(x;\alpha,\beta)=\frac{\beta^\alpha x^{\alpha-1}\exp{-\beta x}}{\Gamma(\alpha)}
-\]</span> 这个分布有2个参数，分别是<span class="math inline">\(\alpha\)</span>和<span class="math inline">\(\beta\)</span>，它们间接控制了曲线的位置(location)与缩放(scale)。它们也控制着曲线的形状，有关这些分布的知识可以参考<a href="https://www.stat.berkeley.edu/~rice/Book3ed/index.html" target="_blank" rel="external">《Mathematical Statistics and Data Analysis》</a>这本书。</p>
-<p>gamma分布的两个特例是卡方分布与指数分布，我们前面了解到了可以使用卡方分布来计算二联表。对于卡方分布来说，我们的参数是<span class="math inline">\(\alpha=\nu/2\)</span>，<span class="math inline">\(\beta=2\)</span>，其中<span class="math inline">\(\nu\)</span>表示自由度。对于指数分布来说，<span class="math inline">\(\alpha=1\)</span>，<span class="math inline">\(\beta=\lambda\)</span>。</p>
-<p>F分布在ANOVA中使用，它也是一个正向分布，并且存在着严格的右拖尾曲线，它的2个参数影响其曲线形状，，F分布的密度函数为： <span class="math display">\[
-f(x,d_1,d_2)=\frac{1}{B\left( \frac{d_1}{2},\frac{d_2}{2}\right)}
-  \left(\frac{d_1}{d_2}\right)^{\frac{d_1}{2}}  
-  x^{\frac{d_1}{2}-1}\left(1+\frac{d1}{d2}x\right)^{-\frac{d_1+d_2}{2}}
-\]</span> 这个函数中含有<span class="math inline">\(B\)</span>函数（即<span class="math inline">\(\beta\)</span>函数），还有2个自由度，即<span class="math inline">\(d_{1}\)</span>和<span class="math inline">\(d_{2}\)</span>。</p>
-<h3 id="模拟变异">模拟变异</h3>
-<p>在后面部分中，我们会介绍用于改善变异估计的层级模型(hierarchical model)。在这些案例中，从数学上很方便地能模拟出<span class="math inline">\(\sigma^2\)</span>的分布，关于层级模型的内容可以参考<a href="https://www.ncbi.nlm.nih.gov/pubmed/16646809" target="_blank" rel="external">《Linear models and empirical bayes methods for assessing differential expression in microarray experiments.》</a>这篇文献，此文献指出，对基因的标准差进行采样服从校正后的F统计： <span class="math display">\[
-s^2 \sim s_0^2 F_{d,d_0}
-\]</span> 其中<span class="math inline">\(d\)</span>表示了计算中<span class="math inline">\(s^2\)</span>的自由度。例如，当我们比较两组样本时，每组3个样本，那么自由度就是4（文中后面提到了<code>This leaves two free parameters to adjust to the data</code>，直译就是<code>剩下的2个自由参数用于调整数据</code>，不太理解）。这里的<span class="math inline">\(d\)</span>用于控制位置(location)，<span class="math inline">\(s_{0}\)</span>用于控制缩放(scale)。下面的代码是F分布的一些案例，我们绘制出了相应的图形，并且标注上了样本的方差：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">3</span>,<span class="number">3</span>)</div><div class="line">sds=seq(<span class="number">0</span>,<span class="number">2</span>,len=<span class="number">100</span>)</div><div class="line"><span class="keyword">for</span>(d <span class="keyword">in</span> c(<span class="number">1</span>,<span class="number">5</span>,<span class="number">10</span>))&#123;</div><div class="line">  <span class="keyword">for</span>(s0 <span class="keyword">in</span> c(<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>))&#123;</div><div class="line">    tmp=hist(biosds,main=paste(<span class="string">"s_0 ="</span>,s0,<span class="string">"d ="</span>,d),xlab=<span class="string">"sd"</span>,ylab=<span class="string">"density"</span>,freq = <span class="literal">FALSE</span>,nc=<span class="number">100</span>,xlim=c(<span class="number">0</span>,<span class="number">1</span>))</div><div class="line">    dd=df(sds^<span class="number">2</span>/s0^<span class="number">2</span>,<span class="number">11</span>,d)</div><div class="line">    <span class="comment">##multiply by normalizing constant to assure same range on plot</span></div><div class="line">    k=sum(tmp$density)/sum(dd)</div><div class="line">    lines(sds,dd*k,type=<span class="string">"l"</span>,col=<span class="number">2</span>,lwd=<span class="number">2</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184007.jpeg">
-
-</div>
-<p>从上面的图形我们要找到哪个图形的<span class="math inline">\(s_{0}\)</span>与<span class="math inline">\(d\)</span>最能拟合我们的数据？这是一个比较麻烦的过程，因为MLE并不会计算这个特殊的分布（具体可以参考Wmyth(2004)）。Bioconductor上的<code>limma</code>包提供的估计这些参数的函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(limma)</div><div class="line">estimates=fitFDist(biosds^<span class="number">2</span>,<span class="number">11</span>)</div><div class="line">theoretical&lt;- sqrt(qf((seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span>, <span class="number">11</span>, estimates$df2)*estimates$scale)</div><div class="line">observed &lt;- biosds</div></pre></td></tr></table></figure>
-<p>拟合模型确实提供了一个合理的估计，从qq图和直方图就能看出来：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">qqplot(theoretical,observed)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">tmp=hist(biosds,main=paste(<span class="string">"s_0 ="</span>, signif(estimates[[<span class="number">1</span>]],<span class="number">2</span>), <span class="string">"d ="</span>, signif(estimates[[<span class="number">2</span>]],<span class="number">2</span>)), xlab=<span class="string">"sd"</span>, ylab=<span class="string">"density"</span>, freq=<span class="literal">FALSE</span>, nc=<span class="number">100</span>, xlim=c(<span class="number">0</span>,<span class="number">1</span>), ylim=c(<span class="number">0</span>,<span class="number">9</span>))</div><div class="line">dd=df(sds^<span class="number">2</span>/estimates$scale,<span class="number">11</span>,estimates$df2)</div><div class="line">k=sum(tmp$density)/sum(dd) <span class="comment">##a normalizing constant to assure same area in plot</span></div><div class="line">lines(sds, dd*k, type=<span class="string">"l"</span>, col=<span class="number">2</span>, lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184617.jpeg">
-
-</div>
-<h2 id="练习">练习</h2>
-<p>P297</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/23/DAL/DALS019_StatisticalModels2_Beyes_Hierarchical/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/23/DAL/DALS019_StatisticalModels2_Beyes_Hierarchical/" itemprop="url">DALS019-统计模型2-贝叶斯分布与层次分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T12:00:00+08:00">
-                2019-08-23
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-24T12:00:00+08:00">
+                2019-08-24
               </time>
             
 
@@ -1286,6 +991,301 @@ s^2 \sim s_0^2 F_{d,d_0}
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; table( top50=rank(limmares$p.value)&lt;= <span class="number">10</span>, spike)</div><div class="line">       spike</div><div class="line">top50   <span class="literal">FALSE</span>  <span class="literal">TRUE</span></div><div class="line">  <span class="literal">FALSE</span> <span class="number">12608</span>     <span class="number">8</span></div><div class="line">  <span class="literal">TRUE</span>      <span class="number">2</span>     <span class="number">8</span></div></pre></td></tr></table></figure>
 <h2 id="练习-1">练习</h2>
 <p>P315</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/23/DAL/DALS018_StatisticalModels1_binomal_Possion_MLE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/23/DAL/DALS018_StatisticalModels1_binomal_Possion_MLE/" itemprop="url">DALS018-统计模型1-二项分布与泊松分布，MLE</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T12:00:00+08:00">
+                2019-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,870
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  16
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第7章统计模型的第1小节，这一部分的主要内容涉及高维数据统计的一些原理，例如二项分布，泊松分布，最大似然估计等。</p>
+<p>相应的R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/modeling/modeling.Rmd" target="_blank" rel="external">Github</a>。</p>
+<p>当我们在文献中看到p值的时候，它意味着使用某种概率分布来对零假设进行量化。很多时候我们很容易地就能找到使用哪种分布。例如，在女士品茶这个案例中，我们就能使用简单的概率计睡来确定零分布。文献中的大多数p值都是基于线性模型的样本均值或最小二乘估计来进行计算的，并利用CLT近似地救出它们的零分布。</p>
+<p>CLT有着理论支持，它能保证这种近似是正确的。但是，我们无法一直使用这种近似法，例如当我们的样本太少时。以前面部分中，我们提到了，当总体数据近似服从正态分布时，样本的平均近似服从t分布。但是这种假设没有理论上的支持。在这一部分里，我们就会对这种情况进行建模。在研究身高时，我们从经验中就知道，这是一个非常好的模型。</p>
+<p>但是，这并不意味着我们收集的每个数据集都服从正态分布。我们常见的一些例子，例如掷硬币，中彩票的人数，美国的收入。正态分布不是建模过程中的唯一参数分布。在这一部分里，我们会描述一些最广泛使用的参数分布以及它们在生命科学研究中的作用。我们还会介绍贝叶斯统计相关的知识，以及给出使用分层模型的使用案例。</p>
+<h2 id="二项分布">二项分布</h2>
+<p>在<span class="math inline">\(N\)</span>次实验中，成功<span class="math inline">\(S=k\)</span>次的概率，公式如下所示： <span class="math display">\[
+\mbox{Pr}(S=k) = {N \choose k}p^k (1-p)^{N-k}
+\]</span> 其中<span class="math inline">\(p\)</span>是成功的概率，二项分布的一个最有名案例就是掷硬币，当我们掷<span class="math inline">\(N\)</span>次硬币，有<span class="math inline">\(S\)</span>次是正面朝上的概率，在这个案例中，<span class="math inline">\(p=0.5\)</span>。</p>
+<p><span class="math inline">\(S/N\)</span>是独立随机变量的均值，因此CLT告诉我们，当<span class="math inline">\(N\)</span>足够大时，<span class="math inline">\(S\)</span>近似地服从正态分布。这种分布在生命科学研究中应用很广，最近，此分布在NGS检测variant callers和表型(genotyper)应用很广，它的一个特殊分布则是泊松分布(poisson distribution)（二顶分布的极限是泊松分布）。</p>
+<h2 id="泊松分布">泊松分布</h2>
+<p>由于买彩票的结果只有两个，中彩票与不中彩票，因此，那些赢得彩票的人数从理论上服从二项分布（我们是假设每个人只能买一张彩票）的。试验次数<span class="math inline">\(N\)</span>是买彩票的人数，这个数字通常非常大。但是，赢得彩票的的人数通常是0到3之间，这就表明，赢得彩票的人数是不服从正态分布的。那么，为什么CLT在这种情况下不成立呢？从数学上可以对此进行解释，但是直觉又告诉我们，如果成功的总和是如此接近，并且大于1，这种分布就不可能是正态分布，这里我们进行一个快速的模拟：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p=<span class="number">10</span>^-<span class="number">7</span> <span class="comment">##1 in 10,000,0000 chances of winning</span></div><div class="line">N=<span class="number">5</span>*<span class="number">10</span>^<span class="number">6</span> <span class="comment">##5,000,000 tickets bought</span></div><div class="line">winners=rbinom(<span class="number">1000</span>,N,p) <span class="comment">##1000 is the number of different lotto draws</span></div><div class="line">tab=table(winners)</div><div class="line">plot(tab)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190905223653.jpeg">
+
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; prop.table(tab)</div><div class="line">winners</div><div class="line">    <span class="number">0</span>     <span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span> </div><div class="line"><span class="number">0.617</span> <span class="number">0.294</span> <span class="number">0.080</span> <span class="number">0.009</span></div></pre></td></tr></table></figure>
+<p>达种情况下，<span class="math inline">\(N\)</span>会非常大，<span class="math inline">\(p\)</span>会非常小，因此我们可以计算出<span class="math inline">\(N \times p\)</span>（此时我们之为<span class="math inline">\(\lambda\)</span>）的值，例如位于0到10之间，而<span class="math inline">\(S\)</span>此时就服从泊松分布，其简单的公式如下所示： <span class="math display">\[
+\mbox{Pr}(S=k)=\frac{\lambda^k \exp{-\lambda}}{k!}
+\]</span></p>
+<p>RNA-seq分析中常常用到泊松分布。因为我们对数千个分子进行采样，并且多数基因仅仅代表了所有基因中一小部分，因此在RNA-seq分析中使用泊松分布比较合适。</p>
+<p>我们知道了泊松分布后，它对我们有什么作用？其中一个方面就是这种分布可以为我们提供实际分析过程中关于统计属性的总结信息。例如我们只从患者组和对照组中各取一个样本进行RNA-seq实验并研究基因的倍数变化。此时，在零假设成立的前提下（也就是这两个样本没有差异），利用泊松分布，我们可以计算出，统计学上的统计变异取决于基因的总丰度。我们可以从数学上来展示一下这个过程，下面是模拟这个过程：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">N=<span class="number">10000</span><span class="comment">##number of genes</span></div><div class="line">lambdas=<span class="number">2</span>^seq(<span class="number">1</span>,<span class="number">16</span>,len=N) <span class="comment">##these are the true abundances of genes</span></div><div class="line">y=rpois(N,lambdas)<span class="comment">##note that the null hypothesis is true for all genes</span></div><div class="line">x=rpois(N,lambdas)</div><div class="line">ind=which(y&gt;<span class="number">0</span> &amp; x&gt;<span class="number">0</span>)<span class="comment">##make sure no 0s due to ratio and log</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">splot(log2(lambdas),log2(y/x),subset=ind)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906202636.jpeg">
+
+</div>
+<p>对于低较的<code>lambda</code>的值，存在着更多的变异，如果我们计算出了大于2倍或更高倍数的基因，那些对于低丰度的基因来说，假阳性率也会变大。</p>
+<h3 id="ngs与poisson分布">NGS与Poisson分布</h3>
+<p>在这一部分里，我们还是要使用公共数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># BiocManager::install("parathyroidSE")</span></div><div class="line"><span class="keyword">library</span>(parathyroidSE) <span class="comment">##available from Bioconductor</span></div><div class="line">data(parathyroidGenesSE)</div><div class="line">se &lt;- parathyroidGenesSE</div></pre></td></tr></table></figure>
+<p>上述的这个数据包含在<code>SummarizedExperiment</code>对象中，在此不再赘述，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; class(parathyroidGenesSE)</div><div class="line">[<span class="number">1</span>] <span class="string">"RangedSummarizedExperiment"</span></div><div class="line">attr(,<span class="string">"package"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"SummarizedExperiment"</span></div></pre></td></tr></table></figure>
+<p>我们只需要知道它包含一个数据矩阵，其中每一行都是基因组特征（可以理解为基因），每列都是一个样本。我们可以使用<code>assay()</code>函数提取这个矩阵。对于这个数据集，数据矩阵中每个单元格的数值对应了一个特定样本的一个特定基因的reads数。因此，我们可以绘制出前面类似的图形，从而表明利用实验数据构建的模型的预测行为，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">x &lt;- assay(se)[,<span class="number">23</span>]</div><div class="line">y &lt;- assay(se)[,<span class="number">24</span>]</div><div class="line">ind=which(y&gt;<span class="number">0</span> &amp; x&gt;<span class="number">0</span>)<span class="comment">##make sure no 0s due to ratio and log</span></div><div class="line">splot((log2(x)+log2(y))/<span class="number">2</span>,log(x/y),subset=ind)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906203804.jpeg">
+
+</div>
+<p>如果我们计算出4个个体的标准差，它要比利用泊松模型预测的要高得多。假设大多数基因在不同的个体之间的表达不同，那么，如果泊松模型适用于此情况，那么此图中应该存在着线性关系：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line">vars=rowVars(assay(se)[,c(<span class="number">2</span>,<span class="number">8</span>,<span class="number">16</span>,<span class="number">21</span>)]) <span class="comment">##we now these four are 4</span></div><div class="line">means=rowMeans(assay(se)[,c(<span class="number">2</span>,<span class="number">8</span>,<span class="number">16</span>,<span class="number">21</span>)]) <span class="comment">##different individulsa</span></div><div class="line">splot(means,vars,log=<span class="string">"xy"</span>,subset=which(means&gt;<span class="number">0</span>&amp;vars&gt;<span class="number">0</span>)) <span class="comment">##plot a subset of data</span></div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>,col=<span class="number">2</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906204226.jpeg">
+
+</div>
+<p>上面图中的变异包括生物变异，但是泊松分布则无法对此进行建模。此时，我们需要另外一种分布，即负二项分布（negative binomial distribution)，这种分布整合了服从泊松分布的采样变异(sampling variability)和生物变异(biological variability)，它更适合对这种情况进行建模。负二项分布有两个参数，在处理计数数据(count data)方面有更大的灵活性。有关RNA-seq与负二项分布的内容可以参考这篇文献<a href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106" target="_blank" rel="external">《Differential expression analysis for sequence count data》</a>。而泊松分布只是负二项分布的一个特例。</p>
+<h2 id="最大似然估计">最大似然估计</h2>
+<p>为了说明最大似然估计(Maximum Likelihood Estimation, MLE)的概念，我们使用一个相对简单的数据集来进行演示，这个数据集包含HMCV（人巨细胞病毒，human cytomegalovirus）基因组的回文位置(palindrome location)信息。我们从HMCV基因组每4kb个间隔中读取回文序列的数目，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">datadir=<span class="string">"http://www.biostat.jhsph.edu/bstcourse/bio751/data"</span></div><div class="line">x=read.csv(file.path(datadir,<span class="string">"hcmv.csv"</span>))[,<span class="number">2</span>]</div><div class="line">breaks=seq(<span class="number">0</span>,<span class="number">4000</span>*round(max(x)/<span class="number">4000</span>),<span class="number">4000</span>)</div><div class="line">tmp=cut(x,breaks)</div><div class="line">counts=table(tmp)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">hist(counts)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906232857.jpeg">
+
+</div>
+<p>上图中的计数数据似乎服从泊松分布，但是，<span class="math inline">\(\lambda\)</span>是多少呢？常见的估计<span class="math inline">\(\lambda\)</span>的方法是最大似然估计(maximum likelihoood estimation)。最了找到最大的MLE，我们要注意这些数据是独立的，我们所观察到这些数据的概率可以用以下公式来表示： <span class="math display">\[
+\Pr(X_1=k_1,\dots,X_n=k_n;\lambda) = \prod_{i=1}^n \lambda^{k_i} / k_i! \exp ( -\lambda)
+\]</span> 当下面这个公式取最大值时候，MLE就等于<span class="math inline">\(\lambda\)</span>： <span class="math display">\[
+\mbox{L}(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right\}
+\]</span> 在实际计算过程中我们通常使用log转换后似然值(log-likehood)。下面我们使用一些代码来计算一下任意的<span class="math inline">\(\lambda\)</span>下的log-likehood，并且我们使用函数<code>optimized()</code>来计睡一下能够值得这个函数值最大的时候的<span class="math inline">\(\lambda\)</span>，最后我们绘制出log-likehood的曲线，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">l&lt;-<span class="keyword">function</span>(lambda) sum(dpois(counts,lambda,log=<span class="literal">TRUE</span>))</div><div class="line">lambdas&lt;-seq(<span class="number">3</span>,<span class="number">7</span>,len=<span class="number">100</span>)</div><div class="line">ls &lt;- exp(sapply(lambdas,l))</div><div class="line">plot(lambdas,ls,type=<span class="string">"l"</span>)</div><div class="line">mle=optimize(l,c(<span class="number">0</span>,<span class="number">10</span>),maximum=<span class="literal">TRUE</span>)</div><div class="line">abline(v=mle$maximum)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907145959.jpeg">
+
+</div>
+<p>如果进行一些微积分计算，就会发现计算MLE其实非常简单，就是计算其均值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print( c(mle$maximum, mean(counts) ) )</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; print( c(mle$maximum, mean(counts) ) )</div><div class="line">[<span class="number">1</span>] <span class="number">5.157894</span> <span class="number">5.157895</span></div></pre></td></tr></table></figure>
+<p>我们会注意到，观察到的计数数据与通过泊松分布预测的计算数据非常吻合：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">theoretical&lt;-qpois((seq(<span class="number">0</span>,<span class="number">99</span>)+<span class="number">0.5</span>)/<span class="number">100</span>,mean(counts))</div><div class="line">qqplot(theoretical,counts)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907155849.jpeg">
+
+</div>
+<p>因此，我们可以使用泊松分布来计算回文数据，其中<span class="math inline">\(\lambda = 5.16\)</span>。</p>
+<h2 id="正连续值的分布">正连续值的分布</h2>
+<p>不同的基因在生物学重复中的变化不同。在后面我们会介绍次聚类模型(hierarchical model)，这是在分析基因组学数学中最有影响力的统计学方法之一。该方法以能够极大地改善了分析差异基因的初级方法。它是通过模拟基因变异的分布来进行建模的。在这里我们会介绍这种方法的参数模型。</p>
+<p>我们想模拟一下基因特异性标准误(gene-specific standard erros)。这些分布是正态分布吗？这里我们需要记住，我们现在模拟的是总体的标准误，因此CLT在此种情况下并不适用，即使我们我们拥有数几千个基因。</p>
+<p>下面就是案例，在这个案例中，我们会使用一个实验数据，这个数据中包含了小鼠基因表达的技术重复和生物学重复，我们会计算出技术重复和生物学重复的基因特异性样本标准误：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Biobase) <span class="comment">##available from Bioconductor</span></div><div class="line"><span class="comment"># install_github("genomicsclass/maPooling")</span></div><div class="line"><span class="keyword">library</span>(maPooling) <span class="comment">##available from course github repo</span></div><div class="line">data(maPooling)</div><div class="line">pd=pData(maPooling)</div><div class="line"><span class="comment">##determin which samples are bio reps and which are tech reps</span></div><div class="line">strain=factor(as.numeric(grepl(<span class="string">"b"</span>,rownames(pd))))</div><div class="line">pooled=which(rowSums(pd)==<span class="number">12</span> &amp; strain==<span class="number">1</span>)</div><div class="line">techreps=exprs(maPooling[,pooled])</div><div class="line">individuals=which(rowSums(pd)==<span class="number">1</span> &amp; strain==<span class="number">1</span>)</div><div class="line"><span class="comment">##remove replicates</span></div><div class="line">individuals=individuals[-grep(<span class="string">"tr"</span>,names(individuals))]</div><div class="line">bioreps=exprs(maPooling)[,individuals]</div><div class="line"><span class="comment">###now compute the gene specific standard deviations</span></div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line">techsds=rowSds(techreps)</div><div class="line">biosds=rowSds(bioreps)</div></pre></td></tr></table></figure>
+<p>下面提研究样本的标准差(sample standard deviation)：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">###now plot</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">shist(biosds,unit=<span class="number">0.1</span>,col=<span class="number">1</span>,xlim=c(<span class="number">0</span>,<span class="number">1.5</span>))</div><div class="line">shist(techsds,unit=<span class="number">0.1</span>,col=<span class="number">2</span>,add=<span class="literal">TRUE</span>)</div><div class="line">legend(<span class="string">"topright"</span>,c(<span class="string">"Biological"</span>,<span class="string">"Technical"</span>), col=c(<span class="number">1</span>,<span class="number">2</span>),lty=c(<span class="number">1</span>,<span class="number">1</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172043.jpeg">
+
+</div>
+<p>从上面的图形中我们可以发现，生物学变异(biological variability)远远大于技术变异(technical variability)。这就为我们提供了一个证据，即基因确实具有基因特异性生物学变异。如果我们想要模拟这种变异，我们首先要注意到，这些变异不服从正态分布，因为上面的曲线明显出现了拖尾现象。此外，由于SD为正数，因此上面的分布也存在着一定的限制。现在我们使用qq图来看一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(biosds)</div><div class="line">qqline(biosds)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172353.jpeg">
+
+</div>
+<p>一些参数分布可以处理这些情况（例如严格正向右拖尾分布，strictly positive and heavy right tails）。其中比较典型的分布就是gamma分布与F分布，gamma分布的密度函数为： <span class="math display">\[
+f(x;\alpha,\beta)=\frac{\beta^\alpha x^{\alpha-1}\exp{-\beta x}}{\Gamma(\alpha)}
+\]</span> 这个分布有2个参数，分别是<span class="math inline">\(\alpha\)</span>和<span class="math inline">\(\beta\)</span>，它们间接控制了曲线的位置(location)与缩放(scale)。它们也控制着曲线的形状，有关这些分布的知识可以参考<a href="https://www.stat.berkeley.edu/~rice/Book3ed/index.html" target="_blank" rel="external">《Mathematical Statistics and Data Analysis》</a>这本书。</p>
+<p>gamma分布的两个特例是卡方分布与指数分布，我们前面了解到了可以使用卡方分布来计算二联表。对于卡方分布来说，我们的参数是<span class="math inline">\(\alpha=\nu/2\)</span>，<span class="math inline">\(\beta=2\)</span>，其中<span class="math inline">\(\nu\)</span>表示自由度。对于指数分布来说，<span class="math inline">\(\alpha=1\)</span>，<span class="math inline">\(\beta=\lambda\)</span>。</p>
+<p>F分布在ANOVA中使用，它也是一个正向分布，并且存在着严格的右拖尾曲线，它的2个参数影响其曲线形状，，F分布的密度函数为： <span class="math display">\[
+f(x,d_1,d_2)=\frac{1}{B\left( \frac{d_1}{2},\frac{d_2}{2}\right)}
+  \left(\frac{d_1}{d_2}\right)^{\frac{d_1}{2}}  
+  x^{\frac{d_1}{2}-1}\left(1+\frac{d1}{d2}x\right)^{-\frac{d_1+d_2}{2}}
+\]</span> 这个函数中含有<span class="math inline">\(B\)</span>函数（即<span class="math inline">\(\beta\)</span>函数），还有2个自由度，即<span class="math inline">\(d_{1}\)</span>和<span class="math inline">\(d_{2}\)</span>。</p>
+<h3 id="模拟变异">模拟变异</h3>
+<p>在后面部分中，我们会介绍用于改善变异估计的层级模型(hierarchical model)。在这些案例中，从数学上很方便地能模拟出<span class="math inline">\(\sigma^2\)</span>的分布，关于层级模型的内容可以参考<a href="https://www.ncbi.nlm.nih.gov/pubmed/16646809" target="_blank" rel="external">《Linear models and empirical bayes methods for assessing differential expression in microarray experiments.》</a>这篇文献，此文献指出，对基因的标准差进行采样服从校正后的F统计： <span class="math display">\[
+s^2 \sim s_0^2 F_{d,d_0}
+\]</span> 其中<span class="math inline">\(d\)</span>表示了计算中<span class="math inline">\(s^2\)</span>的自由度。例如，当我们比较两组样本时，每组3个样本，那么自由度就是4（文中后面提到了<code>This leaves two free parameters to adjust to the data</code>，直译就是<code>剩下的2个自由参数用于调整数据</code>，不太理解）。这里的<span class="math inline">\(d\)</span>用于控制位置(location)，<span class="math inline">\(s_{0}\)</span>用于控制缩放(scale)。下面的代码是F分布的一些案例，我们绘制出了相应的图形，并且标注上了样本的方差：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">3</span>,<span class="number">3</span>)</div><div class="line">sds=seq(<span class="number">0</span>,<span class="number">2</span>,len=<span class="number">100</span>)</div><div class="line"><span class="keyword">for</span>(d <span class="keyword">in</span> c(<span class="number">1</span>,<span class="number">5</span>,<span class="number">10</span>))&#123;</div><div class="line">  <span class="keyword">for</span>(s0 <span class="keyword">in</span> c(<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>))&#123;</div><div class="line">    tmp=hist(biosds,main=paste(<span class="string">"s_0 ="</span>,s0,<span class="string">"d ="</span>,d),xlab=<span class="string">"sd"</span>,ylab=<span class="string">"density"</span>,freq = <span class="literal">FALSE</span>,nc=<span class="number">100</span>,xlim=c(<span class="number">0</span>,<span class="number">1</span>))</div><div class="line">    dd=df(sds^<span class="number">2</span>/s0^<span class="number">2</span>,<span class="number">11</span>,d)</div><div class="line">    <span class="comment">##multiply by normalizing constant to assure same range on plot</span></div><div class="line">    k=sum(tmp$density)/sum(dd)</div><div class="line">    lines(sds,dd*k,type=<span class="string">"l"</span>,col=<span class="number">2</span>,lwd=<span class="number">2</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184007.jpeg">
+
+</div>
+<p>从上面的图形我们要找到哪个图形的<span class="math inline">\(s_{0}\)</span>与<span class="math inline">\(d\)</span>最能拟合我们的数据？这是一个比较麻烦的过程，因为MLE并不会计算这个特殊的分布（具体可以参考Wmyth(2004)）。Bioconductor上的<code>limma</code>包提供的估计这些参数的函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(limma)</div><div class="line">estimates=fitFDist(biosds^<span class="number">2</span>,<span class="number">11</span>)</div><div class="line">theoretical&lt;- sqrt(qf((seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span>, <span class="number">11</span>, estimates$df2)*estimates$scale)</div><div class="line">observed &lt;- biosds</div></pre></td></tr></table></figure>
+<p>拟合模型确实提供了一个合理的估计，从qq图和直方图就能看出来：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">qqplot(theoretical,observed)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">tmp=hist(biosds,main=paste(<span class="string">"s_0 ="</span>, signif(estimates[[<span class="number">1</span>]],<span class="number">2</span>), <span class="string">"d ="</span>, signif(estimates[[<span class="number">2</span>]],<span class="number">2</span>)), xlab=<span class="string">"sd"</span>, ylab=<span class="string">"density"</span>, freq=<span class="literal">FALSE</span>, nc=<span class="number">100</span>, xlim=c(<span class="number">0</span>,<span class="number">1</span>), ylim=c(<span class="number">0</span>,<span class="number">9</span>))</div><div class="line">dd=df(sds^<span class="number">2</span>/estimates$scale,<span class="number">11</span>,estimates$df2)</div><div class="line">k=sum(tmp$density)/sum(dd) <span class="comment">##a normalizing constant to assure same area in plot</span></div><div class="line">lines(sds, dd*k, type=<span class="string">"l"</span>, col=<span class="number">2</span>, lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184617.jpeg">
+
+</div>
+<h2 id="练习">练习</h2>
+<p>P297</p>
 
           
         
@@ -1895,250 +1895,6 @@ q^{(i)}=p_{(k)}^{(i)} * \frac{\text {Total Gene } N u m b e r}{\operatorname{ran
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/" itemprop="url">DALS014-Linear Models线性模型04方差分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T12:00:00+08:00">
-                2019-08-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,532
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  11
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这一部分是《Data Analysis for the life sciences》的第5章线性模型的第4小节，这一部分的主要内容涉及ANOVA，有关方差分析的笔记R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/linear/interactions_and_contrasts.Rmd" target="_blank" rel="external">Github</a>。</p>
-<h2 id="anova简介">ANOVA简介</h2>
-<p>现在考虑一种情况，如果我们想知道push与pull的差值在整体上，不同的组中是否有区别。换句话讲，我们并不想比较任意两组有差异，我们就想知道，在所有的有腿中，代表了push和pull差值的3个交互作用导致的push和pull差异是否比正常的差异大（即不考虑交互作用的情况）。</p>
-<p>通过方差分析(analysis of variance，ANOVA)就可以解决这个问题。ANOVA的本质在于比较不同复杂模型的残差平方和是被哪些因素降低的（我的理解就是，总的残差平方和都是分布在哪些变量上面，哪些变量分到的最多，哪些变量的效应就最强）。含有8个系数的模型比含有5个系数的模型要复杂的多，在5个系数的模型中，我们是假设push和pull在所有组之间的差异是相等的。最简单的模型只使用一个系数，一个截矩。在某些假设下，我们还可以执行推断，确定与我们观察到的一样大的改进概率(Under certain assumptions we can also perform inference that determines the probability of improvements as large as what we observed)。</p>
-<p>下面的ANOVA计算的结果（接前文案例）：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; anova(fitX)</div><div class="line">Analysis of Variance Table</div><div class="line"></div><div class="line">Response: friction</div><div class="line">           Df Sum Sq Mean Sq  <span class="literal">F</span> value    Pr(&gt;<span class="literal">F</span>)    </div><div class="line">type        <span class="number">1</span> <span class="number">42.783</span>  <span class="number">42.783</span> <span class="number">1179.713</span> &lt; <span class="number">2.2e-16</span> ***</div><div class="line">leg         <span class="number">3</span>  <span class="number">2.921</span>   <span class="number">0.974</span>   <span class="number">26.847</span> <span class="number">2.972e-15</span> ***</div><div class="line">type:leg    <span class="number">3</span>  <span class="number">2.098</span>   <span class="number">0.699</span>   <span class="number">19.282</span> <span class="number">2.256e-11</span> ***</div><div class="line">Residuals <span class="number">274</span>  <span class="number">9.937</span>   <span class="number">0.036</span>                       </div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
-<p>结果的第一行中有一个<code>type</code>变量（表示pull或push），它对应的Sum值为42.783，这就表示，这一单一的系数减少了42.783的平方和。我们看一下总的平方和，其实就是线性模型的截矩，也可以是<code>anova(fitX)</code>的第2列的和，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">result &lt;- anova(fitX)</div><div class="line">sum(result$`Sum Sq`)</div><div class="line">mu0 &lt;- mean(spider$friction)</div><div class="line">(initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; result &lt;- anova(fitX)</div><div class="line">&gt; sum(result$`Sum Sq`)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div><div class="line">&gt; mu0 &lt;- mean(spider$friction)</div><div class="line">&gt; (initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
-<p>需要注意是的是，这个平方和的计算公式最初就是来源于样本方差的计算公式，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">N &lt;- nrow(spider)</div><div class="line">(N - <span class="number">1</span>) * var(spider$friction)</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; N &lt;- nrow(spider)</div><div class="line">&gt; (N - <span class="number">1</span>) * var(spider$friction)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
-<p>现在来看一下，前面的42.783是如何得到的。我们需要计算仅包含类型信息模型的残差平方和。我们可以通过计算残差，残差的平方，并将它们加起来就能实现，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">s &lt;- split(spider$friction, spider$type)</div><div class="line">after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">residual &lt;- x - mean(x)</div><div class="line">sum(residual^<span class="number">2</span>)</div><div class="line">&#125;) )</div><div class="line">(type.ss &lt;- initial.ss - after.type.ss)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; s &lt;- split(spider$friction, spider$type)</div><div class="line">&gt; after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">+   residual &lt;- x - mean(x)</div><div class="line">+   sum(residual^<span class="number">2</span>)</div><div class="line">+ &#125;) )</div><div class="line">&gt; (type.ss &lt;- initial.ss - after.type.ss)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
-<p>这个降低的程度(就是上面的42.78307)就相当于模型<code>~type</code>和<code>~1</code>拟合值差值的平方和，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
-<p>线性模型中的各个项的顺序以及ANOVA表格中的顺序很重要：每行表示的是：当添加了一个新的系数后，残差平方和较未添加这个系数之前减少的量。</p>
-<p>在ANOVA表（这个表其实就是ANOAVA计算后的结果）还标明了自由度。当引入了<code>type</code>这一项时，它对应的<code>Df</code>就是1，<code>leg</code>变量引入了3个项（即legL2，legL3和legL4），它对应的<code>Df</code>就是3（这一段不太理解）。ANOVA还有一列是<code>F value</code>。F值表示的是包含感兴趣的项（感兴趣的项平方和除以相应自由度）除以残差（ANOVA表中的最后一行除以自自由度），以第一行为例 说明一下就是<code>(42.783/1)/(9.937/274)=1179.686</code>。</p>
-<p>书中给出的公式为：</p>
-<p><span class="math display">\[
-r_i = Y_i - \hat{Y}_i
-\]</span> <span class="math display">\[
-\mbox{Mean Sq Residuals} = \frac{1}{N - p} \sum_{i=1}^N r_i^2
-\]</span></p>
-<p>其中<code>p</code>表示模型中系数的总数（在这个模型中，包括截矩在内的系数总数是8）。</p>
-<p>在零假设成立的前提下（零假设就是添加系数的真值为0），我们会得到每行F值分布的理论结果。这种近似所需的假设类似于t分布近似的假设，例如我们在使用CLT时需要大量的样本，或者是总体的数据服从正态分布。</p>
-<p>现在我们来解释一下p值，看最后一行，即<code>type:leg</code>，内容是<code>type:leg    3  2.098   0.699   19.282 2.256e-11 ***</code>，<code>type:leg</code>表示的是3个交互作用系数。在零假设下，这3个附加项的真实值为0，例如，<span class="math inline">\(\beta_{push,L2}=0\)</span>，<span class="math inline">\(\beta_{push,L3}=0\)</span>，<span class="math inline">\(\beta_{push,L4}=0\)</span>，然后我们就计算出ANOVA表的这一行观察到的这么大的F值的概率。这里需要记住，我们只关注大的F值，因为我们有一个平方和的比，因此F值只能是正数（原文：Remember that we are only concerned with large values here, because we have a ratio of sum of squares, the F-value can only be positive. ）。<code>type:leg</code>这一行中的p值可以这么解释：在零假设下，我们认为push和pull的差值在所有组之间是没有差异的，p值表示了，在这个零假设成立时，我们观察到的如此大的方差的可能性。从计算结果中我们可以看到，我们的p值非常小，我们就可以拒绝零假设，即可以认为，push和pull的差值在不同组之间是不同的。</p>
-<p>另外，ANOVA中的F值与F分布有关，F分布有2个以参数，一个是分子的自由度（分子是研究对象的自由度，例如前面提到的交互作用），一个是分母的自由度（残差）。从结果可以看到，交互作用系数的自由度是3，残差的自由度是274。</p>
-<h2 id="anova模型的另外表示">ANOVA模型的另外表示</h2>
-<p>现在来看一下ANOVA模型的另外表示方法，在这种方式里，我们假设每一对type与leg都有自己的均值（这样，对于每一条腿来说，push与pull的效应就不会相同）。这种表述方式在某种程度上来说更加简单，但是，我们不能像前面那样构建ANOVA表，因为这种方式无法区分交互作用系数。</p>
-<p>首先我们会先构建一个因子变量，这个因子变量表示的是<code>type</code>与<code>leg</code>的组合，在公式中含有<code>~0</code>，它表示，我们不在线性模型中包含截矩，其中我们通过<code>rafalib</code>包中的<code>imagemat()</code>函数绘制了组变量的矩阵示意图，这个示意图也有8项，它针对每一个type和leg组合进行了拟合，代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">##earlier, we defined the 'group' column:</span></div><div class="line">spider$group &lt;- factor(paste0(spider$leg, spider$type))</div><div class="line">X &lt;- model.matrix(~ <span class="number">0</span> + group, data=spider)</div><div class="line">colnames(X)</div><div class="line">head(X)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">summary(fitG)</div><div class="line">coefs &lt;- coef(fitG)</div><div class="line">coefs</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">&gt; colnames(X)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; head(X)</div><div class="line">  groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push</div><div class="line"><span class="number">1</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">  groupL4pull groupL4push</div><div class="line"><span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">&gt; <span class="keyword">library</span>(rafalib)</div><div class="line">&gt; imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">&gt; fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">&gt; summary(fitG)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-<span class="number">0.46385</span> -<span class="number">0.10735</span> -<span class="number">0.01111</span>  <span class="number">0.07848</span>  <span class="number">0.76853</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">groupL1pull  <span class="number">0.92147</span>    <span class="number">0.03266</span>   <span class="number">28.21</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL1push  <span class="number">0.40735</span>    <span class="number">0.03266</span>   <span class="number">12.47</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2pull  <span class="number">1.14533</span>    <span class="number">0.04917</span>   <span class="number">23.29</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2push  <span class="number">0.52733</span>    <span class="number">0.04917</span>   <span class="number">10.72</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3pull  <span class="number">1.27385</span>    <span class="number">0.02641</span>   <span class="number">48.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3push  <span class="number">0.37596</span>    <span class="number">0.02641</span>   <span class="number">14.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4pull  <span class="number">1.40075</span>    <span class="number">0.03011</span>   <span class="number">46.52</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4push  <span class="number">0.49075</span>    <span class="number">0.03011</span>   <span class="number">16.30</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">0.1904</span> on <span class="number">274</span> degrees of freedom</div><div class="line">Multiple R-squared:   <span class="number">0.96</span>,	Adjusted R-squared:  <span class="number">0.9588</span> </div><div class="line"><span class="literal">F</span>-statistic:   <span class="number">821</span> on <span class="number">8</span> and <span class="number">274</span> DF,  p-value: &lt; <span class="number">2.2e-16</span></div><div class="line"></div><div class="line">&gt; coefs &lt;- coef(fitG)</div><div class="line">&gt; coefs</div><div class="line">groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push groupL4pull </div><div class="line">  <span class="number">0.9214706</span>   <span class="number">0.4073529</span>   <span class="number">1.1453333</span>   <span class="number">0.5273333</span>   <span class="number">1.2738462</span>   <span class="number">0.3759615</span>   <span class="number">1.4007500</span> </div><div class="line">groupL4push </div><div class="line">  <span class="number">0.4907500</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824171912.jpeg">
-
-</div>
-<h2 id="计算估计系数">计算估计系数</h2>
-<p>现在我们绘制出上面计算结果的示意图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">stripchart(split(spider$friction, spider$group), </div><div class="line">           vertical=<span class="literal">TRUE</span>, pch=<span class="number">1</span>, method=<span class="string">"jitter"</span>, las=<span class="number">2</span>, xlim=c(<span class="number">0</span>,<span class="number">11</span>), ylim=c(<span class="number">0</span>,<span class="number">2</span>))</div><div class="line">cols &lt;- brewer.pal(<span class="number">8</span>,<span class="string">"Dark2"</span>)</div><div class="line">abline(h=<span class="number">0</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">8</span>) &#123;</div><div class="line">  arrows(i+a,<span class="number">0</span>,i+a,coefs[i],lwd=<span class="number">3</span>,col=cols[i],length=lgth)</div><div class="line">&#125;</div><div class="line">legend(<span class="string">"right"</span>,names(coefs),fill=cols,cex=<span class="number">.75</span>,bg=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824172337.jpeg">
-
-</div>
-<h2 id="使用contrast包进行简单比较">使用contrast包进行简单比较</h2>
-<p>虽然无法使用这个公式来进行ANOVA分析，但是可以使用<code>contrast()</code>函数对每组的估计系数进行比较，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">groupL2push.vs.pull &lt;- contrast(fitG,</div><div class="line">                                list(group = <span class="string">"L2push"</span>),</div><div class="line">                                list(group = <span class="string">"L2pull"</span>))</div><div class="line">groupL2push.vs.pull</div><div class="line">coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; groupL2push.vs.pull</div><div class="line">lm model parameter contrast</div><div class="line"></div><div class="line">  Contrast      S.E.      Lower      Upper     t  df Pr(&gt;|t|)</div><div class="line"><span class="number">1</span>   -<span class="number">0.618</span> <span class="number">0.0695372</span> -<span class="number">0.7548951</span> -<span class="number">0.4811049</span> -<span class="number">8.89</span> <span class="number">274</span>        <span class="number">0</span></div><div class="line">&gt; coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div><div class="line">groupL2push </div><div class="line">     -<span class="number">0.618</span></div></pre></td></tr></table></figure>
-<h2 id="无截矩时差值的差异">无截矩时差值的差异</h2>
-<p>我们还可以进行push和pull在各级之间的两两(pair-wise)比较。例如，现在我们想比较L3与L2的push和pull的差值，如下所示：</p>
-<p><span class="math display">\[
-(\mbox{L3push} - \mbox{L3pull}) - (\mbox{L2push} - \mbox{L2pull})
-\]</span> <span class="math display">\[
-= \mbox{L3 push} + \mbox{L2pull} - \mbox{L3pull} - \mbox{L2push}
-\]</span></p>
-<p>其过程如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">summary(groupL3vsL2interaction)</div><div class="line">names(coefs)</div><div class="line">(coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">&gt; groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">&gt; summary(groupL3vsL2interaction)</div><div class="line"></div><div class="line">	 Simultaneous Tests <span class="keyword">for</span> General Linear Hypotheses</div><div class="line"></div><div class="line">Fit: lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Linear Hypotheses:</div><div class="line">       Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line"><span class="number">1</span> == <span class="number">0</span> -<span class="number">0.27988</span>    <span class="number">0.07893</span>  -<span class="number">3.546</span>  <span class="number">0.00046</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line">(Adjusted p values reported -- single-step method)</div><div class="line"></div><div class="line">&gt; names(coefs)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; (coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div><div class="line">groupL3push </div><div class="line"> -<span class="number">0.2798846</span></div></pre></td></tr></table></figure>
-<h2 id="练习">练习</h2>
-<p>P230</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/20/DAL/DALS015_Linear_Models05Collinearity/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2562,6 +2318,250 @@ c\\
 <p>这种方法呈现的是假设<span class="math inline">\(\beta\)</span>是一个固定参数（非随机）。我们提取了估计此参数的方法，以及估计过程中如何量化这些参数不确定性的标准误差。这种方法是就所谓的频率论方法(frequentist)。另一种方法是假设<span class="math inline">\(\beta\)</span>是随机的，它的分布可以对我们先前关于<span class="math inline">\(\beta\)</span>应该是什么进行量化。一旦我们观察到数据，那么我们通过计算给定数据的<span class="math inline">\(\beta\)</span>条件分布（称为后验分布,posterior)，我们就就更新我们先前的信息，这种方法称贝叶斯方法。例如，一旦我们计算了<span class="math inline">\(\beta\)</span>的后验分布，我们就可以计算出某事件最容易发生的一个区间（可信区间）。此外，许多模型可以连接在一起，也就是所谓的分层模型(hierarchical mode)。在后面的内容里，我们会介绍贝叶斯统计和层次模型。贝叶斯分层模型的一本很好的书是<a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank" rel="external">《Bayesian Data Analysis》</a>，在CRAN里，也有计算贝叶斯线性模型的包。其它的一些计算贝叶斯模型的软件是stan和BUGS。</p>
 <h3 id="惩罚线性模型penalized-linear-models">惩罚线性模型(Penalized linear models)</h3>
 <p>如果我们在模型中包含足够的参数，我们就可以实现残差平方和为0。惩罚纯情模型引入了一个惩罚项到最小化的最小二乘方程里。这些惩罚项通常是<span class="math inline">\(\lambda \sum_{j=1}^p \|\beta_j\|^k\)</span>这个形式，它们对大的绝对值以及大量的参数进行惩罚。添加这个额外的参数的目的就是避免过拟合。如果要使用这些模型，我们需要选择使用哪种模式来决定我们的惩罚程度。当<span class="math inline">\(k=2\)</span>时，这种模型称为岭回归(ridge regression)，Tikhonov正则化(regularization)L2正则化。当<span class="math inline">\(k=1\)</span>时，被称为LASSO或L1正则化。有关这些惩罚线性模型的一本书是《Elements of Statistical Learn》（网上有免费的电子版）。与这些模型有关的R函数包括<code>MASS</code>包里的<code>lm.ridge</code>函数，还有<code>lars</code>包，<code>glmnet</code>包。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/20/DAL/DALS014_Linear_Models04ANOVA/" itemprop="url">DALS014-Linear Models线性模型04方差分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T12:00:00+08:00">
+                2019-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,532
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第5章线性模型的第4小节，这一部分的主要内容涉及ANOVA，有关方差分析的笔记R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/linear/interactions_and_contrasts.Rmd" target="_blank" rel="external">Github</a>。</p>
+<h2 id="anova简介">ANOVA简介</h2>
+<p>现在考虑一种情况，如果我们想知道push与pull的差值在整体上，不同的组中是否有区别。换句话讲，我们并不想比较任意两组有差异，我们就想知道，在所有的有腿中，代表了push和pull差值的3个交互作用导致的push和pull差异是否比正常的差异大（即不考虑交互作用的情况）。</p>
+<p>通过方差分析(analysis of variance，ANOVA)就可以解决这个问题。ANOVA的本质在于比较不同复杂模型的残差平方和是被哪些因素降低的（我的理解就是，总的残差平方和都是分布在哪些变量上面，哪些变量分到的最多，哪些变量的效应就最强）。含有8个系数的模型比含有5个系数的模型要复杂的多，在5个系数的模型中，我们是假设push和pull在所有组之间的差异是相等的。最简单的模型只使用一个系数，一个截矩。在某些假设下，我们还可以执行推断，确定与我们观察到的一样大的改进概率(Under certain assumptions we can also perform inference that determines the probability of improvements as large as what we observed)。</p>
+<p>下面的ANOVA计算的结果（接前文案例）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; anova(fitX)</div><div class="line">Analysis of Variance Table</div><div class="line"></div><div class="line">Response: friction</div><div class="line">           Df Sum Sq Mean Sq  <span class="literal">F</span> value    Pr(&gt;<span class="literal">F</span>)    </div><div class="line">type        <span class="number">1</span> <span class="number">42.783</span>  <span class="number">42.783</span> <span class="number">1179.713</span> &lt; <span class="number">2.2e-16</span> ***</div><div class="line">leg         <span class="number">3</span>  <span class="number">2.921</span>   <span class="number">0.974</span>   <span class="number">26.847</span> <span class="number">2.972e-15</span> ***</div><div class="line">type:leg    <span class="number">3</span>  <span class="number">2.098</span>   <span class="number">0.699</span>   <span class="number">19.282</span> <span class="number">2.256e-11</span> ***</div><div class="line">Residuals <span class="number">274</span>  <span class="number">9.937</span>   <span class="number">0.036</span>                       </div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div></pre></td></tr></table></figure>
+<p>结果的第一行中有一个<code>type</code>变量（表示pull或push），它对应的Sum值为42.783，这就表示，这一单一的系数减少了42.783的平方和。我们看一下总的平方和，其实就是线性模型的截矩，也可以是<code>anova(fitX)</code>的第2列的和，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">result &lt;- anova(fitX)</div><div class="line">sum(result$`Sum Sq`)</div><div class="line">mu0 &lt;- mean(spider$friction)</div><div class="line">(initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; result &lt;- anova(fitX)</div><div class="line">&gt; sum(result$`Sum Sq`)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div><div class="line">&gt; mu0 &lt;- mean(spider$friction)</div><div class="line">&gt; (initial.ss &lt;- sum((spider$friction - mu0)^<span class="number">2</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
+<p>需要注意是的是，这个平方和的计算公式最初就是来源于样本方差的计算公式，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">N &lt;- nrow(spider)</div><div class="line">(N - <span class="number">1</span>) * var(spider$friction)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; N &lt;- nrow(spider)</div><div class="line">&gt; (N - <span class="number">1</span>) * var(spider$friction)</div><div class="line">[<span class="number">1</span>] <span class="number">57.73858</span></div></pre></td></tr></table></figure>
+<p>现在来看一下，前面的42.783是如何得到的。我们需要计算仅包含类型信息模型的残差平方和。我们可以通过计算残差，残差的平方，并将它们加起来就能实现，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">s &lt;- split(spider$friction, spider$type)</div><div class="line">after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">residual &lt;- x - mean(x)</div><div class="line">sum(residual^<span class="number">2</span>)</div><div class="line">&#125;) )</div><div class="line">(type.ss &lt;- initial.ss - after.type.ss)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; s &lt;- split(spider$friction, spider$type)</div><div class="line">&gt; after.type.ss &lt;- sum( sapply(s, <span class="keyword">function</span>(x) &#123;</div><div class="line">+   residual &lt;- x - mean(x)</div><div class="line">+   sum(residual^<span class="number">2</span>)</div><div class="line">+ &#125;) )</div><div class="line">&gt; (type.ss &lt;- initial.ss - after.type.ss)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
+<p>这个降低的程度(就是上面的42.78307)就相当于模型<code>~type</code>和<code>~1</code>拟合值差值的平方和，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; sum(sapply(s, length) * (sapply(s, mean) - mu0)^<span class="number">2</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">42.78307</span></div></pre></td></tr></table></figure>
+<p>线性模型中的各个项的顺序以及ANOVA表格中的顺序很重要：每行表示的是：当添加了一个新的系数后，残差平方和较未添加这个系数之前减少的量。</p>
+<p>在ANOVA表（这个表其实就是ANOAVA计算后的结果）还标明了自由度。当引入了<code>type</code>这一项时，它对应的<code>Df</code>就是1，<code>leg</code>变量引入了3个项（即legL2，legL3和legL4），它对应的<code>Df</code>就是3（这一段不太理解）。ANOVA还有一列是<code>F value</code>。F值表示的是包含感兴趣的项（感兴趣的项平方和除以相应自由度）除以残差（ANOVA表中的最后一行除以自自由度），以第一行为例 说明一下就是<code>(42.783/1)/(9.937/274)=1179.686</code>。</p>
+<p>书中给出的公式为：</p>
+<p><span class="math display">\[
+r_i = Y_i - \hat{Y}_i
+\]</span> <span class="math display">\[
+\mbox{Mean Sq Residuals} = \frac{1}{N - p} \sum_{i=1}^N r_i^2
+\]</span></p>
+<p>其中<code>p</code>表示模型中系数的总数（在这个模型中，包括截矩在内的系数总数是8）。</p>
+<p>在零假设成立的前提下（零假设就是添加系数的真值为0），我们会得到每行F值分布的理论结果。这种近似所需的假设类似于t分布近似的假设，例如我们在使用CLT时需要大量的样本，或者是总体的数据服从正态分布。</p>
+<p>现在我们来解释一下p值，看最后一行，即<code>type:leg</code>，内容是<code>type:leg    3  2.098   0.699   19.282 2.256e-11 ***</code>，<code>type:leg</code>表示的是3个交互作用系数。在零假设下，这3个附加项的真实值为0，例如，<span class="math inline">\(\beta_{push,L2}=0\)</span>，<span class="math inline">\(\beta_{push,L3}=0\)</span>，<span class="math inline">\(\beta_{push,L4}=0\)</span>，然后我们就计算出ANOVA表的这一行观察到的这么大的F值的概率。这里需要记住，我们只关注大的F值，因为我们有一个平方和的比，因此F值只能是正数（原文：Remember that we are only concerned with large values here, because we have a ratio of sum of squares, the F-value can only be positive. ）。<code>type:leg</code>这一行中的p值可以这么解释：在零假设下，我们认为push和pull的差值在所有组之间是没有差异的，p值表示了，在这个零假设成立时，我们观察到的如此大的方差的可能性。从计算结果中我们可以看到，我们的p值非常小，我们就可以拒绝零假设，即可以认为，push和pull的差值在不同组之间是不同的。</p>
+<p>另外，ANOVA中的F值与F分布有关，F分布有2个以参数，一个是分子的自由度（分子是研究对象的自由度，例如前面提到的交互作用），一个是分母的自由度（残差）。从结果可以看到，交互作用系数的自由度是3，残差的自由度是274。</p>
+<h2 id="anova模型的另外表示">ANOVA模型的另外表示</h2>
+<p>现在来看一下ANOVA模型的另外表示方法，在这种方式里，我们假设每一对type与leg都有自己的均值（这样，对于每一条腿来说，push与pull的效应就不会相同）。这种表述方式在某种程度上来说更加简单，但是，我们不能像前面那样构建ANOVA表，因为这种方式无法区分交互作用系数。</p>
+<p>首先我们会先构建一个因子变量，这个因子变量表示的是<code>type</code>与<code>leg</code>的组合，在公式中含有<code>~0</code>，它表示，我们不在线性模型中包含截矩，其中我们通过<code>rafalib</code>包中的<code>imagemat()</code>函数绘制了组变量的矩阵示意图，这个示意图也有8项，它针对每一个type和leg组合进行了拟合，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">##earlier, we defined the 'group' column:</span></div><div class="line">spider$group &lt;- factor(paste0(spider$leg, spider$type))</div><div class="line">X &lt;- model.matrix(~ <span class="number">0</span> + group, data=spider)</div><div class="line">colnames(X)</div><div class="line">head(X)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">summary(fitG)</div><div class="line">coefs &lt;- coef(fitG)</div><div class="line">coefs</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">&gt; colnames(X)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; head(X)</div><div class="line">  groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push</div><div class="line"><span class="number">1</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">  groupL4pull groupL4push</div><div class="line"><span class="number">1</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">2</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">3</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">4</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">5</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line"><span class="number">6</span>           <span class="number">0</span>           <span class="number">0</span></div><div class="line">&gt; <span class="keyword">library</span>(rafalib)</div><div class="line">&gt; imagemat(X, main=<span class="string">"Model matrix for linear model with group variable"</span>)</div><div class="line">&gt; fitG &lt;- lm(friction ~ <span class="number">0</span> + group, data=spider)</div><div class="line">&gt; summary(fitG)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">     Min       1Q   Median       3Q      Max </div><div class="line">-<span class="number">0.46385</span> -<span class="number">0.10735</span> -<span class="number">0.01111</span>  <span class="number">0.07848</span>  <span class="number">0.76853</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">groupL1pull  <span class="number">0.92147</span>    <span class="number">0.03266</span>   <span class="number">28.21</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL1push  <span class="number">0.40735</span>    <span class="number">0.03266</span>   <span class="number">12.47</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2pull  <span class="number">1.14533</span>    <span class="number">0.04917</span>   <span class="number">23.29</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL2push  <span class="number">0.52733</span>    <span class="number">0.04917</span>   <span class="number">10.72</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3pull  <span class="number">1.27385</span>    <span class="number">0.02641</span>   <span class="number">48.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL3push  <span class="number">0.37596</span>    <span class="number">0.02641</span>   <span class="number">14.24</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4pull  <span class="number">1.40075</span>    <span class="number">0.03011</span>   <span class="number">46.52</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">groupL4push  <span class="number">0.49075</span>    <span class="number">0.03011</span>   <span class="number">16.30</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">0.1904</span> on <span class="number">274</span> degrees of freedom</div><div class="line">Multiple R-squared:   <span class="number">0.96</span>,	Adjusted R-squared:  <span class="number">0.9588</span> </div><div class="line"><span class="literal">F</span>-statistic:   <span class="number">821</span> on <span class="number">8</span> and <span class="number">274</span> DF,  p-value: &lt; <span class="number">2.2e-16</span></div><div class="line"></div><div class="line">&gt; coefs &lt;- coef(fitG)</div><div class="line">&gt; coefs</div><div class="line">groupL1pull groupL1push groupL2pull groupL2push groupL3pull groupL3push groupL4pull </div><div class="line">  <span class="number">0.9214706</span>   <span class="number">0.4073529</span>   <span class="number">1.1453333</span>   <span class="number">0.5273333</span>   <span class="number">1.2738462</span>   <span class="number">0.3759615</span>   <span class="number">1.4007500</span> </div><div class="line">groupL4push </div><div class="line">  <span class="number">0.4907500</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824171912.jpeg">
+
+</div>
+<h2 id="计算估计系数">计算估计系数</h2>
+<p>现在我们绘制出上面计算结果的示意图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">stripchart(split(spider$friction, spider$group), </div><div class="line">           vertical=<span class="literal">TRUE</span>, pch=<span class="number">1</span>, method=<span class="string">"jitter"</span>, las=<span class="number">2</span>, xlim=c(<span class="number">0</span>,<span class="number">11</span>), ylim=c(<span class="number">0</span>,<span class="number">2</span>))</div><div class="line">cols &lt;- brewer.pal(<span class="number">8</span>,<span class="string">"Dark2"</span>)</div><div class="line">abline(h=<span class="number">0</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">8</span>) &#123;</div><div class="line">  arrows(i+a,<span class="number">0</span>,i+a,coefs[i],lwd=<span class="number">3</span>,col=cols[i],length=lgth)</div><div class="line">&#125;</div><div class="line">legend(<span class="string">"right"</span>,names(coefs),fill=cols,cex=<span class="number">.75</span>,bg=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190824172337.jpeg">
+
+</div>
+<h2 id="使用contrast包进行简单比较">使用contrast包进行简单比较</h2>
+<p>虽然无法使用这个公式来进行ANOVA分析，但是可以使用<code>contrast()</code>函数对每组的估计系数进行比较，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">groupL2push.vs.pull &lt;- contrast(fitG,</div><div class="line">                                list(group = <span class="string">"L2push"</span>),</div><div class="line">                                list(group = <span class="string">"L2pull"</span>))</div><div class="line">groupL2push.vs.pull</div><div class="line">coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; groupL2push.vs.pull</div><div class="line">lm model parameter contrast</div><div class="line"></div><div class="line">  Contrast      S.E.      Lower      Upper     t  df Pr(&gt;|t|)</div><div class="line"><span class="number">1</span>   -<span class="number">0.618</span> <span class="number">0.0695372</span> -<span class="number">0.7548951</span> -<span class="number">0.4811049</span> -<span class="number">8.89</span> <span class="number">274</span>        <span class="number">0</span></div><div class="line">&gt; coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>]</div><div class="line">groupL2push </div><div class="line">     -<span class="number">0.618</span></div></pre></td></tr></table></figure>
+<h2 id="无截矩时差值的差异">无截矩时差值的差异</h2>
+<p>我们还可以进行push和pull在各级之间的两两(pair-wise)比较。例如，现在我们想比较L3与L2的push和pull的差值，如下所示：</p>
+<p><span class="math display">\[
+(\mbox{L3push} - \mbox{L3pull}) - (\mbox{L2push} - \mbox{L2pull})
+\]</span> <span class="math display">\[
+= \mbox{L3 push} + \mbox{L2pull} - \mbox{L3pull} - \mbox{L2push}
+\]</span></p>
+<p>其过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">summary(groupL3vsL2interaction)</div><div class="line">names(coefs)</div><div class="line">(coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; C &lt;- matrix(c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,-<span class="number">1</span>,-<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1</span>)</div><div class="line">&gt; groupL3vsL2interaction &lt;- glht(fitG, linfct=C)</div><div class="line">&gt; summary(groupL3vsL2interaction)</div><div class="line"></div><div class="line">	 Simultaneous Tests <span class="keyword">for</span> General Linear Hypotheses</div><div class="line"></div><div class="line">Fit: lm(formula = friction ~ <span class="number">0</span> + group, data = spider)</div><div class="line"></div><div class="line">Linear Hypotheses:</div><div class="line">       Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line"><span class="number">1</span> == <span class="number">0</span> -<span class="number">0.27988</span>    <span class="number">0.07893</span>  -<span class="number">3.546</span>  <span class="number">0.00046</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line">(Adjusted p values reported -- single-step method)</div><div class="line"></div><div class="line">&gt; names(coefs)</div><div class="line">[<span class="number">1</span>] <span class="string">"groupL1pull"</span> <span class="string">"groupL1push"</span> <span class="string">"groupL2pull"</span> <span class="string">"groupL2push"</span> <span class="string">"groupL3pull"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"groupL3push"</span> <span class="string">"groupL4pull"</span> <span class="string">"groupL4push"</span></div><div class="line">&gt; (coefs[<span class="number">6</span>] - coefs[<span class="number">5</span>]) - (coefs[<span class="number">4</span>] - coefs[<span class="number">3</span>])</div><div class="line">groupL3push </div><div class="line"> -<span class="number">0.2798846</span></div></pre></td></tr></table></figure>
+<h2 id="练习">练习</h2>
+<p>P230</p>
 
           
         
