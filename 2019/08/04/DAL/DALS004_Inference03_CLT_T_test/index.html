@@ -97,7 +97,7 @@
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728122626.jpeg">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728123209.jpeg">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728125345.jpeg">
-<meta property="og:updated_time" content="2019-08-16T08:40:18.496Z">
+<meta property="og:updated_time" content="2019-09-10T04:48:10.055Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DALS004-统计推断(Inference)02-CLT与T-test">
 <meta name="twitter:description" content="前言 这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第3部分。这一部分的主要内容涉及中心极限理论，t检验和功效计算。 中心极限定理(Central Limit Theorem)与t分布 中心极限定理(CLT) 当样本的数目非常大的，一个随机样本的均值\(\bar{Y}\)就会服从正态分布，这个正态分布的均值是总">
@@ -359,7 +359,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  9,967
+                  9,969
                 </span>
               
 
@@ -596,14 +596,16 @@ S E(\overline{X})=\sigma / \sqrt{N}
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line">hfPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"hf"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">mu_hf &lt;- mean(hfPopulation)</div><div class="line">mu_control &lt;- mean(controlPopulation)</div><div class="line">print(mu_hf - mu_control)</div><div class="line">print((mu_hf - mu_control)/mu_control*<span class="number">100</span>)</div></pre></td></tr></table></figure>
 <p>计算结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; print(mu_hf - mu_control)</div><div class="line">[<span class="number">1</span>] <span class="number">2.375517</span></div><div class="line">&gt; print((mu_hf - mu_control)/mu_control*<span class="number">100</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">9.942157</span></div></pre></td></tr></table></figure>
-<p>某些情况下，我们会采用抽样的形式，抽取一定数目的小鼠体重作为样本，此时就不能使用总体的计算方法，而是采用t检验，此时计算得到的p值不一定小于0.05，例如。我们随机抽取5只小鼠来计算一下，如下所示：</p>
+<p>某些情况下，我们会采用抽样的形式，抽取一定数目的小鼠体重作为样本，此时就不能使用总体的计算方法，而是采用t检验，此时计算得到的p值不一定小于0.05，例如，我们随机抽取5只小鼠来计算一下，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">N &lt;- <span class="number">5</span></div><div class="line">hf &lt;- sample(hfPopulation, N)</div><div class="line">control &lt;- sample(controlPopulation, N)</div><div class="line">t.test(hf,control)$p.value</div></pre></td></tr></table></figure>
 <p>计算结果如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; t.test(hf,control)$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">0.1410204</span></div></pre></td></tr></table></figure>
 <p>前后两种的计算方法出现了差异，第一次计算（使用小鼠的总体来进行计算）与第二次计算（随机抽两组的5只小鼠来计算）的p值不一样，是否出现了错误？</p>
-<p>在第二次计算中，p值大于0.05，因此我们不拒绝零假设，从而说饮食对小鼠的体重没有影响么？能否这么讲？答案不是能。我们只能说，无法拒绝零假设（注意，没有后面那半句：包含对小鼠的体重没有影响）。我们无法拒绝零假设，并不意味着零假设一定为真。在这个特殊的案例中，这里我们面临的一个问题就是，我们没有足够的功效(power)。如果你从事科学研究，很有可能在某些时候不得不做一个功效计算。在很多情况下，这是一种首选义务，因此它可以帮助你在人的研究中，避免使用过多的小鼠，或者是避免使用过多的受试患者。现在我们就来解释一下统计功效(statistical power)的含义。</p>
+<p>在第二次计算中，p值大于0.05，因此我们不拒绝零假设，从而说饮食对小鼠的体重没有影响么？</p>
+<p>能否这么讲？答案不是能。</p>
+<p>我们只能说，无法拒绝零假设（注意，没有后面那半句：包含对小鼠的体重没有影响）。我们无法拒绝零假设，并不意味着零假设一定为真。在这个特殊的案例中，这里我们面临的一个问题就是，我们没有足够的功效(power)。如果你从事科学研究，很有可能在某些时候不得不做一个功效计算。在很多情况下，这是一种首选义务，因此它可以帮助你在人的研究中，避免使用过多的小鼠，或者是避免使用过多的受试患者。现在我们就来解释一下统计功效(statistical power)的含义。</p>
 <h3 id="错误类型">错误类型</h3>
-<p>我们要有这么一个意识，即，一旦我们做统计，就有可能犯错误，这也就是为什么p值不等于0。在进行统计时，当p值很小时，这说明我们可以拒绝零假设，但是这种拒绝也有可能犯错误（虽然犯错误的概率很低），例如零假设确实是真时。例如当p值等于0.05时，那么我们重复20实验，就有可能1次会发生零假设成功的事件，统计学家把这种错误称为I类错误(<code>type I error</code>)。</p>
+<p>我们要有这么一个思路，一旦我们做统计，就有可能出现计算错误，这也就是为什么p值不等于0。在进行统计时，当p值很小时，这说明我们可以拒绝零假设，但是这种拒绝也有可能犯错误（虽然犯错误的概率很低），例如零假设确实是真时。例如当p值等于0.05时，那么我们重复20实验，就有可能1次会发生零假设成功的事件，统计学家把这种错误称为I类错误(<code>type I error</code>)。</p>
 <p>I类错误的定义就是，零假设成立时，我们拒绝了（其实不应该拒绝的），也就是所谓假阳性。这里为什么使用0.05，而不使用0.00001呢？这是因为如果阈值设得过低，成本会非常高。此时我们还要引入II类错误(<code>type I error</code>)，II类错误是指，零假设不成立，但是我们接受了零假设，也就是所谓的假阴性。前面我们抽样了5只小鼠，计算得到的值大于0.05，因此我们无法拒绝零假设（在0.05这个水平上），此时所犯的错误就是II类错误，也就是假阴性（从总体上看，实际上是有差异的，但是我们没有发现）。如果我们把阈值提高到0.25，我们就不会犯这个错误了（计算出的p值为0.1410204），不过通常情况下，不会这么干。</p>
 <h3 id="与0.01阈值cut-off">0.05与0.01阈值(cut-off)</h3>
 <p>多数的期刊或监管机构都坚持0.01或0.05的显著性水平，当然这么做无可厚非。我们本书的目标就之一就是让读者对p值以及置信区间有一个更深入的理解，以便读者能够在一些情况下做出合理的选择。不幸的是，这些阈值在某些程度上已经滥用，不过这是又是一个容易引起争论的话量，此处不表。</p>
@@ -793,7 +795,7 @@ S E(\overline{X})=\sigma / \sqrt{N}
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">214</span>
+                  <span class="site-state-item-count">215</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -908,7 +910,7 @@ S E(\overline{X})=\sigma / \sqrt{N}
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共856.7k字</span>
+  <span class="post-count">博客全站共859.2k字</span>
 </div>
 
         
