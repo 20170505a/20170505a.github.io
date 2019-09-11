@@ -259,6 +259,522 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/09/07/BioTools/DESeq2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/07/BioTools/DESeq2/" itemprop="url">DESeq2</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-07T12:00:00+08:00">
+                2018-09-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,305
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>本文参考了Jimmy的文章《用R语言的DESeq2包来对RNA-seq数据做差异分析》。使用DESeq2来做差异基因的分析，这个差异基因通常是测序公司给你的一个Excel表格。</p>
+<h2 id="第一步加载包">第一步：加载包</h2>
+<p>进行差异分析需要以下的包，如果无法正常工作，需要根据系统提示下载相应的包，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">source</span>(<span class="string">"http://bioconductor.org/biocLite.R"</span>) </div><div class="line">biocLite(<span class="string">"DESeq"</span>)</div><div class="line"></div><div class="line"><span class="keyword">library</span>(DESeq2)</div><div class="line"><span class="keyword">library</span>(limma)</div><div class="line"><span class="keyword">library</span>(pasilla)</div><div class="line"><span class="comment"># 需要使用到pasillaGenes这个数据集</span></div><div class="line"><span class="keyword">library</span>(DESeq)</div><div class="line"><span class="comment"># 根据系统提示，使用pasillaGenes这个数据集时需要安装DESeq包</span></div><div class="line">data(pasillaGenes)</div></pre></td></tr></table></figure>
+<h2 id="第二步提取原始表达数据">第二步：提取原始表达数据</h2>
+<p>这篇笔记使用pasillaGenes这个数据集进行演示，通过直接输入pasillaGenes，出现一系列信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">CountDataSet (storageMode: environment)</div><div class="line">assayData: <span class="number">14470</span> features, <span class="number">7</span> samples </div><div class="line">  element names: counts </div><div class="line">protocolData: none</div><div class="line">phenoData</div><div class="line">  sampleNames: treated1fb treated2fb <span class="keyword">...</span> untreated4fb (<span class="number">7</span> total)</div><div class="line">  varLabels: sizeFactor condition type</div><div class="line">  varMetadata: labelDescription</div><div class="line">featureData: none</div><div class="line">experimentData: use <span class="string">'experimentData(object)'</span></div><div class="line">  pubMedIds: <span class="number">20921232</span> </div><div class="line">Annotation:</div></pre></td></tr></table></figure>
+<p>从上面我们可以知道这些信息：</p>
+<ol style="list-style-type: decimal">
+<li>这貌似是一个储存了测序的reads数的数据集；</li>
+<li>这个数据集有14470个特征，7个样本；</li>
+<li>数据的表型有treated与untreated两个；</li>
+</ol>
+<p>现在提取这个数据集中的表达矩阵，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># raw data</span></div><div class="line">exprSet=counts(pasillaGenes)  </div><div class="line"><span class="comment">## expression matrix</span></div><div class="line">str(exprSet)</div><div class="line">group_list=pasillaGenes$condition</div><div class="line"><span class="comment">##做好分组因子即可</span></div></pre></td></tr></table></figure>
+<p>现在查看一下这个表达矩阵的格式，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143103.png">
+
+</div>
+<p>从上面可以看出来，列是样本分组情况，行是不同的基因的情况。</p>
+<h2 id="第三步构建dds对象">第三步：构建DDS对象</h2>
+<h3 id="构建分组数据框">3.1构建分组数据框</h3>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">colData &lt;- data.frame(row.names=colnames(exprSet), group_list=group_list)</div><div class="line">colData</div><div class="line"><span class="comment">#              group_list</span></div><div class="line"><span class="comment"># treated1fb      treated</span></div><div class="line"><span class="comment"># treated2fb      treated</span></div><div class="line"><span class="comment"># treated3fb      treated</span></div><div class="line"><span class="comment"># untreated1fb  untreated</span></div><div class="line"><span class="comment"># untreated2fb  untreated</span></div><div class="line"><span class="comment"># untreated3fb  untreated</span></div><div class="line"><span class="comment"># untreated4fb  untreated</span></div></pre></td></tr></table></figure>
+<h3 id="构建dds对象">3.2构建dds对象</h3>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">dds &lt;- DESeqDataSetFromMatrix(countData = exprSet,</div><div class="line">                              colData = colData,</div><div class="line">                              design = ~ group_list)</div><div class="line">dds</div><div class="line"><span class="comment"># class: DESeqDataSet </span></div><div class="line"><span class="comment"># dim: 14470 7 </span></div><div class="line"><span class="comment"># metadata(1): version</span></div><div class="line"><span class="comment"># assays(1): counts</span></div><div class="line"><span class="comment"># rownames(14470): FBgn0000003 FBgn0000008 ... FBgn0261574 FBgn0261575</span></div><div class="line"><span class="comment"># rowData names(0):</span></div><div class="line"><span class="comment">#   colnames(7): treated1fb treated2fb ... untreated3fb untreated4fb</span></div><div class="line"><span class="comment"># colData names(1): group_list</span></div></pre></td></tr></table></figure>
+<p>其中countData是表达数据，colData是分组信息，它是一个数据框，与表达矩阵相对应，design也是实验设计的信息（在这里colData与design的内容是一样，因为只有一个实验因素）。</p>
+<h2 id="第四步计算">第四步：计算</h2>
+<p>在这一步，直接使用DESeq2计算即可，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">dds2 &lt;- DESeq(dds)</div><div class="line">resultsNames(dds2)</div><div class="line"><span class="comment"># [1] "Intercept"                       "group_list_untreated_vs_treated"</span></div><div class="line"></div><div class="line">res &lt;-  results(dds2, contrast=c(<span class="string">"group_list"</span>,<span class="string">"treated"</span>,<span class="string">"untreated"</span>))</div><div class="line"><span class="comment">## 提取你想要的差异分析结果，我们这里是treated组对untreated组进行比较</span></div><div class="line"><span class="comment"># log2 fold change (MLE): group_list treated vs untreated </span></div><div class="line"><span class="comment"># Wald test p-value: group_list treated vs untreated </span></div><div class="line"><span class="comment"># DataFrame with 14470 rows and 6 columns</span></div><div class="line"><span class="comment"># baseMean log2FoldChange     lfcSE        stat     pvalue      padj</span></div><div class="line"><span class="comment"># &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;   &lt;numeric&gt;  &lt;numeric&gt; &lt;numeric&gt;</span></div><div class="line"><span class="comment">#   FBgn0000003    0.1594687     0.95577724 3.8120692  0.25072400 0.80202750        NA</span></div><div class="line"><span class="comment"># FBgn0000008   52.2256776     0.02806414 0.3011996  0.09317455 0.92576489 0.9892560</span></div><div class="line"><span class="comment"># FBgn0000014    0.3897080     0.74861167 3.2713012  0.22884217 0.81899159        NA</span></div><div class="line"><span class="comment"># FBgn0000015    0.9053584    -0.81010553 1.9537695 -0.41463721 0.67840751        NA</span></div><div class="line"><span class="comment"># FBgn0000017 2358.2434078    -0.27580756 0.1292501 -2.13390533 0.03285053 0.2400995</span></div><div class="line"><span class="comment"># ...                  ...            ...       ...         ...        ...       ...</span></div><div class="line"><span class="comment"># FBgn0261571 9.450145e-02     0.90410680 3.8141332  0.23704122  0.8126248        NA</span></div><div class="line"><span class="comment"># FBgn0261572 3.239716e+00    -1.34535962 1.0951184 -1.22850606  0.2192571        NA</span></div><div class="line"><span class="comment"># FBgn0261573 1.401106e+03    -0.00252173 0.1464057 -0.01722426  0.9862577 0.9973619</span></div><div class="line"><span class="comment"># FBgn0261574 2.719020e+03     0.03014446 0.1973005  0.15278450  0.8785682 0.9830712</span></div><div class="line"><span class="comment"># FBgn0261575 3.364605e+00     0.57679881 1.1048881  0.52204276  0.6016406        NA</span></div></pre></td></tr></table></figure>
+<p>上面用到了<code>results</code>这个函数，它能够从DESeq的计算结果中提取计算结果，这些计算结果包括样本信息，log2FC的变化，标准差，检验结果，校正后的p值，它的用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">results(object, contrast, name, lfcThreshold = <span class="number">0</span>,</div><div class="line">  altHypothesis = c(<span class="string">"greaterAbs"</span>, <span class="string">"lessAbs"</span>, <span class="string">"greater"</span>, <span class="string">"less"</span>),</div><div class="line">  listValues = c(<span class="number">1</span>, -<span class="number">1</span>), cooksCutoff, independentFiltering = <span class="literal">TRUE</span>,</div><div class="line">  alpha = <span class="number">0.1</span>, filter, theta, pAdjustMethod = <span class="string">"BH"</span>, filterFun,</div><div class="line">  format = c(<span class="string">"DataFrame"</span>, <span class="string">"GRanges"</span>, <span class="string">"GRangesList"</span>), test, addMLE = <span class="literal">FALSE</span>,</div><div class="line">  tidy = <span class="literal">FALSE</span>, parallel = <span class="literal">FALSE</span>, BPPARAM = bpparam(), <span class="keyword">...</span>)</div></pre></td></tr></table></figure>
+<p>object指的是DESeqDataSet对象。 contrast指的是指定比较的参数，它的格式为以下任意三种：</p>
+<ol style="list-style-type: decimal">
+<li>一个字符型向量，这个向量中含有的信息按照顺序是：①实验设计信息，也就是前面我们在构建dds时的<code>design = ~ group_list</code>，但是这里只输入<code>group_list</code>，②基因表达的分组名称，这里是分子水平的分组名称；③这里是分母中的分组信息，也就是说，表达的倍数是①中的分组除以③中的分组，在上面的结果中，就是<code>treated</code>除以<code>untreated</code>的表达量，也就是<code>treat</code>比<code>untreated</code>的表达量高多少倍。</li>
+<li>2个字符型向量的列表，按照顺序为：①分子的分组信息，②分母的分组信息，这些分组的信息可以通过<code>resultsNames(object)</code>得到，如果列表的长度为1，那么列表的第2个元素就是空。</li>
+<li>一个数字对比向量，它代表<code>resultsNames(object)</code>返回的每个元素（不太理解）。</li>
+</ol>
+<h2 id="第五步根据p值提取差异结果">第五步：根据p值提取差异结果</h2>
+<p>现在根据p值提取差异结果，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">resOrdered &lt;- res[order(res$padj),]</div><div class="line">resOrdered=as.data.frame(resOrdered)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143129.png">
+
+</div>
+<p>到此，计算过程结束。</p>
+<p>绘制热图。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<h2 id="补充使用deseq2对数据进行均一化">补充：使用DESeq2对数据进行均一化</h2>
+<p>DESeq2软件可以对counts进行均一化，有关DESeq2均一化的原理，可以参考这篇笔记<a href="http://rvdsd.top/2018/07/08/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B025-%E5%B7%AE%E5%BC%82%E8%A1%A8%E8%BE%BE%E5%88%86%E6%9E%90/">《差异表达分析》</a>，下面是计算过程：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rld &lt;- rlogTransformation(dds2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143207.png">
+
+</div>
+<p>现在绘制均一化前与均一化后的表达值的图形，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">par(cex = <span class="number">0.7</span>)</div><div class="line">n.sample=ncol(exprSet)</div><div class="line">cols &lt;- rainbow(<span class="number">7</span>)</div><div class="line">boxplot(exprSet, col = cols,main=<span class="string">"expression value"</span>,las=<span class="number">2</span>)</div><div class="line">boxplot(exprSet_new, col = cols,main=<span class="string">"expression value"</span>,las=<span class="number">2</span>)</div><div class="line">hist(exprSet)</div><div class="line">hist(exprSet_new)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302143232.png">
+
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://www.bio-info-trainee.com/1533.html" target="_blank" rel="external">使用DESeq2做基因差异分析</a></li>
+<li></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/09/06/Tools/Bimap对象笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/06/Tools/Bimap对象笔记/" itemprop="url">Bimap对象笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-06T12:00:00+08:00">
+                2018-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,898
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="bimap对象概览">Bimap对象概览</h2>
+<p>我们平常所见的“注释映射”(annotation maps)就是Bimap对象。例如，x是一个Bimap对象，使用<code>show(x)</code>或<code>summary(x)</code>，就可以显示一些有关这个对象的信息，两者的区别在于，后者显示的信息更多，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">show(hgu95av2SYMBOL)</div><div class="line"><span class="comment"># SYMBOL map for chip hgu95av2 (object of class "ProbeAnnDbBimap")</span></div><div class="line"><span class="comment"># 从上面的信息我们可以看出来，hgu95av2SYMBOL是hgu95av芯片的SYMBOL映射文件</span></div><div class="line"></div><div class="line">summary(hgu95av2SYMBOL)</div><div class="line"><span class="comment"># SYMBOL map for chip hgu95av2 (object of class "ProbeAnnDbBimap")</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Lkeyname: probe_id (Ltablename: probes)</span></div><div class="line"><span class="comment"># |    Lkeys: "1000_at", "1001_at", ... (total=12625/mapped=11471)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Rkeyname: symbol (Rtablename: gene_info)</span></div><div class="line"><span class="comment"># |    Rkeys: "A1BG", "A2M", ... (total=59682/mapped=8595)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | direction: L --&gt; R</span></div><div class="line"><span class="comment"># --------------------------------</span></div><div class="line"><span class="comment"># 从上面的信息可以看出来，hgu95av2SYMBOL这个文件的左侧是探针ID(probe_id)，列的名称是probes，它的格式为"1000_at", "1001_at", ... </span></div><div class="line"><span class="comment"># 探针的数目是12625个，有映射关系的有11471个</span></div><div class="line"><span class="comment"># 右侧的信息的symbol，可以理解为基因的缩写，列的名称是gene_info，它的格式为"A1BG", "A2M", ...，其中有基因的数目为59682，有映射关系的有8595个</span></div><div class="line"><span class="comment"># 映射的方向是从左到右</span></div></pre></td></tr></table></figure>
+<h2 id="bimap对象的构成">Bimap对象的构成</h2>
+<p>一个bimap由2部分构成。第一部分是2个对象集，就像上面所说的，左侧的对象集与右侧的对象集，这两个对象集中的每一个成员都有自己的名称，并且这个名称在各自的对象集中是唯一的。左侧对象集的名称称为left keys，或者是Lkeys，相应的右侧就是Rkeys。第二部分就是左侧与右侧的映射数目，并且链接是可以被标记的(tagged），关于这个“标记”是什么意思，下文会提到。总之，一个bimap对象其实就是一个二分图(bipartite grpha)。</p>
+<p>什么是二分图呢，看下面的案例。</p>
+<p>案例1: <code>B1</code>是某个bimap对象，它有4个Lkeys，即abcd，它有3个Rkeys，分别为ABC，它的链接（原文是Links，或edges）链接关系如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="string">"a"</span> &lt;--&gt; <span class="string">"A"</span></div><div class="line"><span class="string">"a"</span> &lt;--&gt; <span class="string">"B"</span></div><div class="line"><span class="string">"b"</span> &lt;--&gt; <span class="string">"A"</span></div><div class="line"><span class="string">"d"</span> &lt;--&gt; <span class="string">"C"</span></div></pre></td></tr></table></figure>
+<p>这里我们需要注意的是，第一，在一个确定的对象中，从左侧到右侧的链接数目可以是任意值。第二，在这个案例中，链接数目并没有标记(tagged)。</p>
+<p>再看一个叫<code>B2</code>的bimap文件，它有4个Lkeys，分别为abcd，有3个Rkeys，分别为ABC，这个bimap文件中的链接进行了标记，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"a"</span> &lt;-<span class="string">"x"</span>-&gt; <span class="string">"A"</span></div><div class="line"><span class="string">"a"</span> &lt;-<span class="string">"y"</span>-&gt; <span class="string">"B"</span></div><div class="line"><span class="string">"b"</span> &lt;-<span class="string">"x"</span>-&gt; <span class="string">"A"</span></div><div class="line"><span class="string">"d"</span> &lt;-<span class="string">"x"</span>-&gt; <span class="string">"C"</span></div><div class="line"><span class="string">"d"</span> &lt;-<span class="string">"y"</span>-&gt; <span class="string">"C"</span></div></pre></td></tr></table></figure>
+<p>从上面的数据可以看出来，d与C存在两个链接(links)，其中一个标记(tag)为x，另外一个标记为y。</p>
+<p>bimap除了用箭头表示映射关系外，还可以采用数据框的形式，下面就是<code>B1</code>文件的映射关系，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">left  right</div><div class="line">   a      A </div><div class="line">   a      B</div><div class="line">   b      A</div><div class="line">   d      C</div></pre></td></tr></table></figure>
+<p>如果右侧的对象有一个多值属性，就像下面的这个样子：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">A &lt;-- c(<span class="number">1.2</span>, <span class="number">0.9</span>)</div><div class="line">B &lt;-- character(<span class="number">0</span>)</div><div class="line">C &lt;-- -<span class="number">1</span>:<span class="number">1</span></div></pre></td></tr></table></figure>
+<p>那么B1的平面表示法（英文是Flat representation），就是下面的这个样子：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">left  right  Rattrib1</div><div class="line">   a      A       <span class="number">1.2</span></div><div class="line">   a      A       <span class="number">0.9</span></div><div class="line">   a      B        <span class="literal">NA</span></div><div class="line">   b      A       <span class="number">1.2</span></div><div class="line">   b      A       <span class="number">0.9</span></div><div class="line">   d      C        -<span class="number">1</span></div><div class="line">   d      C         <span class="number">0</span></div><div class="line">   d      C         <span class="number">1</span></div></pre></td></tr></table></figure>
+<p>从上面的这个案例我们就知道，行数（这里是8）大于链接数（这里是4）。</p>
+<h2 id="anndbbimap与flatbimap对象">AnnDbBimap与FlatBimap对象</h2>
+<p>AnnDbBimap对象是bimap对象的一种，它储存于数据库中。一个FLastBimap的数据（Lkeys，Rkeys和Links）储存在内存（用数据框的形式储存Links）。从概念上讲，AnnDbBimap和FlatBimap对象是一样的（只是它们的内部表示不一样），因此我们可以使用一组方法来对它们进行操作，最常见的接口（common interface）就是Bimap interface。这里需要注意的是，AnnDbBimap和FlastBimap对象都是只读对象，无法更改它们，只能读取。</p>
+<p>使用<code>flatten()</code>函数可以将AnnDbBimap对象转换为一个FlatBimap对象。但是，一个FlatBimap对象不能转换为AnnDbBimap对象，flatten()这个泛型函数在理解一个特定的Bimap的方法，即<code>f</code>方面很有用。对于任何的AnnDbBimap对象x来说，<code>f(x)</code>与<code>f(flatten(x))</code>是一样的。这就说明，<code>f</code>方法作用于AnnDbBimap对象时，它返回的类型与<code>f</code>方法作用于FlatBimap对象是一样。</p>
+<h2 id="处理bimap对象的函数">处理Bimap对象的函数</h2>
+<p>处于Bimap对象的函数有以下这些。</p>
+<p><code>key()</code>，它返回一个Bimap对象的所有keys，例如<code>keys(hgu95av2GO)</code>。 <code>length()</code>，它等于同<code>length(keys(x))</code>。 <code>isNA()</code>，返回一个逻辑向量，长度与参数一样，如果是TRUE，则表示keys没有映射。 <code>mappedkeys()</code>，返回<code>keys(x)</code>的子集，也就是只产生了映射的子集，这是一个处理Bimap对象的接口。 <code>count.mappedkyes()</code>，相当于<code>length(mappedkeys(x))</code>。</p>
+<p>现在我们来看一个Bimap对象<code>hgu95av2GO</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line">class(hgu95av2GO)</div><div class="line"><span class="comment"># [1] "ProbeGo3AnnDbBimap"</span></div><div class="line"><span class="comment"># attr(,"package")</span></div><div class="line"><span class="comment"># [1] "AnnotationDbi"</span></div><div class="line">str(hgu95av2GO)</div><div class="line"><span class="comment"># Formal class 'ProbeGo3AnnDbBimap' [package "AnnotationDbi"] with 9 slots</span></div><div class="line">  <span class="comment"># ..@ rightTables: Named chr [1:3] "go_bp" "go_cc" "go_mf"</span></div><div class="line">  <span class="comment"># .. ..- attr(*, "names")= chr [1:3] "BP" "CC" "MF"</span></div><div class="line">  <span class="comment"># ..@ L2Rchain   :List of 3</span></div><div class="line">  <span class="comment"># .. ..$ :Formal class 'L2Rlink' [package "AnnotationDbi"] with 8 slots</span></div><div class="line">  <span class="comment"># .. .. .. ..@ tablename   : chr "probes"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Lcolname    : chr "probe_id"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ tagname     : chr NA</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rcolname    : chr "gene_id"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rattribnames: chr(0) </span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rattrib_join: chr NA</span></div><div class="line">  <span class="comment"># .. .. .. ..@ filter      : chr "&#123;is_multiple&#125;='0'"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ altDB       : chr(0) </span></div><div class="line">  <span class="comment"># .. ..$ :Formal class 'L2Rlink' [package "AnnotationDbi"] with 8 slots</span></div><div class="line">  <span class="comment"># .. .. .. ..@ tablename   : chr "genes"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Lcolname    : chr "gene_id"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ tagname     : chr NA</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rcolname    : chr "_id"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rattribnames: chr(0) </span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rattrib_join: chr NA</span></div><div class="line">  <span class="comment"># .. .. .. ..@ filter      : chr "1"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ altDB       : chr "org.Hs.eg"</span></div><div class="line">  <span class="comment"># .. ..$ :Formal class 'L2Rlink' [package "AnnotationDbi"] with 8 slots</span></div><div class="line">  <span class="comment"># .. .. .. ..@ tablename   : chr(0) </span></div><div class="line">  <span class="comment"># .. .. .. ..@ Lcolname    : chr "_id"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ tagname     : Named chr "&#123;evidence&#125;"</span></div><div class="line">  <span class="comment"># .. .. .. .. ..- attr(*, "names")= chr "Evidence"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rcolname    : chr "go_id"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rattribnames: Named chr "NULL"</span></div><div class="line">  <span class="comment"># .. .. .. .. ..- attr(*, "names")= chr "Ontology"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ Rattrib_join: chr NA</span></div><div class="line">  <span class="comment"># .. .. .. ..@ filter      : chr "1"</span></div><div class="line">  <span class="comment"># .. .. .. ..@ altDB       : chr "org.Hs.eg"</span></div><div class="line">  <span class="comment"># ..@ direction  : int 1</span></div><div class="line">  <span class="comment"># ..@ Lkeys      : chr NA</span></div><div class="line">  <span class="comment"># ..@ Rkeys      : chr NA</span></div><div class="line">  <span class="comment"># ..@ ifnotfound : list()</span></div><div class="line">  <span class="comment"># ..@ datacache  :&lt;environment: 0x0000000035b54010&gt; </span></div><div class="line">  <span class="comment"># ..@ objName    : chr "GO"</span></div><div class="line">  <span class="comment"># ..@ objTarget  : chr "chip hgu95av2"</span></div><div class="line"></div><div class="line">hgu95av2GO</div><div class="line"><span class="comment"># GO map for chip hgu95av2 (object of class "ProbeGo3AnnDbBimap")</span></div><div class="line">summary(hgu95av2GO)</div><div class="line"><span class="comment"># GO map for chip hgu95av2 (object of class "ProbeGo3AnnDbBimap")</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Lkeyname: probe_id (Ltablename: probes)</span></div><div class="line"><span class="comment"># |    Lkeys: "1000_at", "1001_at", ... (total=12625/mapped=11244)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Rkeyname: go_id (Rtablename: go_bpgo_ccgo_mf)</span></div><div class="line"><span class="comment"># |    Rkeys: "GO:0000002", "GO:0000003", ... (total=17120/mapped=14965)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | tagname: Evidence</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | direction: L --&gt; R</span></div></pre></td></tr></table></figure>
+<p>从上面的信息我们可以知道，<code>hgu95av2GO</code>是一个用于hgu95av2芯片的GO map文件，使用<code>summary(hgu95av2GO)</code>文件我们可以了解到更加全面的信息，如上所述。</p>
+<p>现在对<code>hgu95av2GO</code>这个对象进行几个操作，如下所示：</p>
+<h3 id="direction">direction()</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">x &lt;- hgu95av2GO</div><div class="line">summary(x)</div><div class="line"><span class="comment"># GO map for chip hgu95av2 (object of class "ProbeGo3AnnDbBimap")</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Lkeyname: probe_id (Ltablename: probes)</span></div><div class="line"><span class="comment"># |    Lkeys: "1000_at", "1001_at", ... (total=12625/mapped=11244)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Rkeyname: go_id (Rtablename: go_bpgo_ccgo_mf)</span></div><div class="line"><span class="comment"># |    Rkeys: "GO:0000002", "GO:0000003", ... (total=17120/mapped=14965)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | tagname: Evidence</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | direction: L --&gt; R</span></div><div class="line">direction(x)</div><div class="line"><span class="comment"># [1] 1</span></div><div class="line">direction(x) &lt;- -<span class="number">1</span></div><div class="line">direction(x)</div><div class="line"><span class="comment"># [1] -1</span></div><div class="line">summary(x)</div><div class="line"><span class="comment"># revmap(GO) map for chip hgu95av2 (object of class "ProbeGo3AnnDbBimap")</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Lkeyname: probe_id (Ltablename: probes)</span></div><div class="line"><span class="comment"># |    Lkeys: "1000_at", "1001_at", ... (total=12625/mapped=11244)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Rkeyname: go_id (Rtablename: go_bpgo_ccgo_mf)</span></div><div class="line"><span class="comment"># |    Rkeys: "GO:0000002", "GO:0000003", ... (total=17120/mapped=14965)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | tagname: Evidence</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | direction: L &lt;-- R</span></div></pre></td></tr></table></figure>
+<p>从上面的结果可以看出来，<code>direction(x)</code>这个函数的作用是改变映射方向，当是1的时候，是从左向右映射，当是-1的时候，是从右向左映射，<code>summary(x)</code>结果的最后一行可以看出来。</p>
+<p>direction()这个函数与revmap()函数的功能是一样，如下所示。</p>
+<h3 id="revmap">revmap()</h3>
+<p>这个函数是调换Bimap的左右两侧的映射关系，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">y &lt;- revmap(x)</div><div class="line">y</div><div class="line"><span class="comment"># revmap(revmap(revmap(GO))) map for chip hgu95av2 (object of class "ProbeGo3AnnDbBimap")</span></div><div class="line">summary(y)</div><div class="line"><span class="comment"># revmap(revmap(revmap(GO))) map for chip hgu95av2 (object of class "ProbeGo3AnnDbBimap")</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Lkeyname: probe_id (Ltablename: probes)</span></div><div class="line"><span class="comment"># |    Lkeys: "1000_at", "1001_at", ... (total=12625/mapped=11244)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Rkeyname: go_id (Rtablename: go_bpgo_ccgo_mf)</span></div><div class="line"><span class="comment"># |    Rkeys: "GO:0000002", "GO:0000003", ... (total=17120/mapped=14965)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | tagname: Evidence</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | direction: L &lt;-- R</span></div><div class="line"><span class="comment"># | direction: L &lt;-- R</span></div><div class="line">summary(x)</div><div class="line"><span class="comment"># revmap(revmap(GO)) map for chip hgu95av2 (object of class "ProbeGo3AnnDbBimap")</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Lkeyname: probe_id (Ltablename: probes)</span></div><div class="line"><span class="comment"># |    Lkeys: "1000_at", "1001_at", ... (total=12625/mapped=11244)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | Rkeyname: go_id (Rtablename: go_bpgo_ccgo_mf)</span></div><div class="line"><span class="comment"># |    Rkeys: "GO:0000002", "GO:0000003", ... (total=17120/mapped=14965)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | tagname: Evidence</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment"># | direction: L --&gt; R</span></div><div class="line">keys(y)[<span class="number">1</span>:<span class="number">4</span>]</div><div class="line"><span class="comment"># [1] "GO:0000002" "GO:0000003" "GO:0000011" "GO:0000012"</span></div><div class="line">Lkeys(y)[<span class="number">1</span>:<span class="number">4</span>]</div><div class="line"><span class="comment"># [1] "1000_at"   "1001_at"   "1002_f_at" "1003_s_at"</span></div><div class="line">Rkeys(y)[<span class="number">1</span>:<span class="number">4</span>]</div><div class="line"><span class="comment"># [1] "GO:0000002" "GO:0000003" "GO:0000011" "GO:0000012"</span></div></pre></td></tr></table></figure>
+<h3 id="lkeys与rkeys">Lkeys()与Rkeys()</h3>
+<p>Lkeys()这个函数可以提取出Bimap左侧的成员，Rkeys()则是提取右侧成员，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">direction(x) &lt;- <span class="number">1</span></div><div class="line">head(Lkeys(x))</div><div class="line"><span class="comment"># [1] "1000_at"   "1001_at"   "1002_f_at" "1003_s_at" "1004_at"   "1005_at"  </span></div><div class="line">head(Rkeys(x))</div><div class="line"><span class="comment"># [1] "GO:0000002" "GO:0000003" "GO:0000011" "GO:0000012" "GO:0000018" "GO:0000019"</span></div></pre></td></tr></table></figure>
+<h3 id="llength和rlength">Llength()和Rlength()</h3>
+<p>这两个函数分别是列出左侧与右侧的成员数目，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Llength(x)</div><div class="line"><span class="comment"># [1] 12625</span></div><div class="line">Rlength(x)</div><div class="line"><span class="comment"># [1] 17120</span></div></pre></td></tr></table></figure>
+<h3 id="mappedlkeys与mappedrkeys">mappedLkeys()与mappedRkeys()</h3>
+<p>查看是匹配的keys，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">head(mappedLkeys(x))</div><div class="line"><span class="comment"># [1] "1000_at"   "1001_at"   "1002_f_at" "1003_s_at" "1004_at"   "1005_at"  </span></div><div class="line">head(mappedkeys(x))</div><div class="line"><span class="comment"># [1] "1000_at"   "1001_at"   "1002_f_at" "1003_s_at" "1004_at"   "1005_at" </span></div><div class="line"><span class="comment"># 从上面的结果可以看𡵾，mappedLkeys()与mappedkeys()是等价的</span></div><div class="line"></div><div class="line">head(mappedRkeys(x))</div><div class="line"><span class="comment"># [1] "GO:0000165" "GO:0000187" "GO:0000189" "GO:0001934" "GO:0002741" "GO:0006361"</span></div><div class="line">length(mappedLkeys(x))</div><div class="line"><span class="comment"># [1] 11244</span></div><div class="line">length(mappedRkeys(x))</div><div class="line"><span class="comment"># [1] 14965</span></div><div class="line"><span class="comment"># 等于同count.mappedRkyes()</span></div><div class="line">count.mappedLkeys(x)</div><div class="line"><span class="comment"># [1] 11244</span></div><div class="line">count.mappedRkeys(x)</div><div class="line"><span class="comment"># [1] 14965</span></div><div class="line">count.mappedkeys(x)</div><div class="line"><span class="comment"># [1] 11244</span></div></pre></td></tr></table></figure>
+<h3 id="as.list">as.list()</h3>
+<p>使用<code>as.list()</code>可以将Bimap文件转换为列表，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">as.list(hgu95av2SYMBOL)[<span class="number">1</span>:<span class="number">9</span>]</div><div class="line"><span class="comment"># $`1000_at`</span></div><div class="line"><span class="comment"># [1] "MAPK3"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1001_at`</span></div><div class="line"><span class="comment"># [1] "TIE1"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1002_f_at`</span></div><div class="line"><span class="comment"># [1] "CYP2C19"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1003_s_at`</span></div><div class="line"><span class="comment"># [1] "CXCR5"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1004_at`</span></div><div class="line"><span class="comment"># [1] "CXCR5"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1005_at`</span></div><div class="line"><span class="comment"># [1] "DUSP1"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1006_at`</span></div><div class="line"><span class="comment"># [1] "MMP10"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1007_s_at`</span></div><div class="line"><span class="comment"># [1] NA</span></div><div class="line"></div><div class="line"><span class="comment"># $`1008_f_at`</span></div><div class="line"><span class="comment"># [1] "EIF2AK2"</span></div><div class="line"></div><div class="line">as.list(hgu95av2ENTREZID)[<span class="number">1</span>:<span class="number">9</span>]</div><div class="line"><span class="comment"># $`1000_at`</span></div><div class="line"><span class="comment"># [1] "5595"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1001_at`</span></div><div class="line"><span class="comment"># [1] "7075"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1002_f_at`</span></div><div class="line"><span class="comment"># [1] "1557"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1003_s_at`</span></div><div class="line"><span class="comment"># [1] "643"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1004_at`</span></div><div class="line"><span class="comment"># [1] "643"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1005_at`</span></div><div class="line"><span class="comment"># [1] "1843"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1006_at`</span></div><div class="line"><span class="comment"># [1] "4319"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1007_s_at`</span></div><div class="line"><span class="comment"># [1] NA</span></div><div class="line"></div><div class="line"><span class="comment"># $`1008_f_at`</span></div><div class="line"><span class="comment"># [1] "5610"</span></div></pre></td></tr></table></figure>
+<h3 id="as.character">as.character()</h3>
+<p>使用<code>as.character()</code>可以将Bimap文件转换为字符串，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">as.character(hgu95av2ENTREZID)[<span class="number">1</span>:<span class="number">9</span>]</div><div class="line">  <span class="comment"># 1000_at   1001_at 1002_f_at 1003_s_at   1004_at   1005_at   1006_at 1008_f_at </span></div><div class="line">   <span class="comment"># "5595"    "7075"    "1557"     "643"     "643"    "1843"    "4319"    "5610" </span></div><div class="line">  <span class="comment"># 1009_at </span></div><div class="line">   <span class="comment"># "3094"</span></div></pre></td></tr></table></figure>
+<h3 id="bimap-envirapi">Bimap-envirAPI</h3>
+<p>Bimap-envirAPI的这些操作可以像在R中操作环境一样操作Bimap对象，看下面的案例：</p>
+<h3 id="ls">ls()</h3>
+<p>显示某个Bimap对象的成员，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ls(name, pos = -<span class="number">1L</span>, envir = as.environment(pos), all.names = <span class="literal">FALSE</span>, pattern, sorted = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<p>name是Bimap对象的名称，其它的参数不用管，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(hgu95av2.db)</div><div class="line">x &lt;- hgu95av2SYMBOL</div><div class="line">ls(x)[<span class="number">1</span>:<span class="number">3</span>]</div><div class="line"><span class="comment"># [1] "100_g_at" "1000_at"  "1001_at"</span></div><div class="line">x[[ls(x)[<span class="number">1</span>]]]</div><div class="line"><span class="comment"># [1] "RABGGTA"</span></div></pre></td></tr></table></figure>
+<p>显示前3个成员</p>
+<h3 id="exist">exist()</h3>
+<p>判断某个成员是否存在于Bimap对象中，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">exists(x, where, envir, frame, mode, inherits)</div></pre></td></tr></table></figure>
+<p>看一个案例：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">exists(ls(x)[<span class="number">1</span>], x)</div><div class="line"><span class="comment"># [1] TRUE</span></div><div class="line">exists(<span class="string">"100_g_at"</span>, x)</div><div class="line"><span class="comment"># [1] TRUE</span></div><div class="line">exists(<span class="string">"666"</span>, x)</div><div class="line"><span class="comment"># [1] FALSE</span></div></pre></td></tr></table></figure>
+<h3 id="get">get()</h3>
+<p>获得左侧某个成员在右侧的映射对象，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">get(x, pos, envir, mode, inherits)</div></pre></td></tr></table></figure>
+<p>使用如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">get(<span class="string">"100_g_at"</span>,x)</div><div class="line"><span class="comment"># [1] "RABGGTA"</span></div><div class="line">get(<span class="string">"1974_s_at"</span>,x)</div><div class="line"><span class="comment"># [1] "TP53"</span></div></pre></td></tr></table></figure>
+<h3 id="mget">mget()</h3>
+<p>获取多个成员，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">mget(ls(x)[<span class="number">1</span>:<span class="number">3</span>], x)</div><div class="line"><span class="comment"># $`100_g_at`</span></div><div class="line"><span class="comment"># [1] "RABGGTA"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1000_at`</span></div><div class="line"><span class="comment"># [1] "MAPK3"</span></div><div class="line"></div><div class="line"><span class="comment"># $`1001_at`</span></div><div class="line"><span class="comment"># [1] "TIE1"</span></div></pre></td></tr></table></figure>
+<h3 id="samplexn">sample(x,n)</h3>
+<p>表示随机从x中取出3对映射关系，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sample(x, <span class="number">3</span>)</div><div class="line"><span class="comment"># $`36554_at`</span></div><div class="line"><span class="comment"># [1] "ASMTL"</span></div><div class="line"></div><div class="line"><span class="comment"># $`37701_at`</span></div><div class="line"><span class="comment"># [1] "RGS2"</span></div><div class="line"></div><div class="line"><span class="comment"># $`939_at`</span></div><div class="line"><span class="comment"># [1] "MELTF"</span></div></pre></td></tr></table></figure>
+<h3 id="totable与links">toTable与links</h3>
+<p>将Bimap对象转换为数据框，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">toTable(x)[<span class="number">1</span>:<span class="number">4</span>,]</div><div class="line"><span class="comment"># probe_id  symbol</span></div><div class="line"><span class="comment"># 1   1000_at   MAPK3</span></div><div class="line"><span class="comment"># 2   1001_at    TIE1</span></div><div class="line"><span class="comment"># 3 1002_f_at CYP2C19</span></div><div class="line"><span class="comment"># 4 1003_s_at   CXCR5</span></div></pre></td></tr></table></figure>
+<p>links()与toTable的功能一样，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">toTable(x[<span class="string">"1001_at"</span>])</div><div class="line"><span class="comment"># probe_id symbol</span></div><div class="line"><span class="comment"># 1  1001_at   TIE1</span></div><div class="line">links(x)[<span class="number">1</span>:<span class="number">4</span>,]</div><div class="line"><span class="comment"># probe_id  symbol</span></div><div class="line"><span class="comment"># 1   1000_at   MAPK3</span></div><div class="line"><span class="comment"># 2   1001_at    TIE1</span></div><div class="line"><span class="comment"># 3 1002_f_at CYP2C19</span></div><div class="line"><span class="comment"># 4 1003_s_at   CXCR5</span></div><div class="line">links(x[<span class="string">"1001_at"</span>])</div><div class="line"><span class="comment"># probe_id symbol</span></div><div class="line"><span class="comment"># 1  1001_at   TIE1</span></div></pre></td></tr></table></figure>
+<h3 id="nhit">nhit()</h3>
+<p>此函数返回一个名义整数向量，值为一系列的0或1，1表示有映射关系，0表示没有，这与<code>isNA()</code>类似，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">x_names &lt;- nhit(x)</div><div class="line">class(x_names)</div><div class="line"><span class="comment"># [1] "integer"</span></div><div class="line">str(x_names)</div><div class="line"><span class="comment"># Named int [1:12625] 1 1 1 1 1 1 1 0 1 1 ...</span></div><div class="line"><span class="comment"># - attr(*, "names")= chr [1:12625] "1000_at" "1001_at" "1002_f_at" "1003_s_at" ...</span></div><div class="line">table(x_names)</div><div class="line"><span class="comment"># x_names</span></div><div class="line"><span class="comment"># 0     1 </span></div><div class="line"><span class="comment"># 1154 11471</span></div></pre></td></tr></table></figure>
+<p>从上面的<code>str(x_names)</code>结果我们可以看到第8个是0，它表示不存在左侧的成员与右侧的成员的映射关系，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">isNA(x)[<span class="number">8</span>]</div><div class="line"><span class="comment"># 1007_s_at </span></div><div class="line"><span class="comment"># TRUE </span></div><div class="line">isNA(x)[<span class="number">1</span>:<span class="number">8</span>]</div><div class="line"><span class="comment"># 1000_at   1001_at 1002_f_at 1003_s_at   1004_at   1005_at   1006_at 1007_s_at </span></div><div class="line"><span class="comment"># FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE      TRUE </span></div><div class="line">toTable(x[<span class="string">"1007_s_at"</span>])</div><div class="line"><span class="comment"># [1] probe_id symbol  </span></div><div class="line"><span class="comment"># &lt;0 行&gt; (或0-长度的row.names)</span></div><div class="line">toTable(x[<span class="string">"1006_at"</span>])</div><div class="line"><span class="comment"># probe_id symbol</span></div><div class="line"><span class="comment"># 1  1006_at  MMP10</span></div></pre></td></tr></table></figure>
+<p>从上面我们可以知道，<code>1007_s_at</code>这个探针并没有映射到相应的基因上。hgu95av2SYMBOL一共有1154个探针没有相应的映射。</p>
+<h2 id="提取没有映射关系的探针">提取没有映射关系的探针</h2>
+<p>前面知道，有1154个探针没有映射到相应的基因上，现在我们把那些映射到相应基因上的探针提取出来，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">x &lt;- hgu95av2SYMBOL</div><div class="line">summary(x)</div><div class="line"><span class="comment"># x是原始数据</span></div><div class="line"><span class="comment"># SYMBOL map for chip hgu95av2 (object of class "ProbeAnnDbBimap")</span></div><div class="line"><span class="comment"># &gt; summary(x)</span></div><div class="line"><span class="comment"># SYMBOL map for chip hgu95av2 (object of class "ProbeAnnDbBimap")</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment">#   | Lkeyname: probe_id (Ltablename: probes)</span></div><div class="line"><span class="comment"># |    Lkeys: "1000_at", "1001_at", ... (total=12625/mapped=11471)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment">#   | Rkeyname: symbol (Rtablename: gene_info)</span></div><div class="line"><span class="comment"># |    Rkeys: "A1BG", "A2M", ... (total=59682/mapped=8595)</span></div><div class="line"><span class="comment"># |</span></div><div class="line"><span class="comment">#   | direction: L --&gt; R</span></div><div class="line"></div><div class="line">x_names &lt;- nhit(x)</div><div class="line"><span class="comment"># 生成一个名义整数向量，其中1表示有映射关系的向量，0表示没有</span></div><div class="line">head(x_names,<span class="number">10</span>)</div><div class="line"><span class="comment"># 1000_at   1001_at 1002_f_at 1003_s_at   1004_at   1005_at   1006_at 1007_s_at </span></div><div class="line"><span class="comment"># 1         1         1         1         1         1         1         0 </span></div><div class="line"><span class="comment"># 1008_f_at   1009_at </span></div><div class="line"><span class="comment"># 1         1 </span></div><div class="line">table(x_names)</div><div class="line"><span class="comment"># x_names</span></div><div class="line"><span class="comment"># 0     1 </span></div><div class="line"><span class="comment"># 1154 11471 </span></div><div class="line"><span class="comment"># 一共有11471个探针有映射关系</span></div><div class="line">x_mapped &lt;- mappedkeys(x)</div><div class="line">head(x_mapped)</div><div class="line"><span class="comment"># [1] "1000_at"   "1001_at"   "1002_f_at" "1003_s_at" "1004_at"   "1005_at"</span></div></pre></td></tr></table></figure>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://www.rdocumentation.org/packages/AnnotationDbi/versions/1.34.4/topics/Bimap-direction" target="_blank" rel="external">Bimap-direction</a></li>
+<li><a href="https://www.rdocumentation.org/packages/AnnotationDbi/versions/1.34.4/topics/Bimap" target="_blank" rel="external">Bimap</a></li>
+<li><a href="https://www.rdocumentation.org/packages/AnnotationDbi/versions/1.34.4/topics/Bimap-keys" target="_blank" rel="external">Bimap-keys</a></li>
+<li><a href="https://www.rdocumentation.org/packages/AnnotationDbi/versions/1.34.4/topics/BimapFormatting" target="_blank" rel="external">BimapFormatting</a></li>
+<li><a href="https://www.rdocumentation.org/packages/AnnotationDbi/versions/1.34.4/topics/Bimap-envirAPI" target="_blank" rel="external">Bimap-envirAPI</a></li>
+<li><a href="https://www.rdocumentation.org/packages/AnnotationDbi/versions/1.34.4/topics/Bimap-toTable" target="_blank" rel="external">Bimap-toTable</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/09/05/BioTools/查找miRNA的前体序列/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2754,415 +3270,6 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/18/BioStatistics/生物统计-15判别分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/18/BioStatistics/生物统计-15判别分析/" itemprop="url">判别分析笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-18T12:02:00+08:00">
-                2018-08-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,316
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>一般的回归是指因变量为定量变量的情况，而logistic回归主要处理因变量为只取两个值的定性变量情况。如果作为因变量的定性变量取多于两个值的时候，就需要使用线性判别分析(linear discriminant analysis)来处理。判别分析根据自变量来预测因变量的类型。</p>
-<h2 id="判别分析原理">判别分析原理</h2>
-<p>差别分析是利用部分已知类别的观测数据来建立模型，这样的数据称为训练集(training set)。我们这里介绍的线性判别分析所得到的模型是一组线性差别公式；每个公式是自变量的一个线性组合；公式的个数和类别数目一样。有了公式之后，就可以把每个未知类别的自变量观测值代入那些差别公式，算出和类别一样多的值；相应于哪一类的值最大，则把该观测值判为属于该类。</p>
-<p>判别分析的原理并不复杂，可以简单地描述如下。</p>
-<p>如果作为属性变量的因变量有k个预付（即观测值应该分成k个类），而自变量包含p个变量，那么每一个观测值就是p维空间的一个点。整个训练集的各个点（假定有n个点）就按照已知的类别在p维空间中形成共有n个点的k个点群。那么，对于一个未知类别的点，如果离哪一群近，就可以分到哪一集。关键的细节问题是如何定义“远近”或距离。关键是确定一些准则，使得每一个点群内部的点接近，而使各群之间尽量分开。不同的准则造就了不同的差别或分类方法。这里不讨论这些方法的数学细节，这里仅仅就是线性差别分析一种方法，介绍如何通过R得到结果及结果的解释。这里先把p维空间的点按照最能够分开各类的原则投影到二维空间，再根据二维空间这些点的分布得到判别函数。</p>
-<p>如何来确定判别分析模型的效果呢？最基本的就是用一个没有参加建模的已知观测值类别的数据来验证。这样的数据集称为测试集或检验集(test set)。把通过模型预测的这些观测值的类别和它们已知的类别比较，就知道有多少划分错了，由此可以计算出误差来。</p>
-<h2 id="案例分析">案例分析</h2>
-<p>R自带了一个数据集，即<code>iris</code>。这是一个鸢尾花(iris)的数据，该数据给出了150个鸢尾花的萼片长(sepal length)、萼片宽(sepal width)、花瓣长(petal length)、花瓣宽(petal width)以及这些花的种类(Species)这五个变量。萼片和花瓣的长宽是四个定量变量，而各类为分类变量（有3个值，为setosa、versicolour、virginica）。现在，我们建立一个模型，根据萼片和花瓣这四个度量来把鸢尾花进行分类，这里的鸢尾花一共有3种，每种都有50个观测值。</p>
-<p>现在我们在每种鸢尾花中也能耐选择一半，也就是25个作为测试集，另外25个用来建模。三种鸢尾花一起，训练集和测试集各有75个观测。由于选择测试集和训练集的过程是随机的，每次计算的结果也不相同，在R软件中，对于不同的成随机数种子，我们得到的结果也不尽相同。下面是对两个随机数种子得到的两个测试集判别结果，每个格子中的数目是相应的真实类的观测被划分到预测类的频数，如下所示：</p>
-<p>随机种子数：set.seed(5)</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">set.seed(<span class="number">5</span>)</div><div class="line">samp &lt;- c(sample(<span class="number">1</span>:<span class="number">50</span>,<span class="number">25</span>),sample(<span class="number">51</span>:<span class="number">100</span>,<span class="number">25</span>),sample(<span class="number">101</span>:<span class="number">150</span>,<span class="number">25</span>))</div><div class="line">a &lt;- lda(Species~.,data=iris,shuset=samp)</div><div class="line">summary(predict(a,iris[-samp,])$class)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; summary(predict(a,iris[-samp,])$class)</div><div class="line">    setosa versicolor  virginica </div><div class="line">        25         25         25</div></pre></td></tr></table></figure>
-<p>随机种子数：set.seed(4)</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">set.seed(<span class="number">4</span>)</div><div class="line">samp &lt;- c(sample(<span class="number">1</span>:<span class="number">50</span>,<span class="number">25</span>),sample(<span class="number">51</span>:<span class="number">100</span>,<span class="number">25</span>),sample(<span class="number">101</span>:<span class="number">150</span>,<span class="number">25</span>))</div><div class="line">a &lt;- lda(Species~.,data=iris,shuset=samp)</div><div class="line">summary(predict(a,iris[-samp,])$class)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; summary(predict(a,iris[-samp,])$class)</div><div class="line">    setosa versicolor  virginica </div><div class="line">        25         23         27</div></pre></td></tr></table></figure>
-<p>由这两个结果可知，在第一个随机种子下（set.seed(5)）下，测试集中的每个类别完全划分正确，在第二个随机种子下（set.seed(4)），错误地划分了4个类别，出错率为4/75。</p>
-<p>下图是在建立线性差别函数过程中，把75个训练集的四维空间点投影到二维空间的结果：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(mda)</div><div class="line">z&lt;-fda(Species~.,data=iris[samp,])$fit$fitted</div><div class="line">plot(z,pch=c(rep(<span class="number">19</span>,<span class="number">25</span>),rep(<span class="number">2</span>,<span class="number">25</span>),rep(<span class="number">8</span>,<span class="number">25</span>)),xlab=<span class="string">""</span>,ylab=<span class="string">""</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://ortxpw68f.bkt.clouddn.com/professional/180819/HJDbc61Eim.png?imageslim" alt="mark">
-<p class="caption">mark</p>
-</div>
-<p>可以看也，setosa（用实心圆点标记）离另外两种很远，而versicolor（用空心三角形标记）和virginica（用星号标记）这两类则离得比较近，容易划分错，我们从第二个随机种子（set.seed(4)）中也能看出来，出错的应时这两类。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/18/Linux/Linux命令收集/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/18/Linux/Linux命令收集/" itemprop="url">Linux命令收集</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-18T12:00:00+08:00">
-                2018-08-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  136
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="下载">下载</h3>
-<p><code>curl</code>，用法如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff -o sc.gff</div></pre></td></tr></table></figure>
-<p>这个命令是将某个URL的信息下载下来，并通过<code>-o</code>参数，将其输出到<code>sc.gff</code>文件中，其中,<code>-progress</code>是显示进度条，这个是选用的。</p>
-<p><code>prefetch</code></p>
-<h3 id="查看文件">查看文件</h3>
-<p><code>ls</code></p>
-<h2 id="文本相关">文本相关</h2>
-<h3 id="文本统计">文本统计</h3>
-<p><code>wc</code></p>
-<h3 id="文本排序">文本排序</h3>
-<p><code>sort</code></p>
-<h3 id="去重">去重</h3>
-<p><code>unique</code></p>
-<h3 id="查看文本">查看文本</h3>
-<p><code>head</code></p>
-<p><code>tail</code></p>
-<p><code>less</code></p>
-<p><code>more</code></p>
-<p><code>cat</code></p>
-<h3 id="正则表达式">正则表达式</h3>
-<p><code>grep</code></p>
-<p><code>awk</code></p>
-<p><code>sed</code></p>
-<hr>
-<h2 id="文件操作">文件操作</h2>
-<h3 id="查找文件">查找文件</h3>
-<p><code>find</code></p>
-<p><code>locate</code></p>
-<h3 id="压缩">压缩</h3>
-<p><code>unzip</code></p>
-<hr>
-<h3 id="目录操作">目录操作</h3>
-<p>切换目录：<code>cd</code></p>
-<p>新建目录：<code>mkdir</code></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3213,7 +3320,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">215</span>
+                  <span class="site-state-item-count">217</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3235,7 +3342,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3312,7 +3419,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共859.2k字</span>
+  <span class="post-count">博客全站共864.3k字</span>
 </div>
 
         
