@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="统计模型,MLE,二项分布," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 这一部分是《Data Analysis for the life sciences》的第7章统计模型的第1小节，这一部分的主要内容涉及高维数据统计的一些原理，例如二项分布，泊松分布，最大似然估计等。 相应的R markdown文档可以参考作者的Github。 当我们在文献中看到p值的时候，它意味着使用某种概率分布来对零假设进行量化。很多时候我们很容易地就能找到使用哪种分布。例如，在女士">
+<meta name="keywords" content="统计模型,MLE,二项分布">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DALS018-统计模型1-二项分布与泊松分布，MLE">
+<meta property="og:url" content="http://rvdsd.top/2019/08/18/DAL/DALS018_StatisticalModels1_binomal_Possion_MLE/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言 这一部分是《Data Analysis for the life sciences》的第7章统计模型的第1小节，这一部分的主要内容涉及高维数据统计的一些原理，例如二项分布，泊松分布，最大似然估计等。 相应的R markdown文档可以参考作者的Github。 当我们在文献中看到p值的时候，它意味着使用某种概率分布来对零假设进行量化。很多时候我们很容易地就能找到使用哪种分布。例如，在女士">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190905223653.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906202636.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906203804.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906204226.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906232857.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907145959.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907155849.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172043.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172353.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184007.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184617.jpeg">
+<meta property="og:updated_time" content="2019-09-12T05:14:21.849Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DALS018-统计模型1-二项分布与泊松分布，MLE">
+<meta name="twitter:description" content="前言 这一部分是《Data Analysis for the life sciences》的第7章统计模型的第1小节，这一部分的主要内容涉及高维数据统计的一些原理，例如二项分布，泊松分布，最大似然估计等。 相应的R markdown文档可以参考作者的Github。 当我们在文献中看到p值的时候，它意味着使用某种概率分布来对零假设进行量化。很多时候我们很容易地就能找到使用哪种分布。例如，在女士">
+<meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190905223653.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/08/18/DAL/DALS018_StatisticalModels1_binomal_Possion_MLE/"/>
+
+
+
+
+
+  <title>DALS018-统计模型1-二项分布与泊松分布，MLE | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/18/DAL/DALS018_StatisticalModels1_binomal_Possion_MLE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DALS018-统计模型1-二项分布与泊松分布，MLE</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-18T12:00:00+08:00">
+                2019-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,870
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  16
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第7章统计模型的第1小节，这一部分的主要内容涉及高维数据统计的一些原理，例如二项分布，泊松分布，最大似然估计等。</p>
+<p>相应的R markdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/modeling/modeling.Rmd" target="_blank" rel="external">Github</a>。</p>
+<p>当我们在文献中看到p值的时候，它意味着使用某种概率分布来对零假设进行量化。很多时候我们很容易地就能找到使用哪种分布。例如，在女士品茶这个案例中，我们就能使用简单的概率计睡来确定零分布。文献中的大多数p值都是基于线性模型的样本均值或最小二乘估计来进行计算的，并利用CLT近似地救出它们的零分布。</p>
+<p>CLT有着理论支持，它能保证这种近似是正确的。但是，我们无法一直使用这种近似法，例如当我们的样本太少时。以前面部分中，我们提到了，当总体数据近似服从正态分布时，样本的平均近似服从t分布。但是这种假设没有理论上的支持。在这一部分里，我们就会对这种情况进行建模。在研究身高时，我们从经验中就知道，这是一个非常好的模型。</p>
+<p>但是，这并不意味着我们收集的每个数据集都服从正态分布。我们常见的一些例子，例如掷硬币，中彩票的人数，美国的收入。正态分布不是建模过程中的唯一参数分布。在这一部分里，我们会描述一些最广泛使用的参数分布以及它们在生命科学研究中的作用。我们还会介绍贝叶斯统计相关的知识，以及给出使用分层模型的使用案例。</p>
+<h2 id="二项分布">二项分布</h2>
+<p>在<span class="math inline">\(N\)</span>次实验中，成功<span class="math inline">\(S=k\)</span>次的概率，公式如下所示： <span class="math display">\[
+\mbox{Pr}(S=k) = {N \choose k}p^k (1-p)^{N-k}
+\]</span> 其中<span class="math inline">\(p\)</span>是成功的概率，二项分布的一个最有名案例就是掷硬币，当我们掷<span class="math inline">\(N\)</span>次硬币，有<span class="math inline">\(S\)</span>次是正面朝上的概率，在这个案例中，<span class="math inline">\(p=0.5\)</span>。</p>
+<p><span class="math inline">\(S/N\)</span>是独立随机变量的均值，因此CLT告诉我们，当<span class="math inline">\(N\)</span>足够大时，<span class="math inline">\(S\)</span>近似地服从正态分布。这种分布在生命科学研究中应用很广，最近，此分布在NGS检测variant callers和表型(genotyper)应用很广，它的一个特殊分布则是泊松分布(poisson distribution)（二顶分布的极限是泊松分布）。</p>
+<h2 id="泊松分布">泊松分布</h2>
+<p>由于买彩票的结果只有两个，中彩票与不中彩票，因此，那些赢得彩票的人数从理论上服从二项分布（我们是假设每个人只能买一张彩票）的。试验次数<span class="math inline">\(N\)</span>是买彩票的人数，这个数字通常非常大。但是，赢得彩票的的人数通常是0到3之间，这就表明，赢得彩票的人数是不服从正态分布的。那么，为什么CLT在这种情况下不成立呢？从数学上可以对此进行解释，但是直觉又告诉我们，如果成功的总和是如此接近，并且大于1，这种分布就不可能是正态分布，这里我们进行一个快速的模拟：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p=<span class="number">10</span>^-<span class="number">7</span> <span class="comment">##1 in 10,000,0000 chances of winning</span></div><div class="line">N=<span class="number">5</span>*<span class="number">10</span>^<span class="number">6</span> <span class="comment">##5,000,000 tickets bought</span></div><div class="line">winners=rbinom(<span class="number">1000</span>,N,p) <span class="comment">##1000 is the number of different lotto draws</span></div><div class="line">tab=table(winners)</div><div class="line">plot(tab)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190905223653.jpeg">
+
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; prop.table(tab)</div><div class="line">winners</div><div class="line">    <span class="number">0</span>     <span class="number">1</span>     <span class="number">2</span>     <span class="number">3</span> </div><div class="line"><span class="number">0.617</span> <span class="number">0.294</span> <span class="number">0.080</span> <span class="number">0.009</span></div></pre></td></tr></table></figure>
+<p>达种情况下，<span class="math inline">\(N\)</span>会非常大，<span class="math inline">\(p\)</span>会非常小，因此我们可以计算出<span class="math inline">\(N \times p\)</span>（此时我们之为<span class="math inline">\(\lambda\)</span>）的值，例如位于0到10之间，而<span class="math inline">\(S\)</span>此时就服从泊松分布，其简单的公式如下所示： <span class="math display">\[
+\mbox{Pr}(S=k)=\frac{\lambda^k \exp{-\lambda}}{k!}
+\]</span></p>
+<p>RNA-seq分析中常常用到泊松分布。因为我们对数千个分子进行采样，并且多数基因仅仅代表了所有基因中一小部分，因此在RNA-seq分析中使用泊松分布比较合适。</p>
+<p>我们知道了泊松分布后，它对我们有什么作用？其中一个方面就是这种分布可以为我们提供实际分析过程中关于统计属性的总结信息。例如我们只从患者组和对照组中各取一个样本进行RNA-seq实验并研究基因的倍数变化。此时，在零假设成立的前提下（也就是这两个样本没有差异），利用泊松分布，我们可以计算出，统计学上的统计变异取决于基因的总丰度。我们可以从数学上来展示一下这个过程，下面是模拟这个过程：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">N=<span class="number">10000</span><span class="comment">##number of genes</span></div><div class="line">lambdas=<span class="number">2</span>^seq(<span class="number">1</span>,<span class="number">16</span>,len=N) <span class="comment">##these are the true abundances of genes</span></div><div class="line">y=rpois(N,lambdas)<span class="comment">##note that the null hypothesis is true for all genes</span></div><div class="line">x=rpois(N,lambdas)</div><div class="line">ind=which(y&gt;<span class="number">0</span> &amp; x&gt;<span class="number">0</span>)<span class="comment">##make sure no 0s due to ratio and log</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">splot(log2(lambdas),log2(y/x),subset=ind)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906202636.jpeg">
+
+</div>
+<p>对于低较的<code>lambda</code>的值，存在着更多的变异，如果我们计算出了大于2倍或更高倍数的基因，那些对于低丰度的基因来说，假阳性率也会变大。</p>
+<h3 id="ngs与poisson分布">NGS与Poisson分布</h3>
+<p>在这一部分里，我们还是要使用公共数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># BiocManager::install("parathyroidSE")</span></div><div class="line"><span class="keyword">library</span>(parathyroidSE) <span class="comment">##available from Bioconductor</span></div><div class="line">data(parathyroidGenesSE)</div><div class="line">se &lt;- parathyroidGenesSE</div></pre></td></tr></table></figure>
+<p>上述的这个数据包含在<code>SummarizedExperiment</code>对象中，在此不再赘述，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; class(parathyroidGenesSE)</div><div class="line">[<span class="number">1</span>] <span class="string">"RangedSummarizedExperiment"</span></div><div class="line">attr(,<span class="string">"package"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"SummarizedExperiment"</span></div></pre></td></tr></table></figure>
+<p>我们只需要知道它包含一个数据矩阵，其中每一行都是基因组特征（可以理解为基因），每列都是一个样本。我们可以使用<code>assay()</code>函数提取这个矩阵。对于这个数据集，数据矩阵中每个单元格的数值对应了一个特定样本的一个特定基因的reads数。因此，我们可以绘制出前面类似的图形，从而表明利用实验数据构建的模型的预测行为，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">x &lt;- assay(se)[,<span class="number">23</span>]</div><div class="line">y &lt;- assay(se)[,<span class="number">24</span>]</div><div class="line">ind=which(y&gt;<span class="number">0</span> &amp; x&gt;<span class="number">0</span>)<span class="comment">##make sure no 0s due to ratio and log</span></div><div class="line">splot((log2(x)+log2(y))/<span class="number">2</span>,log(x/y),subset=ind)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906203804.jpeg">
+
+</div>
+<p>如果我们计算出4个个体的标准差，它要比利用泊松模型预测的要高得多。假设大多数基因在不同的个体之间的表达不同，那么，如果泊松模型适用于此情况，那么此图中应该存在着线性关系：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line">vars=rowVars(assay(se)[,c(<span class="number">2</span>,<span class="number">8</span>,<span class="number">16</span>,<span class="number">21</span>)]) <span class="comment">##we now these four are 4</span></div><div class="line">means=rowMeans(assay(se)[,c(<span class="number">2</span>,<span class="number">8</span>,<span class="number">16</span>,<span class="number">21</span>)]) <span class="comment">##different individulsa</span></div><div class="line">splot(means,vars,log=<span class="string">"xy"</span>,subset=which(means&gt;<span class="number">0</span>&amp;vars&gt;<span class="number">0</span>)) <span class="comment">##plot a subset of data</span></div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>,col=<span class="number">2</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906204226.jpeg">
+
+</div>
+<p>上面图中的变异包括生物变异，但是泊松分布则无法对此进行建模。此时，我们需要另外一种分布，即负二项分布（negative binomial distribution)，这种分布整合了服从泊松分布的采样变异(sampling variability)和生物变异(biological variability)，它更适合对这种情况进行建模。负二项分布有两个参数，在处理计数数据(count data)方面有更大的灵活性。有关RNA-seq与负二项分布的内容可以参考这篇文献<a href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106" target="_blank" rel="external">《Differential expression analysis for sequence count data》</a>。而泊松分布只是负二项分布的一个特例。</p>
+<h2 id="最大似然估计">最大似然估计</h2>
+<p>为了说明最大似然估计(Maximum Likelihood Estimation, MLE)的概念，我们使用一个相对简单的数据集来进行演示，这个数据集包含HMCV（人巨细胞病毒，human cytomegalovirus）基因组的回文位置(palindrome location)信息。我们从HMCV基因组每4kb个间隔中读取回文序列的数目，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">datadir=<span class="string">"http://www.biostat.jhsph.edu/bstcourse/bio751/data"</span></div><div class="line">x=read.csv(file.path(datadir,<span class="string">"hcmv.csv"</span>))[,<span class="number">2</span>]</div><div class="line">breaks=seq(<span class="number">0</span>,<span class="number">4000</span>*round(max(x)/<span class="number">4000</span>),<span class="number">4000</span>)</div><div class="line">tmp=cut(x,breaks)</div><div class="line">counts=table(tmp)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">hist(counts)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190906232857.jpeg">
+
+</div>
+<p>上图中的计数数据似乎服从泊松分布，但是，<span class="math inline">\(\lambda\)</span>是多少呢？常见的估计<span class="math inline">\(\lambda\)</span>的方法是最大似然估计(maximum likelihoood estimation)。最了找到最大的MLE，我们要注意这些数据是独立的，我们所观察到这些数据的概率可以用以下公式来表示： <span class="math display">\[
+\Pr(X_1=k_1,\dots,X_n=k_n;\lambda) = \prod_{i=1}^n \lambda^{k_i} / k_i! \exp ( -\lambda)
+\]</span> 当下面这个公式取最大值时候，MLE就等于<span class="math inline">\(\lambda\)</span>： <span class="math display">\[
+\mbox{L}(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right\}
+\]</span> 在实际计算过程中我们通常使用log转换后似然值(log-likehood)。下面我们使用一些代码来计算一下任意的<span class="math inline">\(\lambda\)</span>下的log-likehood，并且我们使用函数<code>optimized()</code>来计睡一下能够值得这个函数值最大的时候的<span class="math inline">\(\lambda\)</span>，最后我们绘制出log-likehood的曲线，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">l&lt;-<span class="keyword">function</span>(lambda) sum(dpois(counts,lambda,log=<span class="literal">TRUE</span>))</div><div class="line">lambdas&lt;-seq(<span class="number">3</span>,<span class="number">7</span>,len=<span class="number">100</span>)</div><div class="line">ls &lt;- exp(sapply(lambdas,l))</div><div class="line">plot(lambdas,ls,type=<span class="string">"l"</span>)</div><div class="line">mle=optimize(l,c(<span class="number">0</span>,<span class="number">10</span>),maximum=<span class="literal">TRUE</span>)</div><div class="line">abline(v=mle$maximum)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907145959.jpeg">
+
+</div>
+<p>如果进行一些微积分计算，就会发现计算MLE其实非常简单，就是计算其均值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print( c(mle$maximum, mean(counts) ) )</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; print( c(mle$maximum, mean(counts) ) )</div><div class="line">[<span class="number">1</span>] <span class="number">5.157894</span> <span class="number">5.157895</span></div></pre></td></tr></table></figure>
+<p>我们会注意到，观察到的计数数据与通过泊松分布预测的计算数据非常吻合：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">theoretical&lt;-qpois((seq(<span class="number">0</span>,<span class="number">99</span>)+<span class="number">0.5</span>)/<span class="number">100</span>,mean(counts))</div><div class="line">qqplot(theoretical,counts)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907155849.jpeg">
+
+</div>
+<p>因此，我们可以使用泊松分布来计算回文数据，其中<span class="math inline">\(\lambda = 5.16\)</span>。</p>
+<h2 id="正连续值的分布">正连续值的分布</h2>
+<p>不同的基因在生物学重复中的变化不同。在后面我们会介绍次聚类模型(hierarchical model)，这是在分析基因组学数学中最有影响力的统计学方法之一。该方法以能够极大地改善了分析差异基因的初级方法。它是通过模拟基因变异的分布来进行建模的。在这里我们会介绍这种方法的参数模型。</p>
+<p>我们想模拟一下基因特异性标准误(gene-specific standard erros)。这些分布是正态分布吗？这里我们需要记住，我们现在模拟的是总体的标准误，因此CLT在此种情况下并不适用，即使我们我们拥有数几千个基因。</p>
+<p>下面就是案例，在这个案例中，我们会使用一个实验数据，这个数据中包含了小鼠基因表达的技术重复和生物学重复，我们会计算出技术重复和生物学重复的基因特异性样本标准误：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Biobase) <span class="comment">##available from Bioconductor</span></div><div class="line"><span class="comment"># install_github("genomicsclass/maPooling")</span></div><div class="line"><span class="keyword">library</span>(maPooling) <span class="comment">##available from course github repo</span></div><div class="line">data(maPooling)</div><div class="line">pd=pData(maPooling)</div><div class="line"><span class="comment">##determin which samples are bio reps and which are tech reps</span></div><div class="line">strain=factor(as.numeric(grepl(<span class="string">"b"</span>,rownames(pd))))</div><div class="line">pooled=which(rowSums(pd)==<span class="number">12</span> &amp; strain==<span class="number">1</span>)</div><div class="line">techreps=exprs(maPooling[,pooled])</div><div class="line">individuals=which(rowSums(pd)==<span class="number">1</span> &amp; strain==<span class="number">1</span>)</div><div class="line"><span class="comment">##remove replicates</span></div><div class="line">individuals=individuals[-grep(<span class="string">"tr"</span>,names(individuals))]</div><div class="line">bioreps=exprs(maPooling)[,individuals]</div><div class="line"><span class="comment">###now compute the gene specific standard deviations</span></div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line">techsds=rowSds(techreps)</div><div class="line">biosds=rowSds(bioreps)</div></pre></td></tr></table></figure>
+<p>下面提研究样本的标准差(sample standard deviation)：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">###now plot</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">shist(biosds,unit=<span class="number">0.1</span>,col=<span class="number">1</span>,xlim=c(<span class="number">0</span>,<span class="number">1.5</span>))</div><div class="line">shist(techsds,unit=<span class="number">0.1</span>,col=<span class="number">2</span>,add=<span class="literal">TRUE</span>)</div><div class="line">legend(<span class="string">"topright"</span>,c(<span class="string">"Biological"</span>,<span class="string">"Technical"</span>), col=c(<span class="number">1</span>,<span class="number">2</span>),lty=c(<span class="number">1</span>,<span class="number">1</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172043.jpeg">
+
+</div>
+<p>从上面的图形中我们可以发现，生物学变异(biological variability)远远大于技术变异(technical variability)。这就为我们提供了一个证据，即基因确实具有基因特异性生物学变异。如果我们想要模拟这种变异，我们首先要注意到，这些变异不服从正态分布，因为上面的曲线明显出现了拖尾现象。此外，由于SD为正数，因此上面的分布也存在着一定的限制。现在我们使用qq图来看一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(biosds)</div><div class="line">qqline(biosds)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907172353.jpeg">
+
+</div>
+<p>一些参数分布可以处理这些情况（例如严格正向右拖尾分布，strictly positive and heavy right tails）。其中比较典型的分布就是gamma分布与F分布，gamma分布的密度函数为： <span class="math display">\[
+f(x;\alpha,\beta)=\frac{\beta^\alpha x^{\alpha-1}\exp{-\beta x}}{\Gamma(\alpha)}
+\]</span> 这个分布有2个参数，分别是<span class="math inline">\(\alpha\)</span>和<span class="math inline">\(\beta\)</span>，它们间接控制了曲线的位置(location)与缩放(scale)。它们也控制着曲线的形状，有关这些分布的知识可以参考<a href="https://www.stat.berkeley.edu/~rice/Book3ed/index.html" target="_blank" rel="external">《Mathematical Statistics and Data Analysis》</a>这本书。</p>
+<p>gamma分布的两个特例是卡方分布与指数分布，我们前面了解到了可以使用卡方分布来计算二联表。对于卡方分布来说，我们的参数是<span class="math inline">\(\alpha=\nu/2\)</span>，<span class="math inline">\(\beta=2\)</span>，其中<span class="math inline">\(\nu\)</span>表示自由度。对于指数分布来说，<span class="math inline">\(\alpha=1\)</span>，<span class="math inline">\(\beta=\lambda\)</span>。</p>
+<p>F分布在ANOVA中使用，它也是一个正向分布，并且存在着严格的右拖尾曲线，它的2个参数影响其曲线形状，，F分布的密度函数为： <span class="math display">\[
+f(x,d_1,d_2)=\frac{1}{B\left( \frac{d_1}{2},\frac{d_2}{2}\right)}
+  \left(\frac{d_1}{d_2}\right)^{\frac{d_1}{2}}  
+  x^{\frac{d_1}{2}-1}\left(1+\frac{d1}{d2}x\right)^{-\frac{d_1+d_2}{2}}
+\]</span> 这个函数中含有<span class="math inline">\(B\)</span>函数（即<span class="math inline">\(\beta\)</span>函数），还有2个自由度，即<span class="math inline">\(d_{1}\)</span>和<span class="math inline">\(d_{2}\)</span>。</p>
+<h3 id="模拟变异">模拟变异</h3>
+<p>在后面部分中，我们会介绍用于改善变异估计的层级模型(hierarchical model)。在这些案例中，从数学上很方便地能模拟出<span class="math inline">\(\sigma^2\)</span>的分布，关于层级模型的内容可以参考<a href="https://www.ncbi.nlm.nih.gov/pubmed/16646809" target="_blank" rel="external">《Linear models and empirical bayes methods for assessing differential expression in microarray experiments.》</a>这篇文献，此文献指出，对基因的标准差进行采样服从校正后的F统计： <span class="math display">\[
+s^2 \sim s_0^2 F_{d,d_0}
+\]</span> 其中<span class="math inline">\(d\)</span>表示了计算中<span class="math inline">\(s^2\)</span>的自由度。例如，当我们比较两组样本时，每组3个样本，那么自由度就是4（文中后面提到了<code>This leaves two free parameters to adjust to the data</code>，直译就是<code>剩下的2个自由参数用于调整数据</code>，不太理解）。这里的<span class="math inline">\(d\)</span>用于控制位置(location)，<span class="math inline">\(s_{0}\)</span>用于控制缩放(scale)。下面的代码是F分布的一些案例，我们绘制出了相应的图形，并且标注上了样本的方差：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">3</span>,<span class="number">3</span>)</div><div class="line">sds=seq(<span class="number">0</span>,<span class="number">2</span>,len=<span class="number">100</span>)</div><div class="line"><span class="keyword">for</span>(d <span class="keyword">in</span> c(<span class="number">1</span>,<span class="number">5</span>,<span class="number">10</span>))&#123;</div><div class="line">  <span class="keyword">for</span>(s0 <span class="keyword">in</span> c(<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>))&#123;</div><div class="line">    tmp=hist(biosds,main=paste(<span class="string">"s_0 ="</span>,s0,<span class="string">"d ="</span>,d),xlab=<span class="string">"sd"</span>,ylab=<span class="string">"density"</span>,freq = <span class="literal">FALSE</span>,nc=<span class="number">100</span>,xlim=c(<span class="number">0</span>,<span class="number">1</span>))</div><div class="line">    dd=df(sds^<span class="number">2</span>/s0^<span class="number">2</span>,<span class="number">11</span>,d)</div><div class="line">    <span class="comment">##multiply by normalizing constant to assure same range on plot</span></div><div class="line">    k=sum(tmp$density)/sum(dd)</div><div class="line">    lines(sds,dd*k,type=<span class="string">"l"</span>,col=<span class="number">2</span>,lwd=<span class="number">2</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184007.jpeg">
+
+</div>
+<p>从上面的图形我们要找到哪个图形的<span class="math inline">\(s_{0}\)</span>与<span class="math inline">\(d\)</span>最能拟合我们的数据？这是一个比较麻烦的过程，因为MLE并不会计算这个特殊的分布（具体可以参考Wmyth(2004)）。Bioconductor上的<code>limma</code>包提供的估计这些参数的函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(limma)</div><div class="line">estimates=fitFDist(biosds^<span class="number">2</span>,<span class="number">11</span>)</div><div class="line">theoretical&lt;- sqrt(qf((seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span>, <span class="number">11</span>, estimates$df2)*estimates$scale)</div><div class="line">observed &lt;- biosds</div></pre></td></tr></table></figure>
+<p>拟合模型确实提供了一个合理的估计，从qq图和直方图就能看出来：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">qqplot(theoretical,observed)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">tmp=hist(biosds,main=paste(<span class="string">"s_0 ="</span>, signif(estimates[[<span class="number">1</span>]],<span class="number">2</span>), <span class="string">"d ="</span>, signif(estimates[[<span class="number">2</span>]],<span class="number">2</span>)), xlab=<span class="string">"sd"</span>, ylab=<span class="string">"density"</span>, freq=<span class="literal">FALSE</span>, nc=<span class="number">100</span>, xlim=c(<span class="number">0</span>,<span class="number">1</span>), ylim=c(<span class="number">0</span>,<span class="number">9</span>))</div><div class="line">dd=df(sds^<span class="number">2</span>/estimates$scale,<span class="number">11</span>,estimates$df2)</div><div class="line">k=sum(tmp$density)/sum(dd) <span class="comment">##a normalizing constant to assure same area in plot</span></div><div class="line">lines(sds, dd*k, type=<span class="string">"l"</span>, col=<span class="number">2</span>, lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190907184617.jpeg">
+
+</div>
+<h2 id="练习">练习</h2>
+<p>P297</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/统计模型/" <i class="fa fa-tag"></i> 统计模型</a>
+          
+            <a href="/tags/MLE/" <i class="fa fa-tag"></i> MLE</a>
+          
+            <a href="/tags/二项分布/" <i class="fa fa-tag"></i> 二项分布</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/17/DAL/DALS017_InferenceForHighDimensionalData2_Principle/" rel="next" title="DALS017-高维数据推断2-统计原理">
+                <i class="fa fa-chevron-left"></i> DALS017-高维数据推断2-统计原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/19/DAL/DALS019_StatisticalModels2_Beyes_Hierarchical/" rel="prev" title="DALS019-统计模型2-贝叶斯分布与层次分析">
+                DALS019-统计模型2-贝叶斯分布与层次分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">219</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二项分布"><span class="nav-number">2.</span> <span class="nav-text">二项分布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#泊松分布"><span class="nav-number">3.</span> <span class="nav-text">泊松分布</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ngs与poisson分布"><span class="nav-number">3.1.</span> <span class="nav-text">NGS与Poisson分布</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最大似然估计"><span class="nav-number">4.</span> <span class="nav-text">最大似然估计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正连续值的分布"><span class="nav-number">5.</span> <span class="nav-text">正连续值的分布</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟变异"><span class="nav-number">5.1.</span> <span class="nav-text">模拟变异</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习"><span class="nav-number">6.</span> <span class="nav-text">练习</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共869.7k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

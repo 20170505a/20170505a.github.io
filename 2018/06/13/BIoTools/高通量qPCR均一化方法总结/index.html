@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="去年看到一篇讲miRNA的文献，这篇文献的信息如下所示： 1Zhang, B. J., et al. (2016). &amp;quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&amp;quot; Immuni">
+<meta name="description" content="去年看到一篇讲miRNA的文献，这篇文献的信息如下所示： 1Zhang, B. J., et al. (2016). &amp;quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&amp;quot; Immun">
 <meta name="keywords" content="miRNA">
 <meta property="og:type" content="article">
 <meta property="og:title" content="高通量qPCR均一化方法总结">
 <meta property="og:url" content="http://rvdsd.top/2018/06/13/BioTools/高通量qPCR均一化方法总结/index.html">
 <meta property="og:site_name" content="RVDSD的个人笔记本">
-<meta property="og:description" content="去年看到一篇讲miRNA的文献，这篇文献的信息如下所示： 1Zhang, B. J., et al. (2016). &amp;quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&amp;quot; Immuni">
+<meta property="og:description" content="去年看到一篇讲miRNA的文献，这篇文献的信息如下所示： 1Zhang, B. J., et al. (2016). &amp;quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&amp;quot; Immun">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210137.png">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210208.png">
@@ -97,7 +97,7 @@
 <meta property="og:updated_time" content="2019-07-30T02:19:40.084Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="高通量qPCR均一化方法总结">
-<meta name="twitter:description" content="去年看到一篇讲miRNA的文献，这篇文献的信息如下所示： 1Zhang, B. J., et al. (2016). &amp;quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&amp;quot; Immuni">
+<meta name="twitter:description" content="去年看到一篇讲miRNA的文献，这篇文献的信息如下所示： 1Zhang, B. J., et al. (2016). &amp;quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&amp;quot; Immun">
 <meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210137.png">
 
 
@@ -397,24 +397,45 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Zhang, B. J., et al. (2016). &quot;MicroRNA-23a Curbs Necrosis during Early T Cell Activation by Enforcing Intracellular Reactive Oxygen Species Equilibrium.&quot; Immunity 44(3): 568-581.</div></pre></td></tr></table></figure>
 <p>这篇文章是杜克大学的李启靖教授于2016年发表在Immunity上的，这里只讲一下文章前面对miRNA高通量数据的筛选，常规的miRNA数据来源是芯片，测序，但这篇文献里面的miRNA数据表达谱是用RT-qPCR法做的（原理就是反转录部分采用了检测miRNA的加尾法，在qPCR部分使用了Labcyte的Echo550声波移液器与ABI ViiA7高通量qPCR仪)。一共做了300多个miRNA，文献附件中给出了每个样本的每个miRNA的相对表达值，与原始Ct值。在这里重复一下文献中的数据分析。</p>
 <p>先看一下文献中最终的数据（只列了前5行），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210137.png" alt=""></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210137.png">
+
+</div>
 <p>再看一下相应的原始数据：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210208.png" alt=""></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210208.png">
+
+</div>
 <p>从原始数据上大致可以猜出已经扣除了内参（文献中提到了使用了4个内参，多内参均一化是采用几何平均数的方法来处理的）。</p>
 <p>现在描述一下如何计算。</p>
 <p>第一步，均一化原始数据，将原始数据导入R中，如下所示：</p>
 <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">setwd(<span class="string">"D:\netdisk\bioinfo.notes\MicroRNA-23a Curbs Necrosis during Early T Cel"</span>)</div><div class="line">rawdata_miRNA &lt;- read.delim(<span class="string">"clipboard"</span>,header=<span class="literal">T</span>)</div><div class="line">str(rawdata_miRNA)</div><div class="line">raw_array &lt;- as.matrix(rawdata_miRNA[,<span class="number">2</span>:<span class="number">11</span>])</div><div class="line">raw_norm &lt;- t(apply(raw_array,<span class="number">1</span>,scale))</div><div class="line">colnames(raw_norm) &lt;- colnames(rawdata_miRNA)[-<span class="number">1</span>]</div><div class="line">dimnames(raw_norm)[<span class="number">1</span>] &lt;- rawdata_miRNA[<span class="number">1</span>]</div><div class="line">write.csv(raw_norm,<span class="string">"Literature_norm.csv"</span>)</div></pre></td></tr></table></figure>
 <p>第二步，打开导出的数据（这里只显示了前5行），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210416.png" alt=""></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210416.png">
+
+</div>
 <p>将计算结果与文献附件中的计算结果对比，下面是文献附件中的均一化后的结果：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210451.png" alt=""></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210451.png">
+
+</div>
 <p>可以发现，计算结果与文献中的结果基本上是一致的，现在计算每组样本中每个miRNA相对表达量。</p>
 <p>第三步，在计算每组样本中每个miRNA相对表达量的同时，要先求相同样本之间的平均数，例如第14天的有2个样本，第5天有2个样本，求它们平均数，有的只有1个样本，不用管（其中1个样本是3只小鼠的混合样本，具体的可以参考文献的Methods部分），计算结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210644.png" alt=""></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210644.png">
+
+</div>
 <p>第四步，求相对表达量，直接以上面的数据的相反数为2的指数求幂即可，例如Naïve组的Let-7a是0.2983，则其相对表达量就是2^-0.2983=0.81321，再乘以100，同理，求出所有样本中miRNA的相对表达量，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210722.png" alt=""></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210722.png">
+
+</div>
 <p>再看一下文献中的数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210743.png" alt=""></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190325210743.png">
+
+</div>
 <p>可以发现两者的数据是一样的。</p>
 
       
@@ -530,7 +551,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">217</span>
+                  <span class="site-state-item-count">219</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -552,7 +573,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -629,7 +650,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共859.6k字</span>
+  <span class="post-count">博客全站共869.7k字</span>
 </div>
 
         

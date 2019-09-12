@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="条件概率,Loess," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 这一部分是《Data Analysis for the life sciences》的第9章机器学习的第2小节，这一部分的主要内容涉及条件概率与Loess回归，这一部分相关的Rmarkdown文档参见作者的Github。 条件概率与期望 预测问题的结果可以分为两类，分别为分类结果(categorical outcomes)和连续型结果(continuous outcomes)。但是，许">
+<meta name="keywords" content="条件概率,Loess">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DALS023-机器学习02-条件概率与Loess拟合">
+<meta property="og:url" content="http://rvdsd.top/2019/08/23/DAL/DALS023_Basic_Machine_Learning02_Loess/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言 这一部分是《Data Analysis for the life sciences》的第9章机器学习的第2小节，这一部分的主要内容涉及条件概率与Loess回归，这一部分相关的Rmarkdown文档参见作者的Github。 条件概率与期望 预测问题的结果可以分为两类，分别为分类结果(categorical outcomes)和连续型结果(continuous outcomes)。但是，许">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911232411.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911232626.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911234623.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912000435.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912000854.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912001103.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912001146.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912001229.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912124609.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912124842.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912125359.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912125636.jpeg">
+<meta property="og:updated_time" content="2019-09-12T05:17:24.979Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DALS023-机器学习02-条件概率与Loess拟合">
+<meta name="twitter:description" content="前言 这一部分是《Data Analysis for the life sciences》的第9章机器学习的第2小节，这一部分的主要内容涉及条件概率与Loess回归，这一部分相关的Rmarkdown文档参见作者的Github。 条件概率与期望 预测问题的结果可以分为两类，分别为分类结果(categorical outcomes)和连续型结果(continuous outcomes)。但是，许">
+<meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911232411.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/08/23/DAL/DALS023_Basic_Machine_Learning02_Loess/"/>
+
+
+
+
+
+  <title>DALS023-机器学习02-条件概率与Loess拟合 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/23/DAL/DALS023_Basic_Machine_Learning02_Loess/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DALS023-机器学习02-条件概率与Loess拟合</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T12:00:00+08:00">
+                2019-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,248
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  14
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第9章机器学习的第2小节，这一部分的主要内容涉及条件概率与Loess回归，这一部分相关的Rmarkdown文档参见作者的<a href="https://github.com/genomicsclass/labs/tree/master/ml/conditional_expectation.Rmd" target="_blank" rel="external">Github</a>。</p>
+<h2 id="条件概率与期望">条件概率与期望</h2>
+<p>预测问题的结果可以分为两类，分别为分类结果(categorical outcomes)和连续型结果(continuous outcomes)。但是，许多算法都可以应用于这两种情况，这是因为条件概率(conditional probabilities)和条件期望(conditional expectations)之间有着一定联系。</p>
+<p>对于分类数据，例如二分类结果，如果我们知道给在一组预测因子<span class="math inline">\(X=(X_1,\dots,X_p)^\top\)</span>下预测的概率<span class="math inline">\(Y\)</span>可能是<span class="math inline">\(k\)</span>个结果中的任意一个，这种情况用方程表示就是： <span class="math display">\[
+f_k(x) = \mbox{Pr}(Y=k \mid X=x)
+\]</span> 我们就可以优化我们的预测结果。尤其是，对于任意的 <span class="math inline">\(x\)</span> ，我们可能预测出最大概率 <span class="math inline">\(f_k(x)\)</span> 时的 <span class="math inline">\(k\)</span> 。</p>
+<p>为了简化我们的描述，我们只考虑二分类变量。我们可以认为 <span class="math inline">\(\mbox{Pr}(Y=1 \mid X=x)\)</span> 是当 <span class="math inline">\(X=x\)</span> 时，第1层的某结果在总体中的比例。考虑到期望是所有 <span class="math inline">\(Y\)</span> 值的均值，在这个案例中，期望的概率就等于：<span class="math inline">\(f(x) \equiv \mbox{E}(Y \mid X=x)=\mbox{Pr}(Y=1 \mid X=x)\)</span>。因此，我们在后面的描述中，就会使用期望，因为这种表示更加普遍。</p>
+<p>通常来说，期望值是有着比较受欢迎的数学属性，因为它能够缩小预测值 <span class="math inline">\(\hat{Y}\)</span> 和 <span class="math inline">\(Y\)</span> 之间的距离： <span class="math display">\[
+\mbox{E}\{ (\hat{Y} - Y)^2  \mid  X=x \}
+\]</span></p>
+<h4 id="预测中的回归问题">预测中的回归问题</h4>
+<p>我们在前面使用了父子的身高数据来介绍了回归，这里我们使用机器学习来解释一下这个数据分析过程。在我们前面的那个案例中，我们试图通常父母的身高<span class="math inline">\(X\)</span>来预测儿子的身高<span class="math inline">\(Y\)</span>。这里我们只有一个预测值(predictor)。现在如果我们被问到随机选择一个儿子，这个儿子的身高是多少，我们也许会使用平均值来回答，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line"><span class="keyword">library</span>(UsingR)</div><div class="line">data(<span class="string">"father.son"</span>)</div><div class="line">x=round(father.son$fheight) <span class="comment">##round to nearest inch</span></div><div class="line">y=round(father.son$sheight)</div><div class="line">hist(y,breaks=seq(min(y),max(y)))</div><div class="line">abline(v=mean(y),col=<span class="string">"red"</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911232411.jpeg">
+
+</div>
+<p>在这个案例中，我们也可以使用<span class="math inline">\(Y\)</span>的分布近似服从正态分布来进行预测，那么也就是说，当我们回答平均值的时候，回答对的概率最大。</p>
+<p>现在我们再来考虑一些情况，当我们有了更多的信息后，如何进行预测。例如，我们被告之，这个随机选择的这个儿子的父亲身高是71英寸（高于均值1.25个SD）。那么我们如何预测？</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">plot(x,y,xlab=<span class="string">"Father's height in inches"</span>,ylab=<span class="string">"Son's height in inches"</span>,main=paste(<span class="string">"correlation ="</span>,signif(cor(x,y),<span class="number">2</span>)))</div><div class="line">abline(v=c(-<span class="number">0.35</span>,<span class="number">0.35</span>)+<span class="number">71</span>,col=<span class="string">"red"</span>)</div><div class="line">hist(y[x==<span class="number">71</span>],xlab=<span class="string">"Heights"</span>,nc=<span class="number">8</span>,main=<span class="string">""</span>,xlim=range(y))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911232626.jpeg">
+
+</div>
+<p>上图的左侧是儿子身高的散点图，其中红色围起来的部分是给定父亲身高是71英寸这个数据后，对应的儿子的身高。条件分布：儿子的身高数据分布就是被父亲71英寸这个数据限定了。</p>
+<p>有了父亲身高是71英寸这个数据后，那么我们来猜儿子的身高时，最好的回答还是期望值(expectation)，但是，我们的数据层(strata)已经发生了改变，也就是说，我们来猜测儿子身高<span class="math inline">\(Y\)</span>时，要考虑到限制因素，即<span class="math inline">\(Y=71\)</span>。因此，我们可以在这个条件之上，再来计算均值，这个均值就是条件期望(conditional expectation)，因此我们对于任意<span class="math inline">\(x\)</span>值来预测时，公式如下所示： <span class="math display">\[
+f(x) = E(Y \mid X=x)
+\]</span></p>
+<p>通过微积分我们可以发现，这个结果更加接近于二元正态分布，我们可以换成下面的表示形式： <span class="math display">\[
+f(x) = \mu_Y + \rho \frac{\sigma_Y}{\sigma_X} (X-\mu_X)
+\]</span></p>
+<p>如果我们使用样本的数据来估计这5个参数，那么我们就会得到回归线：</p>
+<figure class="highlight plain"><figcaption><span>regression, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mypar(1,2)</div><div class="line">plot(x,y,xlab=&quot;Father&apos;s height in inches&quot;,ylab=&quot;Son&apos;s height in inches&quot;,</div><div class="line">     main=paste(&quot;correlation =&quot;,signif(cor(x,y),2)))</div><div class="line">abline(v=c(-0.35,0.35)+71,col=&quot;red&quot;)</div><div class="line">fit &lt;- lm(y~x)</div><div class="line">abline(fit,col=1)</div><div class="line">hist(y[x==71],xlab=&quot;Heights&quot;,nc=8,main=&quot;&quot;,xlim=range(y))</div><div class="line">abline(v = fit$coef[1] + fit$coef[2]*71, col=1)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911234623.jpeg">
+
+</div>
+<p>在这个特殊的案例中，回归线提供了对 <span class="math inline">\(Y\)</span> 更优化的预测函数，但是通常情况下这种情况并不真实，因为在典型的机器学习问题中，优化后的 <span class="math inline">\(f(x)\)</span> 很少是一条直线。</p>
+<h2 id="练习">练习</h2>
+<p>P379</p>
+<h2 id="平滑">平滑</h2>
+<p>相关的Rmarkdown文档见作者的<a href="https://github.com/genomicsclass/labs/blob/master/ml/smoothing.Rmd" target="_blank" rel="external">Github</a>。</p>
+<p>在所有的数据分析中，平滑(Smoothing)是一个非常强大的工具。当数据的分布的形状未知时，我们可以假定这些数据是平滑(smooth)的，我们就能够估计 <span class="math inline">\(f(x)\)</span> 。平滑的主要思路就是将那些有着类似期望的数据归类，然后计算这些归类后的平均值，或者是对其进行简单的参数模型拟合。我们使用基因表达数据来介绍两个平滑工具。</p>
+<p>下面的数据是源于相同RNA样本的基因表达数据。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">##Following three packages are available from Bioconductor</span></div><div class="line"><span class="keyword">library</span>(Biobase)</div><div class="line"><span class="comment"># BiocManager::install("SpikeIn")</span></div><div class="line"><span class="keyword">library</span>(SpikeIn)</div><div class="line"><span class="comment"># BiocManager::install("hgu95acdf")</span></div><div class="line"><span class="keyword">library</span>(hgu95acdf)</div><div class="line">data(SpikeIn95)</div></pre></td></tr></table></figure>
+<p>我们可以使用MA图 (<span class="math inline">\(Y\)</span> = log ratios and <span class="math inline">\(X\)</span> = averages) 来比较这两个重复样本的质量，我们可能通过一种方式对这些数据进行采样，这些采样方式要能平衡 <span class="math inline">\(X\)</span> 中不同层的数据点的数目，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>echo</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">##Example with two columns</div><div class="line">i=10;j=9</div><div class="line">##remove the spiked in genes and take random sample</div><div class="line">library(GEOquery)</div><div class="line">siNames&lt;-colnames(pData(SpikeIn95))</div><div class="line">ind &lt;- which(!probeNames(SpikeIn95)%in%siNames)</div><div class="line">pms &lt;- pm(SpikeIn95)[ ind ,c(i,j)]</div><div class="line">##pick a representative sample for A and order A</div><div class="line">Y=log2(pms[,1])-log2(pms[,2])</div><div class="line">X=(log2(pms[,1])+log2(pms[,2]))/2</div><div class="line">set.seed(4)</div><div class="line">ind &lt;- tapply(seq(along=X),round(X*5),function(i)</div><div class="line">  if(length(i)&gt;20) return(sample(i,20)) else return(NULL))</div><div class="line">ind &lt;- unlist(ind)</div><div class="line">X &lt;- X[ind]</div><div class="line">Y &lt;- Y[ind]</div><div class="line">o &lt;-order(X)</div><div class="line">X &lt;- X[o]</div><div class="line">Y &lt;- Y[o]</div></pre></td></tr></table></figure>
+<p>采样结束后，我们来绘制散点图，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>MAplot, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">mypar()</div><div class="line">plot(X,Y)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912000435.jpeg">
+
+</div>
+<p>在上面的MA图中我们可以看到 <span class="math inline">\(Y\)</span> 取决于 <span class="math inline">\(X\)</span>。这种取决关系存在着偏差，因为我们发现，它们在重复性方面有着偏差，这就意味着，如果不考虑 <span class="math inline">\(X\)</span>， 那么 <span class="math inline">\(Y\)</span> 的均值就是0。现在我们想预测 <span class="math inline">\(f(x)=\mbox{E}(Y \mid X=x)\)</span> ，以便于移除假这种偏差。线性回归无法捕捉到表示上图曲线 <span class="math inline">\(f(x)\)</span> 的曲率(curvature)，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>MAplot_with_regression_line, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">plot(X,Y)</div><div class="line">fit &lt;- lm(Y~X)</div><div class="line">points(X,Y,pch=21,bg=ifelse(Y&gt;fit$fitted,1,3))</div><div class="line">abline(fit,col=2,lwd=4,lty=2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912000854.jpeg">
+
+</div>
+<h2 id="微区间平滑bin-smoothing">微区间平滑(Bin Smoothing)</h2>
+<p>对于上述的数据，我们无法使用直线进行拟合，此时我们就要使用平滑处理的思想，也就是说把这些点分散到不同的组里，计算这些不同组的均值，这就是所谓的<code>微区间平滑</code>处理（我没有找到bin smoothing相应的中文翻译，这里说的<code>微区间平滑</code>是我自己造的词）。这种处理的通常思路就是，我们假定这些数据点分为很多微区间(bin)，这样拟合的曲线是足够”平滑“的，那么在这个微区间中的这个曲线就会近似于常数(approximately constant)。如果我们假设这个曲线是常数(constant)的，那么所有位于某个微区间(bin)中的 <span class="math inline">\(Y\)</span> 就有了相同的期望值。例如，在下面的图形中，如果我们将微区间的宽度设为1，我们标记出了在8.6和12.1处的微区间。我们还显示了，在这两个区间中拟合的 <span class="math inline">\(Y\)</span> 的均值，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>binsmoother, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">centers &lt;- seq(min(X),max(X),0.1)</div><div class="line">plot(X,Y,col=&quot;grey&quot;,pch=16)</div><div class="line">windowSize &lt;- .5</div><div class="line">i &lt;- 25</div><div class="line">center&lt;-centers[i]</div><div class="line">ind=which(X&gt;center-windowSize &amp; X&lt;center+windowSize)</div><div class="line">fit&lt;-mean(Y)</div><div class="line">points(X[ind],Y[ind],bg=3,pch=21)</div><div class="line">lines(c(min(X[ind]),max(X[ind])),c(fit,fit),col=2,lty=2,lwd=4)</div><div class="line">i &lt;- 60</div><div class="line">center&lt;-centers[i]</div><div class="line">ind=which(X&gt;center-windowSize &amp; X&lt;center+windowSize)</div><div class="line">fit&lt;-mean(Y[ind])</div><div class="line">points(X[ind],Y[ind],bg=3,pch=21)</div><div class="line">lines(c(min(X[ind]),max(X[ind])),c(fit,fit),col=2,lty=2,lwd=4)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912001103.jpeg">
+
+</div>
+<p>我们通过计算每一个点附近的小区间，我们就能对构成的曲线的函数 $f(x) $ 进行估计。下图显示了这个计算过程，即我们从最小的 <span class="math inline">\(x\)</span> 值扩展到最大值过程中的这个估计值，同时我们还展示了最小值与最大值之间的10个值，一共是10张图片，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>bin_smoothing_demo, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">windowSize&lt;-0.5</div><div class="line">smooth&lt;-rep(NA,length(centers))</div><div class="line">mypar (4,3)</div><div class="line">for(i in seq(along=centers))&#123;</div><div class="line">  center&lt;-centers[i]</div><div class="line">  ind=which(X&gt;center-windowSize &amp; X&lt;center+windowSize)</div><div class="line">  smooth[i]&lt;-mean(Y[ind])</div><div class="line">  if(i%%round(length(centers)/12)==1)&#123; ##we show 12</div><div class="line">    plot(X,Y,col=&quot;grey&quot;,pch=16)</div><div class="line">    points(X[ind],Y[ind],bg=3,pch=21)</div><div class="line">    lines(c(min(X[ind]),max(X[ind])),c(smooth[i],smooth[i]),col=2,lwd=2)</div><div class="line">    lines(centers[1:i],smooth[1:i],col=&quot;black&quot;)</div><div class="line">    points(centers[i],smooth[i],col=&quot;black&quot;,pch=16,cex=1.5)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912001146.jpeg">
+
+</div>
+<p>最终的结果就如下所示：</p>
+<figure class="highlight plain"><figcaption><span>bin_smooth_final, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mypar (1,1)</div><div class="line">plot(X,Y,col=&quot;darkgrey&quot;,pch=16)</div><div class="line">lines(centers,smooth,col=&quot;black&quot;,lwd=3)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912001229.jpeg">
+
+</div>
+<p>在R中有许多函数可以进行平滑处理(bin smoothers)，例如<code>ksmooth</code>。但是在实际计算过程中，我们更偏向使用一些稍微复杂的模型来对数据进行拟合。在最后一个案例，也就是最后一张图，这个曲线就不怎么平滑，有一些粗糙。我们后面会介绍<code>loess</code>方法会改善这一点。</p>
+<h2 id="loess">Loess</h2>
+<p>Loess的全称是Local weighted regression，即局部权重回归，它在原理上类似于微区间平滑处理。但Loess与微区间平滑处理的主要区别就在于，在微区间中我是使用直线，还是抛物线进行拟合。Loess计算会增大微区间的数目，但这会使我们的估计更稳定。下图展示了两个微区间的拟合曲线，这两个区间比较宽，使用宽区间主要是因为拟合曲线提供了更多的灵活性，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>loess, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">centers &lt;- seq(min(X),max(X),0.1)</div><div class="line">mypar (1,1)</div><div class="line">plot(X,Y,col=&quot;darkgrey&quot;,pch=16)</div><div class="line">windowSize &lt;- 1.25</div><div class="line">i &lt;- 25</div><div class="line">center&lt;-centers[i]</div><div class="line">ind=which(X&gt;center-windowSize &amp; X&lt;center+windowSize)</div><div class="line">fit&lt;-lm(Y~X,subset=ind)</div><div class="line">points(X[ind],Y[ind],bg=3,pch=21)</div><div class="line">a &lt;- min(X[ind]);b &lt;- max(X[ind])</div><div class="line">lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lty=2,lwd=3)</div><div class="line">i &lt;- 60</div><div class="line">center&lt;-centers[i]</div><div class="line">ind=which(X&gt;center-windowSize &amp; X&lt;center+windowSize)</div><div class="line">fit&lt;-lm(Y~X,subset=ind)</div><div class="line">points(X[ind],Y[ind],bg=3,pch=21)</div><div class="line">a &lt;- min(X[ind]);b &lt;- max(X[ind])</div><div class="line">lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lty=2,lwd=3)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912124609.jpeg" alt="当我们">
+<p class="caption">当我们</p>
+</div>
+<p>现在我们展示一下通过12步处理来对这些数据进行loess拟合，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>loess_demo, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">mypar (4,3)</div><div class="line">windowSize&lt;-1.25</div><div class="line">smooth&lt;-rep(NA,length(centers))</div><div class="line">for(i in seq(along=centers))&#123;</div><div class="line">  center&lt;-centers[i]</div><div class="line">  ind=which(X&gt;center-windowSize &amp; X&lt;center+windowSize)</div><div class="line">  fit&lt;-lm(Y~X,subset=ind)</div><div class="line">  smooth[i]&lt;-fit$coef[1]+fit$coef[2]*center</div><div class="line">  if(i%%round(length(centers)/12)==1)&#123; ##we show 12</div><div class="line">    plot(X,Y,col=&quot;grey&quot;,pch=16)</div><div class="line">    points(X[ind],Y[ind],bg=3,pch=21)</div><div class="line">    a &lt;- min(X[ind]);b &lt;- max(X[ind])</div><div class="line">    lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lwd=2)</div><div class="line">    </div><div class="line">    lines(centers[1:i],smooth[1:i],col=&quot;black&quot;)</div><div class="line">    points(centers[i],smooth[i],col=&quot;black&quot;,pch=16,cex=1.5)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912124842.jpeg">
+
+</div>
+<p>最终的结果就是生成一条更加平滑的拟合曲线用于估计我们的局部参数，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>loess_final, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mypar (1,1)</div><div class="line">plot(X,Y,col=&quot;darkgrey&quot;,pch=16)</div><div class="line">lines(centers,smooth,col=&quot;black&quot;,lwd=3)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912125359.jpeg">
+
+</div>
+<p>R中的函数<code>loess()</code>可以进行上述的分析，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>loess2, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">fit &lt;- loess(Y~X, degree=1, span=1/3)</div><div class="line">newx &lt;- seq(min(X),max(X),len=100) </div><div class="line">smooth &lt;- predict(fit,newdata=data.frame(X=newx))</div><div class="line">mypar ()</div><div class="line">plot(X,Y,col=&quot;darkgrey&quot;,pch=16)</div><div class="line">lines(newx,smooth,col=&quot;black&quot;,lwd=3)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912125636.jpeg">
+
+</div>
+<p><code>loess()</code>函数与其它的曲线平滑处理函数(bin smoother)还有三点重要的区别：</p>
+<p>第一，<code>loess()</code>函数会保持局部拟合中的点数不变，而非保持区间的数目不变。局部拟合中的点数是通过<code>span</code>参数决定的，这是一个比值。例如，如果 <code>N</code> 是数据点的数目，那么 <code>span = 0.5</code> 则表示针对一个确定的 <code>x</code> ， <code>loess()</code>将会使用 <code>0.5*N</code> 个最接近的点对 <code>x</code> 进行拟合。</p>
+<p>第二，使用参数模型来对 <span class="math inline">\(f(x)\)</span> 进行拟合时，<code>loess()</code>会使用加权最小平方和来进行计算，那些权重比较大的点就是那些更接近 <code>x</code> 的点。</p>
+<p>第三，<code>loess()</code>函数会选择更稳健(robustly)的局部模型来进行拟合。这是一种迭代算法，其中在一次迭代中拟合了模型之后，对于那些检测到的异常值就会在下一次迭代中降低其权重。如果要想使用这个参数，可以设定<code>family = &quot;symmetric&quot;</code>。</p>
+<h2 id="练习-1">练习</h2>
+<p>P389</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/条件概率/" <i class="fa fa-tag"></i> 条件概率</a>
+          
+            <a href="/tags/Loess/" <i class="fa fa-tag"></i> Loess</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/20/DAL/DALS020_Distance_and_Dimension_Reduction1_SVD/" rel="next" title="DALS020-距离与降维">
+                <i class="fa fa-chevron-left"></i> DALS020-距离与降维
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/23/DAL/DALS024_Basic_Machine_Learning03_Class_Prediction/" rel="prev" title="DALS024-机器学习03-类预测">
+                DALS024-机器学习03-类预测 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">219</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件概率与期望"><span class="nav-number">2.</span> <span class="nav-text">条件概率与期望</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#预测中的回归问题"><span class="nav-number">2.0.1.</span> <span class="nav-text">预测中的回归问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习"><span class="nav-number">3.</span> <span class="nav-text">练习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平滑"><span class="nav-number">4.</span> <span class="nav-text">平滑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微区间平滑bin-smoothing"><span class="nav-number">5.</span> <span class="nav-text">微区间平滑(Bin Smoothing)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loess"><span class="nav-number">6.</span> <span class="nav-text">Loess</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习-1"><span class="nav-number">7.</span> <span class="nav-text">练习</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共869.7k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
