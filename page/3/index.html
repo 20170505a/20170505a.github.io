@@ -259,6 +259,257 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/07/DAL/DALS007_Inference06_AssociationTests/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/07/DAL/DALS007_Inference06_AssociationTests/" itemprop="url">DALS007-统计推断(Inference)06-关联检验(Association Tests)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-07T12:00:00+08:00">
+                2019-08-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,707
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第6部分。这一部分的主要内容涉及卡方检验。</p>
+<h2 id="关联检验">关联检验</h2>
+<p>前面所提到的案例都是普通的统计学案例，这些普通案例指的是，它们的数据是二元的(binary)，分类的(categorical)或有序的(ordinal)。现在我们考虑一种特殊的案例，例如基因型数据，现在我们有两组基因型数据，一组基因是AA/Aa，另外一组是aa（某个特定疾病的对照）。现在我们的问题是，这个基因型(genotype)是否与疾病相关。这个案例与我们前面提到的案例就有点像了，我们有两个总体，即AA/Aa与aa，我们使用1或0来表示它们对应的疾病状态，其中0是不患病，1是患病的。此时我们不能使用t检验，因为这种数据明显不符合正态分布，无法使用t检验。如果样本足够大的话，可以使用CLT，否则，可以使用关联检验(association test)。</p>
+<h2 id="女士品茶">女士品茶</h2>
+<p>关于假设检验最有名的一个案例就是Fisher提出的。这个案例大概是这个样子的，一名女士声称，如果牛奶与红茶加入的先后顺序不同，得到的奶茶口味也不同，并且她自己能品尝出来。Fisher就给了4杯奶茶，这4杯奶茶加入的花与牛奶顺序是不同的，是随机的。后来这个女士品尝对了3个，此时，我们能认为这个女士确实有这种能力么，她品尝出的这3杯奶茶是否是出于偶然因素？假设检验就能回答这个问题，并且能够对这种偶然因素进行定量。</p>
+<p>现在我们提出我们的基础问题：假如这个女士品尝出的这3杯奶茶是她自己瞎猜（瞎猜说明她没有品尝出奶茶这种能力），并且猜对了，那么她瞎猜对3杯，或者是比3杯更难发生的事件（例如猜对4杯）的概率是多少？现在我们做一个零假设，假设她能猜对4杯，这个事件的概率是多少？</p>
+<p>现在我们就把这个事件再简化一下，我们做一个零假设，我们可以把女士品尝这个特殊案例看作是从一个含有4个绿球（正确答案）和4个红球（错误答案）的瓮中挑出4个小球的试验。</p>
+<p>零假设就是：这个女士品尝出正确奶茶的结果纯粹是她自己瞎猜的，也就是说，每个小球有着相同的机会被挑中。现在计算一下每个事件的概率，那么挑中3个绿球的概率就是： <span class="math display">\[
+\left(\begin{array}{l}{4} \\ {3}\end{array}\right)\left(\begin{array}{l}{4} \\ {1}\end{array}\right) /\left(\begin{array}{l}{8} \\ {4}\end{array}\right)=16 / 70
+\]</span> 挑中4个绿球的概率是： <span class="math display">\[
+\left(\begin{array}{l}{4} \\ {4}\end{array}\right)\left(\begin{array}{l}{4} \\ {0}\end{array}\right) /\left(\begin{array}{l}{8} \\ {4}\end{array}\right)=1 / 70
+\]</span> 现在我们把这两个数值相应，就是约等于0.24，这个数字表示，这个女士能够品尝对3杯奶茶，甚至比3杯奶茶这个事件更加极端的概率（例如4杯奶茶），这就是p值。这个p值产生的过程就是Fisher精确检验(<code>Fisher's exact test</code>)，这类数据服从超几何分布(<code>hypergeometric distribution</code>)。</p>
+<h2 id="二联表">二联表</h2>
+<p>前面提到的数据我们可以使用二联表来创建，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tab &lt;- matrix(c(<span class="number">3</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">3</span>),<span class="number">2</span>,<span class="number">2</span>)</div><div class="line">rownames(tab)&lt;-c(<span class="string">"Poured Before"</span>,<span class="string">"Poured After"</span>)</div><div class="line">colnames(tab)&lt;-c(<span class="string">"Guessed before"</span>,<span class="string">"Guessed after"</span>)</div><div class="line">tab</div></pre></td></tr></table></figure>
+<p>数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; tab</div><div class="line">              Guessed before Guessed after</div><div class="line">Poured Before              <span class="number">3</span>             <span class="number">1</span></div><div class="line">Poured After               <span class="number">1</span>             <span class="number">3</span></div></pre></td></tr></table></figure>
+<p>使用<code>fisher.test()</code>这个函数就能计算出p值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fisher.test(tab,alternative=<span class="string">"greater"</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; fisher.test(tab,alternative=<span class="string">"greater"</span>)</div><div class="line"></div><div class="line">	Fisher<span class="string">'s Exact Test for Count Data</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">data:  tab</span></div><div class="line"><span class="string">p-value = 0.2429</span></div><div class="line"><span class="string">alternative hypothesis: true odds ratio is greater than 1</span></div><div class="line"><span class="string">95 percent confidence interval:</span></div><div class="line"><span class="string"> 0.3135693       Inf</span></div><div class="line"><span class="string">sample estimates:</span></div><div class="line"><span class="string">odds ratio </span></div><div class="line"><span class="string">  6.408309</span></div></pre></td></tr></table></figure>
+<h2 id="卡方检验">卡方检验</h2>
+<p>GWAS全称是Genome-wide association studies，即全基因组关联分析。这种分析的统计结果常用曼哈顿图(Manhattan)图来表示。曼哈顿图的y轴是p值的负的log值（底为10），这个p值则是通过计算数百万个SNP的关联检验得到的。x轴通常是染色体的位置（例如chromosome 1 to 22, X,Y等）。这引起p值的计算类似于前面提到的女士品茶的计算过程。但是，在女士品茶那个案例中，绿球与红球的数目是固定的，针对每种事件的发生次数也是固定的，换句话讲，在列联表中，行与列的中的数字之和是固定的。这种限定条件就对二联表中所有的可能性进行了约束，并且还可以使用超几何分布来计算p值。但是，实际情况并非如此，这时，可以使用另外一种方法，即卡方检验(Chi-squared test)。</p>
+<p>假如我们有250个人，他们中有一些人患有某种疾病，剩下的则不患。在这些人中，纯合子(aa)有50人，这些纯合子中又有20%的人患病，即有10名患有该病，而非纯合子(AA/Aa)的人中则有10%患有该病。如果我们再挑250个人，那么又是什么情况呢？</p>
+<p>现在我们先根据既有的数据来过计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">disease=factor(c(rep(<span class="number">0</span>,<span class="number">180</span>),rep(<span class="number">1</span>,<span class="number">20</span>),rep(<span class="number">0</span>,<span class="number">40</span>),rep(<span class="number">1</span>,<span class="number">10</span>)),</div><div class="line">labels=c(<span class="string">"control"</span>,<span class="string">"cases"</span>))</div><div class="line">genotype=factor(c(rep(<span class="string">"AA/Aa"</span>,<span class="number">200</span>),rep(<span class="string">"aa"</span>,<span class="number">50</span>)),</div><div class="line">levels=c(<span class="string">"AA/Aa"</span>,<span class="string">"aa"</span>))</div><div class="line">dat &lt;- data.frame(disease, genotype)</div><div class="line">dat &lt;- dat[sample(nrow(dat)),] <span class="comment">#shuffle them up</span></div><div class="line">head(dat)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(dat)</div><div class="line">    disease genotype</div><div class="line"><span class="number">130</span> control    AA/Aa</div><div class="line"><span class="number">191</span>   cases    AA/Aa</div><div class="line"><span class="number">187</span>   cases    AA/Aa</div><div class="line"><span class="number">233</span> control       aa</div><div class="line"><span class="number">144</span> control    AA/Aa</div><div class="line"><span class="number">91</span>  control    AA/Aa</div></pre></td></tr></table></figure>
+<p>使用<code>table()</code>函数可以创建一个列联表，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">table(genotype)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; table(genotype)</div><div class="line">genotype</div><div class="line">AA/Aa    aa </div><div class="line">  <span class="number">200</span>    <span class="number">50</span></div></pre></td></tr></table></figure>
+<p>查看一下疾病的列联表，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">table(disease)</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; table(disease)</div><div class="line">disease</div><div class="line">control   cases </div><div class="line">    <span class="number">220</span>      <span class="number">30</span></div></pre></td></tr></table></figure>
+<p>现在把基因型与疾病关联起来，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tab &lt;- table(genotype,disease)</div><div class="line">tab</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; tab</div><div class="line">        disease</div><div class="line">genotype control cases</div><div class="line">   AA/Aa     <span class="number">180</span>    <span class="number">20</span></div><div class="line">   aa         <span class="number">40</span>    <span class="number">10</span></div></pre></td></tr></table></figure>
+<p>从上面结果可以看出来，我们使用了2个因素，即基因型，疾病，函数<code>table()</code>返回了<code>2X2</code>列联表。</p>
+<p>对于上述的这种数据，我们通常会使用比数比(OR, odds ratio)来表示。现在我们计算一下<code>aa</code>的比数(odd)，即<code>10/40</code>，也就是说在50个纯合子(aa)中，有10名患病，40名不患病，这个数值是患病与不患病的比值。那么AA/Aa这种基因型患病的比数为20/180，这两个比值再进行比，就是比数比(odd ratio)，即：<code>(10/40)/(20/180)</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(tab[<span class="number">2</span>,<span class="number">2</span>]/tab[<span class="number">2</span>,<span class="number">1</span>]) / (tab[<span class="number">1</span>,<span class="number">2</span>]/tab[<span class="number">1</span>,<span class="number">1</span>])</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; (tab[<span class="number">2</span>,<span class="number">2</span>]/tab[<span class="number">2</span>,<span class="number">1</span>]) / (tab[<span class="number">1</span>,<span class="number">2</span>]/tab[<span class="number">1</span>,<span class="number">1</span>])</div><div class="line">[<span class="number">1</span>] <span class="number">2.25</span></div></pre></td></tr></table></figure>
+<p>我们并不使用OR来直接计算p值。相反，我们会先假设基因型与疾病没有关联，然后计算出表格中每个单元格的期望数值。在零假设下，含有200个人的AA/Aa和含有50个人的aa都被计算出相应的患病数，把他们都当成一个总体，那么患病率是：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p=mean(disease==<span class="string">"cases"</span>)</div><div class="line">p</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; p</div><div class="line">[<span class="number">1</span>] <span class="number">0.12</span></div></pre></td></tr></table></figure>
+<p>那么这个表格的期望值是（期望值是使用每组的人数乘以发病率）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">expected &lt;- rbind(c(<span class="number">1</span>-p,p)*sum(genotype==<span class="string">"AA/Aa"</span>),</div><div class="line">c(<span class="number">1</span>-p,p)*sum(genotype==<span class="string">"aa"</span>))</div><div class="line">dimnames(expected)&lt;-dimnames(tab)</div><div class="line">expected</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; expected</div><div class="line">        disease</div><div class="line">genotype control cases</div><div class="line">   AA/Aa     <span class="number">176</span>    <span class="number">24</span></div><div class="line">   aa         <span class="number">44</span>     <span class="number">6</span></div></pre></td></tr></table></figure>
+<p>卡方检验的p值计算结果如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chisq.test(tab)$p.value</div></pre></td></tr></table></figure>
+<p>结果为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; chisq.test(tab)$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">0.08857435</span></div></pre></td></tr></table></figure>
+<h2 id="大样本小p值">大样本，小p值</h2>
+<p>前面提到，在报道一项发现时，仅报道p值是不合适。许多遗传学关联研究似乎过于强调p值，在这些研究中，研究者们使用了大量的样本，因此他们报道的p值非常人低。但是，如果我们仔细看一下他们的结果就会发现，比数比(odd ratio)则表现得很一般：很少有大于1的。在这种情况下，基因型为AA/Aa或aa的差异也许并不改变个体的疾病风险，虽然这有着实际意义(practically significant)，但是，一个人不可能根据这些基因型与疾病的关系而对自己的行为进行改变。</p>
+<p>比数比(odds ration)与p值之间并非是一对一的关系。为了说明这一点，我们在保证所有比例相同的前提下来重新计算一下p值。现在我们把样本数目扩大10倍，这就会明显地降低p值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tab &lt;- tab*<span class="number">10</span></div><div class="line">chisq.test(tab)$p.value</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; tab &lt;- tab*<span class="number">10</span></div><div class="line">&gt; chisq.test(tab)$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">1.219624e-09</span></div></pre></td></tr></table></figure>
+<h2 id="比数比的置信区间confidence-intervals-for-the-odd-ratio">比数比的置信区间(Confidence Intervals For The Odd Ratio)</h2>
+<p>在数学上计算OR的置信区间并不简单明了。在计算其它统计量时，我们可以推导出那些统计量的近似，但是OR的计算与之不同，OR不仅是一个比值，而是一个比值的比值。因此，没有简单的方法（例如CLT）来计算OR。</p>
+<p>一种方法是使用广义线性模型(generalized linear models )的理论，这种理论可以对比数比的log值(log odds ratio)进行估计。经过log转换的比数比就可以被证明是接近正态分布的，如下所示（具体的理论可以参考文献）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">fit &lt;- glm(disease~genotype,family=<span class="string">"binomial"</span>,data=dat)</div><div class="line">coeftab&lt;- summary(fit)$coef</div><div class="line">coeftab</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; fit &lt;- glm(disease~genotype,family=<span class="string">"binomial"</span>,data=dat)</div><div class="line">&gt; coeftab&lt;- summary(fit)$coef</div><div class="line">&gt; coeftab</div><div class="line">              Estimate Std. Error   z value     Pr(&gt;|z|)</div><div class="line">(Intercept) -<span class="number">2.1972246</span>  <span class="number">0.2356828</span> -<span class="number">9.322803</span> <span class="number">1.133070e-20</span></div><div class="line">genotypeaa   <span class="number">0.8109302</span>  <span class="number">0.4249074</span>  <span class="number">1.908487</span> <span class="number">5.632834e-02</span></div></pre></td></tr></table></figure>
+<p>数据的表格中的第2行就是估计值与log(odds ratio)的值。数学理论告诉我们，这个估计值是接近于正态分布的。因此我们可以构建一个置信区间，然后再化为正常值，就能计算出OR的置信区间，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ci &lt;- coeftab[<span class="number">2</span>,<span class="number">1</span>] + c(-<span class="number">2</span>,<span class="number">2</span>)*coeftab[<span class="number">2</span>,<span class="number">2</span>]</div><div class="line">exp(ci)</div></pre></td></tr></table></figure>
+<p>计算结果为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; ci &lt;- coeftab[<span class="number">2</span>,<span class="number">1</span>] + c(-<span class="number">2</span>,<span class="number">2</span>)*coeftab[<span class="number">2</span>,<span class="number">2</span>]</div><div class="line">&gt; exp(ci)</div><div class="line">[<span class="number">1</span>] <span class="number">0.9618616</span> <span class="number">5.2632310</span></div></pre></td></tr></table></figure>
+<p>这个置信区间包括1，这与p值大于于0.05的结果是一致的。需要注意的是，这里的p值是基于另一种不同方法计算的，它以前面使用卡方检验得到的p值计算过程不一样。</p>
+<h2 id="练习">练习</h2>
+<p>P91</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/06/DAL/DALS006_Inference05_PermutationTest/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -422,226 +673,6 @@
 <ol style="list-style-type: decimal">
 <li><a href="https://blog.csdn.net/u011467621/article/details/47971917" target="_blank" rel="external">Permutation Test 置换检验(转）</a></li>
 </ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
-                2019-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,152
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
-<h2 id="随机数">随机数</h2>
-<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种概念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
-<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
-<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
-<p>现在我们使用Mote Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
-<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
-
-</div>
-<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
-
-</div>
-<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
-
-</div>
-<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
-
-</div>
-<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
-
-</div>
-<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
-<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
-<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
-<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="练习">练习</h2>
-<p>P88</p>
 
           
         
@@ -1174,6 +1205,226 @@
 <p>一些RRI以及所有的RNA-蛋白质结合方法对IP的依赖限制了其对有良好特征抗体蛋白质的研究，而非特异抗体的结合仍然是一个问题（虽然这一问题并非局限于这个领域）。RNA结构也会影响RNA-蛋白质之间的相互作用；一些蛋白质能识别特异的RNA二级结构或与这些结构竞争结合RNA，这使得体外的发现转向体内就变得复杂了。此外，结构和RNA-蛋白质相互作用方法通常报告一个特定转录本或位置的平均值。在实验室方法中，在计算方法和单分子测序方面的未来发展或许有助于破译一些这些生物变异。</p>
 <h2 id="结论">结论</h2>
 <p>Wang，Gerstein和Snyder关于RNA-seq将“革命性地[如何]分析真核转录体”的预测肯定是正确的。但是，即使是他们，也有可能对这种转型的规模感到惊讶。现在我们可以分析RNA生物学的许多方面，这对于基因组功能、研究开发和确定导致癌症和其他疾病的分子调控异常方面来说是必不可少的。虽然生物学发现阶段还远未结束，但是已经在临床中使用了RNA-seq方法。单细胞测序正在成为许多实验的标准配置，空间转录组学的分析可能会遵循类似的路径，使其能够在与开发当前方法的实验室范围之外使用。长读长测序方法也有可能取代当前相当大比例的研究者们默认选择的Illumina的短读长RNA-seq。对于这种情况的出现，长读长测序技术还需要在增加通量和降低错误率方面做出极大的改进。 然而，长读长mRNA异构体测序的优点是，如果它变得像现在短读长测序一样便宜和可靠，那么对于那些除了易降解材料外，长读长测序就可能是首选。考虑到这些因素，那么任何关于RNA-seq在未来十年可能如何发展的预测都有可能过于保守。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
+                2019-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,152
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
+<h2 id="随机数">随机数</h2>
+<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种概念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
+<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
+<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
+<p>现在我们使用Mote Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
+<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
+
+</div>
+<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
+
+</div>
+<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
+
+</div>
+<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
+
+</div>
+<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
+
+</div>
+<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
+<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
+<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
+<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="练习">练习</h2>
+<p>P88</p>
 
           
         
@@ -2259,7 +2510,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,535
+                  1,549
                 </span>
               
 
@@ -2299,7 +2550,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
         
           
             <h2 id="前言">前言</h2>
-<p>本书是《Data Analysis for the Life Sciences》这本书的读书笔记。</p>
+<p>这是一个系列的第一篇，这个系列文章是《Data Analysis for the Life Sciences》这本书的读书笔记。</p>
 <div class="figure">
 <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190721083503.png">
 
@@ -2888,314 +3139,6 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/12/Literature/炎性小体/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/12/Literature/炎性小体/" itemprop="url">炎性小体</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-12T12:00:00+08:00">
-                2019-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/文献笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">文献笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,213
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  12
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概念">概念</h2>
-<p>胚系编码的一一些受体，例如NLR，ALR，TRIM在外界刺激（通常是病原体）下，会形成一个更大分子量的复合物，也就是炎性小体，炎性小体会通过ASC来招募促炎性的蛋白，即caspase-1。</p>
-<p>炎性小体的大致结构如下所示<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190712153128.png">
-
-</div>
-<p>炎性小体的核心结构进而会招募并寡聚化(oligomerize)半胱氨酸蛋白酶caspase-1，其中caspase-1是以丝状的形式存在的，如上图所示，这种丝状的结构会促进caspase-1自身的活化。</p>
-<p>ASC蛋白位于中间，它的N端是PYD，C末端是CARD，其中CARD参与caspase-1的相互作用。caspase-1会切除炎症细胞因子IL-1beta与IL-18的前体，将它们释放到细胞外。</p>
-<p>炎性小体的活化会诱导细胞的裂解死亡，这种形式称为<strong>焦亡(pyroptosis)</strong>，这是细胞对抗病原体的一种免疫机制。</p>
-<p>在天然免疫中，炎性小体是一个重要的组成成分，书中对炎性小体的定义如下所示<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>：</p>
-<blockquote>
-<p>By definition, inﬂammasomes are scaffolds for activation of the inﬂammatory cysteine-dependent aspartate-specific protease caspase-1.</p>
-</blockquote>
-<p>也就是说，炎性小体是一类脚手架蛋白(scaffold)，其功能是参与光胱氨酸依赖的天冬氨酸特异性蛋白酶caspase-1的活化，这种酶活化后参与炎性细胞因子，IL-1beta，IL-18的成熟与分泌， 以及参与焦亡，与焦亡相关的另外一个酶是caspase-11。</p>
-<p>pyroptosis是宿主细胞的一种防御机制，它能裂解那些被病原体感染的细胞，从而将病原体暴露出来，与免疫细胞接触。pyroptosis相关的细胞裂解还会释放DAMP，例如IL-1瞢a和HMGB1。</p>
-<h3 id="prrs作为炎性小体的脚手架蛋白">PRRs作为炎性小体的脚手架蛋白</h3>
-<p>常见的炎性小体结构如下所示<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190712171054.png">
-
-</div>
-<p>NLRP1， NLRP2，NLRP3，NLRP6，NLRC4以及NLRP12它们都含有一个NBD，NBD也被称为NACHT。还含有一个LRR，剩下的要么含有CARD，要么含有PYD。</p>
-<p>AIM2与IFI16是PYHIN家族成员，它们都含有PYD与HIN200结构域，这两个结构域参与配体结合<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>。</p>
-<p>其它文献关于它们的结构总结如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715105613.png">
-
-</div>
-<p>其中的缩写如下所示：</p>
-<ol style="list-style-type: decimal">
-<li>PYD: Pyrin domain</li>
-<li>NLR: nucleotide-binding domain and leucine-rich repeat containing receptors</li>
-<li>NACHT：NAIP-CIITA-HET-E domain</li>
-<li>NAIP: neuronal apoptosis inhibitor protein</li>
-<li>LRR: leucine-rich repeat</li>
-<li>NOD: nucleotide-binding oligomerization domain</li>
-<li>FIND:‘Function to find’ domain</li>
-<li>CARD: Caspase recruitment domain</li>
-<li>BIR: Baculovirus inhibitor repeat(Baculovirus是杆状病毒)</li>
-<li>NLRP: NLR family, pyrin domain containing</li>
-<li>NLRC: containing a caspase recruitment domain</li>
-<li>NLRB: containing a Baculovirus inhibitor repeat (BIR) domain</li>
-<li>Hin200: Hematopoietic interferon-inducible nuclear protein family, 200 amino acid repeat</li>
-<li>CC: coiled-coil</li>
-</ol>
-<p>NLRs（这个s指的是P，C，B，也就是NLRP，NLRB，NLRC这3种炎性小体）这种结构的炎性小体的结构前文已经提及，它含有NACHT/NBD，LRR，这两个组件(NACHT与LRR）通常位于中央。多数的NLRs型炎性小体在氨基端还有BIR，PYD,CARD这些结构。</p>
-<p>NLR家族一共有22个人类炎性小体，有34个鼠源炎性小体。</p>
-<h2 id="炎性小体功能">炎性小体功能</h2>
-<p>哺乳动物的NLRs有几个阐明功能了，其余的功能还不清楚。其中研究比较透彻的是NOD1和NOD2(nucleotide-binding oligomerization domain containing proteins 1/2)，他们能促进RIPK2与CARD9依赖的NF-kappaB与AP1靶基因的活化。MHC II在抗原提呈中也需要NLR蛋白CIITA的参与。</p>
-<p>另一个NLRs亚家族，也就是NLRP1，NLRP3，NLRC4和NAIP通过炎性小体信号转导参与免疫应答。</p>
-<p>信号转导诱导PRR的聚集与招募，促进procaspase-1丝状物的成核，随后procaspase-1会经历邻近诱导的自我活化(proximity-induced autoactivation)。</p>
-<h2 id="相关细胞因子">相关细胞因子</h2>
-<p>IL-1beta与IL-18的分泌与其它的细胞因子不同，proIL-1beta和proIL-18最先是以非活性的形式（前体）分泌到细胞质中，然后再经caspase-1的切割，形成生物活性形式。</p>
-<h2 id="nlrp3">NLRP3</h2>
-<p>NLRP3能对大量的激活剂产生应答，它需要NF-kappaB信号的诱导才能活化。NF-kappaB信号是第一信号 （signal 1或priming）。例如NF-kappaB调控物A20/TNFAIP3缺陷的小鼠就无法出现 NLRP3的活化。</p>
-<p>signla 2：细菌，真菌的一些成分会诱导NLRP3的活化，除了经典的刺激（细菌成分）诱导 NLRP3炎性小体外，还有一些其它的蛋白能诱导NLRP3的活化，这些属于NLRP3的非经典活化内容，例如人类的caspase-11或它的鼠源直系同源蛋白 caspase-4和caspase-5参与细胞质LPS诱导的NLRP3炎性小体的活化。在这些非经典信号通路中，caspase-11诱导的pyroptosis并不依赖于NLRP3炎性小体 ，但是proIL-1beta与por-IL-18的切割却要通过NLRP3来实现 。在观其NLRP3活化过程中，K+是一种重要的诱导物。</p>
-<p>非经典NLRP3炎性小体信号转导通常在格兰氏阴性菌的识别过程中有着重要作用。</p>
-<p>pyroptosis的一个关键事件就是Gasdermin D的切割，它的切割与LPS诱导的caspase-11和caspase-1有关。</p>
-<p>线粒体膜的破坏，以及线粒体DNA的氧化是NLRP3活化的一个因素。</p>
-<p>线粒体异常有时候伴随着离子流的异常，这种行为也会控制NLRP3的活化。心磷脂(cardiolipin)的释放，氧化的线粒体DNA与线粒体膜的破坏都是NLRP3活化的第二信使。最近发现的Nek7是NLRP3活化的一个关键蛋白，它控制K+的流入来影响NLRP3的组装。</p>
-<h2 id="nlrp1">NLRP1</h2>
-<p>NLRP1是第1个发现的炎性小体，它通常FIIND结构域进行自我切割，FIIND位于CARD与LRR中间。人类有1个NLRP1基因，小鼠有3个，分别是Nlrp1a，Nlrp1b与Nlrp1c。Nlrp1b在Bacillus anthracis的LeTx(lethal toxin)诱导下进行组装。ASC对于Nlrp1b依赖的IL-1beta和IL-18分泌来说并非是必不可少的，只是ASC能够增强这两种细胞因子的分泌。这表明，proaspase-1招募到Nlrp1b平台上后，会诱导caspase-1构象的改变，诱导其活化，而ASC依赖的caspase-1自我切割则会锁定这种活化构象。</p>
-<p>炎性小体活化的经典与非经典通路：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713103622.png">
-
-</div>
-<h2 id="nlrc4">NLRC4</h2>
-<p>NLRC4与其它炎性小体的结构如下所示<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713104104.png">
-
-</div>
-<p>上图列出了NLRC4活化的上游机制，NLRC4在氨基末端有一个CARD，在没有ASC的前提下，NLRC4通过CARD与procaspase-1相互作用。一些微生物能活化NLRC4的活化，例如Salmonella enterica serovar Typhimurium， Legionella pneumophila，Pseudomonas auruginosa，Shigella ﬂ exneri， Listeria monocytogenes），这些细菌的毒力因子都是依赖于鞭毛蛋白(flagellin)介导的运行，会向宿主细胞传递T3SS和T4SS。NLRC4不直接检测这些毒力因子，而是NAIP检测到这些成分后，再作用于NLRC4。人类的全长NAIP与小鼠的Naip5，Naip6是鞭毛蛋白的受体。人类短的NAIP与小鼠的Nip1能识别T3SS的针状蛋白(needle protein)，但Naip2则能与T3SS杆状蛋白(rod protein)结合。S. Typhimurium能诱导NLRC4在Ser533位点的磷酸化，进而活化NLRC4。</p>
-<p>在Naip5缺陷的巨噬中，falgellin依赖的NLRC4磷酸化并不依赖地Naip5。这说明，Nlrc4的活化机制分两步，先是在Ser533位点磷酸化，随后，Naip5再诱导NLRC4的活化。NLRC4与天然免疫有关，也与自身免疫性疾病有关。</p>
-<h2 id="aim2">AIM2</h2>
-<p>AIM2全称是absent in melanoma2，这是一个HIN200家族/AIM2家族的一个成员(ALR)。当细菌或病毒来源的dsDNA与Hin200结构域结合时，就会诱发AIM2炎性小体的组装。AIM2会诱导髓系细胞(myeloid cells)产生IL-1beta和IL-18，诱导细胞的pyroptosis。AIM2在控制一些病原体感染方面有着重要作用，例如 Francisella tularensis,Listeria monocytogenes,mouse cytomegalovirus,vaccinia virus。</p>
-<h2 id="pyrin">Pyrin</h2>
-<p>人类MEFV基因编码Pyrin/TRIM20蛋白，这是一个TRIM家族的成员。Pyrin主要表达于髓系细胞(myeloid cell)，在单核细胞向巨噬分化过程中，Pyrin的表达会降低。RhoA-inactivating bacterial toxins会诱导Pyrin组装成炎性小体，激活caspase-1，参与IL-1beta的分泌。</p>
-<h2 id="炎性小体的组装与信号转导">炎性小体的组装与信号转导</h2>
-<p>ASC依赖的炎性小体的组装过程：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713152009.png">
-
-</div>
-<p>上游的NLR或ALR识别其配体后，会通过PYD或CARD聚集，聚集的NLR或ALR会形成一个平台，通过PYD-PYD或CARD-CARD的相互作用来招募ASC，形成一个丝状的核心。其中ASC(CARD)位于外层，它形成另外一个平台，通过CARD-CARD的相互作用来招募caspase-1，高度聚合化折caspase-1会诱导自身的切割，产生活性炎性小体。</p>
-<h2 id="listeria-monocytogenes与炎性小体">Listeria monocytogenes与炎性小体</h2>
-<p>Lm能激活不同的炎性小体。</p>
-<h3 id="nlrp3与lm">NLRP3与Lm</h3>
-<p>Lm是第一个发现的能激活NLRP3的病原体。Mariathasan发现，细胞质中的Lm能激活NLRP3炎性小体，但是被囊泡包裹的Lm无法激活炎性小体，这说明被囊泡包裹这一过程对于炎性小体的活化非常重要。Kannengati观察到，Lm的总RNA能刺激NLRP3的活化，这进一步说明，LM能通过各种机制来刺激NLRP3。</p>
-<p>胞外的LLO形成的孔洞会诱导K+外流，导入NLRP3炎性小体的活化。除此之外，Lm的RNA，iap基因编码的p60也能激活NLRP3。p60的N端LysM与SH3结构域刺激IL-1beta和IL-18的释放，这些活动独立于细胞的焦亡形式死亡。使用DPI抑制ROS能降低IL-1beta的分泌，但IL-18的分泌不受影响。这些实验是在小鼠细胞上做的。</p>
-<p>在人类PBMC实验方面，使用Lm感染PBMC，细胞会经历LLO诱导的NLRP3依赖的炎性小体活化，这种炎性小体一的活化依赖于吞噬泡的西化与cathepsin B的释放，这些现象与小鼠的细胞有所不同。</p>
-<p>Lm诱导的快速NRLP3的活化依赖于TLR信号转导，因为MyD88缺陷的细胞无法活化炎性小体。这些应答依赖于MyD88的下游信号分子IRAK1，因此IRAK1缺陷的细胞无法激活炎性小体，以及无法分泌IL-1beta和IL-18。但是，在致敏状态(priming)，IRAK1对于炎性小体的活化又不是必需的。另外，延长感染时间会出现Lm诱导的非NLRP3依赖的炎性小体活化。总之就是，LM在早期感染中激活NLRP3。</p>
-<h3 id="nlrc4与lm">NLRC4与Lm</h3>
-<p>NRLC4识别鞭毛蛋白(flagellin)与T3SS(Type III secretion system)。</p>
-<p>Lm是格兰阳性菌，不含T3SS成分，它的鞭毛蛋白是激活NLRC4的成分。但Lm鞭毛蛋白似乎并非只激活NRLC4，因为使用鞭毛蛋白缺陷菌ΔflaA来感染，也能产生caspase-1的活化以及形成IL-1beta。</p>
-<h3 id="aim2与lm">AIM2与Lm</h3>
-<p>AIM2通常HIN200结构域来识别dsDNA。前面提到，在NLRP3缺失的情况下，鞭毛蛋白缺陷菌ΔflaA也能诱导caspase-1的活化。但在AIM2缺陷的细胞中，caspase-1的活化则会消失。</p>
-<p>Lm的DNA激活AIM2。</p>
-<h3 id="其它炎性小体">其它炎性小体</h3>
-<p>NLRC5与NLRP3结合参与NLRP3的活化。NLRC5敲除的小鼠感染Lm后，载菌是不是更多，机制不明。NLRP6敲除的小鼠载菌量低，NLRPP6在LM感染方面的作用，不依赖于炎性小体的信号转导。Lm在刺激炎性小体方面的作用，体外数据很好，但是体内数据研究机制不明，其中AIM2有可能与体内相关炎性小体最密切的一个炎性小体。</p>
-<p>在体外实验中，虽然LM能激活很多炎性小体，但是在体内感染方面，Lm会避免过度激活炎性小体，从而避免自身被清除，它已经进化出了逃避炎性小体监测的机制。</p>
-<p>Lm会通过调控自身LLO，鞭毛蛋白(flagellin)来逃避宿主细胞的监测。</p>
-<p>Lm的感染会诱导caspase-11的表达，但是敲除caspase-11后，caspase-1的功能不受影响，这说明caspase-11对于Lm的感染来说是可有可无的。</p>
-<p>ASC敲除的异噬细胞无法激活caspase-1，不能分泌IL-1beta和IL-18.</p>
-<p>Lm激活与逃避炎性小体监测的机制：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713165831.png">
-
-</div>
-<p>Fig1：WT LM能最小程度地激活caspase-1，维持Lm在细胞内的存活，最终形成感染。相比之下，那些能激活炎性小体的Lm会诱导强烈的caspase-1以及pyroptosis，释放IL-1beta和IL-18，最终导致Lm的清除，增强活化巨噬细胞的招募，中性粒细胞的流入。</p>
-<p>炎性小体的活化能清除Lm。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713170002.png">
-
-</div>
-<p>炎性小体相互关的炎症会损伤宿主针对Lm的细胞免疫。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713170251.png">
-
-</div>
-<h2 id="炎性小体研究思路">炎性小体研究思路</h2>
-<h2 id="参考资料">参考资料</h2>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>Janeway immunobiology. 9th<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Backert S . Inflammasome Signaling and Bacterial Infections[M]. Springer International Publishing, 2016.<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>Backert S . Inflammasome Signaling and Bacterial Infections[M]. Springer International Publishing, 2016.<a href="#fnref3">↩</a></p></li>
-<li id="fn4"><p>Inflammasomes in health and disease.Nature. 2012 Jan 18;481(7381):278-86. doi: 10.1038/nature10759.<a href="#fnref4">↩</a></p></li>
-<li id="fn5"><p>Lamkanfi, M. and Vishva M. Dixit (2014). “Mechanisms and Functions of Inflammasomes.” Cell 157(5): 1013-1022.<a href="#fnref5">↩</a></p></li>
-</ol>
-</div>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3246,7 +3189,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">219</span>
+                  <span class="site-state-item-count">220</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3268,7 +3211,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">111</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3345,7 +3288,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共869.7k字</span>
+  <span class="post-count">博客全站共876.4k字</span>
 </div>
 
         
