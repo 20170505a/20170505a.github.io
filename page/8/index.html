@@ -259,6 +259,335 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/23/BioTools/BioStar笔记之SRA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/23/BioTools/BioStar笔记之SRA/" itemprop="url">Biostar Handbook笔记之SRA</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-23T12:00:00+08:00">
+                2018-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,834
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是sra">什么是SRA</h2>
+<p>SRA的全称是Short Read Archive，它是由NCBI提供的一个数据储存服务。从这个名称上来看，貌似是储存测序的原始数据的一个数据库。SRA中的数据组织形式是按照层级结构组织的，不用的数据前面有不同的前缀，如下所示：</p>
+<ol style="list-style-type: decimal">
+<li>NCBI的生物项目(BioProject)的命名为<code>PRJN****</code>，例如<code>PRJNA257197</code>，这个数据是对一个单独研究机制的整体描述，一个生物项目含有很多样本与数据集；</li>
+<li>NCBI的生物样本(BioSample)，它的命名为<code>SAM****</code>，或者是<code>SRS****</code>，例如<code>SAMN03254300</code>，这个数据指的是生物样本的来源，每个生物学样本都有一个单独的BioSample编号，以及一组独特的特征。</li>
+<li>SRA实验，命名方式为<code>SRX****</code>，这是针对某个特定样本的一个测序文库。</li>
+<li>SRA run，命名方式为<code>SRR****</code>或<code>ERR****</code>，例如<code>SRR1553610</code>，它对应的是某个测序文库的数据文件。</li>
+</ol>
+<h2 id="下载sra数据文件">下载SRA数据文件</h2>
+<p>下载SRA主要有两种方式，一种是通过<code>sratoolkit</code>这个工具包，另外一种就是通过普通的下载工具下载，例如迅雷（我下载过，速度还不错）。</p>
+<h3 id="sratoolkit安装">sratoolkit安装</h3>
+<p>现在讲一下sratoolkit这个工具包的安装，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>或者直接使用conda来安装，非常方便，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install sratoolkit</div></pre></td></tr></table></figure>
+<h3 id="下载数据">下载数据</h3>
+<h4 id="下载fastq格式文件">下载fastq格式文件</h4>
+<p>sratoolkit中常用的下载命令有两个，如下所示：</p>
+<p><code>fastq-dump</code>，下载FASTQ格式的文件；</p>
+<p><code>sam-dump</code>下载SAM比对格式的文件；</p>
+<p>fastq-dump的典型用法如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fastq-dump SRR1553607</div></pre></td></tr></table></figure>
+<p>查看下载结果，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/sratoolkit$ head -4 SRR1553607.fastq </div><div class="line">@SRR1553607.1 1 length=202</div><div class="line">GTTAGCGTTGTTGATCGCGACGCAACAACTGGTAAAGAATCTGGAAGAAGGATATCAGTTCAAACGCTCAAGCGAGATGATGGATATTTTTGAACGACTCATCATTCGTCACATCCCGTTCAACCTGATTGAGTCGTTCAAAAATATCCATCATCTCGCTTGAGCGTTTGAACTGATATCCTTCTTCCAGATTCTTTACCAG</div><div class="line">+SRR1553607.1 1 length=202</div><div class="line">BB@FFFFFHHHHHJJJJJJJJJJJJJJJJJJJGHIJJJJJJJJJHHHHHFFFFFEEEEEEEEEDDDDDDDDDDDDDDDDDEDDDDEDEEEDDDDDDDDDDDCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJIJJJIJJHIJJHHHFFFFFEDDEFEEEDDDDDDDDDDDDDEDDDDDD</div></pre></td></tr></table></figure>
+<p>有的数据文件是双端测序文件，此时我们通过添加<code>--split-files</code>参数下载双端测序的文件，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fastq-dump --split-files SRR1553607</div></pre></td></tr></table></figure>
+<p>下载结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<p>fastq-dump还可以只下载一部分数据，例如我闪只下载前10000个reads，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fastq-dump --split-files -X 10000 SRR1553607</div></pre></td></tr></table></figure>
+<p>不过，这种情况下，fastq-dump会先下载全部数据，然后从中提取前10000个reads，如下已经下载了全部的序列，直接运行即可，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/sratoolkit$ ls -lh</div><div class="line">total 171M</div><div class="line">drwxr-xr-x 5 biotest biotest 4.0K 3月   7  2017 sratoolkit.2.8.2-ubuntu64</div><div class="line">-rw-r--r-- 1 biotest biotest  73M 8月  30 11:37 sratoolkit.2.8.2-ubuntu64.tar.gz</div><div class="line">-rw-r--r-- 1 biotest biotest 2.6M 8月  30 12:23 SRR1553607_1.fastq</div><div class="line">-rw-r--r-- 1 biotest biotest 2.6M 8月  30 12:23 SRR1553607_2.fastq</div><div class="line">-rw-r--r-- 1 biotest biotest  93M 8月  30 12:15 SRR1553607.fastq</div></pre></td></tr></table></figure>
+<p>从上面可以看出，有两个文件的大小是2.6M，用wc统计一下，发现确实是1000个reads（4000除以4，因为一条reads占4行）。</p>
+<h4 id="下载sra格式文件">下载sra格式文件</h4>
+<p>通常情况下，下载sra格式的文件可以使用<code>curl</code>，如下所示</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -O ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR197/SRR1972739/SRR1972739.sra</div></pre></td></tr></table></figure>
+<p>查看下载结果：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/LKEGL2djmd.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>prefetch也能下载该文件，不过是fastq格式的，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span> 先删除原来的下载文件</div><div class="line"><span class="meta">#</span> rm SRR1972739.sra</div><div class="line">prefetch SRR1972739</div><div class="line"><span class="meta">#</span> 注意，后续不带sra</div></pre></td></tr></table></figure>
+<p>查看下载文件：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/kGaC1h314f.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>当通过fastq-dump下载文件时，全部的数据默认情况下都位于<code>~/ncbi/public/sra/</code>中，如下所示</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@biotest-VirtualBox:~/biostar/sratoolkit$ ls -lh ~/ncbi/public/sra</div><div class="line">total 110M</div><div class="line">-rw-r--r-- 1 biotest biotest 25M 8月  30 12:15 SRR1553607.sra</div><div class="line">-rw-r--r-- 1 biotest biotest 86M 8月  30 12:33 SRR1972739.sra</div></pre></td></tr></table></figure>
+<h2 id="sra中的spot">SRA中的spot</h2>
+<p>当我们在SRA中检索时，会发现这样的信息，如下所示</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/meB6E1cAJj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>SRA中呈现的结果是<code>Spots</code>，而非<code>reads</code>，其实这两个术语描述的是一种东西。但是如果真要区分这两个东西，可以从Illumina测序的原理上来理解，在测试时，最终的序列是靠相机来读取的，一个spot上有一串碱基，，spot就是这串碱基（就是桥式PCR一端的结合位点）所在的位置，因此spot中包括了这些信息：接头，测序引物，目标序列片段，index，这是从技术层面来讲的，如果从生物学层面来讲，我们所说的reads其实就是指的目标序列，是去掉了接头，测序引物，index后的序列信息。但在很多情况下，spots跟reads所表达的意思是一样的。</p>
+<h2 id="run的信息">run的信息</h2>
+<p><code>sra-stat</code>可以获取数据的XML报告，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sra-stat --xml --quick SRR1553610</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/8iJaG6idKh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>查看一个PacBio数据集的read长度，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sra-stat --xml --statistics SRR4237168</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/efKGcFld96.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="下载多个sra-runs信息">下载多个SRA runs信息</h2>
+<p>先检索某个生物项目，例如<code>PRJNA257197</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">esearch -db sra -query PRJNA257197</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/hdba7Cch58.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从结果中可以发现，有891个run，再看一下网页版：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/5J9BAEaDJC.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在，我们把这些信息都导出到一个文件中，即<code>info.csv</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">esearch -db sra -query PRJNA257197 | efetch -format runinfo &gt; info.csv</div></pre></td></tr></table></figure>
+<p>现在显示前5行的第1到8列，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cut -d ',' -f 1-8 info.csv  |head -5</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/b03jBje1La.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在网页版中，也能导出这些信息，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/gjg36IfEJ2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>打开，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/LiaE658K52.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="文本的切割与组合">文本的切割与组合</h3>
+<p>前面已经看了简单的文本切割，现在再复习一下。</p>
+<ol style="list-style-type: decimal">
+<li>只显示<code>info.csv</code>文件的第1列：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat info.csv |cut -f 1 -d ',' |head</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/A67BBG0f3g.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<ol start="2" style="list-style-type: decimal">
+<li>提取第1列信息，满足开头是<code>SRR</code>的字段，将这些信息导致入到<code>ids.txt</code>这个文件中：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/m7HG4HKLFg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>使用fastq-dump下载sra的run文件，并只取其前10000个reads，并分割（双端测序）如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fastq-dump -X 10000 --split-files SRR1972918</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/0CK2lA2Ikc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>使用<code>xargs</code>命令生成新的文本信息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat ids.txt | xargs -n 1 echo This is number $1</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/DHcd59ACC7.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h4 id="xargs">xargs</h4>
+<p>xargs命令的功能是：将上游输入的数据转化为特定的命令，以上面的命令为例解释一下<code>cat ids.txt | xargs -n 1 echo This is number $1</code>，这个命令是将<code>ids.txt</code>中的SRR号作为<code>echo This is number $1</code>的输入，由于idx。txt这个文件中一共有10行，那么这个<code>-n 1</code>此时就表示，把每一行的信息作为参数传递给<code>THis is number $1</code>，如果我们把<code>-n 1</code>改为<code>-n 2</code>，那么就是下面的情况：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/9jhDjbJ40i.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>可以发现，一次传递了2个参数的内容。</p>
+<p>xargs后面还有东西，也就是<code>echo This is number $1</code>，这个<code>echo</code>好理解，把它当成输出某些信息的函数即可，这个<code>$1</code>表示脚本运行中的第1个参数，具体的内容参考以前的笔记<a href="http://rvdsd.top/2018/05/02/Linux/Linux-shell04-%E5%A4%84%E7%90%86%E7%94%A8%E6%88%B7%E8%BE%93%E5%85%A5/">《Shell学习笔记（4）——处理用户输入》</a>。</p>
+<p>通过这个<code>xargs</code>这个函数，我们就可以下载批量的fastq格式的文件了，现在把ids.txt中所列的文件下载下来，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkdir download </div><div class="line">mv ids.txt downolad</div><div class="line">cd download</div><div class="line">cat ids.txt |xargs -n 1 fastq-dump -X 10000 -split-files $1</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/F4eJ0kfL4j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>过滤多个条件的记录，如下所示：</p>
+<p>这里提取的是2014-08-19，并以SRR开头的文件名，显示前3列：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat info.csv | grep "2014-08-19"|cut -f 1 -d ','| grep "SRR" |head -10</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180830/KiACF4gfI1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="获取sra中全部runs信息">获取SRA中全部runs信息</h2>
+<p>下载2018年1月的全部SRA的信息，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">esearch -db sra -query '"2018/01"[Publication Date]' | efetch -format runinfo &gt; 2018-01.csv</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/22/BioTools/BioStar笔记之Entrez/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3395,326 +3724,11 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/07/StatQuest/生物统计-StatQuest学习笔记24-RPKM FPKM TPM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/07/StatQuest/生物统计-StatQuest学习笔记24-RPKM FPKM TPM/" itemprop="url">StatQuest学习笔记24——RPKM FPKM TPM</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-07T12:10:54+08:00">
-                2018-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,100
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  8
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言主要内容">前言——主要内容</h2>
-<p>这篇笔记是StatQuest系列笔记的第63节，这篇笔记跳过59节，60节，61节主要是因为第63节的内容是讲RPKM，FPKM和TPM这几个概念的区别，在进行差异分析前，有必要了解一下这几个概念。</p>
-<h2 id="测序的度量单位">测序的度量单位</h2>
-<p>在RNA-Seq中，我们通常使用RPKM（全称为Reads Per Kilobase Million）或FPKM（Fragments Per Kilobase Million）来进行均一化，这些均一化的数据（normalized data）主要解决两个问题：</p>
-<ol style="list-style-type: decimal">
-<li>测序深度（这个是指Million这一部分，侧重于数量），我们知道，测序深度越高，那么比对到基因上的reads数就越多；</li>
-<li>基因的长度（这个指的是Kilobase这一部分，侧生于长度），我们知道，一个基因越长，那么比对到这个基因上的reads数就越多。</li>
-</ol>
-<p>不过现在我们还使用TPM（全称为Transcripts per million）来作为均一化后的基因的表达单位，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185837.jpg">
-
-</div>
-<p>为了能够更好的区分这三个单位，即RPKM，FPKM和TPM，我们就通过一个简单的案例来说明一下，在这个案例中，我们一共有3个重复，分别为Rep1，Rep2和Rep3，检测了4个基因，分别为A，B，C，D，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185844.jpg">
-
-</div>
-<p>从上面的图表可以发现，Rep3的reads数比其它的2个更多，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185849.jpg">
-
-</div>
-<p>我们再看一下基因B，它的长度（4kb）是基因A（2kb）的2倍，这个或许就可以说明为什么基因B的reads数是基因A的reads数的2倍了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185852.jpg">
-
-</div>
-<h2 id="rpkm">RPKM</h2>
-<p>RPKM的全称为Reads Per Kilobase Million，中文翻译就是<code>每千个碱基的转录每百万映射读取的reads数</code>。</p>
-<p>现在我们使用RPKM来均一化这些数据，如下所示</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185902.jpg">
-
-</div>
-<h3 id="均一化的步骤如下所示">均一化的步骤如下所示</h3>
-<p>第一步：均一化read深度。</p>
-<p>我们计算一下某个重复的总reads数，然后用它们除以10，这里我们只是简单地模拟一下，真正的应该是除以1000000，因为RPKM的M指的就是million，是百万，但如果要除以1百万的话，小数点太多，不太直观，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185907.jpg">
-
-</div>
-<p>现在就得到了总reads数除以10的结果，分别为3.5，4.5，10.6，此时，再用每个基因对应的reads数除以相应的前面结果，例如对于Rep1中的基因A来说，就是使用10除以3.5，也就是2.86，得到的这个单位我们称之为RPM，也就是reads per million，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185912.jpg">
-
-</div>
-<p>第二步：均一化基因长度。</p>
-<p>在这一步骤中，我们需要对基因的长度进行均一化，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185916.jpg">
-
-</div>
-<p>此时，用RPM的数值除以每个基因的长度，例如，对于Rep1的基因A来说，就是2.86，基因A的长度是2kb，那么这个数值就是2.86除以2等于1.43，这就是RPKM，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185919.jpg">
-
-</div>
-<p>现在我们看一下RPKM的效果，在均一化之前的数据与均一化之后的数据，我们可以发现，经过均一化后的数据，每个重复里的每个基因的RPKM就非常接近了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185922.jpg">
-
-</div>
-<h2 id="fpkm">FPKM</h2>
-<p>FPKM的全称为Fragments Per Kilobase Million，对应的中文就是<code>每千个碱基的转录每百万映射读取的fragments</code>。FPKM与RPKM的计算非常接近，其中区别就在于一个是FPKM的Fragemnts，而RPKM则是reads。</p>
-<p>另外，RPKM通常用于单端测序，FPKM常用于双端测序，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185927.jpg">
-
-</div>
-<p>在RNA-Seq中，我们建库时会把DNA打断成小片段（fragment），两端加上接头，然后测序。</p>
-<p>如果是单端测序，那么一个fragmetns就对应了一条read，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185930.jpg">
-
-</div>
-<p>如果是双端测序，那么一条fragments就对应两条reads，当然，有时候双端测序也有可能出现一条fragment对应一条read（另外一条read有可能会因为质量低而被剔除），FPKM就保证了，一条fragment的两条reads不会被统计2次，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185934.jpg">
-
-</div>
-<p>也就是说FPKM是以fragment为准，而不是以reads数为准，它们的计算方式是一样的。</p>
-<h2 id="tpm">TPM</h2>
-<p>TPM的全称为Transcripts per million，中文就是<code>每百万条reads的转录本</code>。我们现在还以原来的案例，看一下TPM是如何计算的。</p>
-<p>第一步：均一化基因长度。</p>
-<p>每个重复中的每个基因的reads数除以该基因的长度，对于Rep1的基因A来说，就是10除以2，也就是5，也叫RPK，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185937.jpg">
-
-</div>
-<p>第二步：均一化测序深度。</p>
-<p>先计算出一个重复中总的RPK之和，然后除以10，对于Rep1来说，总的RPK是15，除以10就是1.5，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185941.jpg">
-
-</div>
-<p>然后再用每个基因的RPK除以上面计算出来的数值，对于Rep1的基因A来说，就是5除以1.5，即3.33，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185945.jpg">
-
-</div>
-<p>经过TPM这样的均一化后，我们可以发现，这3个重复的数值就比较接近了。</p>
-<h2 id="tpm和rpkm的区别">TPM和RPKM的区别</h2>
-<p>我们比较一下RPKM与TPM均一化扣的结果，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185953.jpg">
-
-</div>
-<p>TPM和RPKM（FPKM）都是基于基因的长度与测序深度进行均一化的，但是它们也有所不同。我们看一下，对于每个重复来说，它们的总TPM和RPKM的数据数据之间的是存在一定差异的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714185956.jpg">
-
-</div>
-<p>对于RPKM来说，每个重复的总RPKM值不一样，分别是4.29，4.5和4.25。</p>
-<p>对于TPM来说，每个重复的总TPM是相同的，都是10（也就是说总的TPM）。</p>
-<p>我们再来看一下这两种的差异有何重要意义。</p>
-<p>我们先看下面的3个饼图，每个饼图的有大小相同，数值都是10。从中我们可以发现，对于同样的饼图来说，一份3.33的扇形（它代表了Rep1中的基因A）肯定比一份3.32的扇形（它代表了Rep2中的基因A）要大。而TPM就能发现这种3.33和3.32的这种差异，我们可以看到，在Rep1的总reads数中，比对到基因A上的reads数的比例肯定比Rep3中相应的比例要高，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714190000.jpg">
-
-</div>
-<p>为什么会出现这种差异，我们可以再看上图，我们可以发现，在Rep3中，比对到基因D上的reads数所占的比例要大于Rep1中，比对到基因D的reads数的比例。通过TPM我们更容易发现，在每个重复中，比对到哪些基因上的reads更高或更低。</p>
-<p>而对于RPKM这种均一化来说，很难比较比对到哪个基因上的总reads高，因为每个重复的总reads数都不同，也就是说这个饼图形的大小都不一样，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714190005.jpg">
-
-</div>
-<p>还看上图，对于Rep1中的基因A来说，它的RPKM是1.43，而在Rep3中，基因A的RPKM是1.42，那么我们不能直接说在Rep1中，比对到基因A上的总Reads数大于Rep3中基因A的总Reads数，也就是无法直接说在Rep1中基因A的转录水平高于Rep3中基因A的转录水平，因为Rep1和Rep3的总RPKM不同。</p>
-<p>而对于TPM就不一样，每个重复的总TPM是一样的，这样很容易比较相同基因在不同的重复中的转录水平高低。由于RNA-Seq主要是研究基因的转录水平，也就是说研究基因的转录本的reads的相对比例，因此使用TPM更加合理，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714190010.jpg">
-
-</div>
-<h2 id="cpm">CPM</h2>
-<p>有的时候还需要做到CPM，CPM的计算流程为：①总reads数除以100万；②用每个样本中的每个基因对应的reads数再除以①中的数字，就是CPM。</p>
-<p>总reads数除以100万主要是为了方便计算CPM，否则CPM的数值会非常小，不方便，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714190014.jpg">
-
-</div>
-<p>用途：在某些情况下，只想了解每个基因被覆盖到的相对reads数，而不希望对其做长度校正，就会使用这个指标。在某些RNA-seq文章或一些软件输出结果中（如edgeR）会出现。CPM只对read count相对总reads数做了数量的均一化。当如果想进行表达量的基因间比较，则就需要考虑基因长度的不同。如果进一步做长度的均一化，就是RPKM。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3760,7 +3774,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">220</span>
+                  <span class="site-state-item-count">221</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3771,7 +3785,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -3782,7 +3796,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3859,7 +3873,7 @@ D^{2}(k, r)=\frac{n_{p}}{n_{r}} D^{2}(k, p)+\frac{n_{q}}{n_{r}} D^{2}(k, q)
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共876.4k字</span>
+  <span class="post-count">博客全站共880.2k字</span>
 </div>
 
         
