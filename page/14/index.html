@@ -259,6 +259,606 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/30/Linux/Linux-shell02-if-then和case语句/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/30/Linux/Linux-shell02-if-then和case语句/" itemprop="url">Shell学习笔记（2）——if-then和case语句</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-30T12:10:54+08:00">
+                2018-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  7,786
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  35
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>本篇笔记的参考资料是（<a href="https://item.jd.com/12010266.html" target="_blank" rel="external">《Linux命令行与shell脚本编程大全》</a>（第3版），外加百度辅助，本篇笔记的主要内容是if-then和case语句。</p>
+<p>许多程序要求对shell脚本中的命令添加一些逻辑流控制。有一类命令会根据条件使脚本跳过某些命令，这样的命令叫做结构化命令（structured command）。</p>
+<h2 id="if-then语句">if-then语句</h2>
+<p>if-then语句是最基本的结构化命令，if-then的结构如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if commandA</div><div class="line">then commandB</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>解释：if后面跟一个shell命令commandA，如果commandA命令的退出状态码是0（表示此命令成功运行），位于then后面的commandB命令就会被执行，如果commandA命令的退出状态码是其他值，then后面的commandB就不会被执行，而是继续执行脚本中的下一具命令，fi语句用来表示if-theny语句到此结构。</p>
+<h3 id="第1案例简单的if-then">第1案例：简单的if-then</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the if statement</div><div class="line">if pwd</div><div class="line">then</div><div class="line">  echo "It worked"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[20161111.DESKTOP-IVG4HR1] ➤ bash test1.sh</div><div class="line">/home/mobaxterm</div><div class="line">It worked</div></pre></td></tr></table></figure>
+<p>代码解释：if部分用了pwd命令，这个命令运行成功后，echo就会显示后面的字符串。</p>
+<h3 id="第2案例出错的if-then">第2案例：出错的if-then</h3>
+<p>看一段代码，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing a bad command</div><div class="line">if IamNotaCommand;then</div><div class="line">  echo "It worked"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行后，结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[2018-04-28 10:41.15]  ~</div><div class="line">[20161111.DESKTOP-IVG4HR1] ➤ bash test2.sh</div><div class="line">test2.sh: line 3: IamNotaCommand: command not found</div></pre></td></tr></table></figure>
+<p>代码解释：if后面跟的是一个无法工作的命令，它会产生一个非零的退出状态码，bash shell会跳过then部分。</p>
+<h3 id="第3案例then部分的多条命令">第3案例：then部分的多条命令</h3>
+<p>在if-then语句中，then部分可以输入多条命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing multiple commands in the then seciton</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=biotest</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then </div><div class="line">  echo "This is my first command"</div><div class="line">  echo "This is my second command"</div><div class="line">  echo "I can even put in other commands besides echo: "</div><div class="line">  ls -a /home/$testuser/.b*</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行后，结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test3.sh</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/bash</div><div class="line">This is my first command</div><div class="line">This is my second command</div><div class="line">I can even put in other commands besides echo: </div><div class="line">/home/biotest/.bash_history  /home/biotest/.bash_logout  /home/biotest/.bashrc</div></pre></td></tr></table></figure>
+<p>代码解释：<code>if grep $testuser /etc/passwd</code>这条代码用于查找某个用户名当前是否在系统上使用，如果有用户使用了这个登录名，脚本会显示出一些文本信息，并列出该用户HOME目录中的bash文件。如果没有这个用户，就什么都不显示，现在将<code>testuser=biotest</code>改为<code>testuser=biotest0</code>，运行，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test3.sh</div><div class="line">biotest@ubuntu:~/test$</div></pre></td></tr></table></figure>
+<h2 id="if-then-else语句">if-then-else语句</h2>
+<p>if-then使用的场景是：如果if后面的命令成功执行，就输出then后面的内容，如果无法成功执行，什么都不输出。只有一这一种情况。而if-then-else语句则是能够执行其他的命令，它的格式如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">if commandA</div><div class="line">then </div><div class="line">  commandB</div><div class="line">else </div><div class="line">  commandC</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>命令解释：当if语句中的commandA命令返回退出状态状码0时，then部分中的命令commandB会执行，到此if-then-else语句与if-then语句是相同的。如果if语句中的commandA命令返回非零状态码时，bash shell会执行else部分中的命令。看一个案例。</p>
+<h3 id="第1案例常规if-then-else语句">第1案例：常规if-then-else语句</h3>
+<p>看下面的代码:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing  the else section</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=biotest0</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then </div><div class="line">  echo "The bash files for user $testuser are:   "</div><div class="line">  ls -a /home/$testuser/.b*</div><div class="line">  echo</div><div class="line">else</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test4.sh</div><div class="line">The user biotest0 does not exist on this system.</div></pre></td></tr></table></figure>
+<p>从代码与结果可以看出，<code>if grep $testuser /etc/passwd</code>命令出错，返回状态码是非0，<code>then</code>后面的命令不会执行，路过，执行<code>else</code>后面的命令。</p>
+<h2 id="嵌套if">嵌套if</h2>
+<h3 id="第1个案例常规if-then-else语句">第1个案例：常规if-then-else语句</h3>
+<p>案例：要检验<code>/etc/passwd</code>文件中是否存在某个用户名以及该用户的目录是否存在，可以使用嵌套的<code>if-then</code>语法，嵌套的<code>if-then</code>语句位于主<code>if-then-else</code>语句的<code>else</code>代码块中，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing nested ifs</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=NoSuchUser</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then</div><div class="line">  echo "The user $testuser exists on this system."</div><div class="line">else</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  if ls -d /home/$testuser/</div><div class="line">  then </div><div class="line">    echo "However, $testuser has a directory."</div><div class="line">    fi</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">ls: cannot access &apos;/home/NoSuchUser/&apos;: No such file or directory</div></pre></td></tr></table></figure>
+<p>程序解释：<code>if grep $testuser /etc/passwd</code>这个命令无法运行，状态返回码是非0，跳过了<code>echo &quot;The user $testuser exists on this system.&quot;</code>这个语句，执行后面的语句，即<code>&quot;The user $testuser does not exist on this system.&quot;</code>，接头是个嵌套语句，其中<code>ls -d /home/$testuser/</code>无法执行（因为不存在这个目录），then后面的` `也无法执行。</p>
+<p>从结果可以看出，NoSuchUser这个账户不存在，他的目录也不存在。<code>if-then-else</code>还有一个延伸，即<code>elif</code>，它的格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">if commandA</div><div class="line">then </div><div class="line">  commandB</div><div class="line">elif commandC</div><div class="line">then</div><div class="line">  more commands</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p><code>elif</code>语句提供了一个要测序的命令，这类似于原始的if语句，如果elif后命令的退出状态码是0，bash就执行第二个<code>then</code>语句部分的命令，即more commands这一部分，看一个案例（提前在<code>/home/</code>目录下建立一个<code>NoSuchUser</code>目录）：</p>
+<h3 id="第2个案例elif语句">第2个案例：elif语句</h3>
+<p>这是对第1个案例的修改，所实现的目的是一样的，只是这里用到了elif语句，这种语句在逻辑上更加清晰。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing nested ifs=user elif</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=NoSuchUser</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then</div><div class="line">  echo "The user $testuser exists on this system."</div><div class="line"><span class="meta">#</span></div><div class="line">elif ls -d /home/$testuser</div><div class="line">then</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo "Howerve, $testuser has a directory."</div><div class="line"><span class="meta">#</span></div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行后，结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test6.sh</div><div class="line">/home/NoSuchUser</div><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">Howerve, NoSuchUser has a directory.</div></pre></td></tr></table></figure>
+<p>程序解释：<code>if grep $testuser /etc/passwd</code>这条语句无法执行，执行<code>elif</code>后面的语句，即<code>ls -d /home/$testuser</code>,这条语句可以执行（因为我们提前建立了/home/NoSuchUser这个目录），随后执行then后面的语句。</p>
+<h3 id="第3个案例elif扩展">第3个案例：elif扩展</h3>
+<p>针对上面的案例，对脚本进行更改，让这个脚本的功能变成：一、检查拥有目录的不存在用户；二、检验没有目录的不存在用户，这是通过在嵌套elif中添加了一个else语句来实现的，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing nested ifs - user elif &amp; else</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=NoSuchUser</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then</div><div class="line">  echo "The user $testuser exists on this system."</div><div class="line"><span class="meta">#</span></div><div class="line">elif ls -d /home/$testuser</div><div class="line">then</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo "Howerve, $testuser has a directory."</div><div class="line"><span class="meta">#</span></div><div class="line">else</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo "And,$testuser does not have a directory."</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>第1次运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test7.sh</div><div class="line">/home/NoSuchUser</div><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">Howerve, NoSuchUser has a directory.</div></pre></td></tr></table></figure>
+<p>第2次运行结果，现在删除掉<code>/home/NoSuchUser</code>目录，运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ sudo rm -rf /home/NoSuchUser</div><div class="line">biotest@ubuntu:~/test$ bash test7.sh </div><div class="line">ls: cannot access &apos;/home/NoSuchUser&apos;: No such file or directory</div><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">And,NoSuchUser does not have a directory.</div></pre></td></tr></table></figure>
+<p>从两次的运行结果可以看出，在删除/home/NoSuchUser目录之前，即第1次运行，脚本执行的是<code>elif</code>后面的语句，返回状态码是0，删除了目录之后，elif语句返回的是非零状态码，elif块中的else就开始执行。需要注意的是，在elif语句中，紧跟其后的else语句属于elif代码块，它们并不属于if-then代码块。</p>
+<h2 id="test命令">Test命令</h2>
+<p>test命令是shell环境中测试条件表达式的工具。在前面的案例中，if后面的语句都是普通的shell语句，无法测序命令退出状态码之外的条件。在test命令中，如果test后面列出的条件成立，test命令就会退出并返回退出状态码0，如果条件不成立，test命令就会退出并返回非零的退出状态码，这就会使if-then语句不会被再执行，test的语句格式如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test condition</div></pre></td></tr></table></figure>
+<p>其中，condition是test命令要测试的一系列参数和值，如果test与if-then配合使用的话，格式如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if test condition</div><div class="line">then</div><div class="line">  commands</div><div class="line">  if</div></pre></td></tr></table></figure>
+<p>如果不写test命令的condition部分，它会以非零状态码退出，并执行else语句块，看一个案例。</p>
+<h3 id="第1案例常规testtest不添加condition">第1案例：常规test：test不添加condition</h3>
+<p>测试一下常规的test功能，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing the test command</div><div class="line"><span class="meta">#</span></div><div class="line">if test</div><div class="line">then</div><div class="line">  echo "No expression returns a True"</div><div class="line">else</div><div class="line">  echo "No expression returns a False"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test8.sh</div><div class="line">No expression returns a False</div></pre></td></tr></table></figure>
+<p>程序解释：test后面没有condition，因此它以非零状态码退出，执行else后面的语句，即<code>echo &quot;No expression returns a False&quot;</code>，如果添加上condition，则是下面的案例：</p>
+<h3 id="第2案例常规testtest添加condition">第2案例：常规test：test添加condition</h3>
+<p>代码如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the test command</div><div class="line"><span class="meta">#</span></div><div class="line">my_variable="Full"</div><div class="line"><span class="meta">#</span></div><div class="line">if test $my_variable</div><div class="line">then </div><div class="line">  echo "The $my_variable expression returns a True"</div><div class="line">else</div><div class="line">  echo "The $my_variable expressoion returns a False"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test9.sh</div><div class="line">The Full expression returns a True</div></pre></td></tr></table></figure>
+<p>代码解释：test后面有内容（Full），因此当test命令测试条件时，返回的状态为0，执行then后面的语句。如果<code>$my_variable=&quot;&quot;</code>时，没有内容，就会执行else后面的语句，就跟第1个案例一样了。</p>
+<h2 id="shell另外一种条件测试方法">shell另外一种条件测试方法</h2>
+<p>shell还有另外一种条件测序方法，无需要在if-then语句中使用test命令，其格式如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if [ condition ]</div><div class="line">then </div><div class="line">  commands</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p><code>[ condition ]</code>中定义了测试条件，需要注意提方括号中，condition前后要加上空格，否则就会报错，test命令可以判断三类条件，分别为①数值比较；②字符串比较；③文件比较。</p>
+<h3 id="数值比较">数值比较</h3>
+<p>test命令常见的情形是对两个数值进行比较，下表就列出了测试两个值可用的条件参数：</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">比较</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">n1 -eq n2</td>
+<td align="center">检查n1是否与n2相等</td>
+</tr>
+<tr class="even">
+<td align="center">n1 -ge n2</td>
+<td align="center">检查n1是否大于或等于n2</td>
+</tr>
+<tr class="odd">
+<td align="center">n1 -gt n2</td>
+<td align="center">检查n1是否大于n2</td>
+</tr>
+<tr class="even">
+<td align="center">n1 -le n2</td>
+<td align="center">检查n1是否小于或等于n2</td>
+</tr>
+<tr class="odd">
+<td align="center">n1 -lt n2</td>
+<td align="center">检查n1是否小于n2</td>
+</tr>
+<tr class="even">
+<td align="center">n1 -ne n2</td>
+<td align="center">检查n1是否不等于n2</td>
+</tr>
+</tbody>
+</table>
+<h4 id="第1案例数值比较">第1案例：数值比较</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!bin/bash</div><div class="line"><span class="meta">#</span> Using numeric test evaluations</div><div class="line"><span class="meta">#</span></div><div class="line">value1=10</div><div class="line">value2=11</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $value1 -gt 5 ] # test value1 is great 5 or not</div><div class="line">then </div><div class="line">  echo "The test value $value1 is greater than 5"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $value1 -eq $value2 ] # test value1 and value2 is equal or not</div><div class="line">then </div><div class="line">  echo "The values are equal"</div><div class="line">else</div><div class="line">  echo "The values are different"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test10.sh</div><div class="line">The test value 10 is greater than 5</div><div class="line">The values are different</div></pre></td></tr></table></figure>
+<h4 id="第2案例浮点数的比较">第2案例：浮点数的比较</h4>
+<p>如果涉及浮点比较时，数值条件测试会有一个限制，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!bin/bash</div><div class="line"><span class="meta">#</span> Using floating point numbers in test evaluations</div><div class="line"><span class="meta">#</span></div><div class="line">value1=5.555</div><div class="line"><span class="meta">#</span></div><div class="line">echo "The test value is $value1"</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $value1 -gt 5 ]</div><div class="line">then </div><div class="line">  echo "The test value $value1 is greater than 5"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test11.sh</div><div class="line">The test value is 5.555</div><div class="line">test11.sh: line 8: [: 5.555: integer expression expected</div></pre></td></tr></table></figure>
+<p>结果中提示有问题，因为变量value1中储存提浮点值，脚本对这个值进行了测试，因为bash shell只能处理整数，如果只是要通过echo语句来显示这个结果，没问题，但是如果是基于数字的函数，就会出现了问题，因此需要注意。</p>
+<h3 id="字符串比较">字符串比较</h3>
+<p>字符串的比较方法如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>比较</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>str1 = str2</td>
+<td>检查str1是否和str2相同</td>
+</tr>
+<tr class="even">
+<td>str1 != str2</td>
+<td>检查str1是否和str3不相同</td>
+</tr>
+<tr class="odd">
+<td>str1 &lt; str2</td>
+<td>检查str1是否比str2小</td>
+</tr>
+<tr class="even">
+<td>str1 &gt; str2</td>
+<td>检查str1是否比str2大</td>
+</tr>
+<tr class="odd">
+<td>-n str1</td>
+<td>检查str1的长度是否非0</td>
+</tr>
+<tr class="even">
+<td>-z str1</td>
+<td>检查str1的长度是否为0</td>
+</tr>
+</tbody>
+</table>
+<h4 id="字符串比较第1案例">字符串比较第1案例</h4>
+<p>代码如下；</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!bin/bash</div><div class="line"><span class="meta">#</span> testing string equality</div><div class="line">testuser=biotest</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $USER = $testuser ]</div><div class="line">then</div><div class="line">  echo "Welcom $testuser"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test12.sh</div><div class="line">Welcom biotest</div></pre></td></tr></table></figure>
+<h4 id="字符串比较第2案例判断字符串不等的条件">字符串比较第2案例：判断字符串不等的条件</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing string equality</div><div class="line">testuser=baduser</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $USER != $testuser ]</div><div class="line">then </div><div class="line">  echo "This is not $testuser"</div><div class="line">else</div><div class="line">  echo "Welcome $testuser"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test13.sh</div><div class="line">This is not baduser</div></pre></td></tr></table></figure>
+<h3 id="字符串的大小">字符串的大小</h3>
+<p>在比较字符串方面，有一些事情比较麻烦，主要有两个方面，①大于号和小于号必须要转义，否则shell会将它们当成重定向符号，把字符串值当作文件名；②大于和小于顺序和sort命令所采用的不同，看一个案例。</p>
+<h4 id="第1案例大于或小于号的重定向问题">第1案例：大于或小于号的重定向问题</h4>
+<p>看下面的案例，注意大于号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> mis-using string comparisons</div><div class="line"><span class="meta">#</span></div><div class="line">val1=baseball</div><div class="line">val2=hockey</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $val1 &gt; $val2 ]</div><div class="line">then</div><div class="line">  echo "$val1 is greater than $val2"</div><div class="line">else</div><div class="line">  echo "$val1 is less than $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash badtest.sh </div><div class="line">val1 is less than val2</div><div class="line">biotest@ubuntu:~/test$ ll</div><div class="line">total 72</div><div class="line">-rw-rw-r--  1 biotest biotest     0 Apr 27 23:21 hockey</div></pre></td></tr></table></figure>
+<p>运行结果时，shell没有报错，但是给出的结果却是错的，因为脚本把大于事情解释成了输出重定向，它在当前目录下创建了一个名为hockey的文件，由于重定向的完成，test命令（就是if语句）返回了退出状态码0。</p>
+<h4 id="第2案例解决字符串比较时大于号的问题">第2案例：解决字符串比较时，大于号的问题</h4>
+<p>如果要解决上述问题，需要对大于号进行转义，前面加上<code>\</code>符号即可，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> mis-using string comparisons</div><div class="line"><span class="meta">#</span></div><div class="line">val1=baseball</div><div class="line">val2=hockey</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $val1 \&gt; $val2 ]</div><div class="line">then</div><div class="line">  echo "$val1 is greater than $val2"</div><div class="line">else</div><div class="line">  echo "$val1 is less than $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash badtest2.sh </div><div class="line">baseball is less than hockey</div></pre></td></tr></table></figure>
+<h4 id="sort命令对字符串的排序问题">sort命令对字符串的排序问题</h4>
+<p>在处理字符串方面，sort和test的方法正好相反， 看一个案例。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing astring osrt order</div><div class="line">val1=Testing</div><div class="line">val2=testing</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $val1 \&gt; $val2 ]</div><div class="line">then</div><div class="line">  echo "$val1 is greater than $val2"</div><div class="line">else</div><div class="line">  echo "$val1 is less than $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test14.sh</div><div class="line">Testing is less than testing</div></pre></td></tr></table></figure>
+<p>结查要显示，Testing比testing小，如果是sort，则是下面的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ cat testfile </div><div class="line">Testing</div><div class="line">testing</div><div class="line">biotest@ubuntu:~/test$ sort testfile </div><div class="line">testing</div><div class="line">Testing</div></pre></td></tr></table></figure>
+<p>testing要比Testing大。</p>
+<p>在比较测试上，大写字符被认为是小于小写字母的，但是在sort命令中，小写字母会先出现。这是因为比较测试中使用的是标准的ASCII顺序，根据每个字符的ASCII为当会来决定排序结果，而sort命令使用的也是ASCII顺序排序，只是默认情况下，sort会按照ASCII从小到大进行排序，如果加上了-r参数，则是按照默认排序的相反顺序进行排序，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ sort -r testfile </div><div class="line">Testing</div><div class="line">testing</div></pre></td></tr></table></figure>
+<h4 id="判断字符串是否为0">判断字符串是否为0</h4>
+<p><code>-n</code>和<code>-z</code>可以检查一个变量是否含有数据，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing string length</div><div class="line">val1=testing  </div><div class="line">val2='' </div><div class="line"><span class="meta">#</span></div><div class="line">if [ -n $val1 ]</div><div class="line">then</div><div class="line">  echo "The string '$val1' is not empty"</div><div class="line">else</div><div class="line">  echo "The string '$val1' is empty"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div><div class="line"></div><div class="line">if [ -z $val2 ]</div><div class="line">then</div><div class="line">  echo "The string '$val2' is empty"</div><div class="line">else</div><div class="line">  echo "The string '$val2' is not empty"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div><div class="line"></div><div class="line">if [ -z $val3 ]</div><div class="line">then</div><div class="line">  echo "The string '$val3' is empty"</div><div class="line">else</div><div class="line">  echo "The string '$val3' is not empty"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test15.sh</div><div class="line">The string &apos;testing&apos; is not empty</div><div class="line">The string &apos;&apos; is empty</div><div class="line">The string &apos;&apos; is empty</div></pre></td></tr></table></figure>
+<p>程序解释：①先创建了2个字符串变量，val1包含一个字符串，val2包含的是一个空字符串；②<code>if [ -n $val1 ]</code>表示：判断val1的变量是否长度非0，因为val1并不是一个空字符串，它不是0，因此执行后面的then部分；③<code>if [ -z $val2 ]</code>：判断val2的变量是否长度为0，而val2是一个空字符串，它的长度为0，因此执行then部分；④<code>if [ -z $val3 ]</code>：判断val3的变量是否长度为0，由于这个变量并未在shell脚本中定义过，所以它的字符串长度仍然为0。</p>
+<h3 id="文件比较">文件比较</h3>
+<p>文件比较是shell编程中使用比较多的形式，它允许用户测试Linux文件系统上的文件和目录的状态，下表列出了这些比较方式，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>比较</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>-d file</td>
+<td>检查file是否存在并是一个目录</td>
+</tr>
+<tr class="even">
+<td>-e file</td>
+<td>检查file是否存在</td>
+</tr>
+<tr class="odd">
+<td>-f file</td>
+<td>检查file是否存在并 一个文件</td>
+</tr>
+<tr class="even">
+<td>-r file</td>
+<td>检查file是否存在并可读</td>
+</tr>
+<tr class="odd">
+<td>-s file</td>
+<td>检查file是否存在并非空</td>
+</tr>
+<tr class="even">
+<td>-w file</td>
+<td>检查file是否存在并可写</td>
+</tr>
+<tr class="odd">
+<td>-x file</td>
+<td>检查file是否存在并可执行</td>
+</tr>
+<tr class="even">
+<td>-O file</td>
+<td>检查file是否存在并属当前用户所有</td>
+</tr>
+<tr class="odd">
+<td>-G file</td>
+<td>检查file是否存在并默认组与当前用户相同</td>
+</tr>
+<tr class="even">
+<td>file1 -nt file2</td>
+<td>检查file是否比file2新</td>
+</tr>
+<tr class="odd">
+<td>file1 -ot file2</td>
+<td>检查file是否比file2旧</td>
+</tr>
+</tbody>
+</table>
+<h4 id="检查目录">检查目录</h4>
+<p><code>-d</code>测试会检查指定的目录是否存在于系统中如果打算将文件写入目录或是准备切换到某个目录，先进行测试是一种好习惯，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Look before you leap</div><div class="line"><span class="meta">#</span></div><div class="line">jump_directory=/home/arthur</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -d $jump_directory ]</div><div class="line">then</div><div class="line">  echo "The $jump_directory directory exists"</div><div class="line">  cd $jump_directory</div><div class="line">  ls</div><div class="line">else</div><div class="line">  echo "The $jump_directory directory does not exist"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>结果运行如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash directest.sh </div><div class="line">The /home/arthur directory does not exist</div></pre></td></tr></table></figure>
+<p>代码解释：<code>-d</code>测试用于检测jump_directory变量是中目录是否存在，如果存在就使用cd命令进入该目录，如果不存在脚本就输出一条信息，然后退出。</p>
+<h4 id="检查对象是否存在">检查对象是否存在</h4>
+<p><code>-e</code>参数可以使脚本代码在使用文件或上当前检查它们是否存在，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> check if either a directory or file exists</div><div class="line"><span class="meta">#</span></div><div class="line">location=$HOME</div><div class="line">file_name="sentinel"</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $location ]</div><div class="line">then # Directory does exist</div><div class="line">  echo "OK on the $location directory."</div><div class="line">  echo "Now checking on the file, $file_name."</div><div class="line"><span class="meta">#</span></div><div class="line">  if [ -e $location/$file_name ]</div><div class="line">  then # file does exist</div><div class="line">    echo "OK on the filename"</div><div class="line">    echo "Updating Current Date..."</div><div class="line">    date &gt;&gt; $location/$file_name</div><div class="line"><span class="meta">#</span></div><div class="line">  else # file does no exist</div><div class="line">    echo "File does not exist"</div><div class="line">    echo "Nothing to update"</div><div class="line">  fi</div><div class="line"><span class="meta">#</span></div><div class="line">else #Directory does exist</div><div class="line">  echo "The $location directory does not exist."</div><div class="line">  echo "Nothing to update"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>第一次运行，结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash object_exist.sh </div><div class="line">OK on the /home/biotest directory.</div><div class="line">Now checking on the file, sentinel.</div><div class="line">File does not exist</div><div class="line">Nothing to update</div></pre></td></tr></table></figure>
+<p>第二次运行，如果创建了<code>sentinel</code>文件，则如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash object_exist.sh </div><div class="line">OK on the /home/biotest directory.</div><div class="line">Now checking on the file, sentinel.</div><div class="line">OK on the filename</div><div class="line">Updating Current Date...</div><div class="line">biotest@ubuntu:~/test$ cat ~/sentinel </div><div class="line">Sat Apr 28 00:37:31 PDT 2018</div></pre></td></tr></table></figure>
+<p>代码解释：第一次检查用了<code>-e</code>比较来判断用户是否有<code>$HOME</code>目录，如果有接下来的<code>-e</code>会检测sentinel文件是否存在于<code>$HOME</code>目录中，如果不存在，shell脚本就会提示该文件不存在，不需要更新。第二次运行时，在<code>$HOME</code>目录下创建了一个<code>sentinel</code>文件，然后重新运行脚本，由于<code>$HOME</code>和<code>sentinel</code>文件都存在，当前的上期和时间就都追加到了这个文本中。</p>
+<h4 id="检查文件">检查文件</h4>
+<p>如果检查的对象是文件，需要用<code>-f</code>参数，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Check if either a directory or file exists.</div><div class="line"><span class="meta">#</span></div><div class="line">item_name=$HOME</div><div class="line">echo</div><div class="line">echo "The item being checked: $item_name"</div><div class="line">echo</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $item_name ]</div><div class="line">then # Item does exist</div><div class="line">  echo "The item, $item_name, does exist."</div><div class="line">  echo "But is it a file?"</div><div class="line">  echo</div><div class="line"><span class="meta">  #</span></div><div class="line">  if [ -f $item_name ]</div><div class="line">  then # Item is a file</div><div class="line">     echo "Yes, $item_name is a file."</div><div class="line"><span class="meta">  #</span></div><div class="line">  else # Item does not exist</div><div class="line">    echo "No, $item_name is not a file"</div><div class="line">  fi</div><div class="line"></div><div class="line">else #Item doese not exist</div><div class="line">    echo "The item , $item_name, does not exist."</div><div class="line">    echo "Nothing to update"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_file.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest</div><div class="line"></div><div class="line">The item, /home/biotest, does exist.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">No, /home/biotest is not a file</div></pre></td></tr></table></figure>
+<p>代码解释：首先使用了<code>-e</code>比较测序<code>$HOME</code>是否存在，如果存在，继续使用<code>-f</code>来测试它是不是一个文件，如果它不是文件（肯定不是文件），就会显示一条消息，它不是一个文件，如果更改一下代码，把<code>item_name</code>设置为<code>$HOME/sentinel</code>，即如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Check if either a directory or file exists.</div><div class="line"><span class="meta">#</span></div><div class="line">item_name=$HOME/sentinel</div><div class="line">echo</div><div class="line">echo "The item being checked: $item_name"</div><div class="line">echo</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $item_name ]</div><div class="line">then # Item does exist</div><div class="line">  echo "The item, $item_name, does exist."</div><div class="line">  echo "But is it a file?"</div><div class="line">  echo</div><div class="line"><span class="meta">  #</span></div><div class="line">  if [ -f $item_name ]</div><div class="line">  then # Item is a file</div><div class="line">     echo "Yes, $item_name is a file."</div><div class="line"><span class="meta">  #</span></div><div class="line">  else # Item does not exist</div><div class="line">    echo "No, $item_name is not a file"</div><div class="line">  fi</div><div class="line"></div><div class="line">else #Item doese not exist</div><div class="line">    echo "The item , $item_name, does not exist."</div><div class="line">    echo "Nothing to update"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_file2.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest/sentinel</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel, does exist.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">Yes, /home/biotest/sentinel is a file.</div></pre></td></tr></table></figure>
+<h4 id="检查文件是否可读">检查文件是否可读</h4>
+<p>在试图从某个文件中读取数据之前，可以测试一下文件是否可读，参数是<code>-r</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing a file is readable or not</div><div class="line">pwfile=/etc/shadow</div><div class="line"><span class="meta">#</span></div><div class="line"><span class="meta">#</span> first, test if the file exists, and is a file</div><div class="line">if [ -f $pwfile ]</div><div class="line">then </div><div class="line">    # Now test if you can read it</div><div class="line">    if [ -r $pwfile ]</div><div class="line">    then </div><div class="line">        tail $pwfile</div><div class="line">    else</div><div class="line">        echo "Sorry, I am unable to read the $pwfile file"</div><div class="line">    fi</div><div class="line">else</div><div class="line">    echo "Sorry, the file $pwfile does not exist"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_read.sh </div><div class="line">Sorry, I am unable to read the /etc/shadow file</div></pre></td></tr></table></figure>
+<h4 id="检查空文档">检查空文档</h4>
+<p>检查空文档的参数是<code>-s</code>，如果<code>-s</code>比较正确，说明文件中有数据，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing if a file is empty</div><div class="line"><span class="meta">#</span></div><div class="line">file_name=$HOME/sentinel</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -f $file_name ]</div><div class="line">then</div><div class="line">    if [ -s $file_name ]</div><div class="line">    then</div><div class="line">        echo "The $file_name file exists and has data in it."</div><div class="line">        echo "Will not remove this file."</div><div class="line"><span class="meta">#</span></div><div class="line">    else</div><div class="line">        echo "The $file_name file exists, but is empty."</div><div class="line">        echo "Deleting empty file..."</div><div class="line">        rm $file_name</div><div class="line">    fi</div><div class="line">else</div><div class="line">    echo "File, $file_name, does not exist."</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ ls -l $HOME/sentinel</div><div class="line">-rw-rw-r-- 1 biotest biotest 29 Apr 28 00:37 /home/biotest/sentinel</div><div class="line">biotest@ubuntu:~/test$ bash test_empty.sh </div><div class="line">The /home/biotest/sentinel file exists and has data in it.</div><div class="line">Will not remove this file.</div></pre></td></tr></table></figure>
+<p>代码解释：首先使用<code>-f</code>测试文件是否存在，如果存在，用<code>-s</code>比较来判断该文件是否为空，空文件会被删除，在运行脚本前，使用<code>ls -l</code>命令检查了<code>$HOME/ssentinel</code>文件，发现不是空的，因此脚本并不会删除它。</p>
+<h4 id="检查是否可写">检查是否可写</h4>
+<p><code>-w</code>比较会判断当前用户对文件是否有可写权限，下面的一段代码应时检测item_name是否存在、是否为文件，是否可写，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing if a file is writable</div><div class="line"><span class="meta">#</span></div><div class="line">file_name=$HOME/sentinel</div><div class="line">echo</div><div class="line">echo "The item being checked: $file_name"</div><div class="line">echo</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $file_name ]</div><div class="line">then </div><div class="line">    echo "The item, $file_name, does exist."</div><div class="line">    echo "But is it a file?"</div><div class="line">    echo</div><div class="line">    #</div><div class="line">    if [ -f $file_name ]</div><div class="line">    then</div><div class="line">        echo "Yes, $file_name is a file."</div><div class="line">        echo "But is it writable ?"</div><div class="line">        echo</div><div class="line"></div><div class="line">    #</div><div class="line">        if [ -w $file_name ]</div><div class="line">        then</div><div class="line">            echo "Yes, it is writable."</div><div class="line">            echo "Writing current time to $file_name"</div><div class="line">            date +%H%M &gt;&gt; $file_name</div><div class="line">            echo</div><div class="line">        #</div><div class="line">        else</div><div class="line">            echo "The item, $file_name,is not a writable file"</div><div class="line">            echo "Unable to write to $file_name"</div><div class="line">        fi</div><div class="line"></div><div class="line">    else</div><div class="line">        echo "No, $file_name is not a file."</div><div class="line">    fi</div><div class="line">else</div><div class="line">    echo "The item  $file_name does not exist"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_write.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest/sentinel</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel, does exit.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">Yes, /home/biotest/sentinel is a file.</div><div class="line">But is it writable ?</div><div class="line"></div><div class="line">Yes, it is writable.</div><div class="line">Writing current time to /home/biotest/sentinel</div><div class="line">biotest@ubuntu:~/test$ cat /home/biotest/sentinel </div><div class="line">Sat Apr 28 00:37:31 PDT 2018</div><div class="line">0137</div><div class="line">0138</div><div class="line">0141</div></pre></td></tr></table></figure>
+<p>现在使用<code>chmod</code>命令关闭文件sentinel的用户写入权限，再测试一下这个脚本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">chmod u-w $HOME/sentinel</div><div class="line">biotest@ubuntu:~/test$ bash test_write.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest/sentinel</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel, does exist.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">Yes, /home/biotest/sentinel is a file.</div><div class="line">But is it writable ?</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel,is not a writable file</div><div class="line">Unable to write to /home/biotest/sentinel</div></pre></td></tr></table></figure>
+<h4 id="检查文件是否可以执行">检查文件是否可以执行</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing file execution</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -x test11.sh ]</div><div class="line">then </div><div class="line">    echo "You can run the script: "</div><div class="line">    ./test11.sh</div><div class="line">else</div><div class="line">    echo "Sorry, you are unable to execute the script"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_ex.sh</div><div class="line">Sorry, you are unable to execute the script</div><div class="line"></div><div class="line">biotest@ubuntu:~/test$ ll test11.sh</div><div class="line">-rw-rw-r-- 1 biotest biotest 195 Apr 27 23:06 test11.sh</div><div class="line">biotest@ubuntu:~/test$ chmod u+x test11.sh</div><div class="line">biotest@ubuntu:~/test$ ll test11.sh</div><div class="line">-rwxrw-r-- 1 biotest biotest 195 Apr 27 23:06 test11.sh*</div><div class="line">biotest@ubuntu:~/test$ bash test_ex.sh </div><div class="line">You can run the script: </div><div class="line">The test value is 5.555</div><div class="line">./test11.sh: line 8: [: 5.555: integer expression expected</div></pre></td></tr></table></figure>
+<p>代码及结果解释：代码开头使用了-x参数来判断是滞有权限执行test11.sh脚本，如果有权限就运行这个脚本。在首次运行时，没有权限，随后使用<code>chmod u+x test11.sh</code>命令赋予权限，再次执行，结果显示有权限运行test11.sh这个脚本。</p>
+<h4 id="检查所属关系">检查所属关系</h4>
+<p><code>-O</code>（大写），测试出某个文件的属主，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> check file ownership</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -O /etc/passwd ]</div><div class="line">then</div><div class="line">    echo "You are the owner of the /etc/passwd file"</div><div class="line">else</div><div class="line">    echo "Sorry, you are not the owner of the /etc/passwd file"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash owner.sh </div><div class="line">Sorry, you are not the owner of the /etc/passwd file</div></pre></td></tr></table></figure>
+<p>代码解释：<code>-O</code>田头来测试运行该脚本的用户是否是<code>/etc/passwd</code>文件的属主，这个脚本是运行在普通有入眠账户下的，所以测试失败。</p>
+<h4 id="检查默认属组关系">检查默认属组关系</h4>
+<p><code>-G</code>比较会检查文件的默认组，如果它匹配了用户的默认组，则测试成功。由于-G比较只会检查默认组而非用户所属的所有组，因此会有一定的局限性，如下所示；</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> check file group test</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -G $HOME/testing ]</div><div class="line">then </div><div class="line">    echo "Your are in the same group as the file"</div><div class="line">else</div><div class="line">    echo "The file is not owned by your gruop"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行脚本，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ll testing/  #查看HOME目录下的testing目录详细信息</div><div class="line">drwxr-xr-x 24 biotest biotest 4096 Apr 29 02:55 ../ # testing属于biotest组</div><div class="line">biotest@ubuntu:~$ cd test</div><div class="line">biotest@ubuntu:~/test$ bash group.sh # 运行脚本</div><div class="line">You are in the same group as the file  # testing属于当前biotest组</div><div class="line">biotest@ubuntu:~$ cd</div><div class="line">biotest@ubuntu:~$ sudo chgrp sharing $HOME/testing # 将testing所属的biotest组更改为sharing组</div><div class="line">[sudo] password for biotest: </div><div class="line">biotest@ubuntu:~$ ll testing/</div><div class="line">drwxrwxr-x  2 biotest sharing 4096 Apr 29 00:03 ./</div><div class="line">biotest@ubuntu:~$ cd test</div><div class="line">biotest@ubuntu:~/test$ bash group.sh </div><div class="line">The file is not owned by your gruop # testing就不属于了biotest组</div><div class="line">biotest@ubuntu:~/test$ cd ..</div></pre></td></tr></table></figure>
+<h4 id="检查文件日期">检查文件日期</h4>
+<p>有时候需要比较两个文件的创建日期，<code>-nt</code>比较会判断文件A是否比另外一个文件B新，如果文件A较新，那意味着它的文件创建日期更近。<code>-ot</code>比较会判断一个文件A是否比另外一个文件B旧，如果文件A较旧，则是意味着它的创建日期更早。</p>
+<p>先来查看地一下test12.sh文件与test13.sh文件，以及test11.sh和test12.sh文件，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ ll test11.sh test12.sh test13.sh</div><div class="line">-rwxrw-r-- 1 biotest biotest 196 Apr 28 20:42 test11.sh*</div><div class="line">-rw-rw-r-- 1 biotest biotest 116 Apr 27 23:14 test12.sh</div><div class="line">-rw-rw-r-- 1 biotest biotest 156 Apr 27 23:17 test13.sh</div></pre></td></tr></table></figure>
+<p>由上述结果可以发现，test11.sh文件创建于4.28，20:42；test12.sh文件创建于4.27，23:14，test13.sh文件创建于4.27 ，23:17，现在运行下面的脚本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing file dates</div><div class="line"><span class="meta">#</span></div><div class="line">if [ test12.sh -nt test13.sh ]</div><div class="line">then</div><div class="line">    echo "The test12 file is newer than test13"</div><div class="line">else</div><div class="line">    echo "The test13 file is newer than test12"</div><div class="line">fi</div><div class="line"></div><div class="line">if [ test11.sh -ot test12.sh ]</div><div class="line">then </div><div class="line">    echo "The test11 file is older than the test12 file"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash contrast_file.sh </div><div class="line">The test13 file is newer than test12</div></pre></td></tr></table></figure>
+<p>代码及结果解释：<code>test12.sh -nt test13.sh</code>这一句用于判断test12是否比test13更新，结果是否，执行<code>then</code>后面的语句，即<code>echo &quot;The test13 file is newer than test12&quot;。</code>结果也显示，test13文件比test12文件更新，因为test13.sh文件创建的时间（2018-4-27-23:17)比test12.sh文件（2018-4-27-23:14)要晚。在第二个<code>if-then</code>语句中，<code>test11.sh -ot test12.sh</code>语句用于判断，test11文件是否比test12文件更老，由于test11.sh文件创建于2018-4-28-20:42；而test12.sh文件创建于2018-4-27-23:14，test11文件比test12文件创建的时候更晚，因此<code>test11.sh -ot test12.sh</code>这个语句不执行。</p>
+<p>再补充一个案例，如果要比较的两个文件不存在，如果仅用<code>-nt</code>来判断，那么还会返回结果，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing file dates</div><div class="line"><span class="meta">#</span></div><div class="line">if [ badfile1 -nt badfile2 ]</div><div class="line">then</div><div class="line">    echo "The badfile1 file is newer than badfile2"</div><div class="line">else</div><div class="line">    echo "The badfile2 file is newer than badfile1"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行后，结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test21.sh</div><div class="line">The badfile2 file is newer than badfile1</div></pre></td></tr></table></figure>
+<p>代码运行后，仍然有结果，这就是有问题了，因此在使用<code>-nt</code>时，首先需要判断文件是否存在。</p>
+<h2 id="复合条件测试">复合条件测试</h2>
+<p>在<code>if-then</code>语句中，还可以使用布尔逻辑来组合测试，有两种布尔运算符可以使用，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[ condition1 ] &amp;&amp; [ condition2 ] </div><div class="line"># 使用的是AND布尔运行算来组合两个条件，若要执行then后面的语句，两个条件必须都满足</div><div class="line"></div><div class="line">[ condition1 ] || [ condition2 ]</div><div class="line"># 使用OR布尔运算符来组合两个条件，如果任意条件为TRUE，then后面的语句执行</div></pre></td></tr></table></figure>
+<h3 id="and运算符">AND运算符</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing compound comparisons</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -d $HOME ] &amp;&amp; [ -w $HOME/testing ]</div><div class="line">then</div><div class="line">    echo "The file exists and you can write to it"</div><div class="line">else</div><div class="line">    echo "I cannot write to the file"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test22.sh</div><div class="line">The file exists and you can write to it</div></pre></td></tr></table></figure>
+<h2 id="if-then的高级特性">if-then的高级特性</h2>
+<p>bash sehll提供了2项可在if-then语句中使用的高级特性，第一：用于数学表达式的双括号；第二：用于高级字符串处理的双方括号。</p>
+<h3 id="使用双括号">使用双括号</h3>
+<p>双括号命令可以使用户在比较过程中使用高级数学表达式。test命令只能在比较中使用简单的自述操作，而双括号命令提供了更多的数学符号，双括号的命令格式为<code>(( expressiton ))</code>。其中<code>expresstion</code>可以是任意的数学赋值或比较表达式，除了test命令使用的标准数学运算答外，下表列出了双括号命令中会用到的其他运算符，如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th>符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>val++</td>
+<td>后增</td>
+</tr>
+<tr class="even">
+<td>val–</td>
+<td>后减</td>
+</tr>
+<tr class="odd">
+<td>++val</td>
+<td>先增</td>
+</tr>
+<tr class="even">
+<td>–val</td>
+<td>先减</td>
+</tr>
+<tr class="odd">
+<td>!</td>
+<td>逻辑求反</td>
+</tr>
+<tr class="even">
+<td>~</td>
+<td>位求反</td>
+</tr>
+<tr class="odd">
+<td>**</td>
+<td>幂运算</td>
+</tr>
+<tr class="even">
+<td>&lt;&lt;</td>
+<td>左位移</td>
+</tr>
+<tr class="odd">
+<td>&gt;&gt;</td>
+<td>右位移</td>
+</tr>
+<tr class="even">
+<td>&amp;</td>
+<td>位布尔和</td>
+</tr>
+<tr class="odd">
+<td>|</td>
+<td>位布尔或</td>
+</tr>
+<tr class="even">
+<td>&amp;&amp;</td>
+<td>逻辑和</td>
+</tr>
+<tr class="odd">
+<td>||</td>
+<td>逻辑或</td>
+</tr>
+</tbody>
+</table>
+<h4 id="案例在if语句中使用双括号">案例：在if语句中使用双括号</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using double parenthesis</div><div class="line"><span class="meta">#</span></div><div class="line">val1=10</div><div class="line"><span class="meta">#</span></div><div class="line">if (( $val1 **2 &gt; 90))</div><div class="line">then</div><div class="line">    (( val2=$val1**2 ))</div><div class="line">    echo "The square of $val1 is $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test23.sh</div><div class="line">The square of 10 is 100</div></pre></td></tr></table></figure>
+<h3 id="使用双方括号">使用双方括号</h3>
+<p>双方括号命令提供了针对字符串比较的高级特性，双方括号命令的格式为<code>[[ expression ]]</code>，双方括号里的<code>expression</code>使用了test命令中采用的标准字符串比较，但它还有另外的一个特性，即模式匹配（pattern matching）。（注：bash shel对中双方括号的支持很好，但其他的shell未必如此）。</p>
+<p>在模式匹配中，用户可以定义一个正则表达式来匹配字符串，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using pattern matching</div><div class="line"><span class="meta">#</span></div><div class="line">if [[ $USER == r* ]]</div><div class="line">then</div><div class="line">    echo "Hello $USER"</div><div class="line">else</div><div class="line">    echo "Sorry, I do not know you"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果为： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test24.sh</div><div class="line">Sorry, I do not know you</div></pre></td></tr></table></figure></p>
+<p>如果将其中<code>$USER == r*</code>改为<code>$USER == b*</code>（当前Linux系统中biotest用户，<code>b*</code>这种格式可以查换所有以b开头的用户，运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test24.sh</div><div class="line">Hello biotest</div></pre></td></tr></table></figure>
+<h2 id="case命令">case命令</h2>
+<p>如果有一种情况：用户在尝试计算一个变量的值，可以在一组可能的值中寻找特定值。在这种情况下，可以写一段长的<code>if-then-else</code>代码，如下所示：</p>
+<h3 id="常规if-then-else代码">常规<code>if-then-else</code>代码</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Looking for a possible value</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $USER = "rich" ]</div><div class="line">then</div><div class="line">    echo "Welcome $USER"</div><div class="line">    echo "Please enjoy your visit"</div><div class="line">elif [ $USER = "barbara" ]</div><div class="line">then</div><div class="line">    echo "Welcome $USER"</div><div class="line">    echo "Please enjoy your visit"</div><div class="line">elif [ $USER = "testing" ]</div><div class="line">then</div><div class="line">    echo "Special testing account"</div><div class="line">elif [ $USER = "jessica" ]</div><div class="line">then</div><div class="line">    echo "Do not forget to logout when you're done"</div><div class="line">elif [ $USER = "biotest" ]</div><div class="line">then</div><div class="line">    echo "You are currnet user"</div><div class="line">else</div><div class="line">    echo "Sorry, your are not allowed here"</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test25.sh</div><div class="line">You are currnet user</div></pre></td></tr></table></figure>
+<p>如果有了<code>case</code>命令，则不需要写出所有的<code>elif</code>语句来不停地检查同一个变量的值，<code>case</code>命令会采用列表格式来检查单个变量的多个值。</p>
+<h3 id="case语句"><code>case</code>语句</h3>
+<p><code>case</code>语句的格式如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">case variable in </div><div class="line">pattern1 | pattern2)  command1;;</div><div class="line">pattern3) commands2;;</div><div class="line">*) default commands;;</div><div class="line">esac</div></pre></td></tr></table></figure>
+<p>case命令会将指定的变量与不同械进行比较。如果变量和模式是匹配的，那么shell会执行为该模式指定的命令，可以通过竖线操作符在一行中分隔出多个模式。星号会捕获所有与已知模式不匹配的值，现在将前面的<code>if-then-else</code>代码转换为<code>case</code>形式，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using the case command</div><div class="line"><span class="meta">#</span></div><div class="line">case $USER in </div><div class="line">rich | barbara)</div><div class="line">    echo "Welcome, $USER"</div><div class="line">    echo "Please enjoy your visit";;</div><div class="line">testing)</div><div class="line">    echo "Special testing account";;</div><div class="line">jessica)</div><div class="line">    echo "Do not forget to log off when you're done";;</div><div class="line">biotest)</div><div class="line">    echo "You are current user";;</div><div class="line">*)</div><div class="line">    echo "Sorry, you are not allowed here";;</div><div class="line">esac</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test26.sh</div><div class="line">You are current user</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/29/Linux/Linux-shell01-基础笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4352,446 +4952,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/12/Python/Python学习笔记（11）-魔法方法、特性和迭代器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/12/Python/Python学习笔记（11）-魔法方法、特性和迭代器/" itemprop="url">Python学习笔记（11）-魔法方法、特性和迭代器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-12T12:00:00+08:00">
-                2018-04-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  9,808
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  38
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="魔法方法">魔法方法</h2>
-<p>魔法方法(Magic methods)在Python中是一类特殊的方法，它们的形式就是前后有两个下划线，例如<code>__init__</code>这个方法，这个方法是我们最常见的魔法方法之一。</p>
-<h2 id="构造函数">构造函数</h2>
-<p>构造函数(constructor)是Python中的一个魔法方法，例如我们在创建某个类的时候使用的初始化方法<code>__init__</code>。<code>构造函数</code>不同的于普通方法的地方在于，对象创建后会自动调用魔法方法，例如常规的方法使用如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">f = FooBar()</div><div class="line">f.init()</div></pre></td></tr></table></figure>
-<p>但是构造函数的使用如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">f = FooBar()</div></pre></td></tr></table></figure>
-<p>从上面可以看出，构造函数不用初始化，只要创建这个对象，它自己就自动初始化了，来看一个简单的案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooBar</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.somevar = <span class="number">42</span></div><div class="line">        </div><div class="line">f = FooBar()</div><div class="line">f.somevar</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooBar</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.somevar = <span class="number">42</span></div><div class="line">f = FooBar()</div><div class="line">f.somevar</div><div class="line">Out[<span class="number">2</span>]: <span class="number">42</span></div></pre></td></tr></table></figure>
-<p>从上面的结果可以看出来，在创建了<code>f</code>这个对象后，我们并没有给<code>f.somevar</code>添加属性，但是在<code>__init__</code>中我们已经初始化了这个属性，因此不用再次定义属性。</p>
-<p>再给这个构造函数添加几个参数，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooBar</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, value = <span class="number">24</span>)</span>:</span></div><div class="line">        self.somevar = value</div><div class="line"></div><div class="line">f = FooBar(<span class="string">"This is a constructor argument"</span>)</div><div class="line">f.somevar</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">1</span>]: <span class="class"><span class="keyword">class</span> <span class="title">FooBar</span>:</span>^M</div><div class="line">   ...:     <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, value = <span class="number">24</span>)</span>:</span>^M</div><div class="line">   ...:         self.somevar = value^M</div><div class="line">   ...: ^M</div><div class="line">   ...: f = FooBar(<span class="string">"This is a constructor argument"</span>)^M</div><div class="line">   ...: f.somevar</div><div class="line">   ...:</div><div class="line">Out[<span class="number">1</span>]: <span class="string">'This is a constructor argument'</span></div></pre></td></tr></table></figure>
-<p>从这个案例中可以知道，如果指定了参数，那么最终属性显示的结果就是添加的指定的参数。</p>
-<h3 id="重写普通方法和特殊的构造函数">重写普通方法和特殊的构造函数</h3>
-<p>在面向对象的编程中，每个类都有一个或多个超类，并从它们那里继承行为，对<code>类B</code>的实例调用方法或访问其属性时，如果找不到该方法或属性，将在其<code>超类A</code>中查找，可以看下面的案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(self)</span>:</span></div><div class="line">        print(<span class="string">"Hello, I'm A."</span>)</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span><span class="params">(A)</span>:</span></div><div class="line">    <span class="keyword">pass</span></div><div class="line"></div><div class="line">a = A()</div><div class="line">b = B()</div><div class="line">a.hello()</div><div class="line">b.hello()</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Hello, I<span class="string">'m A.</span></div><div class="line"><span class="string">Hello, I'</span>m A.</div></pre></td></tr></table></figure>
-<p>在这个案例中，我们可以看到，由于<code>类B</code>自己没有定义方法<code>hello</code>，因此对其调用方法<code>hello</code>时，打印的消息是<code>Hello, I'm A.</code>。要在子类中添加功能，一种基本方法是添加方法，但是如果你想写超类的某些方法，以定制继承而来的行为。还以上面的案例为例说明一下，<code>类B</code>可以重写方法<code>hello</code>，如下述修改后的<code>类B</code>定义如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(self)</span>:</span></div><div class="line">        print(<span class="string">"Hello, I'm A."</span>)</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span><span class="params">(A)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(self)</span>:</span></div><div class="line">        print(<span class="string">"Hello, I'm B"</span>)</div><div class="line"></div><div class="line">a = A()</div><div class="line">b = B()</div><div class="line">a.hello()</div><div class="line">b.hello()</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Hello, I<span class="string">'m A.</span></div><div class="line"><span class="string">Hello, I'</span>m B</div></pre></td></tr></table></figure>
-<p>重写是继承机制的一个重要方法，对构造函数来说万为重要，构造函数用于初始化新建对象的状态，而对于大多数子类来说，除超类的初始化代码外，还要有自己的初始化值代码。虽然所有方法的重写机制都相同，但与重写普通方法相比，重写构造函数时更有可能遇到一个特别的问题：重写构造函数时，必须调用超类（继承的类）的构建函数，否则无法正确地初始化对象，看下面的案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bird</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.hungry = <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eat</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.hungry:</div><div class="line">            print(<span class="string">"Aaaah ..."</span>)</div><div class="line">            self.hungry = <span class="keyword">False</span></div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            print(<span class="string">"No, thanks!"</span>)</div><div class="line"></div><div class="line">b = Bird()</div><div class="line">b.eat()</div><div class="line">b.eat()</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Aaaah ...</div><div class="line">No, thanks!</div></pre></td></tr></table></figure>
-<p>从这个案例中我们可以知道，初始情况下，<code>鸟b</code>处于饥饿状态(<code>hungry = True</code>)，第一次<code>b.eat()</code>后，输出的是<code>Aaaah ...</code>， 此时并把<code>hungry = True</code>切换为<code>hungry = False</code>，当第二次<code>b.eat()</code>后，就输出了<code>No, thanks !</code>。</p>
-<p>再看下面的案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bird</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.hungry = <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eat</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.hungry:</div><div class="line">            print(<span class="string">"Aaaah ..."</span>)</div><div class="line">            self.hungry = <span class="keyword">False</span></div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            print(<span class="string">"No, thanks!"</span>)</div><div class="line"></div><div class="line">b = Bird()</div><div class="line">b.eat()</div><div class="line">b.eat()</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SongBird</span><span class="params">(Bird)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.sound = <span class="string">"Squawk!"</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sing</span><span class="params">(self)</span>:</span></div><div class="line">        print(self.sound)</div><div class="line"></div><div class="line">singbird = SongBird()</div><div class="line">singbird.sing()</div><div class="line">singbird.eat()</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Aaaah ...</div><div class="line">Traceback (most recent call last):</div><div class="line">No, thanks!</div><div class="line">Squawk!</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">24</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">    singbird.eat()</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">6</span>, <span class="keyword">in</span> eat</div><div class="line">    <span class="keyword">if</span> self.hungry:</div><div class="line">AttributeError: <span class="string">'SongBird'</span> object has no attribute <span class="string">'hungry'</span></div></pre></td></tr></table></figure>
-<p>在这个案例中，<code>SongBird</code>是<code>Bird</code>的子类，继承了方法<code>est</code>，但如果你要尝试调用它，就出现了问题。</p>
-<p>异常提示，<code>SongBird</code>没有属性<code>hungry</code>，这是因为，在<code>SongBird</code>类中重写了构造函数，但新的构造函数中没有包含任何初始化属性<code>hungry</code>的代码。如果要消除这种错误，<code>SongBird</code>的构造函数必须调用其超类<code>Bird</code>的构造函数，以确保基本的初始化得以执行。</p>
-<p>为此，有两种方法：</p>
-<p>第一，调用未关联的超类构造函数；</p>
-<p>第二，使用函数<code>super</code>。</p>
-<h3 id="调用未关联的超类构建函数">调用未关联的超类构建函数</h3>
-<p>还以上面的案例为例说明一下，如果要调用未关联的超类方法，就要添加一行<code>Bird.__init__(self)</code>，完整代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bird</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.hungry = <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eat</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.hungry:</div><div class="line">            print(<span class="string">"Aaaah ..."</span>)</div><div class="line">            self.hungry = <span class="keyword">False</span></div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            print(<span class="string">"No, thanks!"</span>)</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SongBird</span><span class="params">(Bird)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        Bird.__init__(self)</div><div class="line">        self.sound = <span class="string">"Squawk!"</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sing</span><span class="params">(self)</span>:</span></div><div class="line">        print(self.sound)</div><div class="line"></div><div class="line">singbird = SongBird()</div><div class="line">singbird.sing()</div><div class="line">singbird.eat()</div><div class="line">singbird.eat()</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Squawk!</div><div class="line">Aaaah ...</div><div class="line">No, thanks!</div></pre></td></tr></table></figure>
-<p>在常规的面向对象编程中，对<code>实例调用方法时</code>，方法的参数<code>self</code>将自动关联到实例（称为关联的方法）。</p>
-<p>如果通过<code>类调用方法</code>（例如<code>Bird.__init__</code>），就没有实例与其相关联，在这种情况下，可以随便设置参数<code>self</code>，这样的方法称为<code>未关联</code>。参过将这个未关联方法的<code>self</code>参数设置为当前实例，将使用超类的构造函数来初始化<code>singbird</code>对象，这表明将设置其属性<code>hungry</code>。</p>
-<h3 id="使用super函数">使用<code>super()</code>函数</h3>
-<p>这一种方法只适用Python3。调用<code>super</code>这个函数时，将当前类和当前实例作为参数。对其返回的对象调用方法时，调用的是将是超类（而不是当前类）的方法，因此在<code>singbird</code>的构造函数中，可以不使用<code>Bird</code>而是使用了<code>super(singbird, self)</code>，另外，可以像常规调用方法那样（也就是调用关联的方法那样）调用方法<code>__init__</code>。在Python3中调用函数<code>super</code>，可以不提供任何参数，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bird</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.hungry = <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eat</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.hungry:</div><div class="line">            print(<span class="string">"Aaaah ..."</span>)</div><div class="line">            self.hungry = <span class="keyword">False</span></div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            print(<span class="string">"No, thanks!"</span>)</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SongBird</span><span class="params">(Bird)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super().__init__()</div><div class="line">        self.sound = <span class="string">"Squawk!"</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sing</span><span class="params">(self)</span>:</span></div><div class="line">        print(self.sound)</div><div class="line"></div><div class="line">singbird = SongBird()</div><div class="line">singbird.sing()</div><div class="line">singbird.eat()</div><div class="line">singbird.eat()</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Squawk!</div><div class="line">Aaaah ...</div><div class="line">No, thanks!</div></pre></td></tr></table></figure>
-<h2 id="元素访问">元素访问</h2>
-<p>这一部分是其他的魔法方法。</p>
-<h3 id="基本的序列和映射协议">基本的序列和映射协议</h3>
-<p>序列和映射基本上是<code>元素(item)</code>的集合，要实现它们的基本行为（协议），不可变对象需要实现2个方法，而可变对象要实现4个：</p>
-<ul>
-<li><code>__len__(self)</code>：这个方法返回集合包含的项数，对序列来说就是元素个数，对映射来说，就是<code>键-值</code>对。如果<code>__len__(self)</code>返回零（且没有实现覆盖这种行为的<code>__nonzero__</code>），对象在布尔上下文中将被视为假（就像空的列表、元组、字符串和字典一样）。</li>
-<li><code>__getitem__(self, key)</code>：返回与指定键相关联的值。对序列来说，键应该是<code>0~n-1</code>的整数（也可以是负数），其中<code>n</code>为序列的长度，对映射来说，键可以是任何类型。如果键为负责，应从末尾往前数，也就是说<code>x[-n]</code>应与<code>x[len(x)-n]</code>等效。</li>
-<li><code>__setitem__(self, key8, value)</code>：这个方法应以与键相关联的方式存储值，以便以后能够使用<code>__getitem__</code>来获取。</li>
-<li><code>__delitem__(self, key)</code>：这个方法在对对象的组成部分使用<code>__del__</code>语句时被调用，应删除与key相关联的值，同样，仅当对象可变（且允许其值被删除）时，才需要实现这个方法。</li>
-</ul>
-<p>另外，如果键的类型不合适（如对序列使用字符串键），可能引发<code>TypeError</code>异常。对于序列，如果索引的类型是正确的，但不在允许的范围内，会引发<code>IndexError</code>异常。</p>
-<p>下面看一个案例，观察一下能否创建一个无穷序列，代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># coding=utf8</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">check_index</span><span class="params">(key)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line"><span class="string">    指定的键上是否是可接受的索引？</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    键必须是非负整数，才是可接受的；</span></div><div class="line"><span class="string">    如果不是整数，将引发TypeError异常；</span></div><div class="line"><span class="string">    如果是负数，将引发IndexError异常（因为这个序列是无穷的）</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(key, int): <span class="keyword">raise</span> TypeError</div><div class="line">    <span class="keyword">if</span> key &lt; <span class="number">0</span>:<span class="keyword">raise</span> IndexError</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ArithmeticSequence</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, start = <span class="number">0</span>, step = <span class="number">1</span>)</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        初始化这个算术序列</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">        start --- 序列中的第一个值</span></div><div class="line"><span class="string">        step  --- 两个相邻的值的差</span></div><div class="line"><span class="string">        changed - 一个字典，包含用户修改后的值</span></div><div class="line"><span class="string">        """</span></div><div class="line">        self.start = start <span class="comment">#存储起始值</span></div><div class="line">        self.step = step</div><div class="line">        self.changed = &#123;&#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, key)</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        从算术序列中获取一个元素</span></div><div class="line"><span class="string">        """</span></div><div class="line">        check_index(key)</div><div class="line"></div><div class="line">        <span class="keyword">try</span>: <span class="keyword">return</span> self.changed[key]</div><div class="line">        <span class="keyword">except</span> KeyError:</div><div class="line">            <span class="keyword">return</span> self.start + key*self.step</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__setitem__</span><span class="params">(self, key, value)</span>:</span></div><div class="line">        <span class="string">"""</span></div><div class="line"><span class="string">        修改算术序列中的元素</span></div><div class="line"><span class="string">        """</span></div><div class="line">        check_index(key)</div><div class="line">        self.changed[key] = value</div><div class="line"></div><div class="line">s = ArithmeticSequence(<span class="number">1</span>, <span class="number">2</span>)</div><div class="line">s[<span class="number">4</span>]</div><div class="line">s[<span class="number">4</span>] = <span class="number">2</span></div><div class="line">s[<span class="number">4</span>]</div><div class="line">s[<span class="number">5</span>]</div><div class="line">print(s[<span class="number">4</span>])</div><div class="line">print(s[<span class="number">5</span>])</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="number">2</span></div><div class="line"><span class="number">11</span></div></pre></td></tr></table></figure>
-<p>这些代码实现的是一个<code>算术序列</code>，其中任何两个相邻数字的差都相同，第一值是由构造函数的参数<code>start</code>（默认为0）指定的，而相邻值之间的差是由参数<code>step</code>（默认为1）指定的。允许允许修改某些元素，这是通过将不符合规则的值保存在字典<code>changed</code>中实现的。如果元素未被修改，就用公式<code>self.start + key*self.step</code>来计算它的值。</p>
-<p>这段代码中禁止删除元素，因此没有实现<code>__del__</code>，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">del</span> s[<span class="number">4</span>]</div><div class="line">File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">52</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">    <span class="keyword">del</span> s[<span class="number">4</span>]</div><div class="line">AttributeError: __delitem__</div></pre></td></tr></table></figure>
-<p>另外这个类中没有方法<code>__len__</code>，因此其长度是无穷的，如果所使用考虑综的类型非法，将引发TypeError异常，如果索引的类型正确，但不在允许的范围内（即为负数），将引发IndexError异常，其中索引的检查是源代码中的<code>check_index</code>这个函数负责的，如果出现索引错误，就是如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">s[<span class="string">"four"</span>]</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">49</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">    s[<span class="string">"four"</span>]</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">31</span>, <span class="keyword">in</span> __getitem__</div><div class="line">    check_index(key)</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">11</span>, <span class="keyword">in</span> check_index</div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(key, int): <span class="keyword">raise</span> TypeError</div><div class="line">TypeError</div><div class="line">s[<span class="number">-42</span>]</div><div class="line">Traceback (most recent call last):</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">49</span>, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">    s[<span class="number">-42</span>]</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">31</span>, <span class="keyword">in</span> __getitem__</div><div class="line">    check_index(key)</div><div class="line">  File <span class="string">"D:/netdisk/bioinfo.notes/Python/python_bio/PythonBio/test.py"</span>, line <span class="number">12</span>, <span class="keyword">in</span> check_index</div><div class="line">    <span class="keyword">if</span> key &lt; <span class="number">0</span>:<span class="keyword">raise</span> IndexError</div><div class="line">IndexError</div></pre></td></tr></table></figure>
-<h3 id="从listdict和str派生">从list、dict和str派生</h3>
-<p>关于序列/映射的一些方法可以还从已有方法中继承，在标准库<code>collections</code>这个模块中提供了抽象和具体的基类，用户也能继承内置类型。因此如果要实现一种行为类似于内置列表的序列类型，可以直接继承list，在下面这个案例中，来实现一个带访问计数器的列表，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CounterList</span><span class="params">(list)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, *args)</span>:</span></div><div class="line">        super().__init__(*args)</div><div class="line">        self.counter = <span class="number">0</span></div><div class="line">        </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></div><div class="line">        self.counter += <span class="number">1</span></div><div class="line">        <span class="keyword">return</span> super(CounterList, self).__getitem__(index)</div></pre></td></tr></table></figure>
-<p>在上面的这段代码中，<code>CounterList</code>类依赖于其超类<code>List</code>的行为。<code>CounterList</code>没有重写的方法（如<code>append</code>、<code>extend</code>，<code>index</code>等）都可以直接使用。在两个被重写的方法中，使用<code>super</code>来调用超类的相应方法，并添加了必要的行为：初始化属性<code>counter</code>（在<code>__init__</code>中）和更新属性<code>counter</code>（在<code>__getitem__</code>）。需要注意的是，重写<code>__getitem__</code>并不能保证一定会捕捉用户的访问操作，因为还有其他访问列表内容的方法，例如通过方法<code>pop</code>，下面来演示一下<code>CounterList</code>的可能用法，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CounterList</span><span class="params">(list)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, *args)</span>:</span></div><div class="line">        super().__init__(*args)</div><div class="line">        self.counter = <span class="number">0</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></div><div class="line">        self.counter += <span class="number">1</span></div><div class="line">        <span class="keyword">return</span> super(CounterList, self).__getitem__(index)</div><div class="line"></div><div class="line">cl = CounterList(range(<span class="number">10</span>))</div><div class="line">print(cl)</div><div class="line">cl.reverse()</div><div class="line">print(cl)</div><div class="line"><span class="keyword">del</span> cl[<span class="number">3</span>:<span class="number">6</span>]</div><div class="line">print(cl.counter)</div><div class="line">print(cl[<span class="number">4</span>] + cl[<span class="number">2</span>])</div><div class="line">print(cl.counter)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]</div><div class="line">[<span class="number">9</span>, <span class="number">8</span>, <span class="number">7</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">0</span>]</div><div class="line"><span class="number">0</span></div><div class="line"><span class="number">9</span></div><div class="line"><span class="number">2</span></div></pre></td></tr></table></figure>
-<p>在上面的案例中，<code>CounterList</code>的行为在大多数方面的都类型于列表，但它有一个<code>counter</code>属性（其初始值为0），每当访问列表元素时，这个属性的值就都加1，执行加法运算<code>cl[4] + cl[2]</code>后，<code>counter</code>的值递增了2次，变成了2。</p>
-<h2 id="特性">特性</h2>
-<p><code>存取方法</code>是名称类似于<code>getHeight</code>和<code>setHeight</code>的方法，用于获取或设置属性，如果访问给定属性时，必须采取特定的措施，那么像这样的封装状态变量（属性）很重要，例如看下面的案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.width = <span class="number">0</span></div><div class="line">        self.height = <span class="number">0</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set_size</span><span class="params">(self, size)</span>:</span></div><div class="line">        self.width, self.height = size</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_size</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self.width, self.height</div><div class="line"></div><div class="line">r = Rectangle()</div><div class="line">r.width = <span class="number">10</span></div><div class="line">r.height = <span class="number">5</span></div><div class="line">print(r.get_size())</div><div class="line">r.set_size((<span class="number">150</span>, <span class="number">100</span>))</div><div class="line">print(r.width)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">print(r.get_size())</div><div class="line">(<span class="number">10</span>, <span class="number">5</span>)</div><div class="line">print(r.width)</div><div class="line"><span class="number">150</span></div></pre></td></tr></table></figure>
-<p><code>get_size</code>和<code>set_size</code>是假想属性<code>size</code>的存取方法，这个属性是一个由<code>width</code>和<code>height</code>组成的元组，这些代码并非完全错误，但存在缺陷。使用这个类时，用户无需关心它是如何被封装的。如果用户想要修改实现，让size成为真正的属性，而width和height是动态计算出来的，就需要提供用于访问width和height的存取方法，使用这个类的程序也必须重写。应当客户代码能够以同样的方式对待所有的属性。</p>
-<p>那么如何解决这个问题呢？给所有的属性都提供存取方法并不现实。而Python能够隐藏存取方法，让所有的属性看起来都一样，通过存取方法定义的属性通常称为<code>特性(property)</code>。在Python中有两种创建特性的机制，但Python中只用<code>property</code>函数。</p>
-<h3 id="property函数"><code>property</code>函数</h3>
-<p>以前面的<code>Rectangle</code>类为例说明一下，在使用<code>property</code>函数时，只需要添加一行代码，即<code>size = property(get_size, set_size)</code>即可，完整代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.width = <span class="number">0</span></div><div class="line">        self.height = <span class="number">0</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set_size</span><span class="params">(self, size)</span>:</span></div><div class="line">        self.width, self.height = size</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_size</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self.width, self.height</div><div class="line">    size = property(get_size, set_size)</div><div class="line"></div><div class="line">r = Rectangle()</div><div class="line">r.width = <span class="number">10</span></div><div class="line">r.height = <span class="number">5</span></div><div class="line">print(r.size)</div><div class="line">r.size = <span class="number">150</span>, <span class="number">100</span></div><div class="line">print(r.width)</div></pre></td></tr></table></figure>
-<p>在上面的这段代码中，通过调用<code>property</code>函数，将存取方法作为参数（<code>获取方法</code>在前，<code>设置方法</code>在后）创建了一个特性，然后将名称<code>size</code>关联到这个特性。这样就能以同样的方式对待width、height和size了，而无需关心它们是如何实现的，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">print(r.size)</div><div class="line">(<span class="number">10</span>, <span class="number">5</span>)</div><div class="line">print(r.width)</div><div class="line"><span class="number">150</span></div></pre></td></tr></table></figure>
-<p>从运行结果中可以看到，属性<code>size</code>依然受制于<code>get_size</code>和<code>set_size</code>执行的计算，但是看起来就像普通属性一样。</p>
-<p>事实上，调用函数<code>property</code>时，还可以①不指定参数；②指定一个参数；③指定三个参数或四个参数。</p>
-<p>如果没有指定任何参数，创建的特性将既不可读，也不可写。如果只指定一个参数（获取方法），创建的特性将是只读的。第三个参数是可选的，指定用于删除属性的方法（这个方法不接受任何参数）。第四个参数也是可选的，指定一个文档字符串，这些参数分别命名为<code>fget</code>、<code>fset</code>、<code>fdel</code>和<code>doc</code>。如果要创建一个只可写且带文档字符串的特性，可使用它们作为关键字参数。</p>
-<h3 id="property函数的工作原理"><code>property</code>函数的工作原理</h3>
-<p><code>property</code>其实并不一个函数，而是一个类，它的实例包含一些魔法方法，而所有的魔法都是由这些方法完成的。这些魔法方法为<code>__get__</code>，<code>__set__</code>和<code>__delete__</code>，它们一道定义了所谓的描述符协议。只要对象实现了这些方法中的任何一个，它就是一个描述符。描述符的独特之处在于其访问方式。例如，读取属性（具体来说，是在实例中访问类中定义的属性）时，如果它关联的是一个实现了<code>__get__</code>的对象，将不会返回这个对象，而是调用方法<code>__get__</code>并将其结果返回。实际上，这是隐藏在特性、关联的方法、静态方法和类方法。</p>
-<h3 id="静态方法和类方法">静态方法和类方法</h3>
-<p>静态方法和类方法是这样创建的：将它们分别包装在<code>staticmethod</code>和<code>classmethod</code>类的对象中。静态方法的定义中没有参数<code>self</code>，可直接通过类来调用。类方法的定义中包含类似于self的参数，通常被命令为cls，对于类方法，也可通过对象直接调用，但参数cls将自动关联到类。</p>
-<p>看下面的一个简单案例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">smeth</span><span class="params">()</span>:</span></div><div class="line">        print(<span class="string">"This is a static method"</span>)</div><div class="line">    smeth = staticmethod(smeth)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">cmeth</span><span class="params">(cls)</span>:</span></div><div class="line">        print(<span class="string">"This is a class method of"</span>,cls)</div><div class="line">    cmeth = classmethod(cmeth)</div></pre></td></tr></table></figure>
-<p>像这样手工包装和替换方法有点繁琐。在Python2中，引入了一种名为<code>装饰器</code>的新语法，可用于像这样包装方法（实际上，装饰器可用于包装任何可调用的对象，并且可用于方法和函数）。要指定一个或多个装饰器，为此可在方法（或函数）前面使用运算符<code>@</code>列出这些装饰器（指定了多少装饰器时，应用的顺序与列出的顺序相反），如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span>:</span></div><div class="line"></div><div class="line"><span class="meta">    @staticmethod</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">smeth</span><span class="params">()</span>:</span></div><div class="line">        print(<span class="string">"This is a static method"</span>)</div><div class="line"></div><div class="line"><span class="meta">    @classmethod</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">cmeth</span><span class="params">(cls)</span>:</span></div><div class="line">        print(<span class="string">"This is a class methods of "</span>, cls)</div><div class="line"></div><div class="line">MyClass.smeth()</div><div class="line">MyClass.cmeth()</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">This <span class="keyword">is</span> a static method</div><div class="line">This <span class="keyword">is</span> a <span class="class"><span class="keyword">class</span> <span class="title">methods</span> <span class="title">of</span>  &lt;<span class="title">class</span> '<span class="title">__main__</span>.<span class="title">MyClass</span>'&gt;</span></div></pre></td></tr></table></figure>
-<h3 id="getattr____setattr__等方法"><code>__getattr__</code>、<code>__setattr__</code>等方法</h3>
-<p>可以拦截对象属性的所有访问企图、其用途之一是在旧式类中实现特性（在旧类中，函数<code>property</code>的行为可能不符合预期）。要在属性被访问时执行一段代码，必须使用一些魔法方法，以下的4个魔法方法提供了你需要的所有功能：</p>
-<ul>
-<li><code>__getattribute__(self, name)</code>：在属性被访问时自动调用；</li>
-<li><code>__getattr__(self, name)</code>：在属性被访问而对象没有这样的属性时自动调用；</li>
-<li><code>__setattr__(self, name, value)</code>：试图给属性赋值时自动调用；</li>
-<li><code>__delattr__(self, name)</code>：试图删除属性时自动调用。</li>
-</ul>
-<p>相比函数<code>property</code>，这些魔法方法使用起来比较麻烦。但它们很有用，因为用户可以在这些方法中编写处理多个特性的代码。然而在可能的情况下，最好还是首选<code>property</code>函数。</p>
-<p>还看一下前面的<code>Rectangle</code>的案例，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.width = <span class="number">0</span></div><div class="line">        self.height = <span class="number">0</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__setattr__</span><span class="params">(self, name, value)</span>:</span></div><div class="line">        <span class="keyword">if</span> name == <span class="string">"size"</span>:</div><div class="line">            self.width, self.height = value</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            self.__dict__[name] = value</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, name)</span>:</span></div><div class="line">        <span class="keyword">if</span> name == <span class="string">"size"</span>:</div><div class="line">            <span class="keyword">return</span> self.width, self.height</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">raise</span> AttributeError()</div></pre></td></tr></table></figure>
-<p>如上面代码所示，这个版本需要处理额外的管理细节，对于这段代码，需要注意以下两点：</p>
-<ol style="list-style-type: decimal">
-<li>即使涉及的属性不是<code>size</code>，也将调用方法<code>__setattr__</code>。因此这个方法必须考虑如下两种情形：如果涉及的属性为<code>size</code>，就执行与以前一样的操作；否则就使用魔法属性<code>__dict__</code>。<code>__dict__</code>属性是一个字典，其中包含所有的实例属性。使用它们而不是执行常规属性赋值，是因为旨在避免再次调用<code>__setattr__</code>，进而导致无限循环。</li>
-<li>仅当没有找到指定的属性时，才会调用方法<code>__getattr__</code>。这意味着如果指定的名称不是<code>size</code>，这个方法将引发<code>AttributeError</code>异常。这在要让类能够正确地支持<code>__hasattr__</code>和<code>__getattr__</code>等内置函数时非常重要。如果指定的名称为<code>size</code>，就使用前一个实现中的表达式。</li>
-</ol>
-<p>需要注意的是：编写方法<code>__setattr__</code>时需要避开无限循环陷阱，编写<code>__getattribute__</code>时也是如此。由于它拦截对所有属性的访问，因此将拦截对<code>__dict__</code>的访问。在<code>__getattribute__</code>中访问当前实例的属性时，唯一案例的方式是使用父类的方法<code>__getattribute__</code>（使用<code>super</code>）。</p>
-<h2 id="迭代器">迭代器</h2>
-<p>有关迭代器的魔法方法是<code>__iter__</code>，它是迭代器协议的基础。</p>
-<h3 id="迭代器协议">迭代器协议</h3>
-<p><code>迭代(iterate)</code>意味着重复多次，就像循环那样。方法<code>__iter__</code>返回一个迭代器，它是包含方法<code>__next__</code>的对象，而调用这个方法时可不提供任何参数，当调用<code>__next__</code>方法时，迭代器应返回其下一个值。如果迭代器没有可供返回的值，应引发<code>StopIteration</code>异常。另外，还可以使用内置的函数<code>next</code>，在这种情况下<code>next(it)</code>与<code>it.__next__()</code>等效。</p>
-<p>这有什么意义呢，为什么不使用列表？</p>
-<p>因为在很多情况下，使用列表都点大材小用。例如，现在有一个可逐个计算值的函数，你可能只想逐个地获取值，而不是使用列表一次性获取。这是因为如果有很多值，列表可以战用太多的内存。但还有其他原因：使用迭代器更通用与简便。</p>
-<p>在下面的案例中就可以看到不能使用列表的案例，因为如果要使用列表，这个列表的长度必须是无穷大的，下面的这个案例是有关斐波那契数列的，代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fibs</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.a = <span class="number">0</span></div><div class="line">        self.b = <span class="number">1</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__next__</span><span class="params">(self)</span>:</span></div><div class="line">        self.a, self.b = self.b, self.a + self.b</div><div class="line">        <span class="keyword">return</span> self.a</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self</div></pre></td></tr></table></figure>
-<p>这个迭代器实现了方法<code>__iter__</code>，而这个方法返回迭代器本身，在很多情况下，都在<code>另一个</code>对象中实现返回迭代器的方法<code>__iter__</code>，并在for循环中使用这个对象。在推荐在迭代器中也实现方法<code>__iter__</code>（并像刚才那样让它返回self），这样迭代器就可直接用于for循环中。</p>
-<p>有关<code>迭代</code>更正规的定义是，实现了方法<code>__iter__</code>的对象是<strong>可迭代的</strong>，而实现了方法<code>__next__</code>的对象是<strong>迭代器</strong>。</p>
-<p>来看一下迭代器的for循环案例，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fibs</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.a = <span class="number">0</span></div><div class="line">        self.b = <span class="number">1</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__next__</span><span class="params">(self)</span>:</span></div><div class="line">        self.a, self.b = self.b, self.a + self.b</div><div class="line">        <span class="keyword">return</span> self.a</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self</div><div class="line"></div><div class="line"></div><div class="line">fibs = Fibs()</div><div class="line"><span class="keyword">for</span> f <span class="keyword">in</span> fibs:</div><div class="line">    <span class="keyword">if</span> f &gt; <span class="number">1000</span>:</div><div class="line">        print(f)</div><div class="line">        <span class="keyword">break</span></div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="number">1597</span></div></pre></td></tr></table></figure>
-<p>这个循环会停止是因为其中包含break语句，否则这个for循环会一直执行下去。</p>
-<p>通过对可迭代对象调用内置函数<code>iter</code>就可以获得一个迭代器，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>it = iter([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(it)</div><div class="line"><span class="number">1</span></div><div class="line">&gt;&gt;&gt;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(it)</div><div class="line"><span class="number">2</span></div></pre></td></tr></table></figure>
-<h3 id="从迭代器创建序列">从迭代器创建序列</h3>
-<p>除了对迭代器和可迭代对象进行迭代外，还可以将它们转换为序列。在可以使用序列的情况下，大多数也可以使用迭代器或可迭代对象（索引和切片这种操作除外）。</p>
-<p>看下面的一个案例，使用构造函数list显式地将迭代器转换为列表：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestIterator</span>:</span></div><div class="line">    value = <span class="number">0</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__next__</span><span class="params">(self)</span>:</span></div><div class="line">        self.value += <span class="number">1</span></div><div class="line">        <span class="keyword">if</span> self.value &gt; <span class="number">10</span>:<span class="keyword">raise</span> StopIteration</div><div class="line">        <span class="keyword">return</span> self.value</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self</div><div class="line"></div><div class="line">ti = TestIterator()</div><div class="line">list(ti)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>]</div></pre></td></tr></table></figure>
-<h2 id="生成器">生成器</h2>
-<p>生成器是一种使用普通函数语法定义的迭代器。</p>
-<h3 id="创建生成器">创建生成器</h3>
-<p>现在创建一个将嵌套列表展开的函数，这个函数以类似于下面的列表作为参数：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nested = [[<span class="number">1</span>,<span class="number">2</span>], [<span class="number">3</span>,<span class="number">4</span>],[<span class="number">5</span>]]</div></pre></td></tr></table></figure>
-<p>上面的这个参数其实是一个列表的列表，现在定义这样的函数：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span><span class="params">(nested)</span>:</span></div><div class="line">    <span class="keyword">for</span> sublist <span class="keyword">in</span> nested:</div><div class="line">        <span class="keyword">for</span> element <span class="keyword">in</span> sublist:</div><div class="line">            <span class="keyword">yield</span> element</div></pre></td></tr></table></figure>
-<p>这个函数首选迭代所提供嵌套列表中的所有子列表，然后按顺序迭代每个子列表的元素。</p>
-<p>这个函数的最后一行含有<code>yield</code>语句，像含有<code>yield</code>语句的函数都被称为<strong>生成器</strong>。生成器与普通函数的区别在于，生成器不是使用<code>return</code>返回一个值，而是生成多个值，一次一个。每次使用<code>yield</code>生成一个值后，函数都将冻结，即在此停止执行，等待被重新唤醒，被唤醒后，函数将从停止的地方开始继续执行。</p>
-<p>为使用所有的值，可对生成器进行迭代，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">nested = [[<span class="number">1</span>,<span class="number">2</span>], [<span class="number">3</span>,<span class="number">4</span>],[<span class="number">5</span>]]</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span><span class="params">(nested)</span>:</span></div><div class="line">    <span class="keyword">for</span> sublist <span class="keyword">in</span> nested:</div><div class="line">        <span class="keyword">for</span> element <span class="keyword">in</span> sublist:</div><div class="line">            <span class="keyword">yield</span> element</div><div class="line"></div><div class="line"><span class="keyword">for</span> num <span class="keyword">in</span> flatten(nested):</div><div class="line">    print(num)</div><div class="line">    </div><div class="line"><span class="comment"># 或者如下所示</span></div><div class="line">list(flatten(nested))</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> num <span class="keyword">in</span> flatten(nested):</div><div class="line"><span class="meta">... </span>    print(num)</div><div class="line">...</div><div class="line"><span class="number">1</span></div><div class="line"><span class="number">2</span></div><div class="line"><span class="number">3</span></div><div class="line"><span class="number">4</span></div><div class="line"><span class="number">5</span></div><div class="line"></div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="comment"># 或者如下所示</span></div><div class="line"><span class="meta">... </span>list(flatten(nested))</div><div class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</div></pre></td></tr></table></figure>
-<h3 id="生成器推导">生成器推导</h3>
-<p><strong>生成器推导</strong>也叫<strong>生成器表达式</strong>，这是一个类似于列表推导的概念。其工作原理与列表推导相同，但不是创建一个列表，而是返回一个生成器，让你能够逐步执行计算，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>g = ((i + <span class="number">2</span> **<span class="number">2</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">2</span>, <span class="number">27</span>)))</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(g)</div><div class="line"><span class="number">6</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(g)</div><div class="line"><span class="number">7</span></div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
-<p>在这段代码中，使用的是圆括号。像在这种简单的情形下，不如使用列表推导；但如果要包装可迭代对象（可能生成大量的值），使用列表推导将立即实例化一个列表，从而丧失迭代的优势。另一个好处是，直接在一对既有的圆括号内（如在函数中调用）使用生成器推导时，无需再添加一对圆括号。也就是可编写下面这样的代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>sum(i ** <span class="number">2</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>))</div><div class="line"><span class="number">285</span></div></pre></td></tr></table></figure>
-<h3 id="递归生成器">递归生成器</h3>
-<p>前面的生成器是使用了2个for循环实现的，如果要处理更多层的嵌套列表，此时就需要使用递归的思路，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span><span class="params">(nested)</span>:</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        <span class="keyword">for</span> sublist <span class="keyword">in</span> nested:</div><div class="line">            <span class="keyword">for</span> element <span class="keyword">in</span> flatten(sublist):</div><div class="line">                <span class="keyword">yield</span> element</div><div class="line">    <span class="keyword">except</span> TypeError:</div><div class="line">        <span class="keyword">yield</span> nested</div></pre></td></tr></table></figure>
-<p>调用<code>flatten</code>时，有两种可能性：</p>
-<p>第一，<strong>基线条件</strong>。在基线条件下，要求这个函数展开单个元素，例如一个数，在这种情况下，for循环将引发TypeError异常（因为用户此时试图迭代一个数），而这个生成器只生成一个元素。</p>
-<p>第二，<strong>递归条件</strong>。如果要展开的是一个列表，就需要做这些工作：遍历所有的子列表，并对它们调用<code>flatten</code>，然后使用另一个for循环生成展开后的子列表中的所有元素，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>list(flatten([[[<span class="number">1</span>],<span class="number">2</span>],<span class="number">3</span>,<span class="number">4</span>,[<span class="number">5</span>,[<span class="number">6</span>,<span class="number">7</span>]],<span class="number">8</span>]))</div><div class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]</div></pre></td></tr></table></figure>
-<p>但是这种方案存在一个问题，如果<code>nested</code>是字符串或类似于字符串的对象，它就属于序列，因此不会引发TypeError异常。要处理这种问题，必须要在生成器开头进行检查。要检查对象是否类似于字符串，最简单的方式就是尝试将对象与一个字符串拼接起来，并检查这是否会引发TypeError异常，添加后的代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># coding=utf8</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span><span class="params">(nested)</span>:</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        <span class="comment"># 不迭代类似于字符串的对象：</span></div><div class="line">        <span class="keyword">try</span>:nested +<span class="string">""</span></div><div class="line">        <span class="keyword">except</span> TypeError:<span class="keyword">pass</span></div><div class="line">        <span class="keyword">else</span>:<span class="keyword">raise</span> TypeError</div><div class="line">        <span class="keyword">for</span> sublist <span class="keyword">in</span> nested:</div><div class="line">            <span class="keyword">for</span> element <span class="keyword">in</span> flatten(sublist):</div><div class="line">                <span class="keyword">yield</span> element</div><div class="line">    <span class="keyword">except</span> TypeError:</div><div class="line">        <span class="keyword">yield</span> nested</div><div class="line"></div><div class="line">list(flatten([<span class="string">'foo'</span>, [<span class="string">'bar'</span>,[<span class="string">'baz'</span>]]]))</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>list(flatten([<span class="string">'foo'</span>, [<span class="string">'bar'</span>,[<span class="string">'baz'</span>]]]))</div><div class="line">[<span class="string">'foo'</span>, <span class="string">'bar'</span>, <span class="string">'baz'</span>]</div></pre></td></tr></table></figure>
-<p>在这个案例中，如查表达式<code>nested + &quot;&quot;</code>引发了TypeError异常，就忽略这种异常；如果没有引发TypeError异常，内部<code>try</code>语句中的else语句就引发TypeError异常，这样将在外部的except中生成类似于字符串的对象。</p>
-<p>需要注意的是，这段代码没有进行类型检查，也就是说没有检查<code>nested</code>是否为字符串，而是只检查了它的行为是否类似于字符串，即能否与字符串拼接。对于这种检查，更符合常规思路的方案是使用<code>isinstance</code>以及字符串和类似于字符串的对象的一些抽象父类，但是Python中没这样的标准类。</p>
-<h3 id="通用生成器">通用生成器</h3>
-<p>这里再描述一下生成器，生成器是含有<code>yield</code>的函数，但被调用时不会执行函数体内的代码，而是返回一个迭代器，每次请求值时，都将执行生成器的代码，直到遇到<code>yield</code>或<code>return</code>，<code>yield</code>意味着应生成一个值，而<code>return</code>意味着生成器应停止执行（即不再生成值，仅当在生成器调用<code>return</code>时，才能不提供任何参数）。</p>
-<p>换句话讲就是，生成器由两个单独的部分构成：①<strong>生成器的函数</strong>和②<strong>生成器的迭代器</strong>。生成器的函数是由<code>def</code>语句定义的，其中包含<code>yield</code>。生成器迭代器是这个函数返回的结果。用不太精准的话讲，生成器就是这两个东西的组合，看下面的代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="function"><span class="keyword">def</span> <span class="title">simple_generator</span><span class="params">()</span>:</span></div><div class="line"><span class="meta">... </span>    <span class="keyword">yield</span> <span class="number">1</span></div><div class="line">...</div><div class="line">...</div><div class="line">&gt;&gt;&gt;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>simple_generator</div><div class="line">&lt;function simple_generator at <span class="number">0x0000021C0C224840</span>&gt;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>simple_generator()</div><div class="line">&lt;generator object simple_generator at <span class="number">0x0000021C0C203F68</span>&gt;</div></pre></td></tr></table></figure>
-<h3 id="生成器的方法">生成器的方法</h3>
-<p>在生成器开始运行后，可使用生成器和外部之间的通信渠道向它提供值，这个通信渠道包含如下两个商战：</p>
-<ul>
-<li><strong>外部世界</strong>：外部世界可访问生成器的方法<code>send</code>，这个方法类似于<code>next</code>，但接受一个参数（要发挥的<code>消息</code>可以是任何对象）。</li>
-<li><strong>生成器</strong>：在挂起的生成器内部，<code>yield</code>可能用作<strong>表达式</strong>而不是<strong>语句</strong>。也就是说，在生成器重新运行时，<code>yield</code>返回一个值，也就是通过<code>send</code>从外部世界发达的值。如果使用的是<code>next</code>，<code>yield</code>将返回<code>None</code>。需要注意的是，仅当生成器被挂起（也就是遇到第一个<code>yield</code>）后，使用<code>send</code>（而不是<code>next</code>）才有意义。要在此之前向生成器提供消息，可使用生成器的函数的参数，下面的一个简单的案例就说明了这个机制：</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">repeater</span><span class="params">(value)</span>:</span></div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        new = (<span class="keyword">yield</span> value)</div><div class="line">        <span class="keyword">if</span> new <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:value = new</div><div class="line">        </div><div class="line">r = repeater(<span class="number">42</span>)</div><div class="line">next(r)</div><div class="line">r.send(<span class="string">"Hello, python"</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>r = repeater(<span class="number">42</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>next(r)</div><div class="line"><span class="number">42</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>r.send(<span class="string">"Hello, python"</span>)</div><div class="line"><span class="string">'Hello, python'</span></div></pre></td></tr></table></figure>
-<p>在上面代码中，使用圆括号将<code>yield</code>表达式圈了起来。</p>
-<p>生成器还有另外两种方法，分别是<code>throw</code>与<code>close</code>。其中：</p>
-<p><code>throw</code>方法用于在生成器中（yield表达式处）引发异常调用时可提供一个异常类型、一个可选值和一个<code>traceback</code>对象。</p>
-<p><code>close</code>方法用于停止生成器，调用时无需提供任何参数。方法<code>close</code>也是基于异常的。在<code>yield</code>处引发<code>GeneratorExit</code>异常。因此如果要在生成器中提供一些清理代码，可将<code>yield</code>放在一条<code>try/finally</code>语句中。如果愿意，也可以捕获<code>GeneratorExit</code>异常，但随后必须重新引发它（可能在清理后）、引发其他 异常或直接返回。对生成器调用<code>close</code>方法后，再试图从它那里获取值将导致<code>RuntimeError</code>异常。</p>
-<h2 id="生成器的使用案例八皇后问题">生成器的使用案例——八皇后问题</h2>
-<p>现在使用生成器来解决一个经典的编程问题。</p>
-<h3 id="问题背景">问题背景</h3>
-<p>对于逐步得到结果的复杂递归算法，非常适合使用生成器来实现。要在不使用生成器的情况下实现这些算法，通常必须通过额外的参数来传递部分结果，让递归调用能够接着往下计算。通过使用生成器，所有的递归调用进乞只需要生成其负责部分的结果。在前面的递归函数<code>flatten</code>就是这样做的，可以使用这种策略来遍历<code>图结构</code>和<code>树结构</code>。</p>
-<p>然而在有些应用程序中，你不能马上得到答案。你必须尝试多次，且在每个递归层级中都如此。</p>
-<p>这里讲一个简单的案例。假设你要去参加一个很重要的会议，你不知道会议在哪里召开，但前面有两扇门，而会议室就在其中一扇门的后面。你选择进入左边的那扇门后，又看到两扇门。你再次选择进入左边的那扇门，但发现走错了。因此你往回走，并进入右边那扇门，但发现也走错了。因此你继续往回走到起始，现在可以尝试进入右边那扇门了。</p>
-<p>对于需要尝试所有组合直到找到答案的问题，这种回溯策略对其解决很有帮助。这种问题的解决方案类似于以下代码：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> each possibility at level <span class="number">1</span>:</div><div class="line">    <span class="keyword">for</span> each possibility at level <span class="number">2</span>:</div><div class="line">        ...</div><div class="line">            <span class="keyword">for</span> each possibility at level n:</div><div class="line">                is it viable?</div></pre></td></tr></table></figure>
-<p>如果要直接使用for循环来实现，就要写许多层，此时就可以使用递归。</p>
-<h3 id="问题描述">问题描述</h3>
-<p>将8个皇后（这个皇后指的是国际象棋中的皇后）放在棋盘上，条件是任何一个皇后都不能威胁其他皇后，即任何两个皇后都不能吃掉对方。</p>
-<p>这里再讲一下国际象棋的部分规则。</p>
-<p>第一，国际象棋的棋盘是<code>8 x 8</code>的方格，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190626144020.png">
-
-</div>
-<p>第二，皇后是国际象棋中的一个柜子，并且是棋局中实力最强的一种棋子，但同时也是最容易被吃掉的棋子。皇后可横着走，可以直着走，可以斜着走，且格数不限。</p>
-<p>第三，因此如果不想让8个皇后中的任何1个被其他的皇后吃掉，那么要满足：①任意2个皇后不能处于同一条横线上；②任意2个皇不能处于同一条竖线上；③任意2个皇后不能处于同一条斜线上。</p>
-<h3 id="解决思路">解决思路</h3>
-<p>八皇后问题是一个典型的回溯问题：</p>
-<p>第一，在棋盘的第一行尝试为第一个皇后选择一个位置；</p>
-<p>第二，在第二行尝试为第二个皇后选择一个位置，依次类推；</p>
-<p>第三，当发现无法为一个皇后选择合适的位置后，回溯到前一个皇后，并尝试为它选择另外一个位置；</p>
-<p>第四，最终要么要尝试完所有的可能性，要么找到答案。</p>
-<h3 id="代码实现">代码实现</h3>
-<p>现在使用Python来解决一下这个问题。</p>
-<h4 id="状态表示">状态表示</h4>
-<p>可以简单地使用元组或列表来表示可能的解，其中每个元素表示相应行中皇后所在的位置（即列）。因此如果<code>state[0] = 3</code>就说明第1行的皇后放在第4列。在特定的递归层级（特定的行），你只需要知道上面各皇后的位置即可，因此状态元组的长度是小于8（即皇后的总数）。</p>
-<h4 id="检测冲突">检测冲突</h4>
-<p>先来做些简单的抽象。要找到没有冲突，即任何一个皇后都无法吃掉其他皇后的位置组合，首选必须定义冲突是什么。此时我们就可以使用一个函数<code>conflict</code>来定义一下。</p>
-<p>函数<code>conflict</code>接受现有皇后的位置，并确定下一个皇后的位置是否会导致冲突，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">conflict</span><span class="params">(state, nextX)</span>:</span></div><div class="line">    nextY = len(state)</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(nextY):</div><div class="line">        <span class="keyword">if</span> abs(state[i] - nextX) <span class="keyword">in</span> (<span class="number">0</span>, nextY - i):</div><div class="line">            <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">False</span></div></pre></td></tr></table></figure>
-<p>参数描述：</p>
-<ol style="list-style-type: decimal">
-<li><code>nextX</code>表示下一个皇后的水平位置，也就是x坐标；</li>
-<li><code>nextY</code>表示下一个皇后的垂直位置，也就是y坐标；</li>
-<li>这个函数对现有的每个皇后执行简单的检查：如果下一个皇后与当前皇后的<code>x</code>坐标相同或在同一条对角线上，将发生冲突，因此会返回<code>True</code>，如果没有发生冲突，就返回<code>False</code>；</li>
-<li><code>abs(state[i] - nextX) in (0, nextY - i)</code>表示：如果下一个皇后和当前皇后的水平距离为0，就表示他们同一列；或者是他们的垂直距离相等，这表示他们位于同一条对角线上，这个表达式就为真，否则为假。</li>
-</ol>
-<h4 id="基线条件">基线条件</h4>
-<p>基线条件：最后一个皇后，对于这个皇后，代码如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">queens</span><span class="params">(num, state)</span>:</span></div><div class="line">    <span class="keyword">if</span> len(state) == num - <span class="number">1</span>:</div><div class="line">        <span class="keyword">for</span> pos <span class="keyword">in</span> range(num):</div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> conflict(state, pos):</div><div class="line">                <span class="keyword">yield</span> pos</div></pre></td></tr></table></figure>
-<p>这段代码的意思是：</p>
-<ol style="list-style-type: decimal">
-<li>如果只剩下最后一个皇后没有放好，就遍历所有可能的位置，并返回那些不会引发冲突的位置；</li>
-<li>参数<code>num</code>是皇后总数，而参数<code>state</code>是一个元组，包含已经放好的皇后位置，例如，假设总共有4个皇后，而前3个皇后的位置分别是1、3和0，如下所示：</li>
-</ol>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190626184432.png">
-
-</div>
-<p>从上图可知，每个皇后都占据一行，而皇后的位置是从0开始编号的，<code>queens</code>函数的代码运行如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="function"><span class="keyword">def</span> <span class="title">conflict</span><span class="params">(state, nextX)</span>:</span></div><div class="line"><span class="meta">... </span>    nextY = len(state)</div><div class="line"><span class="meta">... </span>    <span class="keyword">for</span> i <span class="keyword">in</span> range(nextY):</div><div class="line"><span class="meta">... </span>        <span class="keyword">if</span> abs(state[i] - nextX) <span class="keyword">in</span> (<span class="number">0</span>, nextY - i):</div><div class="line"><span class="meta">... </span>            <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line"><span class="meta">... </span>        <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line">...</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="function"><span class="keyword">def</span> <span class="title">queens</span><span class="params">(num, state)</span>:</span></div><div class="line"><span class="meta">... </span>    <span class="keyword">if</span> len(state) == num - <span class="number">1</span>:</div><div class="line"><span class="meta">... </span>        <span class="keyword">for</span> pos <span class="keyword">in</span> range(num):</div><div class="line"><span class="meta">... </span>            <span class="keyword">if</span> <span class="keyword">not</span> conflict(state, pos):</div><div class="line"><span class="meta">... </span>                <span class="keyword">yield</span> pos</div><div class="line">...</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>list(queens(<span class="number">4</span>, (<span class="number">1</span>,<span class="number">3</span>,<span class="number">0</span>)))</div><div class="line">[<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>]</div></pre></td></tr></table></figure>
-<p>使用list旨在让生成器生成所有的值，在这个案例中，只有一个位置符合条件，就是上面白色棋子的位置。</p>
-<h4 id="递归条件">递归条件</h4>
-<p>处理好基线条件后，可在递归条件中假设来自更低层级（编号更大的皇后）的结果都是正确的，因此，只需要在函数queens的前述实现中给if语句添加一个else语句。最终我们想要的返回结果是当前行下面所有皇后的位置，假设位置是以元组的形式返回的，因此需要修改基线条件，使其返回一个（长度为1的）元组。</p>
-<p>因此，对于递归调用，向它提供的是当前行上面的皇后位置组成的元组。对于当前皇后的每个合法位置，递归调用返回的是由下面的皇后位置组成的元组。为了让这个过程不断进行下去，只需将当前皇后的位置插入返回结果的开头即可，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">queens</span><span class="params">(num=<span class="number">8</span>, state=<span class="params">()</span>)</span>:</span></div><div class="line">    <span class="keyword">if</span> len(state) == num - <span class="number">1</span>:</div><div class="line">        <span class="keyword">for</span> pos <span class="keyword">in</span> range(num):</div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> conflict(state, pos):</div><div class="line">                <span class="keyword">yield</span> pos</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">for</span> pos <span class="keyword">in</span> range(num):</div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> conflict(state, pos):</div><div class="line">                <span class="keyword">for</span> result <span class="keyword">in</span> queens(num, state + (pos, )):</div><div class="line">                    <span class="keyword">yield</span> (pos, ) + result</div></pre></td></tr></table></figure>
-<p>这里的<code>for pos</code>和前面的<code>if not conflict</code>部分与前面相同，因此哦可以稍微简化一下代码，另外还可以给参数指定默认值，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">queens</span><span class="params">(num = <span class="number">8</span>, state = <span class="params">()</span>)</span>:</span></div><div class="line">    <span class="keyword">for</span> pos <span class="keyword">in</span> range(num):</div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> conflict(state, pos):</div><div class="line">            <span class="keyword">if</span> len(state) == num - <span class="number">1</span>:</div><div class="line">                <span class="keyword">yield</span> (pos,)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                <span class="keyword">for</span> result <span class="keyword">in</span> queens(num, state + (pos, )):</div><div class="line">                    <span class="keyword">yield</span> (pos, ) + result</div></pre></td></tr></table></figure>
-<h4 id="扫尾工作">扫尾工作</h4>
-<p>在代码结束部分，可以让输出更容易理解一些，如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">prettyprint</span><span class="params">(solution)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">line</span><span class="params">(pos, length=len<span class="params">(solution)</span>)</span>:</span></div><div class="line">        <span class="keyword">return</span> <span class="string">'. '</span>*(pos) + <span class="string">'X '</span> + <span class="string">'. '</span> *(length - pos - <span class="number">1</span>)</div><div class="line">    <span class="keyword">for</span> pos <span class="keyword">in</span> solution:</div><div class="line">        print(line(pos))</div></pre></td></tr></table></figure>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>MagnusLieHetland. Python基础教程.第3版[M]. 人民邮电出版社, 2018.</li>
-</ol>
-<h2 id="参考资料-1">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="">A Guide to Python’s Magic Methods</a></li>
-<li></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4842,7 +5002,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">221</span>
+                  <span class="site-state-item-count">222</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4864,7 +5024,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">109</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -4941,7 +5101,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共880.2k字</span>
+  <span class="post-count">博客全站共882.4k字</span>
 </div>
 
         
