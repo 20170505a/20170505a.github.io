@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="批次效应," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 这一部分是《Data Analysis for the life sciences》的第10章批次效应的第3小节，这一部分的主要内容涉及批次效应(Batch Effects)的校正，有关这一部分Rmarkdown文档参见作者的Github。 因子分析 在我们介绍另一种用于批量效应校正的统计方法之前，我们先介绍这种方法的核心统计思想：因子分析(Factor Analysis)。因子分子早">
+<meta name="keywords" content="批次效应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DALS028-批次效应04-因子分析">
+<meta property="og:url" content="http://rvdsd.top/2019/08/28/DAL/DALS028_Batch_Effect04_FactorAnalysis/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言 这一部分是《Data Analysis for the life sciences》的第10章批次效应的第3小节，这一部分的主要内容涉及批次效应(Batch Effects)的校正，有关这一部分Rmarkdown文档参见作者的Github。 因子分析 在我们介绍另一种用于批量效应校正的统计方法之前，我们先介绍这种方法的核心统计思想：因子分析(Factor Analysis)。因子分子早">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917125200.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917141729.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917142426.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917142913.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143100.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143153.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143257.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143622.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917153302.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917154043.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917154225.jpeg">
+<meta property="og:updated_time" content="2019-09-17T07:42:35.403Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DALS028-批次效应04-因子分析">
+<meta name="twitter:description" content="前言 这一部分是《Data Analysis for the life sciences》的第10章批次效应的第3小节，这一部分的主要内容涉及批次效应(Batch Effects)的校正，有关这一部分Rmarkdown文档参见作者的Github。 因子分析 在我们介绍另一种用于批量效应校正的统计方法之前，我们先介绍这种方法的核心统计思想：因子分析(Factor Analysis)。因子分子早">
+<meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917125200.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/08/28/DAL/DALS028_Batch_Effect04_FactorAnalysis/"/>
+
+
+
+
+
+  <title>DALS028-批次效应04-因子分析 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/28/DAL/DALS028_Batch_Effect04_FactorAnalysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DALS028-批次效应04-因子分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-28T12:00:00+08:00">
+                2019-08-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,816
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  17
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第10章批次效应的第3小节，这一部分的主要内容涉及批次效应(Batch Effects)的校正，有关这一部分Rmarkdown文档参见作者的<a href="https://github.com/genomicsclass/labs/blob/master/batch/factor_analysis.Rmd" target="_blank" rel="external">Github</a>。</p>
+<h2 id="因子分析">因子分析</h2>
+<p>在我们介绍另一种用于批量效应校正的统计方法之前，我们先介绍这种方法的核心统计思想：因子分析(Factor Analysis)。因子分子早是在一个多世纪前出现的。卡尔·皮尔森(Karl Pearson)指出，当计算学生之间不同科目的数据时，这些不同科目之间存在着相关性。为了解释这种现象，他提出了一个模型，该模型有一个能解释这种相关性的因子，对于每个学生来说，这个因子在各个学科中都是通用的(common)，如下所示： <span class="math display">\[
+Y_ij = \alpha_i W_1 + \varepsilon_{ij}
+\]</span></p>
+<p>其中，<span class="math inline">\(Y_{ij}\)</span> 表示每个人 <span class="math inline">\(i\)</span> 的科目 <span class="math inline">\(j\)</span> 的成绩，而$_{i} $表示学生 <span class="math inline">\(i\)</span> 获得好成绩的能力。</p>
+<p>在这个案例中，<span class="math inline">\(W_{1}\)</span> 是一个常数。这里我们使用一个稍微复杂的情况来说明因子分析，这种情况就类似于批次效应。我们生成一个随机的 <span class="math inline">\(N \times 6\)</span> 矩阵 <span class="math inline">\(Y\)</span> 来表示我们的研究对象，其中6表示不同的学科来表示 <span class="math inline">\(N\)</span> 表示 <span class="math inline">\(N\)</span> 个不同小孩。我们生成数据的方式就是，那些有一定相关性的学科。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">library(MASS)</div><div class="line">library(rafalib)</div><div class="line">n &lt;- 250</div><div class="line">p &lt;- 6</div><div class="line">set.seed(1)</div><div class="line">g &lt;- mvrnorm(n,c(0,0),matrix(c(1,0.5,0.5,1),2,2))</div><div class="line">Ystem &lt;- g[,1] + matrix(rnorm(n*p/2,0,0.65),n,p/2)</div><div class="line">Yhum &lt;- g[,2] + matrix(rnorm(n*p/2,0,0.65),n,p/2)</div><div class="line">Y &lt;- cbind(Ystem,Yhum)</div><div class="line">colnames(Y) &lt;- c(&quot;Math&quot;,&quot;Science&quot;,&quot;CS&quot;,&quot;Eng&quot;,&quot;Hist&quot;,&quot;Classics&quot;)</div></pre></td></tr></table></figure>
+<h3 id="样本相关性">样本相关性</h3>
+<p>我们要注意一下，这6个学科有着高度的相关性，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">round(cor(Y),2)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; round(cor(Y),<span class="number">2</span>)</div><div class="line">         Math Science   CS  Eng Hist Classics</div><div class="line">Math     <span class="number">1.00</span>    <span class="number">0.67</span> <span class="number">0.64</span> <span class="number">0.34</span> <span class="number">0.29</span>     <span class="number">0.28</span></div><div class="line">Science  <span class="number">0.67</span>    <span class="number">1.00</span> <span class="number">0.65</span> <span class="number">0.29</span> <span class="number">0.29</span>     <span class="number">0.26</span></div><div class="line">CS       <span class="number">0.64</span>    <span class="number">0.65</span> <span class="number">1.00</span> <span class="number">0.35</span> <span class="number">0.30</span>     <span class="number">0.29</span></div><div class="line">Eng      <span class="number">0.34</span>    <span class="number">0.29</span> <span class="number">0.35</span> <span class="number">1.00</span> <span class="number">0.71</span>     <span class="number">0.72</span></div><div class="line">Hist     <span class="number">0.29</span>    <span class="number">0.29</span> <span class="number">0.30</span> <span class="number">0.71</span> <span class="number">1.00</span>     <span class="number">0.68</span></div><div class="line">Classics <span class="number">0.28</span>    <span class="number">0.26</span> <span class="number">0.29</span> <span class="number">0.72</span> <span class="number">0.68</span>     <span class="number">1.00</span></div></pre></td></tr></table></figure>
+<p>我们将使用图片来展示一下相关性，从下图我们可以发现，我们可以把学生分为STEM组与人文组（注：STEM与人文学科(humanities )其实就相当于中国的理科和文科，在这个案例中，STEM指的是科学(Science)，计算机(CS)和数学(Math)，人文学科指，古典学(Classics)，历史学(Hist)和英语语言文字(Eng)）。</p>
+<p>在下图中，高度相关性的学科用红色表示，不相关的学科用白色表示，负相关的学科用蓝色表示，代码如下所示：</p>
+<figure class="highlight plain"><figcaption><span>correlation_images,fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">library(RColorBrewer)</div><div class="line">mypar(1,2)</div><div class="line">cols=colorRampPalette(rev(brewer.pal(11,&quot;RdBu&quot;)))(100)</div><div class="line">eps = matrix(rnorm(n*p),n,p)</div><div class="line">par(mar = c(8.1, 8.1, 3.5, 2.1))</div><div class="line">image(1:ncol(Y),1:ncol(Y),cor(Y)[,6:1],xaxt=&quot;n&quot;,yaxt=&quot;n&quot;,col=cols,xlab=&quot;&quot;,ylab=&quot;&quot;,zlim=c(-1,1),main=&quot;Actual Data&quot;)</div><div class="line">axis(1,1:ncol(Y),colnames(Y),las=2)</div><div class="line">axis(2,1:ncol(Y),rev(colnames(Y)),las=2)</div><div class="line">image(1:ncol(Y),1:ncol(Y),cor(eps)[,6:1],xaxt=&quot;n&quot;,yaxt=&quot;n&quot;,col=cols,xlab=&quot;&quot;,ylab=&quot;&quot;,zlim=c(-1,1),main=&quot;Independet Data&quot;)</div><div class="line">axis(1,1:ncol(Y),colnames(Y),las=2)</div><div class="line">axis(2,1:ncol(Y),rev(colnames(Y)),las=2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917125200.jpeg">
+
+</div>
+<p>从上图中，我们可以看到以下信息：所有学科之间都有相关性，这表明学生成绩的背景有着某些隐藏因素（例如学术能力），正是这种能力导致了这些学科表现的相关性，因为在一个科目中获得高分的学生往往在其它科目也能获得高分。我们还能看到，这种相关性在STEM类学科之间更强，以及在人文学科之间更强。这就说明了，还有可能存在着另一种隐藏因素，这种因素决定了学生擅长STEM还是人文学科。现在我们使用一个统计模型来解释这种思路。</p>
+<h3 id="因子模型">因子模型</h3>
+<p>基于前面的图形展示结果，我们假设这些现象背后有2个隐藏因素 <span class="math inline">\(\mathbf{W}_1\)</span> 和 <span class="math inline">\(\mathbf{W}_2\)</span> ，我们用这两个因素来解释所观察到的相关性结构，现在我们使用下面的公式来建模： <span class="math display">\[
+Y_{ij} = \alpha_{i,1} W_{1,j} + \alpha_{i,2} W_{2,j} + \varepsilon_{ij}
+\]</span></p>
+<p>参数解释： <span class="math inline">\(\alpha_{i,1}\)</span> 表示学生 <span class="math inline">\(i\)</span> 的整体学术能力，<span class="math inline">\(\alpha_{i,2}\)</span> 表示学生 <span class="math inline">\(i\)</span> 的这种学术能力在STEM与人文学科之间的差异。现在我们的问题就是，如何估计 <span class="math inline">\(W\)</span> 和 <span class="math inline">\(\alpha\)</span> ？</p>
+<h3 id="因子分析与pca">因子分析与PCA</h3>
+<p>结果表明，在某些假设下，前两个主成分是对于 <span class="math inline">\(W_{1}\)</span> 和 <span class="math inline">\(W_{2}\)</span> 的最优估计，因此我们可以按以下方式对它们进行估计：</p>
+<p>It turns out that under certain assumptions, the first two principal components are optimal estimates for <span class="math inline">\(W_1\)</span> and <span class="math inline">\(W_2\)</span>. So we can estimate them like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">s &lt;- svd(Y)</div><div class="line">What &lt;- t(s$v[,1:2])</div><div class="line">colnames(What)&lt;-colnames(Y)</div><div class="line">round(What,2)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; round(What,<span class="number">2</span>)</div><div class="line">      Math Science    CS  Eng Hist</div><div class="line">[<span class="number">1</span>,]  <span class="number">0.36</span>    <span class="number">0.36</span>  <span class="number">0.36</span> <span class="number">0.47</span> <span class="number">0.43</span></div><div class="line">[<span class="number">2</span>,] -<span class="number">0.44</span>   -<span class="number">0.49</span> -<span class="number">0.42</span> <span class="number">0.34</span> <span class="number">0.34</span></div><div class="line">     Classics</div><div class="line">[<span class="number">1</span>,]     <span class="number">0.45</span></div><div class="line">[<span class="number">2</span>,]     <span class="number">0.39</span></div></pre></td></tr></table></figure>
+<p>正如预期，第一个因子接近于一个常数，它有助于解释所有学科之间观察到的相关性，而第二个因子能解释STEM和人文学科之间的不表现。现在我们就以下模型中使用这些估计值： <span class="math display">\[
+Y_{ij} = \alpha_{i,1} \hat{W}_{1,j} + \alpha_{i,2} \hat{W}_{2,j} + \varepsilon_{ij}
+\]</span></p>
+<p>我们现在就可以拟合模型，并注意一下，它能解释多大比例的变异：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">fit = s$u[,1:2]%*% (s$d[1:2]*What)</div><div class="line">var(as.vector(fit))/var(as.vector(Y))</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; fit = s$u[,<span class="number">1</span>:<span class="number">2</span>]%*% (s$d[<span class="number">1</span>:<span class="number">2</span>]*What)</div><div class="line">&gt; var(as.vector(fit))/var(as.vector(Y))</div><div class="line">[<span class="number">1</span>] <span class="number">0.7880933</span></div></pre></td></tr></table></figure>
+<p>我们在这里学习到的是，当我们有一些相关的单位或数据时，并不适合使用标准的线性模型。我们需要以某种试来解释观察到的结果。而因子分子则是实现这一目标的强大方法。</p>
+<h3 id="因子分析的常规用法">因子分析的常规用法</h3>
+<p>在高通量数据中，我们经常会看到相关结构。例如，我们在下图中展示了样本之间复杂的相关性。下面的这张图是按日期排序后，基因表达实验的数据展示结果：</p>
+<figure class="highlight plain"><figcaption><span>gene_expression_correlations, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">library(Biobase)</div><div class="line">library(GSE5859)</div><div class="line">data(GSE5859)</div><div class="line">n &lt;- nrow(pData(e))</div><div class="line">o &lt;- order(pData(e)$date)</div><div class="line">Y=exprs(e)[,o]</div><div class="line">cors=cor(Y-rowMeans(Y))</div><div class="line">cols=colorRampPalette(rev(brewer.pal(11,&quot;RdBu&quot;)))(100)</div><div class="line">mypar()</div><div class="line">image(1:n,1:n,cors,col=cols,xlab=&quot;samples&quot;,ylab=&quot;samples&quot;,zlim=c(-1,1))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917141729.jpeg">
+
+</div>
+<p>使用两个因子并不足以对观察到的相关结构进行建模。但是，我们可以使用一个更加普遍的因子模型：</p>
+<p><span class="math display">\[
+Y_{ij} = \sum_{k=1}^K \alpha_{i,k} W_{j,k} + \varepsilon_{ij}
+\]</span></p>
+<p>我们可以使用PCA来估计<span class="math inline">\(\mathbf{W}_1,\dots,\mathbf{W}_K\)</span>。但是，在选择 <span class="math inline">\(k\)</span> 方面并不容易，这就是我们要研究问题的核心。在下面的章节里，我们会介绍一下，如何使用探索性数据分析来辅助我们找到这个 <span class="math inline">\(k\)</span> 。</p>
+<h2 id="练习">练习</h2>
+<p>P448</p>
+<h2 id="使用因子分析来对批次效应建模">使用因子分析来对批次效应建模</h2>
+<p>继续使用前面的数据集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(GSE5859Subset)</div><div class="line">data(GSE5859Subset)</div></pre></td></tr></table></figure>
+<p>我们之前展示过一些图形，那些图形中包括了性别效应与月份效应的基因子集，但是，现在我们使用一张图片来展示样本与样本之间的相关性（所有基因），并且展示出数据的复杂结构，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>correlation_image, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">library(RColorBrewer)</div><div class="line">library(genefilter)</div><div class="line">sex &lt;- sampleInfo$group</div><div class="line">batch &lt;- factor(format(sampleInfo$date,&quot;%m&quot;))</div><div class="line">chr &lt;- geneAnnotation$CHR</div><div class="line">tt&lt;-rowttests(geneExpression,batch)</div><div class="line">ind1 &lt;- which(chr==&quot;chrY&quot;) #real differences</div><div class="line">ind2 &lt;- setdiff(c(order(tt$dm)[1:25],order(-tt$dm)[1:25]),ind1)</div><div class="line">set.seed(1)</div><div class="line">ind0 &lt;- setdiff(sample(seq(along=tt$dm),50),c(ind2,ind1))</div><div class="line">geneindex&lt;-c(ind2,ind0,ind1)</div><div class="line">mat&lt;-geneExpression[geneindex,]</div><div class="line">mat &lt;- mat -rowMeans(mat)</div><div class="line">icolors &lt;- colorRampPalette(rev(brewer.pal(11,&quot;RdYlBu&quot;)))(100)</div><div class="line">mypar(1,2)</div><div class="line">image(t(mat),xaxt=&quot;n&quot;,yaxt=&quot;n&quot;,col=icolors)</div><div class="line">y &lt;- geneExpression - rowMeans(geneExpression)</div><div class="line">image(1:ncol(y),1:ncol(y),cor(y),col=icolors,zlim=c(-1,1),</div><div class="line">       xaxt=&quot;n&quot;,xlab=&quot;&quot;,yaxt=&quot;n&quot;,ylab=&quot;&quot;)</div><div class="line">axis(2,1:ncol(y),sex,las=2)</div><div class="line">axis(1,1:ncol(y),sex,las=2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917142426.jpeg">
+
+</div>
+<p>我们已经看到了即假设月份能够解释批次效应效应，并且使用线性模型对批次效应进行校正后的方法，这种方法表现很好。但是，这种方法仍然有改进的空间。这有可能是由于月份仅仅是背后一些隐藏因子的外面表现，或者是说是一些实际上导致结构或样本相关性的因子。</p>
+<h3 id="什么是一个批次">什么是一个批次</h3>
+<p>现在我画出每个样本的日期图，其中颜色表示月份，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>what_is_batch, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">times &lt;-sampleInfo$date </div><div class="line">mypar(1,1)</div><div class="line">o=order(times)</div><div class="line">plot(times[o],pch=21,bg=as.numeric(batch)[o],ylab=&quot;Date&quot;)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917142913.jpeg">
+
+</div>
+<p>我们注意到，每个月不止有一天。天这个时间单位也会产生影响吗？我们可以使用PCA和EDA来尝试回答一下这个问题。以下是按日期排序后的第一个主成分图：</p>
+<figure class="highlight plain"><figcaption><span>PC1_versus_time, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">s &lt;- svd(y)</div><div class="line">mypar(1,1)</div><div class="line">o&lt;-order(times)</div><div class="line">cols &lt;- as.numeric( batch)</div><div class="line">plot(s$v[o,1],pch=21,cex=1.25,bg=cols[o],ylab=&quot;First PC&quot;,xlab=&quot;Date order&quot;)</div><div class="line">legend(&quot;topleft&quot;,c(&quot;Month 1&quot;,&quot;Month 2&quot;),col=1:2,pch=16,box.lwd=0)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143100.jpeg">
+
+</div>
+<p>“天”似乎与第1主成分高度相关，它可以在很大程度上解释变异：</p>
+<figure class="highlight plain"><figcaption><span>variance_explained, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mypar(1,1)</div><div class="line">plot(s$d^2/sum(s$d^2),ylab=&quot;% variance explained&quot;,xlab=&quot;Principal component&quot;)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143153.jpeg">
+
+</div>
+<p>进一步的研究显示，前6个左右的主成分(PC)似乎都是由日期驱动的：</p>
+<figure class="highlight plain"><figcaption><span>PCs_stratified_by_time, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mypar(3,4)</div><div class="line">for(i in 1:12)&#123;</div><div class="line">  days &lt;- gsub(&quot;2005-&quot;,&quot;&quot;,times)  </div><div class="line">  boxplot(split(s$v[,i],gsub(&quot;2005-&quot;,&quot;&quot;,days)))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143257.jpeg">
+
+</div>
+<p>如果我们从数据中将前6个主成分移除后，我们使用t检验来看一下结果是什么样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">D &lt;- s$d; D[1:4]&lt;-0 #take out first 2</div><div class="line">cleandat &lt;- sweep(s$u,2,D,&quot;*&quot;)%*%t(s$v)</div><div class="line">res &lt;-rowttests(cleandat,factor(sex))</div></pre></td></tr></table></figure>
+<p>事实上，这确实消除了批次效应，但是这似乎也消除了我们感兴趣的大部分生物学效应。事实上，没有基因的Q值再小于0.1了，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>pval_hist_and_volcano_after_removing_PCs, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">library(qvalue)</div><div class="line">mypar(1,2)</div><div class="line">hist(res$p.value[which(!chr%in%c(&quot;chrX&quot;,&quot;chrY&quot;) )],main=&quot;&quot;,ylim=c(0,1300))</div><div class="line">plot(res$dm,-log10(res$p.value))</div><div class="line">points(res$dm[which(chr==&quot;chrX&quot;)],-log10(res$p.value[which(chr==&quot;chrX&quot;)]),col=1,pch=16)</div><div class="line">points(res$dm[which(chr==&quot;chrY&quot;)],-log10(res$p.value[which(chr==&quot;chrY&quot;)]),col=2,pch=16,</div><div class="line">       xlab=&quot;Effect size&quot;,ylab=&quot;-log10(p-value)&quot;)</div><div class="line">legend(&quot;bottomright&quot;,c(&quot;chrX&quot;,&quot;chrY&quot;),col=1:2,pch=16)</div><div class="line">qvals &lt;- qvalue(res$p.value)$qvalue</div><div class="line">index &lt;- which(qvals&lt;0.1)</div><div class="line">cat(&quot;Total genes with q-value &lt; 0.1: &quot;,length(index),&quot;\n&quot;,</div><div class="line">    &quot;Number of selected genes on chrY: &quot;, sum(chr[index]==&quot;chrY&quot;,na.rm=TRUE),&quot;\n&quot;,</div><div class="line">    &quot;Number of selected genes on chrX: &quot;, sum(chr[index]==&quot;chrX&quot;,na.rm=TRUE),sep=&quot;&quot;)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917143622.jpeg">
+
+</div>
+<p>这种情况似乎就是过度校正了，因为我们现在恢复了更少的Y染色体基因，并且p值的直方图中小p值的数目更小了，使得分布变得不再均匀。因此性别因素可能与前几个主成分(PC)有关，这就出现了”把婴儿和洗澡水一起倒掉“的情况。</p>
+<h3 id="sva">SVA</h3>
+<p>前面我们刚提到了我们所遇到的问题，即我们遇到了过度校正，以及消除了与感兴趣结果相关的变异，解决这个问题的方法就是同时使用感兴趣变量的协变量以及那些被认为是批次的模型共同进行拟合。代理变量分析(SVA, Surrogate Variable Analysis)就是这样的一种方法。</p>
+<p>SVA的基本思想就是先估计因子，但要注意不要包括感兴趣的结果。为此，SVA使用了一种交互式方法，其中的每一行都赋予一个权重，这个权重能够量化基因与替代变量（而不是感兴趣结果）唯一相关的概率。然后在SVD中使用这些权重，将更高的权重赋予给感兴趣的结果无关，且与批次有关的行。下面是这两次迭代的计算过程。三个图片显示的是，数据乘以权重（对于基因的子集）、权重，以及估计的第一因子，代码如下所示：</p>
+<figure class="highlight plain"><figcaption><span>illustration_of_sva,fig.height</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">library(sva)</div><div class="line">library(limma)</div><div class="line">mod &lt;- model.matrix(~sex)</div><div class="line">cind &lt;- order( as.Date(sampleInfo$date) )</div><div class="line">dates &lt;- gsub(&quot;2005-&quot;,&quot;&quot;,sampleInfo$date)</div><div class="line">weights=rep(1,nrow(y))</div><div class="line">par(mar = c(4.1, 2.1, 3.5, 2.1), </div><div class="line">    mgp = c(1.5, 0.5, 0))</div><div class="line">layout(matrix(c(1:6),nrow=2,byrow=TRUE),widths=c(5,1.5,5))</div><div class="line">for(b in 1:2)&#123;</div><div class="line">  image(1:ncol(mat),1:nrow(mat),t(mat[,cind]*weights[geneindex]),xaxt=&quot;n&quot;,yaxt=&quot;n&quot;,col=icolors,xlab=&quot;&quot;,ylab=&quot;&quot;)</div><div class="line">  axis(side=1,seq(along=dates),dates[cind],las=2)</div><div class="line">  abline(v=12.5)</div><div class="line">  </div><div class="line">  svafit &lt;- sva(y,mod,B=b,n.sv=5)</div><div class="line">  weights = svafit$pprob.gam*(1-svafit$pprob.b)</div><div class="line">  </div><div class="line">  surrogate &lt;- svd( y*weights)$v[,1]#Weighted SVD</div><div class="line">  </div><div class="line">  image(matrix(weights[geneindex],nrow=1),xaxt=&quot;n&quot;,yaxt=&quot;n&quot;,col=brewer.pal(9,&quot;Blues&quot;))</div><div class="line">  plot(surrogate[cind],bg=sex[cind]+1,pch=21,xlab=&quot;&quot;,xaxt=&quot;n&quot;,ylab=&quot;Surrogate variable&quot;,ylim=c(-.5,.5),cex=1.5)</div><div class="line">  axis(side=1,seq(along=dates),dates[cind],las=2)</div><div class="line">  abline(v=12.5)</div><div class="line">  text(1,0.5,&quot;June&quot;)</div><div class="line">  text(13.5,0.5,&quot;Oct&quot;)</div><div class="line">  legend(&quot;bottomright&quot;,c(&quot;0&quot;,&quot;1&quot;),col=c(1,2),pch=16)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917153302.jpeg">
+
+</div>
+<p>这个算法会多次迭代这个过程（由<code>B</code>参数控制），并返回替代变量的估计值，这就类似于因子分子中的隐藏因子。在R中，我们使用<code>sva()</code>函数来实现这个过程。在这个案例里，SVA会为我们选择代理值或因子的数量，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">library(limma)</div><div class="line">svafit &lt;- sva(geneExpression,mod)</div><div class="line">svaX&lt;-model.matrix(~sex+svafit$sv)</div><div class="line">lmfit &lt;- lmFit(geneExpression,svaX)</div><div class="line">tt&lt;- lmfit$coef[,2]*sqrt(lmfit$df.residual)/(2*lmfit$sigma)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; svafit &lt;- sva(geneExpression,mod)</div><div class="line">Number of significant surrogate variables is:  <span class="number">5</span> </div><div class="line">Iteration (out of <span class="number">5</span> ):<span class="number">1</span>  <span class="number">2</span>  <span class="number">3</span>  <span class="number">4</span>  <span class="number">5</span></div></pre></td></tr></table></figure>
+<p>与之前的方法相比，这种方法有了提升：</p>
+<figure class="highlight plain"><figcaption><span>pval_hist_and_volcano_sva, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">res &lt;- data.frame(dm= -lmfit$coef[,2],</div><div class="line">                  p.value=2*(1-pt(abs(tt),lmfit$df.residual[1]) ) )</div><div class="line">mypar(1,2)</div><div class="line">hist(res$p.value[which(!chr%in%c(&quot;chrX&quot;,&quot;chrY&quot;) )],main=&quot;&quot;,ylim=c(0,1300))</div><div class="line">plot(res$dm,-log10(res$p.value))</div><div class="line">points(res$dm[which(chr==&quot;chrX&quot;)],-log10(res$p.value[which(chr==&quot;chrX&quot;)]),col=1,pch=16)</div><div class="line">points(res$dm[which(chr==&quot;chrY&quot;)],-log10(res$p.value[which(chr==&quot;chrY&quot;)]),col=2,pch=16,</div><div class="line">       xlab=&quot;Effect size&quot;,ylab=&quot;-log10(p-value)&quot;)</div><div class="line">legend(&quot;bottomright&quot;,c(&quot;chrX&quot;,&quot;chrY&quot;),col=1:2,pch=16)</div><div class="line">qvals &lt;- qvalue(res$p.value)$qvalue</div><div class="line">index &lt;- which(qvals&lt;0.1)</div><div class="line">cat(&quot;Total genes with q-value &lt; 0.1: &quot;,length(index),&quot;\n&quot;,</div><div class="line">    &quot;Number of selected genes on chrY: &quot;, sum(chr[index]==&quot;chrY&quot;,na.rm=TRUE),&quot;\n&quot;,</div><div class="line">    &quot;Number of selected genes on chrX: &quot;, sum(chr[index]==&quot;chrX&quot;,na.rm=TRUE),sep=&quot;&quot;)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; cat(<span class="string">"Total genes with q-value &lt; 0.1: "</span>,length(index),<span class="string">"\n"</span>,</div><div class="line">+     <span class="string">"Number of selected genes on chrY: "</span>, sum(chr[index]==<span class="string">"chrY"</span>,na.rm=<span class="literal">TRUE</span>),<span class="string">"\n"</span>,</div><div class="line">+     <span class="string">"Number of selected genes on chrX: "</span>, sum(chr[index]==<span class="string">"chrX"</span>,na.rm=<span class="literal">TRUE</span>),sep=<span class="string">""</span>)</div><div class="line">Total genes with q-value &lt; <span class="number">0.1</span>: <span class="number">14</span></div><div class="line">Number of selected genes on chrY: <span class="number">5</span></div><div class="line">Number of selected genes on chrX: <span class="number">8</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917154043.jpeg">
+
+</div>
+<p>现在我们通过图形来展示SVA实现了什么，下面是原始数据集分解为性别效应，代理变量和独立噪声的</p>
+<p>为了可视化SVA实现了什么，下面是原始数据集通过算法分解为性别效果、代理变量和算法估计的独立噪声的可视化结果：</p>
+<figure class="highlight plain"><figcaption><span>different_sources_of_var, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Batch&lt;- lmfit$coef[geneindex,3:7]%*%t(svaX[,3:7])</div><div class="line">Signal&lt;-lmfit$coef[geneindex,1:2]%*%t(svaX[,1:2])</div><div class="line">error &lt;- geneExpression[geneindex,]-Signal-Batch</div><div class="line">##demean for plot</div><div class="line">Signal &lt;-Signal-rowMeans(Signal)</div><div class="line">mat &lt;- geneExpression[geneindex,]-rowMeans(geneExpression[geneindex,])</div><div class="line">mypar(1,4,mar = c(2.75, 4.5, 2.6, 1.1))</div><div class="line">image(t(mat),col=icolors,zlim=c(-5,5),xaxt=&quot;n&quot;,yaxt=&quot;n&quot;)</div><div class="line">image(t(Signal),col=icolors,zlim=c(-5,5),xaxt=&quot;n&quot;,yaxt=&quot;n&quot;)</div><div class="line">image(t(Batch),col=icolors,zlim=c(-5,5),xaxt=&quot;n&quot;,yaxt=&quot;n&quot;)</div><div class="line">image(t(error),col=icolors,zlim=c(-5,5),xaxt=&quot;n&quot;,yaxt=&quot;n&quot;)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190917154225.jpeg">
+
+</div>
+<h2 id="练习-1">练习</h2>
+<p>P459</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/批次效应/" <i class="fa fa-tag"></i> 批次效应</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/27/DAL/DALS027_Batch_Effect03_AdjustBatchEffect/" rel="next" title="DALS027-批次效应03-校正批次效应">
+                <i class="fa fa-chevron-left"></i> DALS027-批次效应03-校正批次效应
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/07/Experiment/HIPC介绍/" rel="prev" title="HIPC介绍">
+                HIPC介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">223</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">109</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#因子分析"><span class="nav-number">2.</span> <span class="nav-text">因子分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#样本相关性"><span class="nav-number">2.1.</span> <span class="nav-text">样本相关性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#因子模型"><span class="nav-number">2.2.</span> <span class="nav-text">因子模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#因子分析与pca"><span class="nav-number">2.3.</span> <span class="nav-text">因子分析与PCA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#因子分析的常规用法"><span class="nav-number">2.4.</span> <span class="nav-text">因子分析的常规用法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习"><span class="nav-number">3.</span> <span class="nav-text">练习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用因子分析来对批次效应建模"><span class="nav-number">4.</span> <span class="nav-text">使用因子分析来对批次效应建模</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是一个批次"><span class="nav-number">4.1.</span> <span class="nav-text">什么是一个批次</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sva"><span class="nav-number">4.2.</span> <span class="nav-text">SVA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习-1"><span class="nav-number">5.</span> <span class="nav-text">练习</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共889.1k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
