@@ -1843,6 +1843,269 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\varepsilon, i=1, \ldots, n
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
+                2019-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,211
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
+<h2 id="随机数">随机数</h2>
+<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种理念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
+<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
+<h2 id="什么是monte-carl模拟">什么是Monte Carl模拟</h2>
+<p>Monte Carl中文译为<code>蒙特卡罗</code>，蒙特卡罗是一种统计学方法，它使用大量的模拟数据来逼近真相，我也不太好解释，我们通过几个例子来说明一下，这一部分书本上没有，而是参考了<a href="https://www.countbayesie.com/all-posts" target="_blank" rel="external">Count Bayesie</a>的博客，里面有不少介绍统计学的知识。</p>
+<h3 id="案例之一积分">案例之一：积分</h3>
+<p>现在我们使用了一个均值为1，标准差为10的标准正态分布来讲解，下面这张图就是这个正态分布，蓝色部分是3到6构成的面积（其实就是积分），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920124923.png">
+
+</div>
+<p>此时，如果我们学了微积分，就知道很容易计算出这个面积，但是，在这个案例中，我们使用Monte Carlo模拟来计算这个面积，于是，我们就能简单地使用R来写几行代码，从这个分布中采样10万次，看看有多少个值介于3到6之间，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line">sims &lt;- rnorm(runs,mean=<span class="number">1</span>,sd=<span class="number">10</span>)</div><div class="line">mc.integral &lt;- sum(sims &gt;= <span class="number">3</span> &amp; sims &lt;= <span class="number">6</span>)/runs</div><div class="line">mc.integral</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.integral</div><div class="line">[<span class="number">1</span>] <span class="number">0.11288</span></div></pre></td></tr></table></figure>
+<p>现在我们直接使用R中的累积分布函数<code>pnorm()</code>来计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.1122028</span></div></pre></td></tr></table></figure>
+<p>从这两次的计算结果来看，Monte Carlo模拟出来的结果与我们实际计算的结果非常接近，可以说是完全相等了。</p>
+<h3 id="案例之二估计二项分布">案例之二：估计二项分布</h3>
+<p>我们再来看一个案例，我们来抛一个硬币，抛10次，现在我们想知道，至少有3次正面朝上概论，这其实就是一个二项分布的问题，用传统的二项分布很容易计算。但是，这里我们假设我们不知道二项分布，我们就用Monte Carlo模拟来计算一下。现在我们使用0表示反面，1表示下面，然后模拟10次抛硬币的情况，我们模拟10万次，来看一下结果如何：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"></div><div class="line">one.trial &lt;- <span class="keyword">function</span>()&#123;</div><div class="line">  sum(sample(c(<span class="number">0</span>,<span class="number">1</span>),<span class="number">10</span>,replace=<span class="literal">T</span>)) &gt; <span class="number">3</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">mc.binom &lt;- sum(replicate(runs,one.trial()))/runs</div><div class="line">mc.binom</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.binom</div><div class="line">[<span class="number">1</span>] <span class="number">0.82844</span></div></pre></td></tr></table></figure>
+<p>现在我们使用R中的<code>pbinom()</code>函数直接计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.828125</span></div></pre></td></tr></table></figure>
+<p>前后计算出来的结果差不多。</p>
+<h3 id="案例之三计算周率">案例之三：计算周率</h3>
+<p>我们知道，圆的面积是<span class="math inline">\(A=\pi r^2\)</span>，现在我们通过Monte Carlo模拟来计算一下 <span class="math inline">\(\pi\)</span> 值。如果我们绘制了一个正方形，这个正方形的边长为<span class="math inline">\(2r\)</span>，那么此时这个正方形的面积为 <span class="math inline">\(A=4r^2\)</span> ，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920130405.png">
+
+</div>
+<p>此时，我们如何得到 $$ 呢？我们知道，上面这个圆的面积与正方形的面积之比就是<span class="math inline">\(\pi /4\)</span> 。那么我们就可以通过一定的计算来获知这个比值的近似值，然后乘以4就得到了 <span class="math inline">\(\pi\)</span> 的近似值。接着我们就来做一下这个近似计算。</p>
+<p>现在，我们假设上面的这个图形在一个坐标系中，圆心就是圆点 <span class="math inline">\((0,0)\)</span> 。我们以圆心为中心，随机抽一个点，这个点的坐标是 <span class="math inline">\((x,y)\)</span> ，圆的半径为 <span class="math inline">\(r\)</span> ，随机样本一个点后，如果 <span class="math inline">\(x^2+y^2 \leq r^2\)</span> ，那么这个点就在圆内，否则就在圆外，然后我们做10万次这样的抽取，我们计算出圆内点的数目与总的点的数目之比，然后再乘以4，就得到了 <span class="math inline">\(\pi\)</span> 的近似值，计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"><span class="comment">#runif samples from a uniform distribution</span></div><div class="line">xs &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">ys &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">in.circle &lt;- xs^<span class="number">2</span> + ys^<span class="number">2</span> &lt;= <span class="number">0.5</span>^<span class="number">2</span></div><div class="line">mc.pi &lt;- (sum(in.circle)/runs)*<span class="number">4</span></div><div class="line">mc.pi</div><div class="line">plot(xs,ys,pch=<span class="string">'.'</span>,col=ifelse(in.circle,<span class="string">"blue"</span>,<span class="string">"grey"</span>)</div><div class="line">     ,xlab=<span class="string">''</span>,ylab=<span class="string">''</span>,asp=<span class="number">1</span>,</div><div class="line">     main=paste(<span class="string">"MC Approximation of Pi ="</span>,mc.pi))</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.pi</div><div class="line">[<span class="number">1</span>] <span class="number">3.14124</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920131517.jpeg">
+
+</div>
+<p>从计算结果来看，我们得到的 <span class="math inline">\(\pi\)</span> 近似为3.14124，还是比较接近的。</p>
+<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
+<p>现在我们再回到原书，我们使用Monte Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
+<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
+
+</div>
+<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
+
+</div>
+<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
+
+</div>
+<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
+
+</div>
+<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
+
+</div>
+<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
+<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
+<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
+<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="练习">练习</h2>
+<p>P88</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/Literature/文献笔记-RNA sequencing the teenage years/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2327,269 +2590,6 @@ Y_{i}=\beta_{0}+\beta_{1} x_{i}+\beta_{2} x_{i}^{2}+\varepsilon, i=1, \ldots, n
 <p>一些RRI以及所有的RNA-蛋白质结合方法对IP的依赖限制了其对有良好特征抗体蛋白质的研究，而非特异抗体的结合仍然是一个问题（虽然这一问题并非局限于这个领域）。RNA结构也会影响RNA-蛋白质之间的相互作用；一些蛋白质能识别特异的RNA二级结构或与这些结构竞争结合RNA，这使得体外的发现转向体内就变得复杂了。此外，结构和RNA-蛋白质相互作用方法通常报告一个特定转录本或位置的平均值。在实验室方法中，在计算方法和单分子测序方面的未来发展或许有助于破译一些这些生物变异。</p>
 <h2 id="结论">结论</h2>
 <p>Wang，Gerstein和Snyder关于RNA-seq将“革命性地[如何]分析真核转录体”的预测肯定是正确的。但是，即使是他们，也有可能对这种转型的规模感到惊讶。现在我们可以分析RNA生物学的许多方面，这对于基因组功能、研究开发和确定导致癌症和其他疾病的分子调控异常方面来说是必不可少的。虽然生物学发现阶段还远未结束，但是已经在临床中使用了RNA-seq方法。单细胞测序正在成为许多实验的标准配置，空间转录组学的分析可能会遵循类似的路径，使其能够在与开发当前方法的实验室范围之外使用。长读长测序方法也有可能取代当前相当大比例的研究者们默认选择的Illumina的短读长RNA-seq。对于这种情况的出现，长读长测序技术还需要在增加通量和降低错误率方面做出极大的改进。 然而，长读长mRNA异构体测序的优点是，如果它变得像现在短读长测序一样便宜和可靠，那么对于那些除了易降解材料外，长读长测序就可能是首选。考虑到这些因素，那么任何关于RNA-seq在未来十年可能如何发展的预测都有可能过于保守。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
-                2019-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
-                    <span itemprop="name">Data Analysis for the life sciences</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,211
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  9
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
-<h2 id="随机数">随机数</h2>
-<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种理念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
-<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
-<h2 id="什么是monte-carl模拟">什么是Monte Carl模拟</h2>
-<p>Monte Carl中文译为<code>蒙特卡罗</code>，蒙特卡罗是一种统计学方法，它使用大量的模拟数据来逼近真相，我也不太好解释，我们通过几个例子来说明一下，这一部分书本上没有，而是参考了<a href="https://www.countbayesie.com/all-posts" target="_blank" rel="external">Count Bayesie</a>的博客，里面有不少介绍统计学的知识。</p>
-<h3 id="案例之一积分">案例之一：积分</h3>
-<p>现在我们使用了一个均值为1，标准差为10的标准正态分布来讲解，下面这张图就是这个正态分布，蓝色部分是3到6构成的面积（其实就是积分），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920124923.png">
-
-</div>
-<p>此时，如果我们学了微积分，就知道很容易计算出这个面积，但是，在这个案例中，我们使用Monte Carlo模拟来计算这个面积，于是，我们就能简单地使用R来写几行代码，从这个分布中采样10万次，看看有多少个值介于3到6之间，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line">sims &lt;- rnorm(runs,mean=<span class="number">1</span>,sd=<span class="number">10</span>)</div><div class="line">mc.integral &lt;- sum(sims &gt;= <span class="number">3</span> &amp; sims &lt;= <span class="number">6</span>)/runs</div><div class="line">mc.integral</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.integral</div><div class="line">[<span class="number">1</span>] <span class="number">0.11288</span></div></pre></td></tr></table></figure>
-<p>现在我们直接使用R中的累积分布函数<code>pnorm()</code>来计算一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.1122028</span></div></pre></td></tr></table></figure>
-<p>从这两次的计算结果来看，Monte Carlo模拟出来的结果与我们实际计算的结果非常接近，可以说是完全相等了。</p>
-<h3 id="案例之二估计二项分布">案例之二：估计二项分布</h3>
-<p>我们再来看一个案例，我们来抛一个硬币，抛10次，现在我们想知道，至少有3次正面朝上概论，这其实就是一个二项分布的问题，用传统的二项分布很容易计算。但是，这里我们假设我们不知道二项分布，我们就用Monte Carlo模拟来计算一下。现在我们使用0表示反面，1表示下面，然后模拟10次抛硬币的情况，我们模拟10万次，来看一下结果如何：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"></div><div class="line">one.trial &lt;- <span class="keyword">function</span>()&#123;</div><div class="line">  sum(sample(c(<span class="number">0</span>,<span class="number">1</span>),<span class="number">10</span>,replace=<span class="literal">T</span>)) &gt; <span class="number">3</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">mc.binom &lt;- sum(replicate(runs,one.trial()))/runs</div><div class="line">mc.binom</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.binom</div><div class="line">[<span class="number">1</span>] <span class="number">0.82844</span></div></pre></td></tr></table></figure>
-<p>现在我们使用R中的<code>pbinom()</code>函数直接计算一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.828125</span></div></pre></td></tr></table></figure>
-<p>前后计算出来的结果差不多。</p>
-<h3 id="案例之三计算周率">案例之三：计算周率</h3>
-<p>我们知道，圆的面积是<span class="math inline">\(A=\pi r^2\)</span>，现在我们通过Monte Carlo模拟来计算一下 <span class="math inline">\(\pi\)</span> 值。如果我们绘制了一个正方形，这个正方形的边长为<span class="math inline">\(2r\)</span>，那么此时这个正方形的面积为 <span class="math inline">\(A=4r^2\)</span> ，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920130405.png">
-
-</div>
-<p>此时，我们如何得到 $$ 呢？我们知道，上面这个圆的面积与正方形的面积之比就是<span class="math inline">\(\pi /4\)</span> 。那么我们就可以通过一定的计算来获知这个比值的近似值，然后乘以4就得到了 <span class="math inline">\(\pi\)</span> 的近似值。接着我们就来做一下这个近似计算。</p>
-<p>现在，我们假设上面的这个图形在一个坐标系中，圆心就是圆点 <span class="math inline">\((0,0)\)</span> 。我们以圆心为中心，随机抽一个点，这个点的坐标是 <span class="math inline">\((x,y)\)</span> ，圆的半径为 <span class="math inline">\(r\)</span> ，随机样本一个点后，如果 <span class="math inline">\(x^2+y^2 \leq r^2\)</span> ，那么这个点就在圆内，否则就在圆外，然后我们做10万次这样的抽取，我们计算出圆内点的数目与总的点的数目之比，然后再乘以4，就得到了 <span class="math inline">\(\pi\)</span> 的近似值，计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"><span class="comment">#runif samples from a uniform distribution</span></div><div class="line">xs &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">ys &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">in.circle &lt;- xs^<span class="number">2</span> + ys^<span class="number">2</span> &lt;= <span class="number">0.5</span>^<span class="number">2</span></div><div class="line">mc.pi &lt;- (sum(in.circle)/runs)*<span class="number">4</span></div><div class="line">mc.pi</div><div class="line">plot(xs,ys,pch=<span class="string">'.'</span>,col=ifelse(in.circle,<span class="string">"blue"</span>,<span class="string">"grey"</span>)</div><div class="line">     ,xlab=<span class="string">''</span>,ylab=<span class="string">''</span>,asp=<span class="number">1</span>,</div><div class="line">     main=paste(<span class="string">"MC Approximation of Pi ="</span>,mc.pi))</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.pi</div><div class="line">[<span class="number">1</span>] <span class="number">3.14124</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920131517.jpeg">
-
-</div>
-<p>从计算结果来看，我们得到的 <span class="math inline">\(\pi\)</span> 近似为3.14124，还是比较接近的。</p>
-<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
-<p>现在我们再回到原书，我们使用Monte Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
-<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
-
-</div>
-<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
-
-</div>
-<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
-
-</div>
-<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
-
-</div>
-<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
-
-</div>
-<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
-<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
-<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
-<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="练习">练习</h2>
-<p>P88</p>
 
           
         
