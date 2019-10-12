@@ -259,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/30/BioTools/NormqPCR笔记/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/10/01/BioTools/NormqPCR笔记对应文献之一/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -278,7 +278,305 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/09/30/BioTools/NormqPCR笔记/" itemprop="url">NormqPCR包笔记</a></h1>
+                <a class="post-title-link" href="/2019/10/01/BioTools/NormqPCR笔记对应文献之一/" itemprop="url">NormqPCR笔记对应文献之一</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-01T12:00:00+08:00">
+                2019-10-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5,653
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  20
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Vandesompele, J., et al. (2002). &quot;Accurate normalization of real-time quantitative RT-PCR data by geometric averaging of multiple internal control genes.&quot; Genome Biology 3(7): research0034.0031.</div></pre></td></tr></table></figure>
+<p>此篇文献引用量很高（到2019年10月为止，引用量约为16000），虽然文献比较古老，但是了解一下文献中的思想还是比较有用的，以下是文献的阅读笔记（基本上就是翻译原文外加自己检索）。</p>
+<p>文献中涉及一定的线性代数知识，我不太懂，只能先暂时先记录下来，等看懂的时候再补充一篇笔记。</p>
+<h2 id="研究背景">研究背景</h2>
+<p>​ 在生物学研究中，基因表达的分析有着重要的作用。对于基因表达模式的理解可以为复杂的调控网络研究提供思路。最近开发的两种检测转录本丰度的方法得到了非常广泛的应用（该文章是2002年写的，这里的最近已经是非常久远了）。微阵列的方法（微阵列其实就是芯片法）可以同时检测数以千计的基因表达情况，而RT-PCR的方法则是用于检测许多不同的样本中数量有限基因的表达情况（在细胞数量比较少的情况下用这种方法更好，说服力更强）。与传统的方法例如northern-blot，核糖核酸酶保护，或者是竞争RT-PCR（competitive rt-PCR）相比，这两种方法（微阵列与RT-qPCR）都有快速，高通量的优点。但是这两种方法都需要与传统方法一样，需要对目的mRNA进行均一化（normalization）。</p>
+<p>以下是补充一些与核酸保护实验相关的背景知识。</p>
+<h3 id="核酸酶保护实验">核酸酶保护实验</h3>
+<p>​ 糖核酸酶保护实验（Ribonuclease protection assay，RPA）是一种mRNA定量分析方法。其基本原理是将标记的特异RNA探针（32P或生物素）与待测的RNA样品液相杂交，标记的特异RNA探针按碱基互补的原则与目的基因特异性结合，形成双链RNA；未结合的单链RNA经RNA酶A或RNA酶T1消化形成寡核糖核酸，而待测目的基因与特异RNA探针结合后形成双链RNA，免受RNA酶的消化，故该方法命名为RNA酶保护实验。</p>
+<p>​ 对于32P标记的探针，杂交双链进行变性聚丙酰胺凝胶电泳，用放射自显影或磷屏成像系统检测被保护的探针的信号; 对于生物素标记的探针，杂交双链经过变性聚丙酰胺凝胶电泳后电转移至尼龙膜，采用链霉亲和素－辣根过氧化物酶（Streptavidin-HRP）和化学发光底物与膜上biotin标记的探针结合，X射线胶片或化学发光图像分析仪检测杂交信号。</p>
+<p>​ 在利用RT-PCR对基因进行定量时，为了缩小误差，我们需要对一些因素进行控制，例如原始样品的数量（细胞或者是组织），酶的效率，组织或细胞的整个转录活动差异等因素。在控制条件的理想情况下，提取的高质量RNA的转录本数量的可重复结果与细胞数量是呈正比的，但是精确的细胞数目很难进行定量（尤其是当原始材料是组织时更是如此）。</p>
+<p>​ 另外一种常用的定量手段就是RNA的量（这里指的是数量，原文写的是mass quantity），尤其是northern blot分析方法。但是这种方法也存在着一些争议。因为这种方法没有考虑到RNA的质量（这里侧重的是RNA的完整性，原文写的是quality）与相关酶的反应效率。此外，在某些情况下，这些因素也无法定量，例如从提取的微切割的组织（microdissected tissue）中得到的RNA数量极少，这个时候就无法对RNA进行定量。</p>
+<p>​ 其中最大的争议还在于，用于均一化时所考虑的总RNA量，因为总的RNA主要是由rRNA组成的，它并不代表mRNA。这里大概介绍一下使用总RNA量来作为RNA质控的方法。</p>
+<p>​ 当我们提取了RNA后，在进行质控时，通常是使用1%的琼脂糖凝胶电泳来跑200ng到400ng的总RNA，然后观察RNA的条带。良好的RNA（这里指的是动物组织或细胞的样本）中可以看到3个条带，从上到下依次是28S、18S、5S（这是核糖体RNA的主要成分），其中28S条带与18S条带非常清楚，5S条件非常弱，28S和18S比值可以判断RNA样本的完整性，通常这个比值是1.5（肉眼不太好判断，通常来说就是28S比18S亮就行了），如果这两个条带变弱，5S条件变亮，则说明RNA降解，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012111600.png">
+
+</div>
+<p>​ 不过电泳法是比较粗糙的方法，毕竟这篇文献是2002年的，现在如果要进行测序建库，要求就比较高，会采用Qubit检测RNA的浓度，用安捷伦2100来检测RNA的完整性，具体的检测指标可以检索相关资料。</p>
+<p>但是在总的RNA中，mRNA的含量仅占7.5%。此外，还有报告指出，rRNA的转录还受到生物因素与药物的影响。利用18S或28S作为RNA定量的标准缺陷还在于，在纯的mRNA分子中，并不含有18S或28S，与靶mRNA转录本相比，18S或28S的含量太高。在利用RT-PCR进行分析时，很难排除基线(baseline)。</p>
+<p>现在补充一些竞争性PCR的背景知识。</p>
+<h3 id="竞争性pcr">竞争性PCR</h3>
+<p>​ 在竞争性PCR中，逆转录之前加入一个外源的RNA转录本（内部标准RNA）作为样品间差异的对照。内部标准RNA被逆转录并同目的模板一起扩增，作为cDNA转化和扩增效率差异的对照。通过将特异性的目的序列同已知浓度的内部标准RNA一起扩增进行定量。通过比较由内部标准获得的信号和目的模板所获得的信号可以确定目的模板的丰度。</p>
+<p>​ 到目前为止（也是2018年为止），内参基因是最常用的对mRNA进行均一化的方法。内参基因（internal control）通常指的是管家基因（housekeeping gene），这类基因并不会随着组织或细胞的不同而变化， 或者是不会随着实验条件而变化。但是在许多的研究里，研究者使用的这些持续表达的内参基因中，并没有对这些基因的稳定表达进行验证。文献中使用的这些管家基因偶尔会出现变化极大的现象。随着RT-PCR灵敏度，可靠性以及使用范围的增加，对于合适内参基因的需求也日益迫切。些外，通过利用利用公共微阵列数量，这种均一化因素（normalization factor）也在广泛的应用的微阵列定标系数（scaling factor）中得到了验证。</p>
+<h2 id="需要了解的几个公式">需要了解的几个公式</h2>
+<p>文献末尾处提到了几个公式，现在汇总如下所示：</p>
+<h3 id="公式1单一内参均一化错误值single-control-normalization-error">公式1:单一内参均一化错误值（Single control normalization error）</h3>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924164713.png">
+
+</div>
+<p>公式上面的英文注释如下所示：</p>
+<p>E值： 对于任何m个样本，用real-time RT-PCR技术可以测量其n个内参基因的表达水平，其表达水平为aij。对于每2个样本（分别记为p和q）的组合来说，它们的两个内参基因j和k的每一种组合来说，可以计算出它们的单一内参均一化错误值E（single control normalization error，公式1）。</p>
+<p>当样本p和q分别针对其内参基因j或k进行均一化的时候，其样本p和样本q的表达总倍数差异就是错误值E。 n表示内参的数目（注：既然是多内参，这个n必然是大于等于2）。</p>
+<p>aij表示的是内参的表达水平（这是一组数据）。</p>
+<p>j与k的范围为1到n，p与q的值为1到m（都是闭区间），并且j不等于k，p不等于q。<strong>Rjkpq的倒数就是E值</strong>，公式1中，aqj是说在样本q中，以内参基因j为标准进行均一化后的数据，aqk则是说，以内参基因k为标准进行均一化后的数据，aqj/aqk则是这二者之比，apk/apj为例，aqj/aqk与apk/apj的比值则是指p与q样本中，a基因表达水平的误差。</p>
+<p>个人理解：这个E值其实就是每个样本，每个内参均一化后误差的乘积。</p>
+<h3 id="公式2内参基因稳定检测值m">公式2:内参基因稳定检测值M</h3>
+<p>原文如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924172122.png">
+
+</div>
+<p>公式解释：</p>
+<p>M值：对于任意两个内参基因j与k，可以计算出由它们构成的一个Ajk数列（array），这个数列包含一组经log2转化来的比值（aij/aik），如果是m个样本，那么Ajk中一共是m个值（公式2）。作者定义Vjk是内参基因j和k的<strong>成对变异（pairwise variation）</strong>它是Ajk的标准差（公式3）。其中内参基因j的稳定表达值Mj就是所有成对基因变异Vjk的算术平均数（公式4）。</p>
+<p>画个图，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924174227.png">
+
+</div>
+<p>以上计算的<strong>只是内参基因j的稳定值</strong>。</p>
+<h2 id="研究思路">研究思路</h2>
+<p>提取了不同组织或细胞的RNA进行检测，然后检测这些RNA中的几个选定的内参，再通过一定的算法进行比较。</p>
+<h2 id="实验过程">实验过程</h2>
+<h3 id="一管家基因表达谱">（一）管家基因表达谱</h3>
+<p>​ 本文研究了10个常用管家基因在人类13个不同组织中的表达，这10个管家基因如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162706.png">
+
+</div>
+<p>管家基因列表。</p>
+<p>注：选这个10个管家基因的思路是要尽量使这10个基因属于不同的功能分类，这样就能极大地了降低它们之间存在的共调控现象。</p>
+<p>作者检测了80个组织中的这10个管家基因的表达情况，这80个组织分别为：在34个神经母细胞瘤（来源不同的实验室以及不同的病人，NB1-34）；20个短期培养的常规成纤维细胞（FIB1-20）；13个常规的淋巴细胞样本（LEU1-13）；9个骨髓样本（BM1-9）；9个其他的人类正常组织（分别为heart，brain，fetal brain，lung，trachea，kidney，mammary gland，small intestine和uterus）。</p>
+<h3 id="二单一内参均一化错误值single-control-normalization-error">（二）单一内参均一化错误值（Single control normalization error）</h3>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162802.png">
+
+</div>
+<p>Figure 1 -对于两个理想的内参基因来说，E值等于1，这个很好理解，我们还看一下前面的E公式，如下所示： <span class="math display">\[
+{R_{j k p q}=\frac{a_{q j}}{a_{q k}} / \frac{a_{p j}}{a_{p k}} \quad\left(\text { if } R&lt;1, \text { then } E=R^{-1}, \text { else } E=R\right)}
+\]</span> 也就是说，理想的两个内参基因表达水平必然是相同的，因此E等于1。</p>
+<p>事实上观察到的E值通常大于1，这就构成了两个样本之间的E倍差异，具体的差异值取决用于均一化的特定管家基因。对所有的10个内参基因两两配对（一共45种组合），以及所有样本的两两配对（一共是865个组合）绘制E值，如figure 1所示。此外，通过分析重复运行的相同内参基因绘制出了系统错误的分位数。E值的75百分位数和90百分位分别是3.0（范围是2.1-3.9）和6.4（范围是3.0-10.9）。</p>
+<p>注：所有样本的两两配对是指，同一个组织内的两两配对，因此根据前面的内容：</p>
+<blockquote>
+<p>34个神经母细胞瘤（来源不同的实验室以及不同的病人，NB1-34）；20个短期培养的常规成纤维细胞（FIB1-20）；13个常规的淋巴细胞样本（LEU1-13）；9个骨髓样本（BM1-9）；9个其他的人类正常组织（分别为heart，brain，fetal brain，lung，trachea，kidney，mammary gland，small intestine和uterus）</p>
+</blockquote>
+<p>排列组合数目就是865。</p>
+<h3 id="三基因表达稳定性检测以及所选基因的秩">（三）基因表达稳定性检测以及所选基因的秩</h3>
+<p>​ 在研究中，通常会认为基因的表达水平应该精选一个稳定表达的基因进行均一化。但是为了验证选定的这个内参基因的稳定表达，我们需要一种可靠的检测手段手段来确定这个内参基因确实是稳定表达的，从而剔除掉非特异性的变异。为了解决这个循环问题（circular problem，这里的循环问题就是说，我要选择稳定的内参，就需要“内参”进行均一化，但是选择均一化的这个“内参”又得是稳定的，因此是一个不断循环的问题），作者以非均一化表达水平为基础，提出了一种基因稳定性检测算法。</p>
+<p>​ 这种算法的原理是，无论实验条件，无论细胞类型，两种理想的内参基因在所有样本中的表达必然是相同的。而在实际条件下，两种真实内参基因的表达比值（ratio）的变异就会反映出一种（或者是两种）内参基因的表达并非是恒定不变的，这种比值的差异与基因表达的稳定程度呈反比。对于每一个内参基因来说，作者都研究了它与其他所有内参基因两两的差异，这种差异用表达比值的对数转换的标准差来表示，并且定义了一个内参基因表达稳定检测值M作为一个特定基因与其他所有内参基因的平均两两变异。</p>
+<p>​ 其中，最小M值的基因是表达最稳定的内参基因。假如选定的这些内参基因不存在共调控，那么分步排除掉的最高M值的基因后，最终剩下的内参基因就会产生一对组合，构成这种组合的两个基因是稳定表达的管家基因，即它们是样品中最稳定的内参基因。</p>
+<p>​ 为了计算最佳的内参基因组合，作者利用VBA开发了一个Excel插件，命名为geNorm，它能自动计算所有内参基因的的M值（现在这个插件已经整合到了qbase+中，网址为：https://www.qbaseplus.com/）。这个程序可以剔除那些不好的内参基因（即最高M值的基因），并且重新计算剩余内参基因的M值。利用geNorm，作者计算了5类组织中的10个内参基因的M值，并按从大到小的顺序排列（参见figure2与table 3）。此外，作者还计算了系统变异，其方法对相同的基因进行重复的RT-PCR实验，这种变异反映了仪器自身，加样，酶的固有变异。</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162839.png">
+
+</div>
+<p>Figure 2 横坐标表示的是剩余的内参数目。</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924181905.png">
+
+</div>
+<p>注：qbase+这个软件我并不熟悉，这是没有重现数据的分析过程。但是在前一篇笔记中，我使用了NormqPCR这个R包来重现了数据分析过程。</p>
+<h3 id="四基于多内参基因的几何均数进行均一化因子计算">（四）基于多内参基因的几何均数进行均一化因子计算</h3>
+<p>这一部分就是说明要选择几个内参来进行均一化。</p>
+<p>​ 为了精确地评估基因的表达水平，作者推荐使用多个内参基因进行均一化。将多个内参取几何均数。至于使用的内参基因数目，需要在实际情况与精确性方面进行取舍。但是就实际情况来看，选择太多的内参基因浪费（例如10个太浪费了），如果太少，不为精确，作者推荐最少使用3个表达稳定的内参基因作为均一化因子（normalizaiton factor, NFn, n=3）。</p>
+<p>​ 作者还研究了一些情况，即那些利用了超过3种内参基因用于均一化的情况，作者计算了相同组织类型内的所有样本，按照两次均一化因子（NFn和NFn+1）的两两变异Vn/n+1（即aij=NFn,i和aik=NFn+1,n代表用于均一化的基因数目，范围是3到9，i表示样本，具体参照公式2和3）。我的理解是，在选定了几个内参，例如5个，对所有的样本进行均一化，计算其变异，即V5，然后再排除一个内参，剩了4个内参，再对所有的样本均一化，计算其变异，即V4，最后计算V4/V5）。这种算法研究的是，如果存在着一个很大的变异，就意味着，这个加入的内参基因（我的理解是，排除的那个内参）有着很强的效应，它应该优先选择用于均一化因子的计算（不太理解这种算法）。</p>
+<p>​ 对于所有的组织类型，用于计算的均一化因子是3个最稳定的内参基因，通过逐步添加剩余的7个内参基因。逐步计算两两配对变异，对于连续的NFn和NFn+1均一化因子，这就反应了加入的第n+1基因的效应。 （如figure 3a所示）。从图中可以明显看出来，对于leukicytes, fibroblast和bone marrow来说，添加的第4个基因没有特别明显的影响（就是说低V3/4值），这也说明，在NF3和NF4值之间存在着很强的关联，如figure 3b所示。以这些数据为基础，作者采用了0.15作为阈值，低于0.15的内参基因不需要添加进来。对于neuroblastoma和正常组织来说，分别需要加入1个和2个内参基因（参见figure 3b）。最高的V8/9和V9/10值对于normal pool，neuroblastoma和leukocyte来说就确认了figure 2中逐步排除的最差内参基因。这种分析表明了平均M值的在开始时的强烈下降，这就指出了，leukocyte的两个内参基因的表达异常，neuroblastoma和normal tissues一个内参基因的不稳定。此外，对于后两种组织来说，需要包含另外的内参基因，从而与内参基因的高度变异保持一致。</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105801.jpg">
+
+</div>
+<h3 id="验证可能的rt-pcr均一化因子">验证可能的RT-PCR均一化因子</h3>
+<p>​ 为了验证这种基因检测算法的可靠性，即最低M值是最稳定的表达的内参基因，作者检测了每个内参基因的特异性变化，作为均一化之后表达的变异系数（variation coefficient）。对于合适的内参基因来说，这个系数应该是最小的。作者以三个基因的几何平均数为基础，分别计算了三个不同的均一化因子，最低的M值（NF3（1-3）），最高的M值（NF3（8-10）和中等的M值（NF3（6-8））。接着，作者计算用最低变异系数，在每种组织类型内，计算了这三个基因的平均基因特异性变异（figure 4a）。从计算结果可以看出，当数据用NF3（1-3）进行均一化时，这些基因特异性变异最小。</p>
+<p>​ 这就表明，基因稳定性检测能够确定地确定表达最稳定的内参基因。为了确认高M值是一类表达不稳定，或者是表达有差异的基因，作者分析了MYCN的表达水平，MYCN这个基因是一种在neuroblastoma中表达有差异的基因。在neuroblastoma中，MYN的M值是6.02，而B2M（表达最稳定的内参基因）的M值是2.17。进一步的观察发现，用单一的内参基因进行均一化会导致其它内参基因更高的的基因特异性变异，这就进一步说明了利用多个管家基因进行均一化的优势。</p>
+<p>​ 为了说明最佳的个内参基因不受细胞增殖的影响，作者分析了PCNA的表达水平（PCNA是增殖的标志），研究了四个最佳管家基因和标志基因PCNA之间的Spearman秩相关系数。从分析结果来看，管家基因之间存在着关联（p值小于0.001，相关系数在0.6到0.76之间）。相比之下，PCNA和三个管家基因之间不存在联系，而与HPRT1则存在着弱相关（p值为0.024，相关系数为0.43）。这些数据清楚地说明了，最稳定的管家基因与细胞的增殖状态无关。</p>
+<p>​ 为了进一步研究选定的内参基因几何均数的精确性，作者研究了公共数据库中的微阵列数据，利用这些数据中的内参基因的几何均数进行了均一化，具体的选择过程参见文献，作者选定了5个内参基因，其标准是M值小于0.7，其计算结果与微阵列的计算结果类似。</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105826.png">
+
+</div>
+<h3 id="组织特异性管家基因的表达">组织特异性管家基因的表达</h3>
+<p>​ 为了比较13所测组织中的管家基因表达水平的异质性。作者剔除了差异最大的4个管家基因（这4个管家基因分别为B2M，RPL13A，ACTB与HMBS，参见Table 2）后，计算了6个内参基因的几何均数作为“伪内参”，然后将这10个内参基因再根据这个“伪内参”进行均一化。Figure 5显示了所有的10个基因的不同丰度类型，表达最高的ACTB基因是最低的HMBS的400倍。虽然内参基因的丰度在不同的组织中类似，但还是观察到了组织特异性表达的差异，例如，B2M的表达水平在leukocytes中比Fetal Brain中高出112倍，而Fibroiblast和Heart tisssue中，ACTB的差异有22倍。与这两个基因相比，有2个基因的表达比较稳定，例如UBC和HPRT1。</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105923.jpg">
+
+</div>
+<p>讨论部分略。</p>
+<p>参考资料：</p>
+<ol style="list-style-type: decimal">
+<li><a href="https://www.biomart.cn/experiment/430/457/458/2284875.htm" target="_blank" rel="external">PCR和RT-PCR基础（强烈推荐）</a></li>
+<li><a href="http://www.bioon.com/experiment/mob/275439.shtml" target="_blank" rel="external">核糖核酸酶保护实验的基本原理</a></li>
+<li><a href="http://www.sohu.com/a/197299181_307557" target="_blank" rel="external">大家好，给大家介绍一下，这是RNA质检结果解读指南</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/30/BioTools/NormqPCR包学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/30/BioTools/NormqPCR包学习笔记/" itemprop="url">NormqPCR包笔记</a></h1>
         
 
         <div class="post-meta">
@@ -313,8 +611,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
                   </a>
                 </span>
 
@@ -731,7 +1029,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4,417
+                  4,416
                 </span>
               
 
@@ -861,20 +1159,20 @@
 <h2 id="实验步骤">实验步骤</h2>
 <h3 id="一样本裂解">（一）样本裂解</h3>
 <ol style="list-style-type: decimal">
-<li><pre><code> 将2×106的细胞悬液离心后，除去上清，加入RIPA溶液40µL（根据细胞的数目而定），反复吹打，随后放冰上静置10分钟；（注：RIPA是一种传统的细胞组织快速裂解液。成分为 ①50 mMTris-HCl(pH 7.4)② 150 mM NaCl③1% NP-40）</code></pre></li>
-<li><pre><code> 12000g，离心10min，4℃，取上清，检测蛋白含量。</code></pre></li>
+<li>将2×106的细胞悬液离心后，除去上清，加入RIPA溶液40µL（根据细胞的数目而定），反复吹打，随后放冰上静置10分钟；（注：RIPA是一种传统的细胞组织快速裂解液。成分为 ①50 mMTris-HCl(pH 7.4)② 150 mM NaCl③1% NP-40）；</li>
+<li>12000g，离心10min，4℃，取上清，检测蛋白含量。</li>
 </ol>
 <h3 id="二蛋白浓度测定bca法">（二）蛋白浓度测定(BCA法)</h3>
 <p>试剂盒：碧云天（BCA蛋白浓度测定试剂盒，货号：P0010）或BCA蛋白浓度测定试剂盒(增强型，货号：P0012) ①BCA试剂A②BCA试剂B③蛋白标准品（5mg/mL BSA，BSA为牛血清白蛋白，bovine serum albumin）。BCA试剂A和B室温保存，蛋白标准于-20℃冻存（提前可以配置为梯度BSA溶液，于负20度保存）；④5XSDS变性剂（碧云天，货号：P0015）</p>
 <p><strong>检测原理</strong> 碱性条件下，蛋白将Cu2+还原为Cu+， Cu+与BCA试剂形成紫颜色的络合物，测定其在562nm处的吸收值，并与标准曲线对比，即可计算待测蛋白的浓度。</p>
-<p><strong>检测流程：</strong></p>
+<p>检测流程：</p>
 <ol style="list-style-type: decimal">
-<li><pre><code> 根据样品数量，按试剂A：试剂B=50：1的比例进行稀释（检测的时候，此工作的体积为180µL，样品以及标准品的体积为20µL，因此要按照这个体积以及相当样品数来进行稀释），BCA工作液室温24小时内稳定（标准品的梯度为8个，样品是N个，则BCA工作液的体积一般是200x(8+N+1)µL）。注：根据试剂盒的说明进行操作，例如我使用的P0010试剂盒，里面是要求加200µL的反应液。</code></pre></li>
-<li><pre><code> 取提前配置好的蛋白标准品梯度溶液，即0µg/µL（编号1），0.025µg/µL（编号2），0.05µg/µL（编号3），0.1µg/µL（编号4），0.2µg/µL（编号5），0.3µg/µL（编号6），0.4µg/µL（编号7），0.5µg/µL（编号8）。</code></pre></li>
-<li><pre><code> 在96孔板相应的孔中加入200µL的BCA工作液，然后将编号为1到8的标准品加入到这些孔中，体积为20µL；</code></pre></li>
-<li><pre><code> 将样品稀释10或20倍，然后将20µL的样品加入到样品孔中（注：在这一步的操作中，通常是先在96孔的孔中提前加入9μL或19μL的双蒸水，然后再加入1μL的样本，最后加入200μL的反应液）；</code></pre></li>
-<li><pre><code> 在37℃条件下放置30分钟； </code></pre></li>
-<li><pre><code> 测定OD562nm处的吸光度，根据标准曲线计算出蛋白浓度，这一步注意，通常我们是使用`y = ax+b`来计算的，也就是x轴是吸光度，y轴是蛋白浓度，计算后再乘以稀释倍数即可。</code></pre></li>
+<li>根据样品数量，按试剂A：试剂B=50：1的比例进行稀释（检测的时候，此工作的体积为180µL，样品以及标准品的体积为20µL，因此要按照这个体积以及相当样品数来进行稀释），BCA工作液室温24小时内稳定（标准品的梯度为8个，样品是N个，则BCA工作液的体积一般是200x(8+N+1)µL）。注：根据试剂盒的说明进行操作，例如我使用的P0010试剂盒，里面是要求加200µL的反应液。</li>
+<li>取提前配置好的蛋白标准品梯度溶液，即0µg/µL（编号1），0.025µg/µL（编号2），0.05µg/µL（编号3），0.1µg/µL（编号4），0.2µg/µL（编号5），0.3µg/µL（编号6），0.4µg/µL（编号7），0.5µg/µL（编号8）。</li>
+<li>在96孔板相应的孔中加入200µL的BCA工作液，然后将编号为1到8的标准品加入到这些孔中，体积为20µL；</li>
+<li>将样品稀释10或20倍，然后将20µL的样品加入到样品孔中（注：在这一步的操作中，通常是先在96孔的孔中提前加入9μL或19μL的双蒸水，然后再加入1μL的样本，最后加入200μL的反应液）；</li>
+<li>在37℃条件下放置30分钟；</li>
+<li>测定OD562nm处的吸光度，根据标准曲线计算出蛋白浓度，这一步注意，通常我们是使用<code>y = ax+b</code>来计算的，也就是x轴是吸光度，y轴是蛋白浓度，计算后再乘以稀释倍数即可。</li>
 </ol>
 <h3 id="三蛋白变性">（三）蛋白变性</h3>
 <ol style="list-style-type: decimal">
@@ -882,50 +1180,48 @@
 </ol>
 <p>建议：蛋白样品在加入SDS之前最好统一稀释至浓度为2.5µg/uL（因为最终上样体积为10uL，上样蛋白为20ug，其中在变性前，1次实验的蛋白样本为8µL，需要加入含有5XSDS的Loading Buffer为2uL，因此蛋白浓度最终就是2µg/µL）。每次制备的样品需要按3次实验进行分装，即每个试管中装24uL，每支的浓度为2.5µg/µL，使用的时候，直接加6uL的Loading Buffer，一次上样为10uL;如果细胞数量较多，蛋白浓度较大，可以将5XSDS稀释为1XSDS,并对蛋白样本进行稀释后再变性。</p>
 <ol start="2" style="list-style-type: decimal">
-<li><pre><code> 100℃干热或水浴（封口）10min充分变性，12000g离心30s后，置于冰上或4℃保存。</code></pre></li>
+<li>100℃干热或水浴（封口）10min充分变性，12000g离心30s后，置于冰上或4℃保存。</li>
 </ol>
 <h3 id="四sds-page胶配置">（四）SDS-PAGE胶配置</h3>
 <ol style="list-style-type: decimal">
-<li><pre><code> 清洗玻璃板：根据实验需要选择一定厚度的玻璃板 （1.0mm，1.5mm），注意一定要将玻璃板洗净（洗洁精），最后用无水乙醇冲洗，与胶接触的一面向上置于干净的纸巾晾干或用电吹风吹干。</code></pre></li>
-<li><pre><code> 装置玻璃板：将两块玻璃板装好，低的玻璃板朝内，注意玻璃底部平整，防止漏胶，四个螺丝钉一起拧紧，防止玻璃破裂，再固定于制胶板上，可同时做一块胶（对面有塑料挡板）或两块胶，在加入分离胶之前，可以加入无水乙醇，观察一下是否漏液；如使用Bio-Rad, 将两块玻璃板装好，低的玻璃板朝外，夹好玻璃。</code></pre></li>
-<li><pre><code> 配分离胶：分离胶的其它成分可事先配好（事先配置好的意思就是，先把除了10% AP（过硫酸铵）及TEMED外的其它成分加好，在实验之前再加入AP与TEMED），避光存放于4℃，可至少存放1个月，临用前取出室温平衡（否则凝胶过程产生的热量会使低温时溶解于储存液中的气体析出而导致气泡，有条件者可真空抽吸3min），加入10%AP及TEMED即可，也可临时按比例配制，注意胶用枪吹打混匀（鉴定的Rab32蛋白是按照10%SDS-PAGE的胶进行配置，体积为5mL，不同的蛋白分子量需要不同浓度的胶，通常是分子量越大的蛋白，需要浓度越低，同时胶也越脆弱）注：试剂盒的A盒（即带有TEMED的那个试剂盒）放4℃保存；B盒常温下保存。</code></pre></li>
-<li><pre><code> 灌胶：将凝胶溶液平缓地注入两层玻璃极中，灌入分离胶后（可预先插入梳子，梳子底下约0.5cm处标记预备配制的分离胶高度，拔出梳子）应立即封胶，可用在液面上小心注入一层无水乙醇，以阻止氧气进入凝胶溶液中，然后静置，封胶后切记勿动，分离胶的上层距离低的玻璃板的最上层距离约为1.5~2cm，配置分离胶的体积约为5mL，用掉约4.5mL。</code></pre></li>
-<li><pre><code> 待分离胶凝后（30min左右出现一条明显的分离线）将无水乙醇倒掉，用滤纸或纸巾吸干。</code></pre></li>
-<li><pre><code> 配浓缩胶： 同前按比例配制浓缩胶，一个板子约2mL，以连续平稳的液流注入凝胶溶液，然后小心插入梳子（不同厚度的玻璃板匹配不同厚度的梳子），注意不得在齿尖留有气泡，静置1h以保证完全聚合。 </code></pre></li>
+<li>清洗玻璃板：根据实验需要选择一定厚度的玻璃板 （1.0mm，1.5mm），注意一定要将玻璃板洗净（洗洁精），最后用无水乙醇冲洗，与胶接触的一面向上置于干净的纸巾晾干或用电吹风吹干。</li>
+<li>装置玻璃板：将两块玻璃板装好，低的玻璃板朝内，注意玻璃底部平整，防止漏胶，四个螺丝钉一起拧紧，防止玻璃破裂，再固定于制胶板上，可同时做一块胶（对面有塑料挡板）或两块胶，在加入分离胶之前，可以加入无水乙醇，观察一下是否漏液；如使用Bio-Rad, 将两块玻璃板装好，低的玻璃板朝外，夹好玻璃。</li>
+<li>配分离胶：分离胶的其它成分可事先配好（事先配置好的意思就是，先把除了10% AP（过硫酸铵）及TEMED外的其它成分加好，在实验之前再加入AP与TEMED），避光存放于4℃，可至少存放1个月，临用前取出室温平衡（否则凝胶过程产生的热量会使低温时溶解于储存液中的气体析出而导致气泡，有条件者可真空抽吸3min），加入10%AP及TEMED即可，也可临时按比例配制，注意胶用枪吹打混匀（鉴定的Rab32蛋白是按照10%SDS-PAGE的胶进行配置，体积为5mL，不同的蛋白分子量需要不同浓度的胶，通常是分子量越大的蛋白，需要浓度越低，同时胶也越脆弱）注：试剂盒的A盒（即带有TEMED的那个试剂盒）放4℃保存；B盒常温下保存。</li>
+<li>灌胶：将凝胶溶液平缓地注入两层玻璃极中，灌入分离胶后（可预先插入梳子，梳子底下约0.5cm处标记预备配制的分离胶高度，拔出梳子）应立即封胶，可用在液面上小心注入一层无水乙醇，以阻止氧气进入凝胶溶液中，然后静置，封胶后切记勿动，分离胶的上层距离低的玻璃板的最上层距离约为1.5~2cm，配置分离胶的体积约为5mL，用掉约4.5mL。</li>
+<li>待分离胶凝后（30min左右出现一条明显的分离线）将无水乙醇倒掉，用滤纸或纸巾吸干。</li>
+<li>配浓缩胶： 同前按比例配制浓缩胶，一个板子约2mL，以连续平稳的液流注入凝胶溶液，然后小心插入梳子（不同厚度的玻璃板匹配不同厚度的梳子），注意不得在齿尖留有气泡，静置1h以保证完全聚合。</li>
 </ol>
 <p><strong>(5)</strong> <strong>电泳</strong></p>
-<ol style="list-style-type: decimal">
-<li><pre><code> 电泳：上样前将胶板下的气泡赶走，用注射器吸取电泳缓冲液冲孔，可根据实验需要设定阳性对照（即肯定可以表达你的目的蛋白的组织或者细胞，同时可以提示你一抗的质量）或阴性对照（即肯定不会表达你的目的蛋白的组织或者细胞），样品两侧的泳道用等体积的1×loading buffer上样，Marker（Ferments）也用1×loading buffer调整至与样品等体积，上样完毕后宜尽快电泳（注意电极正负）防止扩散，以初始电压为80V进行稳压电泳，当溴芬兰泳动至分离胶时，这个过程约为20min~30min，改电压为120 V继续稳压电泳，最终的蓝色缓冲液条件不要超过底部支架的绿色部分，电泳的过程约为60min~90min，整个过程要注意电泳的条件位置，不同分子量的蛋白电泳的时间与位置不同。</code></pre></li>
-</ol>
+<p>电泳：上样前将胶板下的气泡赶走，用注射器吸取电泳缓冲液冲孔，可根据实验需要设定阳性对照（即肯定可以表达你的目的蛋白的组织或者细胞，同时可以提示你一抗的质量）或阴性对照（即肯定不会表达你的目的蛋白的组织或者细胞），样品两侧的泳道用等体积的1×loading buffer上样，Marker（Ferments）也用1×loading buffer调整至与样品等体积，上样完毕后宜尽快电泳（注意电极正负）防止扩散，以初始电压为80V进行稳压电泳，当溴芬兰泳动至分离胶时，这个过程约为20min~30min，改电压为120 V继续稳压电泳，最终的蓝色缓冲液条件不要超过底部支架的绿色部分，电泳的过程约为60min~90min，整个过程要注意电泳的条件位置，不同分子量的蛋白电泳的时间与位置不同。</p>
 <p><strong>(6)</strong> <strong>转膜</strong></p>
 <ol style="list-style-type: decimal">
-<li><pre><code> 取胶：在目的条带充分分离后（参考Marker的分离效果），或电泳至溴酚染料前沿下至凝胶末端处可结束电泳，将胶卸下，保留30-100KD或分子量范围更广些的胶（以便以后杂其他感兴趣的蛋白），在转移液（转移液即1X的transfer buffer，要现用现配）中浸泡。</code></pre></li>
-<li><pre><code> 转膜：转膜液是800mL的1X转膜液加上200mL的甲醇，根据胶的大小剪裁稍大的PVDF膜，在左上角剪角，甲醇中充分浸泡5min（活化PVDF膜）后转入转移液中，去掉PVDF膜的上下两层塑料封纸，将厚的白色滤纸及海绵也浸入转移液中。15min-30min后按如下顺序安装转移装置（如图1所示）：</code></pre></li>
+<li>取胶：在目的条带充分分离后（参考Marker的分离效果），或电泳至溴酚染料前沿下至凝胶末端处可结束电泳，将胶卸下，保留30-100KD或分子量范围更广些的胶（以便以后杂其他感兴趣的蛋白），在转移液（转移液即1X的transfer buffer，要现用现配）中浸泡。</li>
+<li>转膜：转膜液是800mL的1X转膜液加上200mL的甲醇，根据胶的大小剪裁稍大的PVDF膜，在左上角剪角，甲醇中充分浸泡5min（活化PVDF膜）后转入转移液中，去掉PVDF膜的上下两层塑料封纸，将厚的白色滤纸及海绵也浸入转移液中。15min-30min后按如下顺序安装转移装置（如图1所示）：</li>
 </ol>
 <div class="figure">
 <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191009124330.png">
 
 </div>
-<p>a.平放底部电极（负极），放一张海绵垫片。 b.在海绵垫片上放置1张用转移缓冲液浸泡过的滤纸，然后用一玻璃棒作滚筒以挤出所有气泡，必要时可滴加转膜液润湿。 c.取出浸在转膜液中的凝胶平放于滤纸上，排除所有气泡。 d.把PVDF膜放在聚丙烯酰胺凝胶上，在硝酸纤维素滤膜与聚丙烯酰胺凝胶之间不留有气泡。 e. 把最后1张滤纸放在PVDF膜上方，同样须确保不留气泡。 f.放上另一张海绵垫片，盖上阳极板，夹紧。保证对凝胶有一定的压力。加入预冷的转膜液及内置的冰盒，盖好盖子，连接电源，（注意正负极）电转移40min, 300mA（根据实验需要摸索最佳转膜条件）。电转过程中，尽量保持低温环境，可放在冰水里转膜。电转结束后，断开电源，拆卸转移装置，逐一掀去各层。将凝胶转移至盛有考马斯亮蓝染液的托盘中，进行染色，可检查蛋白质转移是否完全。要观察膜上蛋白的情况可将膜在丽春红中染色，然后蒸馏水冲洗。（电泳上槽液及转膜液可回收）</p>
+<p>a.平放底部电极（负极），放一张海绵垫片。 b.在海绵垫片上放置1张用转移缓冲液浸泡过的滤纸，然后用一玻璃棒作滚筒以挤出所有气泡，必要时可滴加转膜液润湿。 c.取出浸在转膜液中的凝胶平放于滤纸上，排除所有气泡。 d.把PVDF膜放在聚丙烯酰胺凝胶上，在硝酸纤维素滤膜与聚丙烯酰胺凝胶之间不留有气泡。 e. 把最后1张滤纸放在PVDF膜上方，同样须确保不留气泡。 f.放上另一张海绵垫片，盖上阳极板，夹紧。保证对凝胶有一定的压力。加入预冷的转膜液及内置的冰盒，盖好盖子，连接电源，（注意正负极）电转移40min, 300mA（根据实验需要摸索最佳转膜条件）。电转过程中，尽量保持低温环境，可放在冰水里转膜。电转结束后，断开电源，拆卸转移装置，逐一掀去各层。将凝胶转移至盛有考马斯亮蓝染液的托盘中，进行染色，可检查蛋白质转移是否完全。要观察膜上蛋白的情况可将膜在丽春红中染色，然后蒸馏水冲洗。（电泳上槽液及转膜液可回收）。</p>
 <ol start="3" style="list-style-type: decimal">
-<li><pre><code> 如果不染色，可以跳过后面几步，直接进行封闭。染色和脱色 ：电泳完毕可通过染色和脱色评定其结果的优劣.对凝胶中分离成不同条带的蛋白进行检测.此外,根据不同的研究目的,也可将凝胶电印迹后的胶或膜染色。</code></pre></li>
-<li><pre><code> 考马斯亮蓝染色：将凝胶取出放入塑料盒中倒入少量的染色液,以浸没凝胶为宜,在摇床上震荡,直到凝胶上出现明显的条带为止,一般5-6小时或者4℃过夜;然后倾去染色液，用脱色液洗涤震荡,其间要不断换脱色液,直至脱色液颜色稍清亮.,凝胶背景清楚为止。（染色液可回收）</code></pre></li>
-<li><pre><code> 丽春红染色：详细方法见说明书。</code></pre></li>
+<li>如果不染色，可以跳过后面几步，直接进行封闭。染色和脱色 ：电泳完毕可通过染色和脱色评定其结果的优劣.对凝胶中分离成不同条带的蛋白进行检测.此外,根据不同的研究目的,也可将凝胶电印迹后的胶或膜染色。</li>
+<li>考马斯亮蓝染色：将凝胶取出放入塑料盒中倒入少量的染色液,以浸没凝胶为宜,在摇床上震荡,直到凝胶上出现明显的条带为止,一般5-6小时或者4℃过夜;然后倾去染色液，用脱色液洗涤震荡,其间要不断换脱色液,直至脱色液颜色稍清亮.,凝胶背景清楚为止。（染色液可回收）</li>
+<li>丽春红染色：详细方法见说明书。</li>
 </ol>
 <p><strong>(7)</strong> <strong>膜的封闭</strong></p>
 <p>在进行抗体杂交之前，需要先对转印膜进行封闭，防止免疫试剂的非特异性吸附。封闭一般采用异源性蛋白质或去污剂，常用的有0.2%Tween-20，20%BSA，10%马血清以及5% Non-fat milk等，至于选择哪一类封闭液，首先应考虑与检测试剂相适应，如采用葡萄球蛋白A（SPA）作用检测试剂，就不能用全血清封闭，其次是尽可能使非特异着色背静浅，本实验室常用封闭液5%Non-fat milk。封闭过程如下所示（与胶接触的PVDF膜的一面是正面，要在正面的左上角剪下一小块，作为区分正反面的依据，前面剪过的则忽略此步）：</p>
 <ol style="list-style-type: decimal">
-<li><pre><code> 洗转印膜：用1xTBS-T室温漂洗3次×10min（漂洗1次也行），以尽量洗去转印膜上的SDS，防止影响后面的抗体结合。</code></pre></li>
-<li><pre><code> 取漂洗的转印膜，放入5% Non-fat milk的封闭液内，摇床震动，室温封闭2h，也可在4℃过夜， 或使用商用封闭液。</code></pre></li>
-<li><pre><code> 封闭后，使用1×TBS-T室温漂洗3次×10min。</code></pre></li>
+<li>洗转印膜：用1xTBS-T室温漂洗3次×10min（漂洗1次也行），以尽量洗去转印膜上的SDS，防止影响后面的抗体结合。</li>
+<li>取漂洗的转印膜，放入5% Non-fat milk的封闭液内，摇床震动，室温封闭2h，也可在4℃过夜， 或使用商用封闭液。</li>
+<li>封闭后，使用1×TBS-T室温漂洗3次×10min。</li>
 </ol>
 <p><strong>(8)</strong> <strong>抗体杂交</strong></p>
 <p>抗体表面主要采用间接法。即先加入未标记特异性抗体（Ab1，即一抗）与膜上抗原结合，再加入标记的抗抗体（Ab2，即二抗）进行杂交检测，标记Ab2 物质有放射性核素酶及生物素等。 （抗体稀释倍数需要摸索通常一抗浓度1：2000到1:1000，具体的稀释浓度可以参考一抗的说明书，二抗浓度1:1000）。杂交过程如下所示：</p>
 <ol style="list-style-type: decimal">
-<li><p>封闭后的杂交膜放入塑料盒或杂交袋中，加入抗体稀释液稀释的Ab1（宜设立内参照，beta-actin，beta-tubulin等），4℃孵育过夜或室温（22-25℃）摇动孵育2h。（一抗可回收3-5次）；</p></li>
-<li><p>1×TBS-T洗膜3次×10min；</p></li>
-<li><p>抗体稀释液稀释的Ab2（抗兔-HRP或抗鼠-HRP，根据一抗种属来源决定，注意避光）室温2h，随后洗膜3×10min。</p></li>
-<li><p>ECL显色：将显色剂A、B按1：1 混匀，将杂交后PVDF膜放入显色盒中，加上混合好的显色液，约1-5min用纸巾吸去印迹膜边缘或者边角部分多余的显色液，在暗室中使胶片曝光1-5min。注：不同的显色仪参数不同，需要阅读一下说明书，找到最优曝光条件。</p></li>
+<li>封闭后的杂交膜放入塑料盒或杂交袋中，加入抗体稀释液稀释的Ab1（宜设立内参照，beta-actin，beta-tubulin等），4℃孵育过夜或室温（22-25℃）摇动孵育2h。（一抗可回收3-5次）；</li>
+<li>1×TBS-T洗膜3次×10min；</li>
+<li>抗体稀释液稀释的Ab2（抗兔-HRP或抗鼠-HRP，根据一抗种属来源决定，注意避光）室温2h，随后洗膜3×10min。</li>
+<li>ECL显色：将显色剂A、B按1：1 混匀，将杂交后PVDF膜放入显色盒中，加上混合好的显色液，约1-5min用纸巾吸去印迹膜边缘或者边角部分多余的显色液，在暗室中使胶片曝光1-5min。注：不同的显色仪参数不同，需要阅读一下说明书，找到最优曝光条件。</li>
 </ol>
 <h2 id="wb常见问题">WB常见问题</h2>
 <ol style="list-style-type: decimal">
@@ -2761,322 +3057,6 @@ Y_{i,j} = \mu +
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/24/DAL/DALS024_Basic_Machine_Learning03_Class_Prediction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/24/DAL/DALS024_Basic_Machine_Learning03_Class_Prediction/" itemprop="url">DALS024-机器学习03-分类预测</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-24T12:00:00+08:00">
-                2019-08-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
-                    <span itemprop="name">Data Analysis for the life sciences</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  6,035
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  27
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这一部分是《Data Analysis for the life sciences》的第9章机器学习的第3小节，这一部分的主要内容涉及类预测(Class Prediction)，这一部分相关的Rmarkdown文档参见作者的<a href="https://github.com/genomicsclass/labs/blob/master/ml/machine_learning.Rmd" target="_blank" rel="external">Github</a>。</p>
-<p>在这一部分中我们主要介绍分类预测(class prediction)。实际上，许多人将分类预测称为机器学习，有的时候我们会交替使用这两个术语。我们会对这个庞杂的主题做一个非常简单的介绍，重点关注一些具体的案例。</p>
-<p>我们这里使用的案例来源于统计学的经典书籍，即Trevor Hastie, Robert Tibshirani and Jerome Friedman的《<em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>》。与回归中的推断类似，机器学习(ML)也是研究结果 <span class="math inline">\(Y\)</span> 和协变量 <span class="math inline">\(X\)</span> 之间的关系。在ML中，我们将 <span class="math inline">\(X\)</span> 称为预测因子或特征值，ML和推断之间的主要区别在于，在ML中，我们主要研究使用 <span class="math inline">\(X\)</span> 来预测 <span class="math inline">\(Y\)</span> 。关于统计模型，我在常规的推断中，我们主要用来估计和解释模型参数，但在ML中，统计模型只是我们达到目的的手段，即预测 <span class="math inline">\(Y\)</span> 。</p>
-<p>这里我们介绍理解ML的主要概念，以及两个具体的算法：回归(regression)和k近似算法(kNN,k nearest neighbors)。我们需要知道，绐中学习有几十种流行的算法，我们这里不一一列举。</p>
-<p>在前面部分里，我们介绍了非常简单的单一预测因子案例。但是，大多数与这种案例相关的案例往往不止一个预测因子。为了说明这个问题，我们现在再介绍一个案例，其中 <span class="math inline">\(X\)</span> 是一个二维数据，<span class="math inline">\(Y\)</span> 是一个二分类结果。这个案例来源于Hastie, Tibshirani 和 Friedman的书中，在这个案例中， <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 并不线性关系。在下面的图形中，使用不 的颜色表示了实际的 <span class="math inline">\(f(x_1,x_2)=E(Y \mid X_1=x_1,X_2=x_2)\)</span> 值。下面的代码用于生成一个相对复杂的条件概率函数。我们随后会使用测试数据集与训练数据集。在下图中，我们使用红色来表示 <span class="math inline">\(f(x_1,x_2)\)</span>中接近于1的数据，使用蓝色表示接近于0的数据，中间过渡态使用黄色表示，如下所示：</p>
-<figure class="highlight plain"><figcaption><span>conditional_prob, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">library(RColorBrewer)</div><div class="line">hmcol &lt;- colorRampPalette(rev(brewer.pal(11, &quot;Spectral&quot;)))(100)</div><div class="line">mycols=c(hmcol[1],hmcol[100])</div><div class="line">set.seed(1)</div><div class="line">##create covariates and outcomes</div><div class="line">##outcomes are alwasy 50 0s and 50 1s</div><div class="line">s2=0.15</div><div class="line">##pick means to create a non linear conditional expectation</div><div class="line">library(MASS)</div><div class="line">M0 &lt;- mvrnorm(10,c(1,0),s2*diag(2)) ##generate 10 means</div><div class="line">M1 &lt;- rbind(mvrnorm(3,c(1,1),s2*diag(2)),</div><div class="line">            mvrnorm(3,c(0,1),s2*diag(2)),</div><div class="line">            mvrnorm(4,c(0,0),s2*diag(2)))</div><div class="line">###funciton to generate random pairs</div><div class="line">s&lt;- sqrt(1/5)</div><div class="line">N=200</div><div class="line">makeX &lt;- function(M,n=N,sigma=s*diag(2))&#123;</div><div class="line">  z &lt;- sample(1:10,n,replace=TRUE) ##pick n at random from above 10</div><div class="line">  m &lt;- M[z,] ##these are the n vectors (2 components)</div><div class="line">  return(t(apply(m,1,function(mu) mvrnorm(1,mu,sigma)))) ##the final values</div><div class="line">&#125;</div><div class="line">###create the training set and the test set</div><div class="line">x0 &lt;- makeX(M0)##the final values for y=0 (green)</div><div class="line">testx0 &lt;- makeX(M0)</div><div class="line">x1 &lt;- makeX(M1)</div><div class="line">testx1 &lt;-makeX(M1)</div><div class="line">x &lt;- rbind(x0,x1) ##one matrix with everything</div><div class="line">test &lt;- rbind(testx0,testx1)</div><div class="line">y &lt;- c(rep(0,N),rep(1,N)) #the outcomes</div><div class="line">ytest &lt;- c(rep(0,N),rep(1,N))</div><div class="line">cols &lt;- mycols[c(rep(1,N),rep(2,N))]</div><div class="line">colstest &lt;- cols</div><div class="line">##Create a grid so we can predict all of X,Y</div><div class="line">GS &lt;- 150 ##grid size is GS x GS</div><div class="line">XLIM &lt;- c(min(c(x[,1],test[,1])),max(c(x[,1],test[,1])))</div><div class="line">tmpx &lt;- seq(XLIM[1],XLIM[2],len=GS)</div><div class="line">YLIM &lt;- c(min(c(x[,2],test[,2])),max(c(x[,2],test[,2])))</div><div class="line">tmpy &lt;- seq(YLIM[1],YLIM[2],len=GS)</div><div class="line">newx &lt;- expand.grid(tmpx,tmpy) #grid used to show color contour of predictions</div><div class="line">###Bayes rule: best possible answer</div><div class="line">p &lt;- function(x)&#123; ##probability of Y given X</div><div class="line">  p0 &lt;- mean(dnorm(x[1],M0[,1],s)*dnorm(x[2],M0[,2],s))</div><div class="line">  p1 &lt;- mean(dnorm(x[1],M1[,1],s)*dnorm(x[2],M1[,2],s))</div><div class="line">  p1/(p0+p1)</div><div class="line">&#125;</div><div class="line">###Create the bayesrule prediction</div><div class="line">bayesrule &lt;- apply(newx,1,p)</div><div class="line">colshat &lt;- bayesrule</div><div class="line">colshat &lt;- hmcol[floor(bayesrule*100)+1]</div><div class="line">mypar()</div><div class="line">plot(x,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">points(newx,col=colshat,pch=16,cex=0.35)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912170040.jpeg">
-
-</div>
-<p>如果我们将那些 <span class="math inline">\(E(Y \mid X=x)&gt;0.5\)</span> 的点用红色表示，剩下的点用蓝色表示，我们就能看到一条明显的分界线，它将0与1的区域分开了，如下所示：</p>
-<figure class="highlight plain"><figcaption><span>bayes_rule,fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">colshat[bayesrule&gt;=0.5] &lt;- mycols[2]</div><div class="line">colshat[bayesrule&lt;0.5] &lt;- mycols[1]</div><div class="line">plot(x,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">points(newx,col=colshat,pch=16,cex=0.35)</div><div class="line">contour(tmpx,tmpy,matrix(round(bayesrule),GS,GS),levels=c(1,2),</div><div class="line">        add=TRUE,drawlabels=FALSE)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912170527.jpeg">
-
-</div>
-<p>通过上面的图形我们并没有看到“真相”(truth)。大多数的ML方法涉及估计的 <span class="math inline">\(f(x)\)</span> 。通常第一步就是将一个样本作为参数，也就是训练集(training set)，用它来估计 <span class="math inline">\(f(x)\)</span> 。我们将回顾一下两种具体的ML技术。首先，我们需要回顾一下我们用评估这些方法性能的主要概念。</p>
-<h3 id="训练集">训练集</h3>
-<p>在第一张图中，我们创建了一个训练集和一个测试集，现在我们画出来，如下所示：</p>
-<figure class="highlight plain"><figcaption><span>test_train, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#x, test, cols, and coltest were created in code that was not shown</div><div class="line">#x is training x1 and x2, test is test x1 and x2</div><div class="line">#cols (0=blue, 1=red) are training observations</div><div class="line">#coltests are test observations</div><div class="line">mypar(1,2)</div><div class="line">plot(x,pch=21,bg=cols,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">plot(test,pch=21,bg=colstest,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912171217.jpeg">
-
-</div>
-<p>从上面我们可以看到，训练集（左侧）与测试集（右侧）有着相似的全局属性，因为它们是用相同的随机谈量生成的（蓝色点都趋向分布于右下角），但是它们的构建的过程还是不同的。原因在于，我们创建测试集和训练集的原因是通过测试与用于拟合模型或训练算法的数据不同的数据来检测过度训练。 我们将在下面看到它的重要性。</p>
-<h4 id="利用回归进行预测">利用回归进行预测</h4>
-<p>关于ML问题的第一个简单方法就是拟合一个双变量线性回归模型：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">##x and y were created in the code (not shown) for the first plot</div><div class="line">#y is outcome for the training set</div><div class="line">X1 &lt;- x[,1] ##these are the covariates</div><div class="line">X2 &lt;- x[,2] </div><div class="line">fit1 &lt;- lm(y~X1+X2)</div></pre></td></tr></table></figure>
-<p>一旦我们有了这些拟合的数据，我们就能使用 <span class="math inline">\(\hat{f}(x_1,x_2)=\hat{\beta}_0 + \hat{\beta}_1x_1 +\hat{\beta}_2 x_2\)</span> 来估计 <span class="math inline">\(f(x_1,x_2)\)</span> 。为了提供一个实际的预测结果，我们仅仅预测当 <span class="math inline">\(\hat{f}(x_1,x_2)&gt;0.5\)</span> 时结果为1（这一段不懂）。我们现在检测一个在训练集与测试集中的错误率，并绘制出边界区域，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">##prediction on train</div><div class="line">yhat &lt;- predict(fit1)</div><div class="line">yhat &lt;- as.numeric(yhat&gt;0.5)</div><div class="line">cat(&quot;Linear regression prediction error in train:&quot;,1-mean(yhat==y),&quot;\n&quot;)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Linear regression prediction error <span class="keyword">in</span> train: <span class="number">0.295</span></div></pre></td></tr></table></figure>
-<p>我们使用<code>predict()</code>函数就能很快地从任意数据集中来获得预测值，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yhat &lt;- predict(fit1,newdata=data.frame(X1=newx[,1],X2=newx[,2]))</div></pre></td></tr></table></figure>
-<p>现在我们生成图片，用于展示我们预测的1和0在图片上的分布，以及边界。我们还可以使用<code>predict()</code>函数从我们的测试集中生成预测数据。需要注意的是，我们无法在测试集中拟合模型：</p>
-<figure class="highlight plain"><figcaption><span>regression_prediction, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">colshat &lt;- yhat</div><div class="line">colshat[yhat&gt;=0.5] &lt;- mycols[2]</div><div class="line">colshat[yhat&lt;0.5] &lt;- mycols[1]</div><div class="line">m &lt;- -fit1$coef[2]/fit1$coef[3] #boundary slope</div><div class="line">b &lt;- (0.5 - fit1$coef[1])/fit1$coef[3] #boundary intercept</div><div class="line">##prediction on test</div><div class="line">yhat &lt;- predict(fit1,newdata=data.frame(X1=test[,1],X2=test[,2]))</div><div class="line">yhat &lt;- as.numeric(yhat&gt;0.5)</div><div class="line">cat(&quot;Linear regression prediction error in test:&quot;,1-mean(yhat==ytest),&quot;\n&quot;)</div><div class="line">plot(test,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">abline(b,m)</div><div class="line">points(newx,col=colshat,pch=16,cex=0.35)</div><div class="line">##test was created in the code (not shown) for the first plot</div><div class="line">points(test,bg=cols,pch=21)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912173537.jpeg">
-
-</div>
-<p>在上图中，我们使用 <span class="math inline">\(X_{1}\)</span>和 <span class="math inline">\(X_{2}\)</span> 作为预测因子估计了1的概率，预测的结果将高于0.5的数据标注成了红色，低于0.5的标注为了蓝色。</p>
-<p>从计算结果来年地，训练集与测试集的错误率非常相似。因此我们可以相信似乎没有过度训练。这并不奇怪，因为我们使用了2参数模型来拟合400个数据点。不过需要注意的是，边界是一个直线。因为我们为这些数据拟合了一个平面，所以这里没有其它选择。线性回归方法过于僵化。这种僵化会让它稳定，并且避免过度训练。，但是线性回归也不能适合对 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(X\)</span> 之间的非线性关系进行拟合。我们之前在平滑部分中看到了这些东西。下一个ML技术将会达到我们之间平滑处理的那种效果。</p>
-<h4 id="knn">kNN</h4>
-<p>kNN的全称是K-nearest neighbors，即<code>k最近邻</code>，这种算法类似于微区间平滑处理，但是kNN更适合于多维数据。总的来说，只要给定我们想要估计的任意点 <span class="math inline">\(x\)</span> ，我们会寻找k个最近的点，然后取这些点的平均值。这就会估计 <span class="math inline">\(f(x_1,x_2)\)</span> , 跟微区间平滑处理生成一个条曲线类似。我们现在通过 <span class="math inline">\(k\)</span> 来控制灵活性。这时我们比较一下 <span class="math inline">\(k=1\)</span> 和 <span class="math inline">\(k=100\)</span> 时的计算结果：</p>
-<figure class="highlight plain"><figcaption><span>message</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">mypar(2,2)</div><div class="line">for(k in c(1,100))&#123;</div><div class="line">  ##predict on train</div><div class="line">  yhat &lt;- knn(x,x,y,k=k)</div><div class="line">  cat(&quot;KNN prediction error in train:&quot;,1-mean((as.numeric(yhat)-1)==y),&quot;\n&quot;)</div><div class="line">  ##make plot</div><div class="line">  yhat &lt;- knn(x,test,y,k=k)</div><div class="line">  cat(&quot;KNN prediction error in test:&quot;,1-mean((as.numeric(yhat)-1)==ytest),&quot;\n&quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; mypar(<span class="number">2</span>,<span class="number">2</span>)</div><div class="line">&gt; <span class="keyword">for</span>(k <span class="keyword">in</span> c(<span class="number">1</span>,<span class="number">100</span>))&#123;</div><div class="line">+   <span class="comment">##predict on train</span></div><div class="line">+   yhat &lt;- knn(x,x,y,k=k)</div><div class="line">+   cat(<span class="string">"KNN prediction error in train:"</span>,<span class="number">1</span>-mean((as.numeric(yhat)-<span class="number">1</span>)==y),<span class="string">"\n"</span>)</div><div class="line">+   <span class="comment">##make plot</span></div><div class="line">+   yhat &lt;- knn(x,test,y,k=k)</div><div class="line">+   cat(<span class="string">"KNN prediction error in test:"</span>,<span class="number">1</span>-mean((as.numeric(yhat)-<span class="number">1</span>)==ytest),<span class="string">"\n"</span>)</div><div class="line">+ &#125;</div><div class="line">KNN prediction error <span class="keyword">in</span> train: <span class="number">0</span> </div><div class="line">KNN prediction error <span class="keyword">in</span> test: <span class="number">0.375</span> </div><div class="line">KNN prediction error <span class="keyword">in</span> train: <span class="number">0.2425</span> </div><div class="line">KNN prediction error <span class="keyword">in</span> test: <span class="number">0.2825</span></div></pre></td></tr></table></figure>
-<p>为了说明，当我们设定 <span class="math inline">\(k=1\)</span>时，训练集中没有错误，以及 <span class="math inline">\(k=100\)</span> 时错误升高的原因，我们用图片直观地展示一下上面的结果，如下所示：</p>
-<figure class="highlight plain"><figcaption><span>knn, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">mypar(2,2)</div><div class="line">for(k in c(1,100))&#123;</div><div class="line">  ##predict on train</div><div class="line">  yhat &lt;- knn(x,x,y,k=k)</div><div class="line">  ##make plot</div><div class="line">  yhat &lt;- knn(x,newx,y,k=k)</div><div class="line">  colshat &lt;- mycols[as.numeric(yhat)]</div><div class="line">  plot(x,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">  points(newx,col=colshat,cex=0.35,pch=16)</div><div class="line">  contour(tmpx,tmpy,matrix(as.numeric(yhat),GS,GS),levels=c(1,2),</div><div class="line">          add=TRUE,drawlabels=FALSE)</div><div class="line">  points(x,bg=cols,pch=21)</div><div class="line">  title(paste(&quot;Train: KNN (&quot;,k,&quot;)&quot;,sep=&quot;&quot;))</div><div class="line">  </div><div class="line">  plot(test,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">  points(newx,col=colshat,cex=0.35,pch=16)</div><div class="line">  contour(tmpx,tmpy,matrix(as.numeric(yhat),GS,GS),levels=c(1,2),</div><div class="line">          add=TRUE,drawlabels=FALSE)</div><div class="line">  points(test,bg=cols,pch=21)</div><div class="line">  title(paste(&quot;Test: KNN (&quot;,k,&quot;)&quot;,sep=&quot;&quot;))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912174226.jpeg">
-
-</div>
-<p>从图上我们可以发现，当 <span class="math inline">\(k=1\)</span> 时，在训练集中并没有出现错误，因为每个点都是它最接近的点，这个就是它自身。但是，我们可以看到一些蓝色的岛（由几个点构成的区域）在红色区域中，一旦我们将数据集移向测试集，就会出现一些错误。当 <span class="math inline">\(k=100\)</span> 时，我们没有这个问题（也就是说红蓝区域分得很开），我们可以看到，错误率比线性回归有着明显的降低。我们还看到，我们估计的 <span class="math inline">\(f(x_1,x_2)\)</span> 比较接近于真实情况。</p>
-<h4 id="贝叶斯规则">贝叶斯规则</h4>
-<p>在这一部分里，我们会比较了不同 <span class="math inline">\(k\)</span> 值下的训练集与测试集。我们还会比较当我们知道 <span class="math inline">\(\mbox{E}(Y \mid X_1=x1,X_2=x_2)\)</span> 时的错误率，这也就是所谓的贝叶斯规则(Bayes Rule)。</p>
-<p>我们先来计算一下错误率，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">###Bayes Rule</div><div class="line">yhat &lt;- apply(test,1,p)</div><div class="line">cat(&quot;Bayes rule prediction error in train&quot;,1-mean(round(yhat)==y),&quot;\n&quot;)</div><div class="line">bayes.error=1-mean(round(yhat)==y)</div><div class="line">train.error &lt;- rep(0,16)</div><div class="line">test.error &lt;- rep(0,16)</div><div class="line">for(k in seq(along=train.error))&#123;</div><div class="line">  ##predict on train</div><div class="line">  yhat &lt;- knn(x,x,y,k=2^(k/2))</div><div class="line">  train.error[k] &lt;- 1-mean((as.numeric(yhat)-1)==y)</div><div class="line">  ##prediction on test    </div><div class="line">  yhat &lt;- knn(x,test,y,k=2^(k/2))</div><div class="line">  test.error[k] &lt;- 1-mean((as.numeric(yhat)-1)==y)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>然后绘制出不同 <span class="math inline">\(k\)</span> 值下的错误率。我们还以一条水平线来展示贝叶斯规则错误率，如下所示</p>
-<figure class="highlight plain"><figcaption><span>bayes_rule2, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">ks &lt;- 2^(seq(along=train.error)/2)</div><div class="line">mypar()</div><div class="line">plot(ks,train.error,type=&quot;n&quot;,xlab=&quot;K&quot;,ylab=&quot;Prediction Error&quot;,log=&quot;x&quot;,</div><div class="line">     ylim=range(c(test.error,train.error)))</div><div class="line">lines(ks,train.error,type=&quot;b&quot;,col=4,lty=2,lwd=2)</div><div class="line">lines(ks,test.error,type=&quot;b&quot;,col=5,lty=3,lwd=2)</div><div class="line">abline(h=bayes.error,col=6)</div><div class="line">legend(&quot;bottomright&quot;,c(&quot;Train&quot;,&quot;Test&quot;,&quot;Bayes&quot;),col=c(4,5,6),lty=c(2,3,1),box.lwd=0)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913013135.jpeg">
-
-</div>
-<p>在上图中，粉色是训练集的错误率，绿色的是测试集的错误率。黄色是贝叶斯规则的错误率。</p>
-<p>我们要知道，错误率是一个随机变量，它有着标准差。在下面的部分里，我们会提到交叉验证，这种方法有助于降低一些变异（这里我自己的理解就是错误率的变异）。然而即使将这些变异降低，从图中我们就可以看出来，当 <span class="math inline">\(k\)</span> 低于20时就会出现过拟合(over-fitting)，当 <span class="math inline">\(k\)</span> 超过100时就会出现低拟合(under-fitting)。</p>
-<h2 id="交叉验证">交叉验证</h2>
-<p>这里我们描述一下交叉验证(cross-validation)，交叉验证是机器学习中有关方法评估的一个基础工具，它能在一项预测或机器学习任务中进行参数选择。假设我们有一组许多特征值的观测值，并且每个观测值都与一个标签关联。我们将这个集合称为我们的训练集。我们的任务就是通过从训练数据中学习模式来预测任何新样本的标签。对于一个具体的例子来说，例如我们会将每个基因看作是一个特征值，然后我们再来计算一组没有标签的数据（测试数据集），看一下这组数据是新样本中的哪些组织类型。</p>
-<p>如果我们选择了一个可调参数的机器学习算法，那么我们必须要有一个策略来这个参数选择一个最佳值。我们可以尝试着先计算一批数据，例如可以把一些已知样本的数据当作训练集，然后算法会计算出这些值产生的错误数据，然后我们会选择在我们的训练集中表现最好的值。</p>
-<p>现在我们使用前面提到过的组织基要因表达数据集来看一下，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(tissuesGeneExpression)</div><div class="line">data(tissuesGeneExpression)</div></pre></td></tr></table></figure>
-<p>为了说明我们这么做的目的，我们把那些样本数目较少的组织剔除掉，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">table(tissue)</div><div class="line">ind &lt;- which(tissue != &quot;placenta&quot;)</div><div class="line">y &lt;- tissue[ind]</div><div class="line">X &lt;- t( e[,ind] )</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; table(tissue)</div><div class="line">tissue</div><div class="line"> cerebellum       colon endometrium hippocampus      kidney       liver    placenta </div><div class="line">         <span class="number">38</span>          <span class="number">34</span>          <span class="number">15</span>          <span class="number">31</span>          <span class="number">39</span>          <span class="number">26</span>           <span class="number">6</span></div></pre></td></tr></table></figure>
-<p>我们把<code>placenta(胎盘)</code>这个组织去掉了，现在我们使用kNN法来进行归类，先使用 <span class="math inline">\(k=5\)</span> 这个参数试一下。当我们把这个参数用于训练集和测试集时，我们在预测训练集中的组织时，平均误差是多少呢？</p>
-<p>计算过程如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">pred &lt;- knn(train =  X, test = X, cl=y, k=5)</div><div class="line">mean(y != pred)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(y != pred)</div><div class="line">[<span class="number">1</span>] <span class="number">0</span></div></pre></td></tr></table></figure>
-<p>当我们使用 <span class="math inline">\(k=5\)</span> 这个参数时，没有发现错误，如果是 <span class="math inline">\(k=1\)</span> 呢？如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pred &lt;- knn(train=X, test=X, cl=y, k=1)</div><div class="line">mean(y != pred)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(y != pred)</div><div class="line">[<span class="number">1</span>] <span class="number">0</span></div></pre></td></tr></table></figure>
-<p>当我们试图通过对观测值进行分类用于训练(train)模型时，这一过程可能有误导性。事实时，对于kNN法来说，使用 <span class="math inline">\(k=1\)</span> 这个参数时，总是能在训练集中得到0个分类错误，因为我们使用的是数据本身。了解算法是否可靠的方法就让它对未见过的样本进行预测。类似地，如果我们想知道可调参数的最佳值是什么，我们查看不同的参数值在那些不在训练集中的样本上表现如何。</p>
-<p>交叉验证是机器学习中广泛使用的一种方法，它解决了训练集和测试集的问题，同时它仍然可以使用所有的数据用于检测预测的准确性。它通过将所有的数据分散成一定数据的折叠(fold)（注：这里有关交叉验证的问题，可以参考以前的文章<a href="http://rvdsd.top/2018/07/05/StatQuest/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。如果我们有 <span class="math inline">\(N\)</span> 个折叠，那么算法的第一步就是使用 <span class="math inline">\((N-1)\)</span> 个折叠来训练算法，并且剩下一个折叠用于测试算法的准确性。然后重复 <span class="math inline">\(N\)</span> 次，直到所有的折叠都在测试集中一样被使用。如果我们有M个参数需要进行尝试，那么我们需要在外部循环中完成这个过程，因为我们需要总共拟合 <span class="math inline">\(N \times M\)</span>次。</p>
-<p>在R中，我们使用<code>caret</code>包中的<code>createFolds()</code>函数来实现这个过程,在下面的案例中，我们使用5个折叠来计算我们的基因表达数据，这个数字与组织的数目比较接近。此外，<code>createFold()</code>函数中有个参数<code>k</code>，这里不要与kNN算法中的<code>k</code>混淆，它们只是相同的字符，具体意义不一样，它们完全不相关。<code>createFolds()</code>会寻问用户要创建多少个折叠，也就是上文提到的 <span class="math inline">\(N\)</span> 。而<code>knn()</code>中的参数<code>k</code>则是说明在一个新的样本中，使用多少个最接近的观测值。现在我们创建10个折叠，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">library(caret)</div><div class="line">set.seed(1)</div><div class="line">idx &lt;- createFolds(y, k=10)</div><div class="line">sapply(idx, length)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; sapply(idx, length)</div><div class="line">Fold01 Fold02 Fold03 Fold04 Fold05 Fold06 Fold07 Fold08 Fold09 Fold10 </div><div class="line">    <span class="number">18</span>     <span class="number">19</span>     <span class="number">17</span>     <span class="number">17</span>     <span class="number">18</span>     <span class="number">20</span>     <span class="number">19</span>     <span class="number">19</span>     <span class="number">20</span>     <span class="number">16</span></div></pre></td></tr></table></figure>
-<p>折叠会以数字索引列表的形式返回，因此数据的第一个折叠是：</p>
-<p>The folds are returned as a list of numeric indices. The first fold of data is therefore:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">y[idx[[1]]] ##the labels</div><div class="line">head( X[idx[[1]], 1:3] ) ##the genes (only showing the first 3 genes...)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; y[idx[[<span class="number">1</span>]]] <span class="comment">##the labels</span></div><div class="line"> [<span class="number">1</span>] <span class="string">"kidney"</span>      <span class="string">"kidney"</span>      <span class="string">"hippocampus"</span> <span class="string">"hippocampus"</span> <span class="string">"hippocampus"</span> <span class="string">"cerebellum"</span> </div><div class="line"> [<span class="number">7</span>] <span class="string">"cerebellum"</span>  <span class="string">"cerebellum"</span>  <span class="string">"colon"</span>       <span class="string">"colon"</span>       <span class="string">"colon"</span>       <span class="string">"colon"</span>      </div><div class="line">[<span class="number">13</span>] <span class="string">"kidney"</span>      <span class="string">"kidney"</span>      <span class="string">"endometrium"</span> <span class="string">"endometrium"</span> <span class="string">"liver"</span>       <span class="string">"liver"</span>      </div><div class="line">&gt; head( X[idx[[<span class="number">1</span>]], <span class="number">1</span>:<span class="number">3</span>] ) <span class="comment">##the genes (only showing the first 3 genes...)</span></div><div class="line">                1007_s_at  1053_at   117_at</div><div class="line">GSM12075.CEL.gz  <span class="number">9.966782</span> <span class="number">6.060069</span> <span class="number">7.644452</span></div><div class="line">GSM12098.CEL.gz  <span class="number">9.945652</span> <span class="number">5.927861</span> <span class="number">7.847192</span></div><div class="line">GSM21214.cel.gz <span class="number">10.955428</span> <span class="number">5.776781</span> <span class="number">7.493743</span></div><div class="line">GSM21218.cel.gz <span class="number">10.757734</span> <span class="number">5.984170</span> <span class="number">8.525524</span></div><div class="line">GSM21230.cel.gz <span class="number">11.496114</span> <span class="number">5.760156</span> <span class="number">7.787561</span></div><div class="line">GSM87086.cel.gz  <span class="number">9.798633</span> <span class="number">5.862426</span> <span class="number">7.279199</span></div></pre></td></tr></table></figure>
-<p>我们可以看到，事实上组织在10个折叠中表现非常平均：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sapply(idx, function(i) table(y[i]))</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; sapply(idx, <span class="keyword">function</span>(i) table(y[i]))</div><div class="line">            Fold01 Fold02 Fold03 Fold04 Fold05 Fold06 Fold07 Fold08 Fold09 Fold10</div><div class="line">cerebellum       <span class="number">3</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">3</span></div><div class="line">colon            <span class="number">4</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">3</span></div><div class="line">endometrium      <span class="number">2</span>      <span class="number">2</span>      <span class="number">1</span>      <span class="number">1</span>      <span class="number">1</span>      <span class="number">2</span>      <span class="number">1</span>      <span class="number">2</span>      <span class="number">2</span>      <span class="number">1</span></div><div class="line">hippocampus      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span></div><div class="line">kidney           <span class="number">4</span>      <span class="number">4</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span></div><div class="line">liver            <span class="number">2</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">2</span>      <span class="number">2</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">2</span></div></pre></td></tr></table></figure>
-<p>因为不同组织的表达谱不一样，因此使用所有的基因来预测组织非常容易。为了说明这种算法的原理，我们这里只使用二维数据来进行预测，现在我们使用<code>cmdscale()</code>函数进行降低处理：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">Xsmall &lt;- cmdscale(dist(X))</div><div class="line">plot(Xsmall,col=as.fumeric(y))</div><div class="line">legend(<span class="string">"topleft"</span>,levels(factor(y)),fill=seq_along(levels(factor(y))))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913180841.jpeg">
-
-</div>
-<p>现在我们在单个折叠上试一下kNN法。我们使用<code>Xsmall</code>中的样本（不用第1个样本），用<code>knn()</code>函数计算一下。我们使用<code>-idx[[1]]</code>移除第1个样本，这样将剩下来的样本当作测试集。参数<code>cl</code>用于指定真分类（true classificaiton）或者是训练集的标签（这里指的是组织）。现在我们使用5个观测值来为我们的kNN算法指定分类，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pred &lt;- knn(train=Xsmall[ -idx[[1]] , ], test=Xsmall[ idx[[1]], ], cl=y[ -idx[[1]] ], k=5)</div><div class="line">table(true=y[ idx[[1]] ], pred)</div><div class="line">mean(y[ idx[[1]] ] != pred)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; table(true=y[ idx[[<span class="number">1</span>]] ], pred)</div><div class="line">             pred</div><div class="line">true          cerebellum colon endometrium hippocampus kidney liver</div><div class="line">  cerebellum           <span class="number">2</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">1</span>      <span class="number">0</span>     <span class="number">0</span></div><div class="line">  colon                <span class="number">0</span>     <span class="number">4</span>           <span class="number">0</span>           <span class="number">0</span>      <span class="number">0</span>     <span class="number">0</span></div><div class="line">  endometrium          <span class="number">0</span>     <span class="number">0</span>           <span class="number">1</span>           <span class="number">0</span>      <span class="number">1</span>     <span class="number">0</span></div><div class="line">  hippocampus          <span class="number">1</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">2</span>      <span class="number">0</span>     <span class="number">0</span></div><div class="line">  kidney               <span class="number">0</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>      <span class="number">4</span>     <span class="number">0</span></div><div class="line">  liver                <span class="number">0</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>      <span class="number">0</span>     <span class="number">2</span></div><div class="line">&gt; mean(y[ idx[[<span class="number">1</span>]] ] != pred)</div><div class="line">[<span class="number">1</span>] <span class="number">0.1666667</span></div></pre></td></tr></table></figure>
-<p>现在我们出现了一些分类错误，我们计算一下剩余折叠，看一下情况怎么样？</p>
-<p>Now we have some misclassifications. How well do we do for the rest of the folds?</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">for (i in 1:10) &#123;</div><div class="line">  pred &lt;- knn(train=Xsmall[ -idx[[i]] , ], test=Xsmall[ idx[[i]], ], cl=y[ -idx[[i]] ], k=5)</div><div class="line">  print(paste0(i,&quot;) error rate: &quot;, round(mean(y[ idx[[i]] ] != pred),3)))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) &#123;</div><div class="line">+   pred &lt;- knn(train=Xsmall[ -idx[[i]] , ], test=Xsmall[ idx[[i]], ], cl=y[ -idx[[i]] ], k=<span class="number">5</span>)</div><div class="line">+   print(paste0(i,<span class="string">") error rate: "</span>, round(mean(y[ idx[[i]] ] != pred),<span class="number">3</span>)))</div><div class="line">+ &#125;</div><div class="line">[<span class="number">1</span>] <span class="string">"1) error rate: 0.111"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"2) error rate: 0.105"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"3) error rate: 0.118"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"4) error rate: 0.118"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"5) error rate: 0.278"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"6) error rate: 0.1"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"7) error rate: 0.105"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"8) error rate: 0.158"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"9) error rate: 0.15"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"10) error rate: 0.312"</span></div></pre></td></tr></table></figure>
-<p>所以，我们会看到每个折叠都会发生一些变化，其错误率徘徊在0.1-0.3之间。但是，<span class="math inline">\(k=5\)</span> 是最佳的参数吗？为了研究 <span class="math inline">\(k\)</span> 的最佳数值，我们需要创建一个外部循环，我们会在其中尝试不同的 <span class="math inline">\(k\)</span> 值，然后计算出所有折叠的平均测试集误差。我们将会尝试从1到12的每个 <span class="math inline">\(k\)</span> 值。不过这里我们不使用<code>for</code>循环，我们将使用<code>sapply</code>，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">set.seed(1)</div><div class="line">ks &lt;- 1:12</div><div class="line">res &lt;- sapply(ks, function(k) &#123;</div><div class="line">  ##try out each version of k from 1 to 12</div><div class="line">  res.k &lt;- sapply(seq_along(idx), function(i) &#123;</div><div class="line">    ##loop over each of the 10 cross-validation folds</div><div class="line">    ##predict the held-out samples using k nearest neighbors</div><div class="line">    pred &lt;- knn(train=Xsmall[ -idx[[i]], ],</div><div class="line">                test=Xsmall[ idx[[i]], ],</div><div class="line">                cl=y[ -idx[[i]] ], k = k)</div><div class="line">    ##the ratio of misclassified samples</div><div class="line">    mean(y[ idx[[i]] ] != pred)</div><div class="line">  &#125;)</div><div class="line">  ##average over the 10 folds</div><div class="line">  mean(res.k)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>对于每个 <span class="math inline">\(k\)</span> 值，我们都有一个来自于交叉验证的关联测试集错误率，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">res</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; res</div><div class="line"> [<span class="number">1</span>] <span class="number">0.1978212</span> <span class="number">0.1703423</span> <span class="number">0.1882933</span> <span class="number">0.1750989</span> <span class="number">0.1613291</span> <span class="number">0.1500791</span> <span class="number">0.1552670</span> <span class="number">0.1884813</span></div><div class="line"> [<span class="number">9</span>] <span class="number">0.1822020</span> <span class="number">0.1763197</span> <span class="number">0.1761318</span> <span class="number">0.1813197</span></div></pre></td></tr></table></figure>
-<p>我们可以绘制出每个 <span class="math inline">\(k\)</span> 值下的错误率图，它可以帮助我们查看哪个区域中的错误率最小，如下所示：</p>
-<figure class="highlight plain"><figcaption><span>misclassification_error, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plot(ks, res, type=&quot;o&quot;,ylab=&quot;misclassification error&quot;)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913184146.jpeg">
-
-</div>
-<p>我们要记住一点就是，训练集是一个随机变量，因为我们生成折叠的程序涉随机数的生成，因此，在产生“最好”的 <span class="math inline">\(k\)</span> 值时，这个 <span class="math inline">\(k\)</span> 值的产生过程也是一个随机变量。如果我们有新的训练集，并且如果我们再创建折叠，那么我们有可能会得到一个新的优化的 <span class="math inline">\(k\)</span> 值。</p>
-<p>最后，为了说明基因表达数据能够很好的预测组织类型，我们使用5维数据，而非是2维数据来展示这个过程，毕竟5维数据的信息量更丰富，如下所示：</p>
-<figure class="highlight plain"><figcaption><span>misclassification_error2, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">Xsmall &lt;- cmdscale(dist(X),k=5)</div><div class="line">set.seed(1)</div><div class="line">ks &lt;- 1:12</div><div class="line">res &lt;- sapply(ks, function(k) &#123;</div><div class="line">  res.k &lt;- sapply(seq_along(idx), function(i) &#123;</div><div class="line">    pred &lt;- knn(train=Xsmall[ -idx[[i]], ],</div><div class="line">                test=Xsmall[ idx[[i]], ],</div><div class="line">                cl=y[ -idx[[i]] ], k = k)</div><div class="line">    mean(y[ idx[[i]] ] != pred)</div><div class="line">  &#125;)</div><div class="line">  mean(res.k)</div><div class="line">&#125;)</div><div class="line">plot(ks, res, type=&quot;o&quot;,ylim=c(0,0.20),ylab=&quot;misclassification error&quot;)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913184233.jpeg">
-
-</div>
-<p>上图显示的是，使用5维数据后，错误分配与 <span class="math inline">\(k\)</span> 值变化的关系。</p>
-<p>重要提示：我们使用<code>cmdscale()</code>函数来计算整个数据集，用于创建一个较小的数据集来说明kNN的计算过程。然而在真正的机器学习应用中，这样的处理会低估小样本测试数据集的错误，但是，使用未标记的完全数据集进行降维会改善这种情况。一个种更安全的做法就是为每个折叠分别转换数据（这句不懂， 我个人的猜测就是，对每个折叠进行计算，把几个折叠中的每一个都当作测试集，而不是将几个折叠放一块当作测试集），方法就是仅用训练集来计算旋转和降维，并将其应用于测试集。</p>
-<p>最后一段实在没读懂，这里放原文：</p>
-<blockquote>
-<p>However, in a real machine learning application, this may result in an underestimation of test set error for small sample sizes, where dimension reduction using the unlabeled full dataset gives a boost in performance. A safer choice would have been to transform the data separately for each fold, by calculating a rotation and dimension reduction using the training set only and applying this to the test set.</p>
-</blockquote>
-<h2 id="练习">练习</h2>
-<p>P407</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3127,7 +3107,7 @@ Y_{i,j} = \mu +
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">225</span>
+                  <span class="site-state-item-count">226</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3149,7 +3129,7 @@ Y_{i,j} = \mu +
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">112</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3226,7 +3206,7 @@ Y_{i,j} = \mu +
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共905.4k字</span>
+  <span class="post-count">博客全站共911.9k字</span>
 </div>
 
         

@@ -259,6 +259,312 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/03/BioItem/生信-转录组学习笔记03了解fastq测序数据/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/03/BioItem/生信-转录组学习笔记03了解fastq测序数据/" itemprop="url">转录组学习笔记03-了解fastq测序数据</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-03T12:00:00+08:00">
+                2017-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,124
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="任务">任务</h2>
+<blockquote>
+<p>需要用安装好的sratoolkit把sra文件转换为fastq格式的测序文件，并且用fastqc软件测试测序文件的质量！ 作业，理解测序reads，GC含量，质量值，接头，index，fastqc的全部报告，搜索中文教程，并发在论坛上面。 来源于生信技能树：http://www.biotrainee.com/forum.php?mod=viewthread&amp;tid=1750#lastpost</p>
+</blockquote>
+<h2 id="将sra转换为fastq格式">将sra转换为fastq格式</h2>
+<h4 id="sra格式">sra格式</h4>
+<p>下载的原始数据是sra格式，SRA（Sequence ReadArchive）数据库是用于存储二代测序的原始数据，包括 454，Illumina，SOLiD，IonTorrent，Helicos 和 CompleteGenomics。除了原始序列数据外，SRA现在也存在raw reads在参考基因的比对信息。</p>
+<h4 id="fastq格式">fastq格式：</h4>
+<p>Fastq格式是一种基于文本的存储生物序列和对应碱基（或氨基酸）质量的文件格式。最初由桑格研究所（Wellcome Trust Sanger Institute）开发出来，现已成为存储高通量测序数据的事实标准。</p>
+<h4 id="fastq格式说明">fastq格式说明</h4>
+<p>FASTQ文件中每个序列通常有四行： 1. 序列标识以及相关的描述信息，以‘@’开头；后面跟着序列的唯一ID以及相关说明内容。 2. 第二行是核酸序列，是有ATCGN字符组成 3. 第三行以‘+’开头，后面是序列标示符、描述信息，或者什么也不加 4. 第四行，每个测序碱基质量，是用ASCII码来表示的，与第二行的字符数一致。 碱基质量得分与错误率的换算关系： Q = -10log10p（p表示测序的错误率，Q表示碱基质量分数） ASCII值与碱基质量得分之间的关系： Phred64 Q=ASCII转换后的数值-64 Phred33 Q=ASCII转换后的数值-33</p>
+<h5 id="一个典型的fastq文件如下所示">一个典型的fastq文件如下所示：</h5>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@SEQ_ID</div><div class="line">GATTTGGGGTTCAAAGCAGTATCGATCAAATAGTAAATCCATTTGTTCAACTCACAGTTT</div><div class="line">+</div><div class="line">!&apos;&apos;*((((***+))%%%++)(%%%%).1***-+*&apos;&apos;))**55CCF&gt;&gt;&gt;&gt;&gt;&gt;CCCCCCC65</div></pre></td></tr></table></figure>
+<blockquote>
+<p>如何判断是Phred64 还是 Phred33 ？ ASCII值小于等于58（相应的质量得分小于等于25）对应的字符只有在Phred+33的编码中被使用，所有Phred+64所使用的字符的ASCII值都大于等于59。在通常情况下，ASCII值大于等于74的字符只出现在Phred+64中。如果是最近两年的测序数据，一般都是Phred33形式的。参考文章：http://blog.csdn.net/huyongfeijoe/article/details/51613827</p>
+</blockquote>
+<h4 id="转换工具fastq-dump">转换工具：fastq-dump</h4>
+<p>将sra格式转换为fastq格式的工具是sratoolkit的fastq-dump，可以先用fastq-dump -h看一下帮助文件，分为如下几个部分：</p>
+<blockquote>
+<p>输入： -A|—accession 序列号 处理中: Read Splitting, Full Spot Filters, Common Filters, Filters based on alignments, Filters for individual reads。 基本都是些过滤参数。不太常用 输出： -O|—outdir 输出文件夹， -Z|—stdout 输出到标准输出， —gzip/—bzip2 输出为压缩格式 多文件选项： 常用的就是—split-3，split-3表示如果是单端测序则一个sra文件出来一个fastq文件，如果是双末端，则一个sra问件对应两个fastq问件SRRXXXXXX_1.fastq,SRRXXXXXX_2.fastq 格式化： 分为序列， 质量等，不常用 –gzip 使得输出的结果是.gz 的格式</p>
+</blockquote>
+<p>现在将disk2/sra下的sra文件转化为fastq格式，其中输入目录为disk2/sra，输出目录为/disk2/data/rna-seq，命令如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">for ((i=56;i&lt;=62;i++))</div><div class="line">do fastq-dump --gzip --split-3 -A ~/disk2/sra/SRR35899$i.sra -O ~/disk2/data/rna-seq</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>转换后的结果如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnqseqfastq.png"></p>
+<h2 id="对fastqc格式进行质控">对fastqc格式进行质控</h2>
+<h3 id="工具fastqc">工具：Fastqc</h3>
+<p>用法如下所示：</p>
+<blockquote>
+<p>fastqc [-o output dir] [–(no)extract] [-f fastq|bam|sam] [-c contaminant file] seqfile1 .. seqfileN 1. 参数： -o 输出目录，需自己创建目录 2. –(no)extract 是否解压输出文件，默认是自动解压缩zip文件。加上–noextract不解压文件。 3. -f 指定输入文件的类型，支持fastq|bam|sam三种格式的文件，默认自动识别。 4. -t 同时处理的文件数目。 5. -c 是contaminant 文件，会从中搜索overpresent 序列。</p>
+</blockquote>
+<p>代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkdir -p ~/disk2/data/QC</div><div class="line">cd ~/disk2/data/rna-seq</div><div class="line"># 将所有的数据进行质控，得到zip的压缩文件和html文件</div><div class="line">fastqc -o ~/disk2/data/QC *.fastq.gz</div></pre></td></tr></table></figure>
+<h3 id="质控结果查看">质控结果查看：</h3>
+<h4 id="质控后的文件如下所示">1. 质控后的文件如下所示：</h4>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqqc.png">
+
+</div>
+<p>质控结果有14个html文件，可以选择用浏览器打开查看最终的QC reports。随便打开一个质控结果文件，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseqqc1.png">
+
+</div>
+<h4 id="质控报告的内容">2. 质控报告的内容</h4>
+<p>左边是目录概要，一共12项内容，如下所示：</p>
+<ol style="list-style-type: decimal">
+<li>Basic Statistics</li>
+<li>Per base sequence quality</li>
+<li>Per tile sequence quality</li>
+<li>Per sequence quality scores</li>
+<li>Per base sequence content</li>
+<li>Per sequence GC content</li>
+<li>Per base N content</li>
+<li>Sequence Length Distribution</li>
+<li>Sequence Duplication Levels</li>
+<li>Overrepresented sequences</li>
+<li>Adapter Content</li>
+<li>Kmer Content</li>
+</ol>
+<p>可以点击想要看的结果，右边会跳转到特定详细的可视化结果。绿色代表“通过”，黄色代表“警告”，红色代表“不通过，失败”，如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult1.png"></p>
+<h6 id="basic-statistics">2.1 Basic Statistics</h6>
+<p>基本的数据统计包括文件名，文件类型，编码形式，总的序列数，质量差的序列，序列平均长度，GC含量。 <img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult2.png"></p>
+<h6 id="per-base-sequence-quality">2.2 Per base sequence quality</h6>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult3.png">
+
+</div>
+<p>图片太大，下部图片如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult4.png"> 上图表示的是每个read各位置碱基的测序质量，具体的理解如下所示：</p>
+<ol style="list-style-type: decimal">
+<li>横轴表示碱基的位置，数字就是表示碱基，即1到51个碱基。</li>
+<li>纵轴是质量分数，Quality score=-10log10p（p代表错误率），所以当质量分数为40的时候，p就是0.0001，质量算高了。</li>
+<li>图中每1个boxplot，都是该位置的所有序列的测序质量的一个统计，上面的bar是90%分位数，下面的bar是10%分位数，箱子的中间的横线是50%分位数，箱子的上边是75%分位数，下边是25%分位数。</li>
+<li>红色线代表中位数，蓝色代表平均数的连线，黄色是25%-75%区间，触须是10%-90%区间。若任一位置的下四分位数低于10或者中位数低于25，出现“警告”；若任一位置的下四分位数低于5或者中位数低于20，出现“失败，Fail”。</li>
+</ol>
+<p>一般要求此图中，所有位置的10%分位数大于20,也就是我们常说的Q20过滤（即质量数低于20的reads清除掉）W。</p>
+<h6 id="per-tile-sequence-quality">2.3 Per tile sequence quality</h6>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult5.png">
+
+</div>
+<p>检查reads中每一个碱基位置在不同的测序小孔之间的偏离度，蓝色代表偏离度小，质量好，越红代表偏离度越大，质量越差。纵轴是tail的Index编号。 这个图主要是为了防止，在测序过程中，某些tail受到不可控因素的影响而出现测序质量偏低。蓝色代表测序质量很高，暖色代表测序质量不高，如果某些tail出现暖色，可以在后续分析中把该tail测序的结果全部都去除</p>
+<h6 id="per-sequence-quality-scoresreads">2.4 Per sequence quality scores，reads</h6>
+<p>质量的分布，当峰值小于27时，警告；当峰值小于20时，fail。可以看出这个测序的报告峰值在38左右。 假如我测的1条序列长度为101bp，那么这101个位置每个位置Q之的平均值就是这条reads的质量值。该图横轴是0-40，表示Q值，纵轴是每个值对应的reads数目</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult6.png">
+
+</div>
+<h6 id="per-base-sequence-content">2.5 Per base sequence content</h6>
+<p>对所有reads的每一个位置，统计ATCG四种碱基的分布，横轴为位置，这里是1-51bp，纵轴为碱基含量（百分数），正常情况下每个位置每种碱基出现的概率是相近的，四条线应该平行且相近。当部分位置碱基的比例出现bias时，即四条线在某些位置纷乱交织，往往提示我们有overrepresented sequence的污染。本结果前10个位置，每种碱基频率有明显的差别，说明有污染。当任一位置的A/T比例与G/C比例相差超过10%，报“WARN”；当任一位置的A/T比例与G/C比例相差超过20%，报“FAIL”。 理论上来说，A和T应该相等，G和C应该相等，但是一般测序的时候，刚开始测序仪状态不稳定，很可能出现上图的情况。像这种情况，即使测序的得分很高，也需要cut开始部分的序列信息，一般遇到到这种情况，会cut前面5bp。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult7.png">
+
+</div>
+<h6 id="per-sequence-gc-content">2.6 Per Sequence GC Content</h6>
+<p>统计reads的平均GC含量的分布。横轴是0 - 100%； 纵轴是每条序列GC含量对应的数量。红线是实际情况，蓝线是理论分布（正态分布，均值不一定在50%，而是由平均GC含量推断的），两个应该比较接近才比较好。 曲线形状的偏差往往是由于文库的污染或是部分reads构成的子集有偏差（overrepresented reads）。形状接近正态但偏离理论分布的情况提示我们可能有系统偏差。偏离理论分布的reads超过15%时，报“WARN”；偏离理论分布的reads超过30%时，报“FAIL”。当红色的线出现双峰，基本肯定是混入了其他物种的DNA序列。这张图中的信息良好。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult8.png">
+
+</div>
+<h6 id="per-base-n-content">2.7 Per base N content</h6>
+<p>当测序仪器不能辨别某条reads的某个位置到底是什么碱基时，就会产生“N”，统计N的比率。正常情况下，N值非常小。当任意位置的N的比例超过5%，报“WARN”；当任意位置的N的比例超过20%，报“FAIL”。 <img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult9.png"></p>
+<h6 id="sequence-length-distribution">2.8 Sequence Length Distribution</h6>
+<p>reads长度分布，每次测序仪测出来的长度在理论上应该是完全相等的，但是总会有一些偏差。比如此图中，51bp是主要的，但是还是有少量的50和52的长度，不过数量比较少，不影响后续分析。当测序的长度不同时，如果很严重，则表明测序仪在此次测序过程中产生的数据不可信。当reads长度不一致时报“WARN”；当有长度为0的read时报“FAIL”。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult10.png">
+
+</div>
+<h6 id="sequence-duplication-levels">2.9 Sequence Duplication Levels</h6>
+<p>统计不同拷贝数的reads的频率。测序深度越高，越容易产生一定程度的duplication，这是正常的现象，但如果duplication的程度很高，就提示我们可能有bias的存在。横坐标是duplication的次数，纵坐标是duplicated reads的数目，以unique reads的总数作为100%。下图中，横坐标表示序列重复水平；纵坐标代表重复水平序列占所有序列的百分比。下图中大于10个重复的reads占总序列的20%以上，其他依次类推。当非unique的reads占总数的比例大于20%时，报“WARN”；当非unique的reads占总数的比例大于50%时，报“FAIL“。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult11.png">
+
+</div>
+<h6 id="overrepresented-sequences">2.10 Overrepresented sequences</h6>
+<p>一条序列的重复数，因为一个转录组中有非常多的转录本，一条序列再怎么多也不太会占整个转录组的一小部分（比如1%），如果出现这种情况，不是这种转录本巨量表达，就是样品被污染。这个模块列出来大于全部转录组1%的reads序列，但是因为用的是前200,000条，所以其实参考意义不大，完全可以忽略。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult12.png">
+
+</div>
+<h6 id="adapter-content">2.11 Adapter content</h6>
+<p>接头含量。①此图衡量的是序列中两端adapter的情况；②如果在当时fastqc分析的时候-a选项没有内容，则默认使用图例中的四种通用adapter序列进行统计；③本例中adapter都已经去除，如果有adapter序列没有去除干净的情况，在后续分析的时候需要先使用cutadapt软件进行去接头。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult13.png">
+
+</div>
+<h6 id="kmer-content">2.12 Kmer content</h6>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult14.png"> ①这个图统计的是，在序列中某些特征的短序列重复出现的次数；② 我们可以看到1-8bp的时候图例中的几种短序列都出现了非常多的次数，一般来说，出现这种情况，要么是adapter没有去除干净，而又没有使用-a参数；要么就是序列本身可能重复度比较高，如建库PCR的时候出现了bias；④ 对于这种情况，我的办法是可以cut掉前面的一些长度，可以试着cut 5~8bp</p>
+<h2 id="批量质控结果查看multiqc">批量质控结果查看MultiQC</h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># 安装multiqc</div><div class="line">$ conda install -c bioconda multiqc</div><div class="line"># 测试</div><div class="line">$ multiqc --help</div><div class="line"># 进入存放QC结果的文件夹，空白处右键“在终端打开”</div><div class="line"></div><div class="line"># 扫描结果文件，忽略html文件</div><div class="line">$ multiqc ./*fastqc.zip --ignore *.html</div><div class="line"># 最后会默认生成一个名为multiqc_report.html文件，用浏览器查看</div></pre></td></tr></table></figure>
+<h2 id="参考资料">参考资料：</h2>
+<p><a href="https://zhuanlan.zhihu.com/p/20731723" target="_blank" rel="external">孟浩巍.20160410 测序分析——使用 FastQC 做质控</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/02/BioItem/生信-转录组学习笔记02-读文章获取测序数据/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -948,190 +1254,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/22/Tools/hexo公式渲染/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/22/Tools/hexo公式渲染/" itemprop="url">hexo公式渲染</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-22T12:02:00+08:00">
-                2017-09-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信工具/" itemprop="url" rel="index">
-                    <span itemprop="name">生信工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  56
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ol style="list-style-type: decimal">
-<li>安装hexo-math</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
-<p>2.<code>_config.yml</code>的配置 添加以下信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">math:</div><div class="line">  engine: &apos;mathjax&apos; # or &apos;katex&apos;</div><div class="line">  mathjax:</div><div class="line">    src: custom_mathjax_source</div><div class="line">    config:</div><div class="line">      # MathJax config</div><div class="line">  katex:</div><div class="line">    css: custom_css_source</div><div class="line">    js: custom_js_source # not used</div><div class="line">    config:</div><div class="line">      # KaTeX config</div></pre></td></tr></table></figure>
-<p>参考资料：</p>
-<ol style="list-style-type: decimal">
-<li>https://github.com/hexojs/hexo-math</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/22/BioStatistics/生物统计-13主成分分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1424,6 +1546,190 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
 <li><a href="https://mp.weixin.qq.com/s/-FuNX0LiKHNRysSdgenK_g" target="_blank" rel="external">如何理解矩阵特征值和特征向量？</a></li>
 <li><a href="https://ask.hellobi.com/blog/dataman/3073" target="_blank" rel="external">数据挖掘系列篇(15):R语言VS主成分分析的案例</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/23795029" target="_blank" rel="external">Learn R | 数据降维之主成分分析（下）</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/22/Tools/hexo公式渲染/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/22/Tools/hexo公式渲染/" itemprop="url">hexo公式渲染</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-22T12:02:00+08:00">
+                2017-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  56
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol style="list-style-type: decimal">
+<li>安装hexo-math</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
+<p>2.<code>_config.yml</code>的配置 添加以下信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">math:</div><div class="line">  engine: &apos;mathjax&apos; # or &apos;katex&apos;</div><div class="line">  mathjax:</div><div class="line">    src: custom_mathjax_source</div><div class="line">    config:</div><div class="line">      # MathJax config</div><div class="line">  katex:</div><div class="line">    css: custom_css_source</div><div class="line">    js: custom_js_source # not used</div><div class="line">    config:</div><div class="line">      # KaTeX config</div></pre></td></tr></table></figure>
+<p>参考资料：</p>
+<ol style="list-style-type: decimal">
+<li>https://github.com/hexojs/hexo-math</li>
 </ol>
 
           
@@ -2622,213 +2928,6 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/07/04/Experiment/病毒包装笔记(4)-质粒的提取与测序/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/04/Experiment/病毒包装笔记(4)-质粒的提取与测序/" itemprop="url">病毒包装笔记(4)-质粒的提取与测序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-04T12:00:00+08:00">
-                2017-07-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,724
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="实验原理">实验原理</h2>
-<p>细菌质粒是一类双链、闭环的DNA，大小范围从1kb至200kb以上不等。各种质粒都是存在于细胞质中、独立于细胞染色体之外的自主复制的遗传成份，通常情况下可持续稳定地处于染色体外的游离状态，但在一定条件下也会可逆地整合到寄主染色体上，随着染色体的复制而复制， 并通过细胞分裂传递到后代。质粒已成为目前最常用的基因克隆的载体分子，重要的条件是可获得大量纯化的质粒DNA分子。目前已有许多方法可用于质粒DNA的提取，下面主要介绍碱裂解法提取质粒DNA的方法。</p>
-<p>在 pH 12.0～12.6 碱性环境中，细菌的线性大分子量染色体 DNA 变性分开，而共价闭环的质粒 DNA 虽然变性但仍处于拓扑缠绕状态。将 pH 调至中性并有高盐存在及低温的条件下，大部分染色体 DNA 、大分子量的 RNA 和蛋白质在去污剂 SDS 的作用下形成沉淀，而质粒 DNA 仍然为可溶状态。通过离心，可除去大部分细胞碎片、染色体 DNA 、 RNA 及蛋白质，质粒 DNA 尚在上清中，然后用硅酸纤维膜吸附或者酚、氯仿抽提进一步纯化质粒 DNA 。</p>
-<h2 id="实验材料">实验材料：</h2>
-<p>试剂盒E.Z.N.A.® Plasmid DNA Mini Kit I（OMEGA　Bio-tek） Epoch微孔板分光光度计（BioTek） 1.5mL管 5mL 离心管</p>
-<h2 id="实验流程">实验流程：</h2>
-<ol style="list-style-type: decimal">
-<li>自新鲜划痕选择培养板中分离单菌落，接种含适当选择性抗生素的5ml的LB培养基进行培养。37℃强力摇动（~300rpm）孵育16h。括DH5α。</li>
-<li>将5.0ml细菌室温10,000 g离心1min，放到5 mL的EP管中，如果菌液多，则分两次加入。</li>
-<li>轻轻倒出或吸走培养基并丢弃。</li>
-<li>加入250μL 的溶液I/Rnase A重悬沉淀，涡旋或用移液器反复吹打。充分重悬沉淀对于获得高质量的DNA非常重要。（<strong>注：溶液Ⅰ的成分及作用为：①50mM 葡萄糖—增稠，使悬浮后的大肠杆菌不会快速沉积到管子的底部；②10mM EDTA—抑制DNase的活性。这一步溶液中还可以加入RNase，③25mM Tris-HCl，pH=8.0—提取适当的缓冲液体系和PH；④RNase—除去RNA，此成分不受EDTA影响，并且可以在后续步骤中被除去</strong>）</li>
-<li>加入250μL溶液II（在孵箱中预热），倒置、转动试管数次使之轻轻混匀，得到透明的裂解产物。可能需要孵育2min。不要用力混合，以免使染色体DNA断裂，减低质粒的纯度。该步反应不要超过5min。溶液II不用时要拧紧瓶盖，以免试剂被空气中的CO2酸化。（<strong>溶液II的成分及作用为为①0.2M NaOH—裂解细菌，使双层膜变化为micelle微囊；②1%SDS—-结合蛋白质（平均2个氨基酸结合上一个SDS），和钾离子形成十二烷基硫酸钾PDS,进而形成大量的沉淀。</strong>）</li>
-<li>加入350μL溶液III，立即倒置试管数次混匀，直至白色絮状沉淀物形成。为避免形成局部沉淀，加入溶液III后应立即、充分混匀溶液。（<strong>溶液III的成分及作用为：①3M醋酸钾—钾离子和SDS形成PDS，大量的沉淀；②2M醋酸—中和NaOH，防止基因组DNA断裂。</strong>）</li>
-<li>室温≥13,000g离心10分钟。白色沉淀物形成，立即进行下一步操作。</li>
-<li>将HiBindDNAMini Column 加入到2mL的收集管上。</li>
-<li>小心翼翼的吸取上清液（注意不要吸到沉淀，如果不放心，可以将上清吸到另一新的EP管，然后再离心一次，吸取上清），加入装配在2ml收集管中的小量纯化柱I中。确保离心沉淀未受扰动，确保没有细胞碎片加入到柱子中。</li>
-<li>室温下10,000g离心1分钟，使裂解液完全通过柱子。再将裂解液加回柱子，再离心一次。</li>
-<li>丢弃滤过液，重新使用2ml收集管。</li>
-<li>加入500μL HBC缓冲液清洗柱子。(** HBC的成分没有查到，但根据相关的信息，HBC的成分应该是酚，氯仿，异戊醇的混合用；它们的作用分为：①酚—使残余的蛋白质变性（远强于氯仿）；②氯仿—和酚混合使用，增加比重。酞与氯仿是非极性分子，水是极性分子，当蛋白水溶液与酚或氯仿混合时，蛋白质分子之间的水分子就被酚或氯仿挤去，使蛋白失去水合状态而变性过离心，变性蛋白质的密度比水的密度为大，因而与水分离，沉淀在水相下面，从而与溶解在水相中的DNA分开；③异戊醇—可以使用酚：氯仿：异戊醇=25:24:1的比例抽提质粒DNA，在抽提DNA时，为了混合均匀，必须剧烈振荡容器数次，这时在混合液内易产生气泡，气泡会阻止相互间的充分作用。加入异戊醇能降低分子表面张力，所以能减少抽提过程中的泡沫产生。**)</li>
-<li>室温13,000 g离心1分钟，使溶液完成通过柱子。该步操作需确保残余的蛋白质污染被去除，以保证获得高品质的DNA以适合于下游的应用。</li>
-<li>丢弃滤过液，重新使用2ml收集管。</li>
-<li>加入700μL DNA Wash Buffer。DNA清洗液的浓缩液使用前必须用无水乙醇稀释（5倍稀释），如果DNA清洗液稀释液经过冷藏，则使用之前必须置于室温。(<strong>wash buffer的作用：加入无水乙醇后,终浓度差不多就是70%的乙醇溶液了,在沉淀的DNA中,由于过多的盐杂质存在,影响DNA的酶切等反应,wash buffer就是洗去这些盐杂质的。</strong>)</li>
-<li>室温10,000g离心1分钟。</li>
-<li>丢弃滤过液。</li>
-<li>将空柱子≥13,000 x g离心2min，使柱子的基质干燥。此步骤为关键操作，不可遗漏。</li>
-<li>将柱子放入干净的1.5ml微量离心管中，60℃孵育5min。</li>
-<li>将80μL无菌去离子水直接加入柱子基质上。</li>
-<li>60℃孵育5min。</li>
-<li>≥13,000 x g离心1min洗脱DNA。可以进行二次洗脱，以收集残存的DNA。</li>
-<li>检测质粒浓度，A260/A280的比率可以反映核酸的纯度。比值大于1.8表明核算的纯度在90%以上。将质粒稀释到400ng/uL。</li>
-</ol>
-<h2 id="测序">测序</h2>
-<p>取10uL的质粒样品，送到测序公司即可。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2879,7 +2978,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">225</span>
+                  <span class="site-state-item-count">226</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2901,7 +3000,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">112</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2978,7 +3077,7 @@ Z_{i}={\bf a&#39;_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dot
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共905.4k字</span>
+  <span class="post-count">博客全站共911.9k字</span>
 </div>
 
         

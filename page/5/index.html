@@ -259,6 +259,271 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/02/Python/Python数据处理笔记02-Excel文件处理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/02/Python/Python数据处理笔记02-Excel文件处理/" itemprop="url">Python数据分析02-Excel文件处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-02T12:00:00+08:00">
+                2019-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,929
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="python处理excel的包">Python处理Excel的包</h2>
+<p>在PYthon中处理Excel文件（扩展名为<code>.xls</code>和<code>.xlsx</code>的文件）的扩展包为<code>xlrd</code>和<code>xlwt</code>，这两个包对Excel中的日期型数据支持非常好。而在Anaconda Python中，已经含有了这两个包，不用额外安装。如果是最原始版本的Python，则需要下载这两个包。</p>
+<p>书中关于这两个包的介绍并不多，因此一些参数只是告诉你了要么用，至于这个参数具体是做什么的，这个包的某些函数还有没有其它的参数，作者并没有多讲，因此可以检索一下<code>xlrd</code>和<code>xlwt</code>这两个包的文档。</p>
+<p><a href="https://xlrd.readthedocs.io/en/latest/index.html" target="_blank" rel="external">xlrd文档</a></p>
+<p><a href="https://xlwt.readthedocs.io/en/latest/" target="_blank" rel="external">xlwt文档</a></p>
+<h2 id="练习数据下载">练习数据下载</h2>
+<p>《Python数据分析基础》这本书中的<a href="https://github.com/cbrownley/foundations-for-analytics-with-python" target="_blank" rel="external">源数据和源代码</a>已经上传至Github上，自己可以下载下来。</p>
+<p>下载后的Excel练习数据一共是3个，名称分别为：<code>sales_2013</code>，<code>sales_2014</code>和<code>sales_2015</code>。其中以<code>sales_2013</code>为例说明一下，这个文件中一共有3个Excel表格，名称分别为<code>january_2013</code>，<code>february_2013</code>和<code>march_2013</code>。</p>
+<p>Excel与csv文件的不同之处在于，一个Excel文件（后文称为一个Exce工作薄）含有多个工作表（sheet）。通过工作簿的内省可以获取工作表的信息：</p>
+<blockquote>
+<p>Python的内省（Introspection）是一种自我检查行为。在编程过程中，自省能够获取对象的类型与属性。</p>
+</blockquote>
+<p>注：在这篇笔记中，工作簿是指一个Excel文件，而一个工作簿中则中含有多个工作表。</p>
+<h2 id="获取工作表的信息">获取工作表的信息</h2>
+<p>下面的代码命名为<code>1excel_introspect_workbook.py</code>，它的功能在于获取一个Excel文件中工作表的数量、名称和每个工作表中行与列的数量，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">workbook = open_workbook(input_file)</div><div class="line">print(<span class="string">'Number of worksheets:'</span>, workbook.nsheets)</div><div class="line"><span class="keyword">for</span> worksheet <span class="keyword">in</span> workbook.sheets():</div><div class="line">    print(<span class="string">"Worksheet name:"</span>, worksheet.name, <span class="string">'\tRows:'</span>, \</div><div class="line">          worksheet.nrows, <span class="string">'\tColumns:'</span>, worksheet.ncols)</div></pre></td></tr></table></figure>
+<p>运行如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">1</span>excel_introspect_workbook.py sales_2013.xlsx</div><div class="line">Number of worksheets: <span class="number">3</span></div><div class="line">Worksheet name: january_2013    Rows: <span class="number">7</span>         Columns: <span class="number">5</span></div><div class="line">Worksheet name: february_2013   Rows: <span class="number">7</span>         Columns: <span class="number">5</span></div><div class="line">Worksheet name: march_2013      Rows: <span class="number">7</span>         Columns: <span class="number">5</span></div></pre></td></tr></table></figure>
+<p>解释代码：</p>
+<ol style="list-style-type: decimal">
+<li>使用<code>open_workbook</code>函数打开了一个Excel主文件，并赋给了一个名为<code>workbook</code>的对象，这个对象中包含了工作簿中的所有可用的信息，可以查看一下，如下所示：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>dir(workbook)</div><div class="line">[<span class="string">'__class__'</span>, <span class="string">'__delattr__'</span>, <span class="string">'__dict__'</span>, <span class="string">'__dir__'</span>, <span class="string">'__doc__'</span>, <span class="string">'__enter__'</span>, <span class="string">'__eq__'</span>, <span class="string">'__exit__'</span>, <span class="string">'__format__'</span>, <span class="string">'__ge__'</span>, <span class="string">'__getattribute__'</span>, <span class="string">'__gt__'</span>, <span class="string">'__hash__'</span>, <span class="string">'__init__'</span>, <span class="string">'__init_subclass__'</span>, <span class="string">'__le__'</span>, <span class="string">'__lt__'</span>, <span class="string">'__module__'</span>, <span class="string">'__ne__'</span>, <span class="string">'__new__'</span>, <span class="string">'__reduce__'</span>, <span class="string">'__reduce_ex__'</span>, <span class="string">'__repr__'</span>, <span class="string">'__setattr__'</span>, <span class="string">'__sizeof__'</span>, <span class="string">'__str__'</span>, <span class="string">'__subclasshook__'</span>, <span class="string">'__weakref__'</span>, <span class="string">'_all_sheets_count'</span>, <span class="string">'_all_sheets_map'</span>, <span class="string">'_externsheet_info'</span>, <span class="string">'_externsheet_type_b57'</span>, <span class="string">'_extnsht_count'</span>, <span class="string">'_extnsht_name_from_num'</span>, <span class="string">'_repr_these'</span>, <span class="string">'_resources_released'</span>, <span class="string">'_rich_text_runlist_map'</span>, <span class="string">'_sh_abs_posn'</span>, <span class="string">'_sharedstrings'</span>, <span class="string">'_sheet_list'</span>, <span class="string">'_sheet_names'</span>, <span class="string">'_sheet_num_from_name'</span>, <span class="string">'_sheet_visibility'</span>, <span class="string">'_sheethdr_count'</span>, <span class="string">'_supbook_addins_inx'</span>, <span class="string">'_supbook_count'</span>, <span class="string">'_supbook_locals_inx'</span>, <span class="string">'_supbook_types'</span>, <span class="string">'_xf_epilogue_done'</span>, <span class="string">'_xf_index_to_xl_type_map'</span>, <span class="string">'actualfmtcount'</span>, <span class="string">'addin_func_names'</span>, <span class="string">'biff2_8_load'</span>, <span class="string">'biff_version'</span>, <span class="string">'builtinfmtcount'</span>, <span class="string">'codepage'</span>, <span class="string">'colour_map'</span>, <span class="string">'countries'</span>, <span class="string">'datemode'</span>, <span class="string">'derive_encoding'</span>, <span class="string">'dump'</span>, <span class="string">'encoding'</span>, <span class="string">'fake_globals_get_sheet'</span>, <span class="string">'filestr'</span>, <span class="string">'font_list'</span>, <span class="string">'format_list'</span>, <span class="string">'format_map'</span>, <span class="string">'formatting_info'</span>, <span class="string">'get2bytes'</span>, <span class="string">'get_record_parts'</span>, <span class="string">'get_record_parts_conditional'</span>, <span class="string">'get_sheet'</span>, <span class="string">'get_sheets'</span>, <span class="string">'getbof'</span>, <span class="string">'handle_boundsheet'</span>, <span class="string">'handle_builtinfmtcount'</span>, <span class="string">'handle_codepage'</span>, <span class="string">'handle_country'</span>, <span class="string">'handle_datemode'</span>, <span class="string">'handle_externname'</span>, <span class="string">'handle_externsheet'</span>, <span class="string">'handle_filepass'</span>, <span class="string">'handle_name'</span>, <span class="string">'handle_obj'</span>, <span class="string">'handle_sheethdr'</span>, <span class="string">'handle_sheetsoffset'</span>, <span class="string">'handle_sst'</span>, <span class="string">'handle_supbook'</span>, <span class="string">'handle_writeaccess'</span>, <span class="string">'initialise_format_info'</span>, <span class="string">'load_time_stage_1'</span>, <span class="string">'load_time_stage_2'</span>, <span class="string">'logfile'</span>, <span class="string">'mem'</span>, <span class="string">'name_and_scope_map'</span>, <span class="string">'name_map'</span>, <span class="string">'name_obj_list'</span>, <span class="string">'names_epilogue'</span>, <span class="string">'nsheets'</span>, <span class="string">'on_demand'</span>, <span class="string">'palette_record'</span>, <span class="string">'parse_globals'</span>, <span class="string">'props'</span>, <span class="string">'ragged_rows'</span>, <span class="string">'raw_user_name'</span>, <span class="string">'read'</span>, <span class="string">'release_resources'</span>, <span class="string">'sheet_by_index'</span>, <span class="string">'sheet_by_name'</span>, <span class="string">'sheet_loaded'</span>, <span class="string">'sheet_names'</span>, <span class="string">'sheets'</span>, <span class="string">'style_name_map'</span>, <span class="string">'unload_sheet'</span>, <span class="string">'use_mmap'</span>, <span class="string">'user_name'</span>, <span class="string">'verbosity'</span>, <span class="string">'xf_list'</span>, <span class="string">'xfcount'</span>]</div></pre></td></tr></table></figure>
+<ol start="2" style="list-style-type: decimal">
+<li><code>name</code>属性则是获取每个sheet的名称，<code>nrow</code>与<code>ncol</code>则是获取每个sheet的行与列的数目</li>
+</ol>
+<h2 id="处理单个sheet">处理单个sheet</h2>
+<h3 id="读写excel文件">读写Excel文件</h3>
+<p>下面的代码功能在于读取一个excel文件，名称为<code>2excel_parsing_and_write.py</code>，代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook</div><div class="line"><span class="keyword">from</span> xlwt <span class="keyword">import</span> Workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">output_workbook = Workbook()</div><div class="line"><span class="comment"># Create an Workbook object</span></div><div class="line"><span class="comment"># Workbook object is intended for output</span></div><div class="line"></div><div class="line">output_worksheet = output_workbook.add_sheet(<span class="string">'jan_2013_output'</span>)</div><div class="line"><span class="comment"># add_sheet function is adding an sheet</span></div><div class="line"><span class="keyword">with</span> open_workbook(input_file) <span class="keyword">as</span> workbook:</div><div class="line">    worksheet = workbook.sheet_by_name(<span class="string">'january_2013'</span>)</div><div class="line">    <span class="keyword">for</span> row_index <span class="keyword">in</span> range(worksheet.nrows):</div><div class="line">        <span class="keyword">for</span> column_index <span class="keyword">in</span> range(worksheet.ncols):</div><div class="line">            output_worksheet.write(row_index, column_index, \</div><div class="line">                                   worksheet.cell_value(row_index, column_index))</div><div class="line">            <span class="comment"># write function is use for writing data into output files</span></div><div class="line">output_workbook.save(output_file)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">2</span>excel_parsing_and_write.py sales_2013.xlsx <span class="number">2</span>output.xls</div></pre></td></tr></table></figure>
+<p>打开<code>2output.xls</code>后如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630141416.png">
+
+</div>
+<p>其中第5列，也就是<code>Purchase Date</code>这一列是数字，而不是日期。Excel会将日期和时间保存为浮点数，这个浮点数代表从1900年1月0日起经过的日期数，加上一个24小时的小数部分。例如数值1表示1900年1月1日，因为从1900年1月0日是过去了1天，因此这一列中的数值代表日期，只是这是没有经过格式化的日期数据。</p>
+<p><code>xlrd</code>能够格式化这种日期。</p>
+<h2 id="格式化日期">格式化日期</h2>
+<h3 id="常规方法">常规方法</h3>
+<p>格式化日期的Python代码保存为<code>3excel_parsing_and_write_keep_dates.py</code>，代码内容如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> date</div><div class="line"><span class="comment"># date function is used to format date data</span></div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook, xldate_as_tuple</div><div class="line"><span class="comment"># xldate_as_tuple is to transform data representing date, time into tuple</span></div><div class="line"><span class="keyword">from</span> xlwt <span class="keyword">import</span> Workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">output_workbook = Workbook()</div><div class="line">output_worksheet = output_workbook.add_sheet(<span class="string">'jan_2013_output'</span>)</div><div class="line"></div><div class="line"><span class="keyword">with</span> open_workbook(input_file) <span class="keyword">as</span> workbook:</div><div class="line">    worksheet = workbook.sheet_by_name(<span class="string">'january_2013'</span>)</div><div class="line">    <span class="keyword">for</span> row_index <span class="keyword">in</span> range(worksheet.nrows):</div><div class="line">        row_list_output = []</div><div class="line">        <span class="keyword">for</span> col_index <span class="keyword">in</span> range(worksheet.ncols):</div><div class="line">            <span class="keyword">if</span> worksheet.cell_type(row_index, col_index) == <span class="number">3</span>:</div><div class="line">                <span class="comment"># value 3 represents cell that include date data</span></div><div class="line">                date_cell = xldate_as_tuple(worksheet.cell_value\</div><div class="line">                                                (row_index, col_index), workbook.datemode)</div><div class="line">                <span class="comment"># datemode determine date is based on 1900 or 1904 </span></div><div class="line">                date_cell = date(*date_cell[<span class="number">0</span>:<span class="number">3</span>]).strftime\</div><div class="line">                    (<span class="string">'%m/%d/%Y'</span>)</div><div class="line">                row_list_output.append(date_cell)</div><div class="line">                output_worksheet.write(row_index, col_index, date_cell)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                non_date_cell = worksheet.cell_value\</div><div class="line">                    (row_index, col_index)</div><div class="line">                row_list_output.append(non_date_cell)</div><div class="line">                output_worksheet.write(row_index, col_index, \</div><div class="line">                                       non_date_cell)</div><div class="line">output_workbook.save(output_file)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C:\Users\<span class="number">20161111</span>\Desktop&gt;python <span class="number">3</span>excel_parsing_and_write_keep_dates.py sales_2013.xlsx date_output.xls</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630150632.png">
+
+</div>
+<h2 id="使用pandas读取excel文件">使用<code>pandas</code>读取Excel文件</h2>
+<p>使用<code>pandas</code>也可以读取Excel文件，将下面的代码保存为<code>pandas_read_and_write_excel.py</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line">data_frame = pd.read_excel(input_file, sheetname = <span class="string">'january_2013'</span>)</div><div class="line">writer = pd.ExcelWriter(output_file)</div><div class="line">data_frame.to_excel(writer, sheet_name = <span class="string">'jan_13_output'</span>, index = <span class="keyword">False</span>)</div><div class="line">writer.save()</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PS D:\netdisk\python_data&gt; python .\pandas_read_and_write_excel.py .\sales_2013.xlsx pandas_output.xls</div></pre></td></tr></table></figure>
+<h2 id="选取特定的行">选取特定的行</h2>
+<p>现在挑出那些<code>Sale Amount</code>超过1400的行。</p>
+<h3 id="常规python选择某一行">常规Python选择某一行</h3>
+<p>保存下面代码，命名为<code>4excel_value_meets_condition.py</code>，代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> date</div><div class="line"><span class="keyword">from</span> xlrd <span class="keyword">import</span> open_workbook,xldate_as_tuple</div><div class="line"><span class="keyword">from</span> xlwt <span class="keyword">import</span> Workbook</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">output_workbook = Workbook()</div><div class="line">output_worksheet = output_workbook.add_sheet(<span class="string">'jan_2013_output'</span>)</div><div class="line">sale_amount_column_index = <span class="number">3</span></div><div class="line"><span class="keyword">with</span> open_workbook(input_file) <span class="keyword">as</span> workbook:</div><div class="line">    worksheet = workbook.sheet_by_name(<span class="string">'january_2013'</span>)</div><div class="line">    data = []</div><div class="line">    header = worksheet.row_values(<span class="number">0</span>)</div><div class="line">    data.append(header)</div><div class="line">    <span class="keyword">for</span> row_index <span class="keyword">in</span> range(<span class="number">1</span>, worksheet.nrows):</div><div class="line">        row_list = []</div><div class="line">        sale_amount = worksheet.cell_value\</div><div class="line">            (row_index, sale_amount_column_index)</div><div class="line">        <span class="keyword">if</span> sale_amount &gt; <span class="number">1400</span>:</div><div class="line">            <span class="keyword">for</span> column_index <span class="keyword">in</span> range(worksheet.ncols):</div><div class="line">                cell_value = worksheet.cell_value\</div><div class="line">                    (row_index, column_index)</div><div class="line">                cell_type = worksheet.cell_type\</div><div class="line">                    (row_index, column_index)</div><div class="line">                <span class="keyword">if</span> cell_type == <span class="number">3</span>:</div><div class="line">                    date_cell = xldate_as_tuple\</div><div class="line">                        (cell_value, workbook.datemode)</div><div class="line">                    date_cell = date(*date_cell[<span class="number">0</span>:<span class="number">3</span>])\</div><div class="line">                    .strftime(<span class="string">'%m/%d/%Y'</span>)</div><div class="line">                    row_list.append(date_cell)</div><div class="line">                <span class="keyword">else</span>:</div><div class="line">                    row_list.append(cell_value)</div><div class="line">        <span class="keyword">if</span> row_list:</div><div class="line">            data.append(row_list)</div><div class="line">    <span class="keyword">for</span> list_index, output_list <span class="keyword">in</span> enumerate(data):</div><div class="line">        <span class="keyword">for</span> element_index, element <span class="keyword">in</span> enumerate(output_list):</div><div class="line">            output_worksheet.write(list_index, element_index, element)</div><div class="line">output_workbook.save(output_file)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PS D:\netdisk\python_data&gt; python .\<span class="number">4</span>excel_value_meets_condition.py .\sales_2013.xlsx <span class="number">4</span>output.xls</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190701153503.png">
+
+</div>
+<h3 id="pandas包选取某一行"><code>pandas</code>包选取某一行</h3>
+<p>在下面的案例中，使用<code>pandas</code>挑出那些<code>Sale Amount</code>列大于1400的行。如果需要多个条件，则需要添加<code>&amp;</code>与<code>|</code>符号，代码文件保存为<code>pandas_value_meets_condition.py</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">data_frame = pd.read_excel(input_file, <span class="string">'january_2013'</span>, index_col = <span class="keyword">None</span>)</div><div class="line">data_frame_value_meets_condition = \</div><div class="line">    data_frame[data_frame[<span class="string">'Sale Amount'</span>].astype(float) &gt; <span class="number">1400</span>]</div><div class="line">writer = pd.ExcelWriter(output_file)</div><div class="line">data_frame_value_meets_condition.to_excel(writer, sheet_name = <span class="string">'jan_13_output'</span>,\</div><div class="line">                                          index = <span class="keyword">False</span>)</div><div class="line">writer.save()</div></pre></td></tr></table></figure>
+<p>运行代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PS D:\netdisk\python_data&gt; python .\pandas_value_meets_condition.py .\sales_2013.xlsx pandas_output.xlsx</div></pre></td></tr></table></figure>
+<p>打开<code>pandas_output.xlsx</code>，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190702100612.png">
+
+</div>
+<h2 id="挑选满足多个条件的行">挑选满足多个条件的行</h2>
+<p>例如在前面的数据中，我们要挑选<code>01/24/2013</code>与<code>01/31/2013</code>这两个购买日期的行，代码保存为<code>5excel_value_in_set.py</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line"></div><div class="line">data_frame = pd.read_excel(input_file, <span class="string">'january_2013'</span>, index_col=<span class="keyword">None</span>)</div><div class="line">important_dates = [<span class="string">'01/24/2013'</span>,<span class="string">'01/31/2013'</span>]</div><div class="line">data_frame_value_in_set = data_frame[data_frame[<span class="string">'Purchase Date'</span>].isin(important_dates)]</div><div class="line">writer = pd.ExcelWriter(output_file)</div><div class="line">data_frame_value_in_set.to_excel(writer, sheet_name=<span class="string">'jan_13_output'</span>, index=<span class="keyword">False</span>)</div><div class="line">writer.save()</div></pre></td></tr></table></figure>
+<p>运行以下代码即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">D:\netdisk\python_data&gt;python <span class="number">5</span>excel_value_in_set.py sales_2013.xlsx pandas_output.xls</div></pre></td></tr></table></figure>
+<h3 id="挑选满足某一特定模式的行">挑选满足某一特定模式的行</h3>
+<p>任务：选择那些顾客的名字里，首字母是<code>J</code>的行，使用pandas来实现，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">data_frame = pd.read_excel(input_file, <span class="string">'january_2013'</span>, index_col=<span class="keyword">None</span>)</div><div class="line">data_frame_value_matches_pattern = data_frame[data_frame[<span class="string">'Customer Name'</span>]\</div><div class="line">    .str.startswith(<span class="string">"J"</span>)]</div><div class="line">writer = pd.ExcelWriter(output_file)</div><div class="line">data_frame_value_matches_pattern.to_excel(writer, sheet_name=<span class="string">'jan_13_output'</span>,\</div><div class="line">                                          index=<span class="keyword">False</span>)</div><div class="line">writer.save()</div></pre></td></tr></table></figure>
+<p>按如下方式运行代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">λ python pandas_value_matches_pattern.py sales_2013.xlsx output_files\pandsa_output.xls</div></pre></td></tr></table></figure>
+<h3 id="选取特定列">选取特定列</h3>
+<p>使用Python选取特定的列的时，可以采用列索引值，也可以采用列标题来实现。</p>
+<p>按索引值来提取列。****</p>
+<p>现在假设我们想保留Customer Name和Purchase Date这两列，使用Pandas来实现，保存代码为<code>pandas_column_by_index.py</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">input_file = sys.argv[<span class="number">1</span>]</div><div class="line">output_file = sys.argv[<span class="number">2</span>]</div><div class="line">data_frame = pd.read_excel(input_file, <span class="string">'january_2013'</span>, index_col = <span class="keyword">None</span>)</div><div class="line">data_frame_column_by_index = data_frame.iloc[:, [<span class="number">1</span>,<span class="number">4</span>]]</div><div class="line">writer  = pd.ExcelWriter(output_file)</div><div class="line">data_frame_column_by_index.to_excel(writer, sheet_name = <span class="string">'jan_13_output'</span>,index=<span class="keyword">False</span>)</div><div class="line">writer.save()</div></pre></td></tr></table></figure>
+<h2 id="参考资料">参考资料</h2>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/01/Python/Python数据处理笔记01-argv函数与读取csv文件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -684,6 +949,207 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/28/Experiment/双荧光素酶实验笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/28/Experiment/双荧光素酶实验笔记/" itemprop="url">双荧光素酶笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T12:00:00+08:00">
+                2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">生物实验笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,847
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="一-什么是双荧光素酶">(一) 什么是双荧光素酶？</h3>
+<p>答：双荧光素酶通常是指萤火虫荧光素酶和海肾荧光素。其中荧火虫荧光素是从甲虫（Photinus pyralis）中分离得到，分子量为61kDa；而海肾（Renilla）荧光素酶则是从海肾（Renilla reniformis）中分离，分子量为36kDa。这两种酶的区别之一是他们的底物和辅因子不同：萤火虫荧光素酶需要荧光素、氧气、ATP和镁离子同时存在才能发光；而海肾荧光素酶仅需要腔肠素（coelenterazine）和氧气。萤火虫荧光素酶和海肾荧光素酶的区别之二是发光的颜色不同：萤火虫荧光素酶产生的光颜色呈现黄绿色，波长550-570nm；而海肾荧光素酶产生蓝光，波长480nm。正是由于这两种酶的底物和发光颜色不同，所以在双报告实验中得到广泛应用，它们的发光原理如下所示：<br>
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175539.png"></p>
+<h3 id="二-为什么要采用双荧光素酶报告系统">(二) 为什么要采用双荧光素酶报告系统？</h3>
+<p>答：单报告基因实验往往会受到各种实验条件的影响，而双报告基因则通过共转染的“对照”作为内参为试验提供一基准线，从而可以在最大程度上减小细胞活性和转染效率等外在因素对实验的影响，使得数据结果更为可信。</p>
+<h3 id="三-双荧光素酶在mirna验证其靶基因方面的原理是什么">(三) 双荧光素酶在miRNA验证其靶基因方面的原理是什么？</h3>
+<p>答：双萤光素酶报告基因检测系统在细胞中同时表达萤火虫萤光素酶和海肾萤光素酶，两者没有种源同源性并对应不同的反应底物，故而没有交叉干扰。得益于超强的光信号和超高的信噪比，本系统被广泛用于 miRNA 靶基因验证。 miRNA 主要通过作用于靶基因的 3’UTR 起作用，可以将目的基因 3’UTR 区域构建至载体中报告基因 luciferase 的后面，通过比较过表达或者干扰 miRNA 后，报告基因表达的改变（监测萤光素酶的活性变化）可以定量反映 miRNA 对目的基因的抑制作用，也即用荧光值来判断miRNA是否和靶基因结合。</p>
+<h3 id="四-在利用双荧光素酶验证mirna的靶基因方面插入的3utr长度应该是多少">(四) 在利用双荧光素酶验证miRNA的靶基因方面，插入的3’UTR长度应该是多少？</h3>
+<p>答：靶基因的3’UTR长度不一，将全长都插入载体中不切实际，通常只插入包括miRNA结合位点前后200bp左右的序列，大概就是400bp[1]，但也有文献插入的是80个bp[2]，有文献选择了200多个bp[3]，但严格来讲，应该选择400bp，以结合位点为中心，上游200bp，下游200bp。</p>
+<h3 id="五-常用的双荧光素酶载体有哪些">(五) 常用的双荧光素酶载体有哪些？</h3>
+<p>答：常用的载体有两种策略。第一种是两种荧光素分别位于两个载体上，第二种是两种荧光素酶位于同一个载体上。以第一种为例，这两种载体分别为pMIR-REPORT miRNA载体和pRL-TK载体。经检索发现，pMIR-REPORT miRNA载体是由Ambion开发的载体，它用来克隆插入miRNA靶序列，评估细胞内miRNA功能的载体，该载体的图谱如下所示：</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175303.png"> 另外的一个载体是pRL-TK载体，这个载体是由Promega开发的，pRL-TK是海肾荧光素酶报告载体，含有SV40增强子，质粒图谱如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175327.png"> 从这两个图谱中可以发现，pMIR-REPORT miRNA这个载体主要是用于评估miRNA与靶基因3’UTR的结合，靶基因的3’UTR放在荧光素酶的后面，这个荧光素酶是荧火虫荧光素酶，而pRL-TK这个载体则表达海肾荧光素酶，将这两个质粒共同转染进入293细胞中来检测荧光时，pRL-TK这个质粒起到一个内参的作用。</p>
+<p>第二种方案就是将荧火虫荧光素酶与海肾荧光素酶构建到一个载体上，这样偏差更小，毕竟转染一个质粒比转染两个质粒要容易，在这方面，根据检索到的资料显示，现在的这类质比较有名的是Promega公司的pmirGLO质粒，图谱如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175348.png"> 另外的质粒就是国产的，即复能基因的pEZX-MT06质粒，图谱如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175405.png"></p>
+<h3 id="六-在检测mirna靶基因时需要设置多少个分组">(六) 在检测miRNA靶基因时，需要设置多少个分组？</h3>
+<p>答：首先要知道，插入的靶基因原始3’UTR的质粒叫野生型质粒，除此之外，还需要在萤火虫荧光素酶3’UTR插入miRNA结合位点突变的序列载体，这个质粒通常叫突变型质粒，最后还有各种对照载体，包括萤火虫荧光素酶空载体，miRNA空载体，还有海肾素荧光载体，以文献中的案例[4]说明，此文献使用了6组来进行验证，其分组以及分组说明如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175421.png"> 注：pGL3是荧光素酶报告质粒，绿色的是对照组，即不加miRNA质粒，红色的是正常组，加miRNA质粒。思路即为荧光素酶质粒（3种情况：①空质粒；②加了WT靶基因3’UTR的质粒；③加了MUT的靶基因3’UTR的质粒）×miRNA precursor（两种情况，即加与不加），经排列组合，即为6组，详细说明如下所示：</p>
+<p>第一组 荧光素酶质粒pGL3不加3’UTR片段 + miRNA载体质粒 第二组 荧光素酶质粒pGL3不加3’UTR片段 + miR-200c质粒 第三组 荧光素酶质粒pGL3 -WT-3’UTR+ + miRNA载体质粒 第四组 重点：荧光素酶质粒pGL3 -WT3’UTR + miR-200c质粒 第五组 荧光素酶质粒pGL3 -MUT-3‘UTR+ miRNA载体质粒 第六组 重点：荧光素酶质粒pGL3 -MUT-3‘UTR + miR-200c质粒 理想结果：第四组降低，即miRNA能够与靶基因的3UTR结合，第六组不变，即突变后靶基因3‘UTR不与miRNA结合。</p>
+<h3 id="七-在检测荧光方面所使用的仪器是哪些">(七) 在检测荧光方面，所使用的仪器是哪些？</h3>
+<p>答：最经典的仪器就是Promega的GloMax 20/20 发光检测仪，但这种仪器只适合一次检测一个酝酿。但也可以用多功能酶标仪来检测（本实验室的仪器是VARIOSKAN LUX），这种酶标仪可以实现多通量检测。萤火虫荧光素酶产生的光颜色呈现黄绿色，波长550-570nm；而海肾荧光素酶产生蓝光，波长480nm。</p>
+<h3 id="八-测得结果的数据如何处理">(八) 测得结果的数据如何处理？</h3>
+<p>答：测得的结果一个萤火虫荧光素酶产生的光信号，记为RL1，，海肾荧光素酶产生的信号，记为RL2。RL1/RL2将数据均一化后，每两组之间用ANOVA检测即可。</p>
+<h3 id="九-参考资料">(九) 参考资料</h3>
+<ol style="list-style-type: decimal">
+<li>Nicolas, F.E., Experimental Validation of MicroRNA Targets Using a Luciferase Reporter System, in MicroRNAs in Development: Methods and Protocols, T. Dalmay, Editor. 2011, Humana Press: Totowa, NJ. p. 139-152.</li>
+<li>Zhu, J., et al., TNF-alpha mRNA is negatively regulated by microRNA-181a-5p in maturation of dendritic cells induced by high mobility group box-1 protein. Sci Rep, 2017. 7(1): p. 12239.</li>
+<li>Zhu, S., et al., MicroRNA-21 targets the tumor suppressor gene tropomyosin 1 (TPM1). J Biol Chem, 2007. 282(19): p. 14328-36.</li>
+<li>Shimono, Y., et al., Downregulation of miRNA-200c links breast cancer stem cells with normal stem cells. Cell, 2009. 138(3): p. 592-603.</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/28/Experiment/6xHis标签/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -900,7 +1366,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/28/Experiment/双荧光素酶实验笔记/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/27/Experiment/蛋白质谱笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -919,7 +1385,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/28/Experiment/双荧光素酶实验笔记/" itemprop="url">双荧光素酶笔记</a></h1>
+                <a class="post-title-link" href="/2019/06/27/Experiment/蛋白质谱笔记/" itemprop="url">蛋白质谱笔记</a></h1>
         
 
         <div class="post-meta">
@@ -931,8 +1397,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T12:00:00+08:00">
-                2019-06-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-27T12:00:00+08:00">
+                2019-06-27
               </time>
             
 
@@ -987,7 +1453,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,847
+                  23
                 </span>
               
 
@@ -1003,7 +1469,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  7
+                  1
                 </span>
               
             </div>
@@ -1026,33 +1492,17 @@
       
         
           
-            <h3 id="一-什么是双荧光素酶">(一) 什么是双荧光素酶？</h3>
-<p>答：双荧光素酶通常是指萤火虫荧光素酶和海肾荧光素。其中荧火虫荧光素是从甲虫（Photinus pyralis）中分离得到，分子量为61kDa；而海肾（Renilla）荧光素酶则是从海肾（Renilla reniformis）中分离，分子量为36kDa。这两种酶的区别之一是他们的底物和辅因子不同：萤火虫荧光素酶需要荧光素、氧气、ATP和镁离子同时存在才能发光；而海肾荧光素酶仅需要腔肠素（coelenterazine）和氧气。萤火虫荧光素酶和海肾荧光素酶的区别之二是发光的颜色不同：萤火虫荧光素酶产生的光颜色呈现黄绿色，波长550-570nm；而海肾荧光素酶产生蓝光，波长480nm。正是由于这两种酶的底物和发光颜色不同，所以在双报告实验中得到广泛应用，它们的发光原理如下所示：<br>
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175539.png"></p>
-<h3 id="二-为什么要采用双荧光素酶报告系统">(二) 为什么要采用双荧光素酶报告系统？</h3>
-<p>答：单报告基因实验往往会受到各种实验条件的影响，而双报告基因则通过共转染的“对照”作为内参为试验提供一基准线，从而可以在最大程度上减小细胞活性和转染效率等外在因素对实验的影响，使得数据结果更为可信。</p>
-<h3 id="三-双荧光素酶在mirna验证其靶基因方面的原理是什么">(三) 双荧光素酶在miRNA验证其靶基因方面的原理是什么？</h3>
-<p>答：双萤光素酶报告基因检测系统在细胞中同时表达萤火虫萤光素酶和海肾萤光素酶，两者没有种源同源性并对应不同的反应底物，故而没有交叉干扰。得益于超强的光信号和超高的信噪比，本系统被广泛用于 miRNA 靶基因验证。 miRNA 主要通过作用于靶基因的 3’UTR 起作用，可以将目的基因 3’UTR 区域构建至载体中报告基因 luciferase 的后面，通过比较过表达或者干扰 miRNA 后，报告基因表达的改变（监测萤光素酶的活性变化）可以定量反映 miRNA 对目的基因的抑制作用，也即用荧光值来判断miRNA是否和靶基因结合。</p>
-<h3 id="四-在利用双荧光素酶验证mirna的靶基因方面插入的3utr长度应该是多少">(四) 在利用双荧光素酶验证miRNA的靶基因方面，插入的3’UTR长度应该是多少？</h3>
-<p>答：靶基因的3’UTR长度不一，将全长都插入载体中不切实际，通常只插入包括miRNA结合位点前后200bp左右的序列，大概就是400bp[1]，但也有文献插入的是80个bp[2]，有文献选择了200多个bp[3]，但严格来讲，应该选择400bp，以结合位点为中心，上游200bp，下游200bp。</p>
-<h3 id="五-常用的双荧光素酶载体有哪些">(五) 常用的双荧光素酶载体有哪些？</h3>
-<p>答：常用的载体有两种策略。第一种是两种荧光素分别位于两个载体上，第二种是两种荧光素酶位于同一个载体上。以第一种为例，这两种载体分别为pMIR-REPORT miRNA载体和pRL-TK载体。经检索发现，pMIR-REPORT miRNA载体是由Ambion开发的载体，它用来克隆插入miRNA靶序列，评估细胞内miRNA功能的载体，该载体的图谱如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175303.png"> 另外的一个载体是pRL-TK载体，这个载体是由Promega开发的，pRL-TK是海肾荧光素酶报告载体，含有SV40增强子，质粒图谱如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175327.png"> 从这两个图谱中可以发现，pMIR-REPORT miRNA这个载体主要是用于评估miRNA与靶基因3’UTR的结合，靶基因的3’UTR放在荧光素酶的后面，这个荧光素酶是荧火虫荧光素酶，而pRL-TK这个载体则表达海肾荧光素酶，将这两个质粒共同转染进入293细胞中来检测荧光时，pRL-TK这个质粒起到一个内参的作用。</p>
-<p>第二种方案就是将荧火虫荧光素酶与海肾荧光素酶构建到一个载体上，这样偏差更小，毕竟转染一个质粒比转染两个质粒要容易，在这方面，根据检索到的资料显示，现在的这类质比较有名的是Promega公司的pmirGLO质粒，图谱如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175348.png"> 另外的质粒就是国产的，即复能基因的pEZX-MT06质粒，图谱如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175405.png"></p>
-<h3 id="六-在检测mirna靶基因时需要设置多少个分组">(六) 在检测miRNA靶基因时，需要设置多少个分组？</h3>
-<p>答：首先要知道，插入的靶基因原始3’UTR的质粒叫野生型质粒，除此之外，还需要在萤火虫荧光素酶3’UTR插入miRNA结合位点突变的序列载体，这个质粒通常叫突变型质粒，最后还有各种对照载体，包括萤火虫荧光素酶空载体，miRNA空载体，还有海肾素荧光载体，以文献中的案例[4]说明，此文献使用了6组来进行验证，其分组以及分组说明如下所示： <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707175421.png"> 注：pGL3是荧光素酶报告质粒，绿色的是对照组，即不加miRNA质粒，红色的是正常组，加miRNA质粒。思路即为荧光素酶质粒（3种情况：①空质粒；②加了WT靶基因3’UTR的质粒；③加了MUT的靶基因3’UTR的质粒）×miRNA precursor（两种情况，即加与不加），经排列组合，即为6组，详细说明如下所示：</p>
-<p>第一组 荧光素酶质粒pGL3不加3’UTR片段 + miRNA载体质粒 第二组 荧光素酶质粒pGL3不加3’UTR片段 + miR-200c质粒 第三组 荧光素酶质粒pGL3 -WT-3’UTR+ + miRNA载体质粒 第四组 重点：荧光素酶质粒pGL3 -WT3’UTR + miR-200c质粒 第五组 荧光素酶质粒pGL3 -MUT-3‘UTR+ miRNA载体质粒 第六组 重点：荧光素酶质粒pGL3 -MUT-3‘UTR + miR-200c质粒 理想结果：第四组降低，即miRNA能够与靶基因的3UTR结合，第六组不变，即突变后靶基因3‘UTR不与miRNA结合。</p>
-<h3 id="七-在检测荧光方面所使用的仪器是哪些">(七) 在检测荧光方面，所使用的仪器是哪些？</h3>
-<p>答：最经典的仪器就是Promega的GloMax 20/20 发光检测仪，但这种仪器只适合一次检测一个酝酿。但也可以用多功能酶标仪来检测（本实验室的仪器是VARIOSKAN LUX），这种酶标仪可以实现多通量检测。萤火虫荧光素酶产生的光颜色呈现黄绿色，波长550-570nm；而海肾荧光素酶产生蓝光，波长480nm。</p>
-<h3 id="八-测得结果的数据如何处理">(八) 测得结果的数据如何处理？</h3>
-<p>答：测得的结果一个萤火虫荧光素酶产生的光信号，记为RL1，，海肾荧光素酶产生的信号，记为RL2。RL1/RL2将数据均一化后，每两组之间用ANOVA检测即可。</p>
-<h3 id="九-参考资料">(九) 参考资料</h3>
-<ol style="list-style-type: decimal">
-<li>Nicolas, F.E., Experimental Validation of MicroRNA Targets Using a Luciferase Reporter System, in MicroRNAs in Development: Methods and Protocols, T. Dalmay, Editor. 2011, Humana Press: Totowa, NJ. p. 139-152.</li>
-<li>Zhu, J., et al., TNF-alpha mRNA is negatively regulated by microRNA-181a-5p in maturation of dendritic cells induced by high mobility group box-1 protein. Sci Rep, 2017. 7(1): p. 12239.</li>
-<li>Zhu, S., et al., MicroRNA-21 targets the tumor suppressor gene tropomyosin 1 (TPM1). J Biol Chem, 2007. 282(19): p. 14328-36.</li>
-<li>Shimono, Y., et al., Downregulation of miRNA-200c links breast cancer stem cells with normal stem cells. Cell, 2009. 138(3): p. 592-603.</li>
+            <p>测试脚注</p>
+<p>文献1<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
+<p>文献2<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+<p>30参考文献</p>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn1"><p>测试444444444444444444444444<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>测试3444444444444444444444444<a href="#fnref2">↩</a></p></li>
 </ol>
+</div>
 
           
         
@@ -1254,191 +1704,6 @@
 <li><pre><code>      上机拍照，如果不能及时拍照，放到4度冰箱保存即可，最长的时间我放的时间有近2周。</code></pre></li>
 </ol>
 <p>如果免疫荧光图片效果不行，可以根据实际情况调整封闭，一抗，二抗的条件。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/27/Experiment/蛋白质谱笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/27/Experiment/蛋白质谱笔记/" itemprop="url">蛋白质谱笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-27T12:00:00+08:00">
-                2019-06-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  23
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>测试脚注</p>
-<p>文献1<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
-<p>文献2<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
-<p>30参考文献</p>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>测试444444444444444444444444<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>测试3444444444444444444444444<a href="#fnref2">↩</a></p></li>
-</ol>
-</div>
 
           
         
@@ -2682,706 +2947,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/06/02/BioItem/GEO笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/02/BioItem/GEO笔记/" itemprop="url">GEO笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-02T12:00:00+08:00">
-                2019-06-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
-                    <span itemprop="name">生信实战项目</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,593
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  11
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>此篇笔记主要是学习生信技术树Jimmy在<a href="https://www.bilibili.com/video/av37568990" target="_blank" rel="external">B站上的视频教程</a>。</p>
-<h2 id="背景知识">背景知识</h2>
-<p>GEO的全称是Gene Expression Omnibus，数据库地址是：https://www.ncbi.nlm.nih.gov/geo/。</p>
-<p>GEO是一个公共的基因组数据库，含有大量的芯片以及二代测序数据。在挖掘GEO上的数据集时，常规流程就是选择GSE号，下载表达矩阵，得到基因集，使用数据库进行注释，PPI等网络等。</p>
-<p>GEO里面的数据前缀有4种，如下所示：</p>
-<ul>
-<li>GEO Platform (GPL)</li>
-<li>GEO Sample (GSM)</li>
-<li>GEO Series (GSE)</li>
-<li>GEO Dataset (GDS)</li>
-</ul>
-<p>其中GSE开头的是表达矩阵，GPL开头的是测序的平台信息。一篇文章可以有一个或者多个GSE数据集，一个GSE里面可以有一个或者多个GSM样本。多个研究的GSM样本可以根据研究目的整合为一个GDS，不过GDS本身用的很少。而每个数据集都有着自己对应的芯片平台，就是GPL。</p>
-<h2 id="下载数据">下载数据</h2>
-<p>这个数据已经被其他人挖掘过发了文章，文章信息如下所示：</p>
-<p>Wang Q L , Chen X , Zhang M H , et al. Identification of hub genes and pathways associated with retinoblastoma based on co-expression network analysis[J]. Genetics and Molecular Research, 2015, 14(4):16151-16161.</p>
-<p>现在去GEO官网下载数据：</p>
-<p>代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">rm(list = ls())</div><div class="line">setwd(<span class="string">"D:\\GEO_test"</span>)</div><div class="line"><span class="keyword">library</span>(GEOquery)</div><div class="line">eSet &lt;- getGEO(<span class="string">'GSE42872'</span>, destdir=<span class="string">"."</span>, </div><div class="line">                 AnnotGPL = <span class="literal">F</span>,</div><div class="line">                 getGPL = <span class="literal">F</span>)</div><div class="line">save(eSet, file=<span class="string">'GSE42872_eSet.Rdata'</span>)</div></pre></td></tr></table></figure>
-<p>这里用到了<code>getGEO</code>函数，这个函数的参数如下所示：</p>
-<ol style="list-style-type: decimal">
-<li><code>destdir</code>：下载的地址，使用<code>.</code>则下载到当前的工作目录；</li>
-<li><code>AnnotGPL</code>：是否下载注释的信息。</li>
-<li><code>getGPL</code>：若为TRUE，则下载GPL注释文件；若为FALSE，则不下载。默认为TRUE。</li>
-<li><code>GSEMatrix</code>：若为TRUE，则下载Matrix文件；若为FALSE，则下载SOFT文件。默认为TRUE。</li>
-</ol>
-<p>随后，<code>D:\GEO_test</code>目录下就会出现下载后的表达矩阵，名称为<code>GSE42872_series_matrix.txt.gz</code>。</p>
-<p>GSE24673</p>
-<p>下载后的这个<code>eSet</code>文件信息如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">&gt; eSet</div><div class="line">$GSE24673_series_matrix.txt.gz</div><div class="line">ExpressionSet (storageMode: lockedEnvironment)</div><div class="line">assayData: <span class="number">28869</span> features, <span class="number">11</span> samples </div><div class="line">  element names: exprs </div><div class="line">protocolData: none</div><div class="line">phenoData</div><div class="line">  sampleNames: GSM607938 GSM607939 <span class="keyword">...</span> GSM607948 (<span class="number">11</span> total)</div><div class="line">  varLabels: title geo_accession <span class="keyword">...</span> tissue:ch1 (<span class="number">40</span> total)</div><div class="line">  varMetadata: labelDescription</div><div class="line">featureData: none</div><div class="line">experimentData: use <span class="string">'experimentData(object)'</span></div><div class="line">Annotation: GPL6244 </div><div class="line"></div><div class="line">&gt; class(eSet)</div><div class="line">[<span class="number">1</span>] <span class="string">"list"</span></div><div class="line">&gt; eSet[[<span class="number">1</span>]]</div><div class="line">ExpressionSet (storageMode: lockedEnvironment)</div><div class="line">assayData: <span class="number">28869</span> features, <span class="number">11</span> samples </div><div class="line">  element names: exprs </div><div class="line">protocolData: none</div><div class="line">phenoData</div><div class="line">  sampleNames: GSM607938 GSM607939 <span class="keyword">...</span> GSM607948 (<span class="number">11</span> total)</div><div class="line">  varLabels: title geo_accession <span class="keyword">...</span> tissue:ch1 (<span class="number">40</span> total)</div><div class="line">  varMetadata: labelDescription</div><div class="line">featureData: none</div><div class="line">experimentData: use <span class="string">'experimentData(object)'</span></div><div class="line">Annotation: GPL6244</div></pre></td></tr></table></figure>
-<p>从上面信息可以知道：</p>
-<ol style="list-style-type: decimal">
-<li><code>eSet</code>是一个列表(list)；</li>
-<li><code>eSet</code>这个列表只有一个元素。</li>
-</ol>
-<h2 id="获取表达矩阵">获取表达矩阵</h2>
-<h3 id="提取表达矩阵">提取表达矩阵</h3>
-<p>使用<code>exprs</code>函数可以获取表达矩阵，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">raw_profile_data &lt;- eSet[[<span class="number">1</span>]]</div><div class="line">exprSet = exprs(raw_profile_data)</div></pre></td></tr></table></figure>
-<p>表达矩阵如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630180025.png">
-
-</div>
-<h3 id="获取样本信息">获取样本信息</h3>
-<p>使用<code>sampleNames</code>函数可以获取样本信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sampleNames(raw_profile_data)</div></pre></td></tr></table></figure>
-<p>运行后如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; sampleNames(raw_profile_data)</div><div class="line"> [<span class="number">1</span>] <span class="string">"GSM607938"</span> <span class="string">"GSM607939"</span> <span class="string">"GSM607940"</span> <span class="string">"GSM607941"</span> <span class="string">"GSM607942"</span> <span class="string">"GSM607943"</span> <span class="string">"GSM607944"</span> <span class="string">"GSM607945"</span></div><div class="line"> [<span class="number">9</span>] <span class="string">"GSM607946"</span> <span class="string">"GSM607947"</span> <span class="string">"GSM607948"</span></div></pre></td></tr></table></figure>
-<p>使用<code>pData</code>可以获取分组信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pData &lt;- pData(raw_profile_data)</div></pre></td></tr></table></figure>
-<p>运行如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630180621.png">
-
-</div>
-<p>从title这一列就可以知道，里面有几个是干预组，有几个是健康组。</p>
-<h2 id="表达矩阵过滤">表达矩阵过滤</h2>
-<p>这一部分主要是将探针名称转化为基因名。</p>
-<h4 id="转换探针名">转换探针名</h4>
-<p>表达矩阵的列的名称是探针名，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630181024.png">
-
-</div>
-<p>现在将探针名转换为基因名，从前面的<code>eSet</code>数据集中可以获取以下信息：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; eSet</div><div class="line">$GSE24673_series_matrix.txt.gz</div><div class="line">ExpressionSet (storageMode: lockedEnvironment)</div><div class="line">assayData: <span class="number">28869</span> features, <span class="number">11</span> samples </div><div class="line">  element names: exprs </div><div class="line">protocolData: none</div><div class="line">phenoData</div><div class="line">  sampleNames: GSM607938 GSM607939 <span class="keyword">...</span> GSM607948 (<span class="number">11</span> total)</div><div class="line">  varLabels: title geo_accession <span class="keyword">...</span> tissue:ch1 (<span class="number">40</span> total)</div><div class="line">  varMetadata: labelDescription</div><div class="line">featureData: none</div><div class="line">experimentData: use <span class="string">'experimentData(object)'</span></div><div class="line">Annotation: GPL6244</div></pre></td></tr></table></figure>
-<p>从<code>Annotation: GPL6244</code>这行可以知道，这个数据集是用<code>GPL6244</code>这个平台测的，同时在GEO的官网也能查到这个信息，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190630181741.png">
-
-</div>
-<p>现有的一些常用平台都对应的有相应的R包，如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th>gpl</th>
-<th>organism</th>
-<th>bioc_package</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>GPL32</td>
-<td>Mus musculus</td>
-<td>mgu74a</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>GPL33</td>
-<td>Mus musculus</td>
-<td>mgu74b</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>GPL34</td>
-<td>Mus musculus</td>
-<td>mgu74c</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>GPL74</td>
-<td>Homo sapiens</td>
-<td>hcg110</td>
-</tr>
-<tr class="odd">
-<td>7</td>
-<td>GPL75</td>
-<td>Mus musculus</td>
-<td>mu11ksuba</td>
-</tr>
-<tr class="even">
-<td>8</td>
-<td>GPL76</td>
-<td>Mus musculus</td>
-<td>mu11ksubb</td>
-</tr>
-<tr class="odd">
-<td>9</td>
-<td>GPL77</td>
-<td>Mus musculus</td>
-<td>mu19ksuba</td>
-</tr>
-<tr class="even">
-<td>10</td>
-<td>GPL78</td>
-<td>Mus musculus</td>
-<td>mu19ksubb</td>
-</tr>
-<tr class="odd">
-<td>11</td>
-<td>GPL79</td>
-<td>Mus musculus</td>
-<td>mu19ksubc</td>
-</tr>
-<tr class="even">
-<td>12</td>
-<td>GPL80</td>
-<td>Homo sapiens</td>
-<td>hu6800</td>
-</tr>
-<tr class="odd">
-<td>13</td>
-<td>GPL81</td>
-<td>Mus musculus</td>
-<td>mgu74av2</td>
-</tr>
-<tr class="even">
-<td>14</td>
-<td>GPL82</td>
-<td>Mus musculus</td>
-<td>mgu74bv2</td>
-</tr>
-<tr class="odd">
-<td>15</td>
-<td>GPL83</td>
-<td>Mus musculus</td>
-<td>mgu74cv2</td>
-</tr>
-<tr class="even">
-<td>16</td>
-<td>GPL85</td>
-<td>Rattus norvegicus</td>
-<td>rgu34a</td>
-</tr>
-<tr class="odd">
-<td>17</td>
-<td>GPL86</td>
-<td>Rattus norvegicus</td>
-<td>rgu34b</td>
-</tr>
-<tr class="even">
-<td>18</td>
-<td>GPL87</td>
-<td>Rattus norvegicus</td>
-<td>rgu34c</td>
-</tr>
-<tr class="odd">
-<td>19</td>
-<td>GPL88</td>
-<td>Rattus norvegicus</td>
-<td>rnu34</td>
-</tr>
-<tr class="even">
-<td>20</td>
-<td>GPL89</td>
-<td>Rattus norvegicus</td>
-<td>rtu34</td>
-</tr>
-<tr class="odd">
-<td>22</td>
-<td>GPL91</td>
-<td>Homo sapiens</td>
-<td>hgu95av2</td>
-</tr>
-<tr class="even">
-<td>23</td>
-<td>GPL92</td>
-<td>Homo sapiens</td>
-<td>hgu95b</td>
-</tr>
-<tr class="odd">
-<td>24</td>
-<td>GPL93</td>
-<td>Homo sapiens</td>
-<td>hgu95c</td>
-</tr>
-<tr class="even">
-<td>25</td>
-<td>GPL94</td>
-<td>Homo sapiens</td>
-<td>hgu95d</td>
-</tr>
-<tr class="odd">
-<td>26</td>
-<td>GPL95</td>
-<td>Homo sapiens</td>
-<td>hgu95e</td>
-</tr>
-<tr class="even">
-<td>27</td>
-<td>GPL96</td>
-<td>Homo sapiens</td>
-<td>hgu133a</td>
-</tr>
-<tr class="odd">
-<td>28</td>
-<td>GPL97</td>
-<td>Homo sapiens</td>
-<td>hgu133b</td>
-</tr>
-<tr class="even">
-<td>29</td>
-<td>GPL98</td>
-<td>Homo sapiens</td>
-<td>hu35ksuba</td>
-</tr>
-<tr class="odd">
-<td>30</td>
-<td>GPL99</td>
-<td>Homo sapiens</td>
-<td>hu35ksubb</td>
-</tr>
-<tr class="even">
-<td>31</td>
-<td>GPL100</td>
-<td>Homo sapiens</td>
-<td>hu35ksubc</td>
-</tr>
-<tr class="odd">
-<td>32</td>
-<td>GPL101</td>
-<td>Homo sapiens</td>
-<td>hu35ksubd</td>
-</tr>
-<tr class="even">
-<td>36</td>
-<td>GPL201</td>
-<td>Homo sapiens</td>
-<td>hgfocus</td>
-</tr>
-<tr class="odd">
-<td>37</td>
-<td>GPL339</td>
-<td>Mus musculus</td>
-<td>moe430a</td>
-</tr>
-<tr class="even">
-<td>38</td>
-<td>GPL340</td>
-<td>Mus musculus</td>
-<td>mouse4302</td>
-</tr>
-<tr class="odd">
-<td>39</td>
-<td>GPL341</td>
-<td>Rattus norvegicus</td>
-<td>rae230a</td>
-</tr>
-<tr class="even">
-<td>40</td>
-<td>GPL342</td>
-<td>Rattus norvegicus</td>
-<td>rae230b</td>
-</tr>
-<tr class="odd">
-<td>41</td>
-<td>GPL570</td>
-<td>Homo sapiens</td>
-<td>hgu133plus2</td>
-</tr>
-<tr class="even">
-<td>42</td>
-<td>GPL571</td>
-<td>Homo sapiens</td>
-<td>hgu133a2</td>
-</tr>
-<tr class="odd">
-<td>43</td>
-<td>GPL886</td>
-<td>Homo sapiens</td>
-<td>hgug4111a</td>
-</tr>
-<tr class="even">
-<td>44</td>
-<td>GPL887</td>
-<td>Homo sapiens</td>
-<td>hgug4110b</td>
-</tr>
-<tr class="odd">
-<td>45</td>
-<td>GPL1261</td>
-<td>Mus musculus</td>
-<td>mouse430a2</td>
-</tr>
-<tr class="even">
-<td>49</td>
-<td>GPL1352</td>
-<td>Homo sapiens</td>
-<td>u133x3p</td>
-</tr>
-<tr class="odd">
-<td>50</td>
-<td>GPL1355</td>
-<td>Rattus norvegicus</td>
-<td>rat2302</td>
-</tr>
-<tr class="even">
-<td>51</td>
-<td>GPL1708</td>
-<td>Homo sapiens</td>
-<td>hgug4112a</td>
-</tr>
-<tr class="odd">
-<td>54</td>
-<td>GPL2891</td>
-<td>Homo sapiens</td>
-<td>h20kcod</td>
-</tr>
-<tr class="even">
-<td>55</td>
-<td>GPL2898</td>
-<td>Rattus norvegicu</td>
-<td>adme16cod</td>
-</tr>
-<tr class="odd">
-<td>60</td>
-<td>GPL3921</td>
-<td>Homo sapiens</td>
-<td>hthgu133a</td>
-</tr>
-<tr class="even">
-<td>63</td>
-<td>GPL4191</td>
-<td>Homo sapiens</td>
-<td>h10kcod</td>
-</tr>
-<tr class="odd">
-<td>64</td>
-<td>GPL5689</td>
-<td>Homo sapiens</td>
-<td>hgug4100a</td>
-</tr>
-<tr class="even">
-<td>65</td>
-<td>GPL6097</td>
-<td>Homo sapiens</td>
-<td>illuminaHumanv1</td>
-</tr>
-<tr class="odd">
-<td>66</td>
-<td>GPL6102</td>
-<td>Homo sapiens</td>
-<td>illuminaHumanv2</td>
-</tr>
-<tr class="even">
-<td>67</td>
-<td>GPL6244</td>
-<td>Homo sapiens</td>
-<td>hugene10sttranscriptcluster</td>
-</tr>
-<tr class="odd">
-<td>68</td>
-<td>GPL6947</td>
-<td>Homo sapiens</td>
-<td>illuminaHumanv3</td>
-</tr>
-<tr class="even">
-<td>69</td>
-<td>GPL8300</td>
-<td>Homo sapiens</td>
-<td>hgu95av2</td>
-</tr>
-<tr class="odd">
-<td>70</td>
-<td>GPL8490</td>
-<td>Homo sapiens</td>
-<td>IlluminaHumanMethylation27k</td>
-</tr>
-<tr class="even">
-<td>71</td>
-<td>GPL10558</td>
-<td>Homo sapiens</td>
-<td>illuminaHumanv4</td>
-</tr>
-<tr class="odd">
-<td>72</td>
-<td>GPL11532</td>
-<td>Homo sapiens</td>
-<td>hugene11sttranscriptcluster</td>
-</tr>
-<tr class="even">
-<td>73</td>
-<td>GPL13497</td>
-<td>Homo sapiens</td>
-<td>HsAgilentDesign026652</td>
-</tr>
-<tr class="odd">
-<td>74</td>
-<td>GPL13534</td>
-<td>Homo sapiens</td>
-<td>IlluminaHumanMethylation450k</td>
-</tr>
-<tr class="even">
-<td>75</td>
-<td>GPL13667</td>
-<td>Homo sapiens</td>
-<td>hgu219</td>
-</tr>
-<tr class="odd">
-<td>76</td>
-<td>GPL15380</td>
-<td>Homo sapiens</td>
-<td>GGHumanMethCancerPanelv1</td>
-</tr>
-<tr class="even">
-<td>77</td>
-<td>GPL15396</td>
-<td>Homo sapiens</td>
-<td>hthgu133b</td>
-</tr>
-<tr class="odd">
-<td>78</td>
-<td>GPL17897</td>
-<td>Homo sapiens</td>
-<td>hthgu133a</td>
-</tr>
-</tbody>
-</table>
-<p>如果是比较少见的平台，那么可以通过下面的方式来下载相应的平台探针信息：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># gpl &lt;- getGEO('GPL6244',destdir = ".")</span></div></pre></td></tr></table></figure>
-<p>只是这种方式下载起来比较慢。</p>
-<p>此时将探针转换为基因名，我们前面提到，这个数据使用的是<code>GPL6244</code>平台来测的（上表第67行），它对应的R包是<code>hugene10sttranscriptcluster</code>，此时安装这个包并加载即可：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biocLite(<span class="string">"hugene10sttranscriptcluster.db"</span>)</div><div class="line"><span class="keyword">library</span>(hugene10sttranscriptcluster.db)</div><div class="line">ls(<span class="string">'package:hugene10sttranscriptcluster.db'</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; ls(<span class="string">'package:hugene10sttranscriptcluster.db'</span>)</div><div class="line"> [<span class="number">1</span>] <span class="string">"hugene10sttranscriptcluster"</span>              <span class="string">"hugene10sttranscriptcluster.db"</span>          </div><div class="line"> [<span class="number">3</span>] <span class="string">"hugene10sttranscriptcluster_dbconn"</span>       <span class="string">"hugene10sttranscriptcluster_dbfile"</span>      </div><div class="line"> [<span class="number">5</span>] <span class="string">"hugene10sttranscriptcluster_dbInfo"</span>       <span class="string">"hugene10sttranscriptcluster_dbschema"</span>    </div><div class="line"> [<span class="number">7</span>] <span class="string">"hugene10sttranscriptclusterACCNUM"</span>        <span class="string">"hugene10sttranscriptclusterALIAS2PROBE"</span>  </div><div class="line"> [<span class="number">9</span>] <span class="string">"hugene10sttranscriptclusterCHR"</span>           <span class="string">"hugene10sttranscriptclusterCHRLENGTHS"</span>   </div><div class="line">[<span class="number">11</span>] <span class="string">"hugene10sttranscriptclusterCHRLOC"</span>        <span class="string">"hugene10sttranscriptclusterCHRLOCEND"</span>    </div><div class="line">[<span class="number">13</span>] <span class="string">"hugene10sttranscriptclusterENSEMBL"</span>       <span class="string">"hugene10sttranscriptclusterENSEMBL2PROBE"</span></div><div class="line">[<span class="number">15</span>] <span class="string">"hugene10sttranscriptclusterENTREZID"</span>      <span class="string">"hugene10sttranscriptclusterENZYME"</span>       </div><div class="line">[<span class="number">17</span>] <span class="string">"hugene10sttranscriptclusterENZYME2PROBE"</span>  <span class="string">"hugene10sttranscriptclusterGENENAME"</span>     </div><div class="line">[<span class="number">19</span>] <span class="string">"hugene10sttranscriptclusterGO"</span>            <span class="string">"hugene10sttranscriptclusterGO2ALLPROBES"</span> </div><div class="line">[<span class="number">21</span>] <span class="string">"hugene10sttranscriptclusterGO2PROBE"</span>      <span class="string">"hugene10sttranscriptclusterMAP"</span>          </div><div class="line">[<span class="number">23</span>] <span class="string">"hugene10sttranscriptclusterMAPCOUNTS"</span>     <span class="string">"hugene10sttranscriptclusterOMIM"</span>         </div><div class="line">[<span class="number">25</span>] <span class="string">"hugene10sttranscriptclusterORGANISM"</span>      <span class="string">"hugene10sttranscriptclusterORGPKG"</span>       </div><div class="line">[<span class="number">27</span>] <span class="string">"hugene10sttranscriptclusterPATH"</span>          <span class="string">"hugene10sttranscriptclusterPATH2PROBE"</span>   </div><div class="line">[<span class="number">29</span>] <span class="string">"hugene10sttranscriptclusterPFAM"</span>          <span class="string">"hugene10sttranscriptclusterPMID"</span>         </div><div class="line">[<span class="number">31</span>] <span class="string">"hugene10sttranscriptclusterPMID2PROBE"</span>    <span class="string">"hugene10sttranscriptclusterPROSITE"</span>      </div><div class="line">[<span class="number">33</span>] <span class="string">"hugene10sttranscriptclusterREFSEQ"</span>        <span class="string">"hugene10sttranscriptclusterSYMBOL"</span>       </div><div class="line">[<span class="number">35</span>] <span class="string">"hugene10sttranscriptclusterUNIGENE"</span>       <span class="string">"hugene10sttranscriptclusterUNIPROT"</span></div></pre></td></tr></table></figure>
-<p>这是一个R包的注释文件，它提供的是hugene10sttranscriptcluster这个芯片平台的详细信息，每两个月更新一次。这个包中含有的很多数据，上表已经列出来了，我们将探针转换为基因要使用的是文件是<code>hugene10sttranscriptclusterSYMBOL</code>这个，它的功能在于：将探针编号转换为基因名。</p>
-<p>同理，<code>hugene10sttranscriptclusterUNIPROT</code>是将探针编号转换为蛋白名，</p>
-<p>同时，<code>hugene10sttranscriptclusterREFSEQ</code>是将探针编号转换为转录组名，转换时使用的函数是<code>toTable()</code>函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">probe_trans_SYMBOL &lt;- toTable(hugene10sttranscriptclusterSYMBOL)</div><div class="line">probe_trans_UNIPROT &lt;- toTable(hugene10sttranscriptclusterUNIPROT)</div><div class="line">probe_trans_REFSEQ &lt;- toTable(hugene10sttranscriptclusterREFSEQ)</div><div class="line">head(probe_trans_SYMBOL)</div><div class="line">head(probe_trans_UNIPROT)</div><div class="line">head(probe_trans_REFSEQ)</div></pre></td></tr></table></figure>
-<p>运行结果为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&gt; head(probe_trans_SYMBOL)</div><div class="line">  probe_id    symbol</div><div class="line"><span class="number">1</span>  <span class="number">7896759</span> LINC01128</div><div class="line"><span class="number">2</span>  <span class="number">7896761</span>    SAMD11</div><div class="line"><span class="number">3</span>  <span class="number">7896779</span>    KLHL17</div><div class="line"><span class="number">4</span>  <span class="number">7896798</span>   PLEKHN1</div><div class="line"><span class="number">5</span>  <span class="number">7896817</span>     ISG15</div><div class="line"><span class="number">6</span>  <span class="number">7896822</span>      AGRN</div><div class="line">&gt; head(probe_trans_UNIPROT)</div><div class="line">  probe_id uniprot_id</div><div class="line"><span class="number">1</span>  <span class="number">7896761</span>     Q96NU1</div><div class="line"><span class="number">2</span>  <span class="number">7896779</span>     Q6TDP4</div><div class="line"><span class="number">3</span>  <span class="number">7896798</span>     Q494U1</div><div class="line"><span class="number">4</span>  <span class="number">7896817</span>     P05161</div><div class="line"><span class="number">5</span>  <span class="number">7896822</span>     O00468</div><div class="line"><span class="number">6</span>  <span class="number">7896865</span>     Q6ZVT0</div><div class="line">&gt; head(probe_trans_REFSEQ)</div><div class="line">  probe_id accession</div><div class="line"><span class="number">1</span>  <span class="number">7896759</span> NR_015368</div><div class="line"><span class="number">2</span>  <span class="number">7896759</span> NR_047519</div><div class="line"><span class="number">3</span>  <span class="number">7896759</span> NR_047520</div><div class="line"><span class="number">4</span>  <span class="number">7896759</span> NR_047521</div><div class="line"><span class="number">5</span>  <span class="number">7896759</span> NR_047522</div><div class="line"><span class="number">6</span>  <span class="number">7896759</span> NR_047523</div></pre></td></tr></table></figure>
-<p>我们这里只使用基因SYMBOL即可，也就是<code>probe_trans_SYMBOL &lt;- toTable(hugene10sttranscriptclusterSYMBOL)</code>这个语句。</p>
-<p>由于一个基因对应好几个探针，因此转换后的基因名必然是小于探针名的，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">length(unique(probe_trans_SYMBOL$symbol))</div><div class="line">length(unique(probe_trans_SYMBOL$probe_id))</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; length(unique(probe_trans_SYMBOL$symbol))</div><div class="line">[<span class="number">1</span>] <span class="number">18834</span></div><div class="line">&gt; length(unique(probe_trans_SYMBOL$probe_id))</div><div class="line">[<span class="number">1</span>] <span class="number">19827</span></div></pre></td></tr></table></figure>
-<p>从上面可以看出来，基因SYMBOL有18834个，探针有19827个。</p>
-<p>现在我们将下载的表达谱中的探针转换为基因SYMBOL，先来看下表达谱，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719171511.png">
-
-</div>
-<p>现在的任务就是将左侧的探针编号转换为基因SYMBOL。</p>
-<p>此时有两步操作：</p>
-<p>第一步就是我们先把表达谱中能够在平台芯片注释文件中找到基因SYMBOL给挑出来，因为表达谱中的有的探针名没有对应的基因SYMBOL，不要这种探针的数据，筛选过程如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">table(rownames(exprSet) %<span class="keyword">in</span>% probe_trans_SYMBOL$probe_id)</div><div class="line">dim(exprSet)</div><div class="line">exprSet_trans_symbol &lt;- exprSet[rownames(exprSet) %<span class="keyword">in</span>% probe_trans_SYMBOL$probe_id,]</div><div class="line">dim(exprSet_trans_symbol)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; dim(exprSet)</div><div class="line">[<span class="number">1</span>] <span class="number">28869</span>    <span class="number">11</span></div><div class="line">&gt; exprSet_trans_symbol &lt;- exprSet[rownames(exprSet) %<span class="keyword">in</span>% probe_trans_SYMBOL$probe_id,]</div><div class="line">&gt; dim(exprSet_trans_symbol)</div><div class="line">[<span class="number">1</span>] <span class="number">19631</span>    <span class="number">11</span></div></pre></td></tr></table></figure>
-<p>从结果中可以看出来，表达谱中有28869行，第1列就是探针名，探针中有19631个能找到相应的基因SYMBOL，因此表达谱经过第一步操作，就从原来的28869行缩小到了19631行，再强调一下这一步的目的，就是筛选表达谱数据，将那些表达谱中有探针号，但没有对应基因SYMBOL的数据给剔除掉。</p>
-<p>第二步：将表达谱中的这些探针号与基因名对应起来，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">probe_trans_SYMBOL_filter &lt;- probe_trans_SYMBOL[match(rownames(exprSet_trans_symbol), probe_trans_SYMBOL$probe_id),]</div></pre></td></tr></table></figure>
-<p>这里用到了<code>match()</code>函数，简单看一个案例：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">A&lt;-<span class="number">1</span>:<span class="number">10</span></div><div class="line">B&lt;-seq(<span class="number">5</span>,<span class="number">15</span>,<span class="number">2</span>)</div><div class="line">match(A,B) <span class="comment">#遍历A中的元素，看A的元素是否在B里面出现过，如果A中的元素在B中出现，就返回此元素在B中的索引号</span></div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; match(A,B) <span class="comment">#遍历A中的元素，看A的元素是否在B里面出现过，如果A中的元素在B中出现，就返回此元素在B中的索引号</span></div><div class="line"> [<span class="number">1</span>] <span class="literal">NA</span> <span class="literal">NA</span> <span class="literal">NA</span> <span class="literal">NA</span>  <span class="number">1</span> <span class="literal">NA</span>  <span class="number">2</span> <span class="literal">NA</span>  <span class="number">3</span> <span class="literal">NA</span></div></pre></td></tr></table></figure>
-<p>因此上面代码的目的在于：将表达谱中的探针位置与转换后的探针文件<code>probe_trans_SYMBOL</code>中的位置对应起来，先看一下这两个文件的长度：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; length(rownames(exprSet_trans_symbol))</div><div class="line">[<span class="number">1</span>] <span class="number">19631</span></div><div class="line">&gt; length(probe_trans_SYMBOL$probe_id)</div><div class="line">[<span class="number">1</span>] <span class="number">19827</span></div><div class="line">&gt; length(probe_trans_SYMBOL_filter$symbol)</div><div class="line">[<span class="number">1</span>] <span class="number">19631</span></div></pre></td></tr></table></figure>
-<p>经过前面的<code>match()</code>函数操作，我们就可以看到，探针的位置已经与基因名一一对应了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719175830.png">
-
-</div>
-<p>左侧是探针对应的文件，右侧是表达谱数据，由于现在这两个文件的探针与基因的位置都是一一对应的，使用<code>merge()</code>函数或<code>cbind()</code>都可以，由于名称对应，直接改名也行，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">rownames(exprSet_trans_symbol) &lt;- probe_trans_SYMBOL_filter$symbol</div><div class="line">str(exprSet_trans_symbol)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; str(exprSet_trans_symbol)</div><div class="line"> num [<span class="number">1</span>:<span class="number">19631</span>, <span class="number">1</span>:<span class="number">11</span>] <span class="number">7.27</span> <span class="number">8.05</span> <span class="number">7.47</span> <span class="number">7.52</span> <span class="number">7.08</span> <span class="keyword">...</span></div><div class="line"> - attr(*, <span class="string">"dimnames"</span>)=List of <span class="number">2</span></div><div class="line">  ..$ : chr [<span class="number">1</span>:<span class="number">19631</span>] <span class="string">"LINC01128"</span> <span class="string">"SAMD11"</span> <span class="string">"KLHL17"</span> <span class="string">"PLEKHN1"</span> <span class="keyword">...</span></div><div class="line">  ..$ : chr [<span class="number">1</span>:<span class="number">11</span>] <span class="string">"GSM607938"</span> <span class="string">"GSM607939"</span> <span class="string">"GSM607940"</span> <span class="string">"GSM607941"</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>此时，这个表达谱是有19631行数据，但是，由于芯片的设计，一个基因名有可能对应好几个探针编号，查看一下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; length(unique(rownames(exprSet_trans_symbol)))</div><div class="line">[<span class="number">1</span>] <span class="number">18775</span></div></pre></td></tr></table></figure>
-<p>从这个结果可以看出来，其实基因一共是18775个，比19631要少，因此我们还要继续剔除掉一些相同的基因名，此时的问题就是，如果有3行的基因相同，要剔掉哪个？按教程中的标准，剔除标准是：只保留在各个样本中均值最大的那个基因名，这个处理过程的示意图如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719182201.png">
-
-</div>
-<p>在上表中，一共有4个样本，6个基因，其中<code>Gene_5</code>有3个重复，<code>Gene_6</code>有4个重复，因此我们要剔除掉那些重复的基因名，假设我们按照这2个基因在不同样本中的最高均值这个条件来筛选，那么<code>Gene_5</code>只需要保留第1行，<code>Gene_6</code>只需要保留第3行就行，代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">exprSet_trans_symbol2 &lt;- as.data.frame(exprSet_trans_symbol)</div><div class="line">exprSet_trans_symbol2$names &lt;-rownames(exprSet_trans_symbol)</div><div class="line">result &lt;- exprSet_trans_symbol2 %&gt;% group_by(names) %&gt;% summarise_all(max)</div><div class="line">result2 &lt;- as.matrix(result[-<span class="number">1</span>])</div><div class="line">rownames(result2) &lt;- result$names</div><div class="line">final_data &lt;- result2</div><div class="line">boxplot(final_data)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719191931.png">
-
-</div>
-<p>现在提取分组信息，在开头的代码中，我们把分组信息储存在了<code>pData</code>变量中，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(stringr)</div><div class="line">group_sample &lt;- pData$title</div><div class="line">group_clean &lt;- str_sub(group_sample,<span class="number">1</span>,<span class="number">6</span>)</div><div class="line">group_clean[<span class="number">10</span>:<span class="number">11</span>] &lt;- rep(<span class="string">"Health"</span>,<span class="number">2</span>)</div></pre></td></tr></table></figure>
-<p>有了分组信息后，把原始表达谱再整理一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(reshape2)</div><div class="line">exprSet_L &lt;- melt(final_data)</div><div class="line">colnames(exprSet_L) &lt;- c(<span class="string">"probe"</span>, <span class="string">"Sample"</span>, <span class="string">"value"</span>)</div><div class="line">exprSet_L$group &lt;- rep(group_clean, each=nrow(final_data))</div></pre></td></tr></table></figure>
-<p>绘图：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line">p &lt;- ggplot(exprSet_L, aes(x=Sample, y=value, fill=group))+geom_boxplot()</div><div class="line">p &lt;- p + theme(axis.text.x = element_text(angle = <span class="number">45</span>, hjust = <span class="number">0.5</span>, vjust = <span class="number">0.5</span>))</div><div class="line">p</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190719194204.png">
-
-</div>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzAxMDkxODM1Ng==&amp;mid=2247486063&amp;idx=1&amp;sn=156bee5397e979722b36b78284188538&amp;chksm=9b484ad4ac3fc3c2d025b9e4bb1c3c8392839c08d84697754d7d95d041b539479a45f19cf5d5&amp;scene=21#wechat_redirect" target="_blank" rel="external">解读GEO数据存放规律及下载，一文就够</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3432,7 +2997,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">225</span>
+                  <span class="site-state-item-count">226</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3454,7 +3019,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">112</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3531,7 +3096,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共905.4k字</span>
+  <span class="post-count">博客全站共911.9k字</span>
 </div>
 
         
