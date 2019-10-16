@@ -259,6 +259,1280 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/09/BioStatistics/生物统计-广义线性模型与Logistics回归笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/09/BioStatistics/生物统计-广义线性模型与Logistics回归笔记/" itemprop="url">广义线性模型与Logistics回归笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-09T12:02:00+08:00">
+                2017-06-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6,720
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  28
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="一般线性模型与广义线性模型">一般线性模型与广义线性模型</h2>
+<p>由于统计模型的多样性和各种模型的适应性，针对因变量（也就是我们常用于回归方程中的y）和解释变量（就是自变量，也就是我们常用于回归的x）的取值性质，可以将统计模型分为多种类型。通常自变量为定性变量的线性模型称为<code>一般线性模型（general linear model，GLM）</code>，如实验设计模型、方差分析模型。因变量为非正态分布的线性模型为<code>广义线性模型（Generalized linear model,GENMOD）</code>，如Logistic回归模型、对数线性模型和Cox比例风险模型。</p>
+<p>对于一般线性线性模型，其基本假定是y服从正态分布，或至少y的方差<span class="math inline">\(\sigma^2\)</span>为有限常数。但是在实际研究中，情况并非总是如此，例如当y是发病率(y=k/n)时，y服从二项分布，期望值和方差分别为E(y)=π，Var(y)=1/n x π(1-π)，其方差与倒数呈反比，且是π的函数。又如，当y是单位时间内的放射性计数时，y服从Poisson分布，期望值和方差分别为E(y)=μ,Var(y)=μ，方差是μ的函数。实际数据中有很多资料均不符合一般线性模型的基本假定。尽管也可以将频率或频数作为y代入一般线性模型，但拟合结果往往不能令人满意，例如会出现频率的拟合值y&gt;1、频数的拟合值y&lt;0这种奇怪现象。</p>
+<p>后来有人在一般线性模型的基础上，对<span class="math inline">\(\sigma^2\)</span>为有限常数的假定作了进一步的推广，提出了广义线性模型的概念和<code>拟似然函数(quasi-likelihood function)</code>的方法，用于求解满足下列条件的线性模型：</p>
+<p>$E(y) = $</p>
+<p><span class="math inline">\(m(\mu) = X\beta\)</span></p>
+<p><span class="math inline">\(cov(y) = \sigma^2 V(\mu) \quad （一）\)</span></p>
+<p>其中m为连接函数组成的向量，将<span class="math inline">\(\mu\)</span>转化为<span class="math inline">\(\beta\)</span>的线性表达式，<span class="math inline">\(V(\mu)\)</span>为<span class="math inline">\(n \times n\)</span>矩阵，其中每个元素均为<span class="math inline">\(\mu\)</span>的函数，当处<span class="math inline">\(y_{i}\)</span>值相互独立时，<span class="math inline">\(V(\mu)\)</span>为对角矩阵。当<span class="math inline">\(m(\mu)=\mu\)</span>，<span class="math inline">\(V(\mu)=I\)</span>时，(一)中的三个公式为一般线性模型，也就是说，（一）中包括了一般线性模型。在广义线性模型中，均假定观察值y具有指数族概率密度函数，如下所示：</p>
+<p><span class="math inline">\(f(y|\theta,\phi) = exp{[y\theta -b(\theta)]/a(\phi)=c(y,\phi)} \quad (二)\)</span></p>
+<p>其中，a、b和c是三种函数形式，θ为典则参数，如果给定φ（散布参数，有时写作<span class="math inline">\(\sigma^2\)</span>），<code>（二）</code>式就是具有参数θ的指数族密度函数，以正式分布为例：</p>
+<p>与<code>（二）</code>式对照，如下所示：</p>
+<p><span class="math inline">\(\theta=\mu\)</span></p>
+<p><span class="math inline">\(b(\theta)=\mu^2/2\)</span></p>
+<p><span class="math inline">\(\phi=\sigma^2\)</span></p>
+<p><span class="math inline">\(a(\phi)=\sigma^2\)</span></p>
+<p><span class="math inline">\(c(y,\phi)=-\frac{1}{2}[y^2/\sigma^2 + ln(2\pi\sigma^2) ]\)</span></p>
+<p>根据样本和y的函数可建立对数似然函数，并可导出y的期望值和方差。在广义线性模型中，<code>（二）</code>式中的典则参数不仅仅是μ的函数，还是参数β0，β1,..βp的线性表达式，因此对μ作变换，则可得到下面三种分布连接函数的形式：</p>
+<p>正态分布：<span class="math inline">\(m(\mu)=\mu=\sum\beta_{j}x_{j}\)</span></p>
+<p>二项分布：<span class="math inline">\(m(\mu)=ln(\frac{\mu}{1-\mu})=\sum\beta_{j}x_{j}\)</span></p>
+<p>Poisson分布：<span class="math inline">\(mu(\mu)=ln(\mu)=\sum\beta_{j}x_{j}\)</span></p>
+<p>Logistic属于广义线性模式的一种，它是通常的正态线性模型的推广，它要求应变量只能通过线性形式依赖于自变量。上述推广体现在以下两个方面： 1. 通过一个连接函数，将应变量与自变量建立线性关系</p>
+<p><span class="math inline">\(m(E(y))=\beta_{0}+\beta_{1}x_{1}+\beta_{2}x_{2}+\cdots+\beta_{p}x_{p}\)</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>通过一个误差函数，说明广义线性模型的最后一部分随机项。</li>
+</ol>
+<p>因此，Logistic是关于应变量为0到1定性变量的广义线性回归问题，且广义线性模型的分布族为二项分布。</p>
+<p>广义线性模型中常用的分布族如下所示：</p>
+<table>
+<colgroup>
+<col width="15%">
+<col width="44%">
+<col width="40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>分布</th>
+<th>函数</th>
+<th>模型</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>正态(Gaussian)</td>
+<td><span class="math inline">\(E(y)=X&#39;\beta\)</span></td>
+<td>普通线性模型</td>
+</tr>
+<tr class="even">
+<td>二项(Binomial)</td>
+<td><span class="math inline">\(E(y)=\frac{exp(X&#39;\beta)}{1+exp(X&#39;\beta)}\)</span></td>
+<td>Logistic模型和概率模型单位(probit)模型</td>
+</tr>
+<tr class="odd">
+<td>泊松(Poisson)</td>
+<td><span class="math inline">\(E(y)=exp(X&#39;\beta)\)</span></td>
+<td>对数线性模型</td>
+</tr>
+</tbody>
+</table>
+<p>在R语言中，正态分布（也叫高斯分布）的广义线性模型事实上同线性模型是相同的，即</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gm &lt;- glm(formula,family = gaussian, data)</div></pre></td></tr></table></figure>
+<p>与线性模型<code>fm &lt;- lm(formula, data)</code>得到的结论是一致的，当然，其效率会差很多。下面是广义线性模型函数<code>glm()</code>的用法：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">glm(formula, family = gaussian, data,<span class="keyword">...</span>)</div><div class="line">formula为公式，即为要拟合的模型；</div><div class="line">family为分布族，包括正态分布(Gaussian)、二项分布(Binomial)、泊松分布(Poisson)和伽玛分布(Gamma)，分布族还可以通过选项link=来指定使用的连接函数</div><div class="line">data为可选择的数据框</div></pre></td></tr></table></figure>
+<p>这样，在广义线性意义下，我们不仅知道了一般线性模型是广义线性模型的一个特例，而且导出了处理频率资料的Logistic模型和处理频数资料的对数线性模型。这个重要结果还说明，虽然Logistic模型和对数线性模型都是非线性模型，即μ和β呈非线性关系，但通过连接函数使m(μ)和β呈线性关系，从而使我们可以用线性拟合的方法求解这类非线性模型。更有意义的是，实际研究中的主要数据形式无非是计量资料、频率资料和频数资料（半计量资料实际上可以看做有序的频数资料），因此，掌握了广义线性模型的思想和方法，就可以使用统一的方法处理各种类型的统计数据。</p>
+<h2 id="logistic回归简介">Logistic回归简介</h2>
+<p>在回归中，如果因变量不是数量型的，而是取两个可能值的分类变量，而自变量可以为定性变量及定量变量，那么此时普通的线性回归模型就不适用了，至少回归方程的左边不能是分类变量。我们回忆一下二项分布Bin(n,p)，取两个值的二分布变量和二项分布有关，满足二项分布的变量取两种可能的值，处理过程可以看成为n次独立的随机试验（Bernoulli试验），每次试验只可能取两个可能的值之一，如果称一个试验结果为“成功”，而另一个为“不成功”，并记每次试验成功的概率为p，那么不成功的概率则为1-p。在这里，在所有n次试验中，成功概率p保持不变，然而在实际情况中，概率在所有情况下都不变的假定往往不成立，概率p可能是一些自变量的函数，此时，回归方程的右边与普通的回归方程的类似，而左边则是概率p的函数，而不是p（因变量成功概率）本身，这种回归就是Logistic回归。</p>
+<p><code>Logistic回归（logistic regression）</code>属于概率型线性回归，它是研究二分类（可以扩展到多类）观察结果与一些影响因素之间关系的一种多变量分析方法。在流行病学研究中，经常需要分析疾病与各危险因素之间的定量关系，如食管癌的发生与吸烟、饮酒、不良包含习惯等危险因素的关系，为了正确说明这种关系，需要排除一些混杂因素的影响，传统上常使用<code>Mantel-Haenszel分层分析方法</code>，但这一方法适用于样本含量大、分析因素较少的情况。如果用线性回归，由于应变量Y是一个二值变量（通常取值为1或0），不满足应用条件，尤其当各因素都处于低水平或高水平时，预测值<span class="math inline">\(\hat{Y}\)</span>可能超出0~1的范围，出现不合理的现象，用Logistic回归分析就是为了解决上述问题的。</p>
+<h2 id="基本概念">基本概念</h2>
+<h4 id="logistic回归模型">logistic回归模型</h4>
+<p>设应变量是一个二值变量，取值为0或1，如下所示：</p>
+<p><span class="math inline">\(Y= \begin{cases} 1 &amp;出现阳性结果（发病、有效、死亡等） \\ 0 &amp;出现阴性结果（未发病、无效、存活等） \end{cases}\)</span></p>
+<p>另有影响Y取值的m个自变变量，分别为<span class="math inline">\(X_{1},X_{2},\dots,X_{m}\)</span>，记作<span class="math inline">\(P=P(Y=1|X_{1},X_{2},\dots,X_{m})\)</span>，表示在m个自变量作用下阳性结果发生的概率，Logistic回归模型就可以表示为下面的公式，如下所示：</p>
+<p><span class="math inline">\(P=\frac{1}{1+exp[-(\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\cdots+\beta_{m}X_{m})]} \quad (16-1)\)</span></p>
+<p>其中<span class="math inline">\(\beta_{0}\)</span>是常数项，<span class="math inline">\(\beta_{1},\beta_{2},\cdots,\beta_{m}\)</span>是回归系数，如果用Z表示m个自变量的线性组合，就是下面的样子：</p>
+<p><span class="math inline">\(Z=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\cdots+\beta_{m}X_{m}\)</span></p>
+<p>则Z与P之间的Logistic曲线就是下面的图形，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/cblf06iB27.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>从图中可以看出：当Z趋于<span class="math inline">\(+\infty\)</span>时，P值逐渐趋于1；当Z趋于<span class="math inline">\(-\infty\)</span>时，P值逐渐趋于0；P值的变化在0~1这个范围内，并且随着Z的增加或减少，以点<span class="math inline">\((0,0.5)\)</span>为中心呈对称S形变化，logistic模型的这些特点能够较好地配合生物学反应资料，对(16-1)的公式作对数变量，logistic回归模型就成了下面的线性形式，如下所示：</p>
+<p><span class="math inline">\(ln(\frac{P}{1-P})=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\cdots+\beta_{m}X_{m} \quad (16-2)\)</span></p>
+<p>上述公式的左端为阳性与阴性结果发生概率之比的自然对数，称为P的Logit变换，称为<code>logitP</code>，这就可以看出，虽然概率P的取值范围是0~1，但是<code>logitP</code>却没有数值界限，这里我们使用了<code>ln(p/1-p)</code>将<code>p/1-p</code>变成了线性方程，这里的<code>ln(x)</code>就是我们前面提到的连接函数。</p>
+<h4 id="模型参数意义">模型参数意义</h4>
+<p>以流行病学来说明一下模型参数的意义，从<code>公式(16-2)</code>可以看出，常数项<span class="math inline">\(\beta_{0}\)</span>表示暴露剂量为0时，个体发病与不发病概率比之的自然对数，回归系数<span class="math inline">\(\beta_{j}(j=1,2,\cdots,m)\)</span>表示自变量<span class="math inline">\(X_{j}\)</span>改变一个单位时，<code>logitP</code>的改变量，它与衡量危险因素作用大小的比数变称<code>优势比</code>（<code>odds ratio</code>，<code>OR</code>，也有教材译为<code>比数比</code>）有一个对应的关系，对比某一危险因素两个不同暴露水平<span class="math inline">\(X_{j}=c_{1}\)</span>与<span class="math inline">\(X_{j}=c_{0}\)</span>的发病情况（假定其他因素的水平相同），其优势比的自然对数如下所示：</p>
+$
+<span class="math display">\[\begin{align*}lnOR_{j}&amp;=ln[\frac{P_{1}/(1-P_{1})}{P_{0}/(1-P_{0})}]\\
+&amp;=logitP_{1}-logitP_{0}\\&amp;=(\beta_{0}+\beta_{j}c_{1}+\sum \limits_{t\neq j}^m \beta_{t}X_{t}-(\beta_{0}+\beta_{j}c_{0}+\sum \limits_{t\neq j}^m \beta_{t}X_{t}) \\&amp;=\beta_{j}(c_{1}-c_{0}) \end{align*}\]</span>
+<p>(16-3)$</p>
+<p>转换成真数，则是如下的样子：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/5ekdJ13eik.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在上面的这些公式中，<span class="math inline">\(P_{1}\)</span>和<span class="math inline">\(P_{2}\)</span>分别表示在<span class="math inline">\(X_{j}\)</span>取值为<span class="math inline">\(c_{1}\)</span>及<span class="math inline">\(c_{0}\)</span>时的发病概率，<span class="math inline">\(OR_{j}\)</span>称作<code>多变量调整后的优势比（adjusted odds ratio）</code>，表示扣除了其他自变量影响后危险因素的作用，如果<span class="math inline">\(X_{j}\)</span>赋值上为1，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/2HEiLjbAjK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>那么，暴露组与非暴露组发病的优势比则为</p>
+<p>$OR_{j}=exp(_{j}) $(<strong>16-5</strong>)</p>
+<p>当<span class="math inline">\(\beta_{j}=0\)</span>时，<span class="math inline">\(OR_{j}=1\)</span>，说明因素<span class="math inline">\(X_{j}\)</span>对产生的发生不起作用；当<span class="math inline">\(\beta_{j}&gt;0\)</span>时，<span class="math inline">\(OR_{j}&gt;1\)</span>，说明<span class="math inline">\(X_{j}\)</span>是一个危险因子；当<span class="math inline">\(\beta_{j}&lt;1\)</span>时，<span class="math inline">\(OR_{j}&lt;1\)</span>，说明<span class="math inline">\(X_{j}\)</span>是一个保护因子。</p>
+<p>由于<span class="math inline">\(OR_{j}\)</span>值与模型中的常数项无关，<span class="math inline">\(\beta_{0}\)</span>在危险因素分析中视为无效参数，对于发病率较低的慢性疾病如心脑血管疾病、恶性中肿瘤等，由于P很小，优势比可以作用<code>相对危险度（relative risk，RR）</code>的近似估计，如：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/G0jKg4aH0E.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>这是logistic回归用于流行病学调查资料的优势之一，即得到某一因素的回归系数估计值后，便可以得到该因素不同水平下优势比的估计值和相对危险度的近似估计值，关于比数比，可以参考这篇笔记<a href="http://rvdsd.top/2018/06/09/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B008-%E6%AF%94%E6%95%B0%E4%B8%8E%E6%AF%94%E6%95%B0%E6%AF%94/">《比数与比数比》</a>。</p>
+<h3 id="logistic回归模型的参数估计">Logistic回归模型的参数估计</h3>
+<h4 id="参数估计">参数估计</h4>
+<p>根据一组实际观察资料估计Logistic回归模型的参数时，通常采用<strong>最大似然法估计（maximum likelihood estimate, MLE）</strong>，关于最大似然法，可以参考这篇笔记<a href="http://rvdsd.top/2018/06/08/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B007-%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E6%B3%95%E8%AF%A6%E8%A7%A3/">《最大似然法详解》</a>。</p>
+<p>最大似然法即建立一个样本似然函数，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/BCLLk6g26i.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>式中<span class="math inline">\(P_{i}\)</span>表示第<span class="math inline">\(i\)</span>例观察对象在暴露条件下阳性结果发生的概率，如果实际出现的是阳性结果，取<span class="math inline">\(Y_{i}=1\)</span>，否则取<span class="math inline">\(Y_{i}=0\)</span>，根据最大似然原理，在一次抽样中，获得现有样本的概率应该最大，即似然函数L应该达到最大值，为了简化计算，通常取似然函数的对数形式，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/ca1ifm2laf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>形成要计算的目标函数lnL，然后采用Newton-Raphson迭代方法使对数似然函数达到极大值，此时参数的取值<span class="math inline">\(b_{0},b_{1},b_{2},\cdots,b_{m}\)</span>即为<span class="math inline">\(\beta_{0},\beta_{1},\beta_{2},\cdots,\beta_{m}\)</span>的最大似然估计值，同时得到参数估计值的方差，即协方差矩阵（对角线元素开平方为标准误<span class="math inline">\(S_{b_{0}},S_{b_{1}},S_{b_{2}},\cdots,S_{b_{m}}\)</span>。</p>
+<p>如果我们有下述的分层资料，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/5iAFH48fd5.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>高有g层，每层有<span class="math inline">\(n_{k}(k=1,2,\cdots,g)\)</span>例观察以对象，其中有<span class="math inline">\(d_{k}\)</span>个病例，则似然函数为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/8ghGBC6Kaf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中，<span class="math inline">\(P_{k}\)</span>表示第k层阳性结果发生的概率，上述求解过程现在都是通过软件来完成的。</p>
+<h4 id="优势比估计">优势比估计</h4>
+<p>根据公式(16-4)，其一因素两个不同水平<span class="math inline">\((c_{1},c_{0})\)</span>优势比的估计值如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/4fi9JCGKgL.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p><span class="math inline">\(OR_{j}\)</span>的可信区间可以利用<span class="math inline">\(b_{j}\)</span>的抽样分布来估计，在样本含量比较大的情况下，它近似服从正态分布，特殊情况下，若自变量<span class="math inline">\(X_{j}\)</span>只有暴露和非暴露两个水平，则优势比<span class="math inline">\(OR_{j}\)</span>的<span class="math inline">\(1-\alpha\)</span>可信区间计算公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180920/D0fbdC49El.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="logistic案例计算">Logistic案例计算：</h3>
+<p>对前面所述的表格（16-1）做Logistic回归分析，也就是下面的这个表格</p>
+<table>
+<thead>
+<tr class="header">
+<th>分层</th>
+<th>吸烟<span class="math inline">\(X_{1}\)</span></th>
+<th>饮酒<span class="math inline">\(X_{2}\)</span></th>
+<th>观察例数<span class="math inline">\(n_{k}\)</span></th>
+<th>阳性数<span class="math inline">\(d_{k}\)</span></th>
+<th>阴性数<span class="math inline">\(n_{k}-d_{k}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>199</td>
+<td>63</td>
+<td>136</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>170</td>
+<td>63</td>
+<td>107</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>101</td>
+<td>44</td>
+<td>57</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>416</td>
+<td>265</td>
+<td>151</td>
+</tr>
+</tbody>
+</table>
+<p>确定各变量的赋值或编码，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/21e8gfChkI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>进行logistic回归计算，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">smoke &lt;- c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>) <span class="comment"># 0表示不吸烟，1表示吸烟</span></div><div class="line">wine &lt;- c(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">n1 &lt;- c(<span class="number">199</span>,<span class="number">170</span>,<span class="number">101</span>,<span class="number">416</span>) <span class="comment"># 0表示不饮酒，1表示饮酒</span></div><div class="line">positive1 &lt;- c(<span class="number">63</span>,<span class="number">63</span>,<span class="number">44</span>,<span class="number">265</span>)</div><div class="line">negative1 &lt;- c(<span class="number">136</span>,<span class="number">107</span>,<span class="number">57</span>,<span class="number">151</span>)</div><div class="line">data1 &lt;- positive1/n1 <span class="comment"># data1用来计算阳性率</span></div><div class="line">result1 &lt;- glm(data1~smoke+wine,binomial,weights=n1) <span class="comment"># data1为百分比，需要加上总数</span></div><div class="line">con1 &lt;- as.matrix(confint(result1))[<span class="number">2</span>,] <span class="comment"># confint(result1)查看各个系数对应的置信区间</span></div><div class="line">exp(con1) <span class="comment"># 计算吸烟与不吸烟优势比的可信区间</span></div><div class="line">con2 &lt;- as.matrix(confint(result1))[<span class="number">3</span>,] </div><div class="line">exp(con2) <span class="comment"># 计算饮酒与不饮酒优势比的可信区间</span></div><div class="line">summary(result1) <span class="comment"># 查看各个系数,z值的平方即为Wald检验值</span></div><div class="line">anova(result1,test=<span class="string">"Chisq"</span>) <span class="comment"># 似然比卡方检验</span></div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">exp(con1) <span class="comment"># 计算吸烟与不吸烟优势比的可信区间</span></div><div class="line"><span class="comment"># 2.5 %   97.5 % </span></div><div class="line"><span class="comment">#   1.809052 3.258006 </span></div><div class="line"></div><div class="line">con2 &lt;- as.matrix(confint(result1))[<span class="number">3</span>,] </div><div class="line">exp(con2) <span class="comment"># 计算饮酒与不饮酒优势比的可信区间</span></div><div class="line"><span class="comment"># 2.5 %   97.5 % </span></div><div class="line"><span class="comment">#   1.244161 2.304882 </span></div><div class="line">summary(result1) <span class="comment"># 查看各个系数,z值的平方即为Wald检验值</span></div><div class="line"><span class="comment"># Call:</span></div><div class="line"><span class="comment">#   glm(formula = data1 ~ smoke + wine, family = binomial, weights = n1)</span></div><div class="line"><span class="comment"># Deviance Residuals: </span></div><div class="line"><span class="comment">#   1        2        3        4  </span></div><div class="line"><span class="comment"># 0.9133  -0.9240  -1.1731   0.5968  </span></div><div class="line"><span class="comment"># Coefficients:</span></div><div class="line"><span class="comment">#   Estimate Std. Error z value Pr(&gt;|z|)    </span></div><div class="line"><span class="comment"># (Intercept)  -0.9099     0.1358  -6.699 2.11e-11 ***</span></div><div class="line"><span class="comment">#   smoke         0.8856     0.1500   5.904 3.54e-09 ***</span></div><div class="line"><span class="comment">#   wine          0.5261     0.1572   3.348 0.000815 ***</span></div><div class="line"><span class="comment">#   ---</span></div><div class="line"><span class="comment">#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span></div><div class="line"><span class="comment"># (Dispersion parameter for binomial family taken to be 1)</span></div><div class="line"><span class="comment"># Null deviance: 71.9659  on 3  degrees of freedom</span></div><div class="line"><span class="comment"># Residual deviance:  3.4202  on 1  degrees of freedom</span></div><div class="line"><span class="comment"># AIC: 32.005</span></div><div class="line"><span class="comment"># Number of Fisher Scoring iterations: 3</span></div></pre></td></tr></table></figure>
+<p>从上面结果可以看出：</p>
+<p><span class="math inline">\(b_{0}=-0.9099,S_{b_{0}}=0.1358,b_{1}=0.8856,S_{b_{1}}=0.1500,b_{2}=0.5261,S_{b_{2}}=0.1572\)</span></p>
+<p>吸烟与不吸烟的优势比为：</p>
+<p>$ =exp(b_{1})=exp(0.8856)=2.42 $</p>
+<p><span class="math inline">\(OR_{1}\)</span>的95%可信区间如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/B338JCG4gA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>饮酒与不饮酒的优势比为：</p>
+<p>$ =exp(b_{2})=exp(0.5261)=1.69 $</p>
+<p><span class="math inline">\(OR_{2}\)</span>的95%可信区间如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/mfI8e4D6gg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="logistic回归模型的假设检验">Logistic回归模型的假设检验</h3>
+<p>得到logistic回归方程后，还需要对其回归系数进行假设检验，用于说明所研究的自变量对于应变量Y的是影响是否有统计学意义，为此，需要对模型中的回归系数是否不全为0作出检验，这个跟多重线性回归的检验是一样的，检验假设条件如下所示：</p>
+<p><span class="math inline">\(H_{0}:\beta_{1}=\beta_{2}=\cdots=\beta_{m}=0\)</span></p>
+<p><span class="math inline">\(H_{1}:\)</span>各<span class="math inline">\(\beta_{j}(j=1,2,\cdots,m)\)</span>不全为0</p>
+<p>更典型的问题是对一个回归系数的检验，检验假设为<span class="math inline">\(H_{0}:\beta_{j}=0,H_{1}:\beta \neq 0\)</span>。常用的检验验方法有<code>似然比检验（likelihood ratio test）</code>，<code>Wald检验</code>和<code>计分检验（score test）</code>。</p>
+<h4 id="似然比检验">似然比检验</h4>
+<p>似然比检验的基本思想是比较在两种不同假设条件下的对数似然函数值，看其差别大小。具体做法是，先拟合一个不包含准备检测的变量在内的logistic回归模型，求出它的对数似然函数值<span class="math inline">\(lnL_{0}\)</span>，然后把需要检验的变量加入模型中去，再检验配合，得到一个新的对数似然函数值<span class="math inline">\(lnL_{1}\)</span>，假设前后两个模型分别包含<span class="math inline">\(l\)</span>个自变量和<span class="math inline">\(p\)</span>个自变量，似然比统计量G的计算公式为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180726/GEj57Gk3Cf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>当样本含量较大时，在零假设下得到的G统计量近似服从自由度为<span class="math inline">\(d(d=p-l)\)</span>的<span class="math inline">\(\chi^2\)</span>分布，若<span class="math inline">\(G\geq{\chi^2_{\alpha,d}}\)</span>时，则新加入的<span class="math inline">\(d\)</span>个自变量对回归方程有统计学意义，如果只对一个回归系数检验，则<span class="math inline">\(d=1\)</span>，由上面的案例可以计算出来：</p>
+<p><span class="math inline">\(lnL(X_{1})=-585.326,lnL(X_{2})=-597.436,lnL(X_{1},X_{2})=-579.711\)</span></p>
+<p>符号<span class="math inline">\(L(X_{1})\)</span>和<span class="math inline">\(L(X_{2})\)</span>分别表示模型中只含有<span class="math inline">\(X_{1}\)</span>和<span class="math inline">\(X_{2}\)</span>的最大似然函数值，而<span class="math inline">\(L(X_{1},X_{2})\)</span>则表示模型中同时含有<span class="math inline">\(X_{1}\)</span>和<span class="math inline">\(X_{2}\)</span>的最大似然函数。</p>
+<p>对于<span class="math inline">\(H_{0}:\beta_{1}=0,H_{1}:\beta \neq 0\)</span>，则有：</p>
+<p><span class="math inline">\(G=2[lnL(X_{1},X_{2})-lnL(X_{2})]=2[-579.711-(-597.436)]=35.45\)</span></p>
+<p>查<span class="math inline">\(\chi^2\)</span>界值表可以得，<span class="math inline">\(\chi^2_{0.05,1}=3.84\)</span>，<span class="math inline">\(G&gt;3.84\)</span>，因此在<span class="math inline">\(\alpha=0.05\)</span>检验水平上拒绝<span class="math inline">\(H_{0}\)</span>，接受<span class="math inline">\(H_{1}\)</span>，说明控制了饮酒因素是呼后，食管癌与吸烟有显著性关系。</p>
+<p>同理，对于<span class="math inline">\(H_{0}:\beta_{2}=0,H_{1}:\beta_{2} \neq 0\)</span>，则有</p>
+<p><span class="math inline">\(G=2[lnL(X_{1},X_{2})-lnL(X_{2})]=2[-579.711-(-585.326)]=11.23\)</span></p>
+<p><span class="math inline">\(G&gt;3.84\)</span>，拒绝<span class="math inline">\(H_{0}\)</span>，接受<span class="math inline">\(H_{1}\)</span>，说明控制了吸烟因素的影响后，食管癌与饮酒有显著性关系。</p>
+<p>看一下R对于似然比卡方的检验，因变量服从二项分布，因此对模型的方差检验需要使用似然比卡方检验，<code>anova()</code>函数提供了检验Logistic模型的馀在卡方比的功能，它也能逐一地检验模型的自变量是否显著。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">anova(result1,test=<span class="string">"Chisq"</span>) <span class="comment">#似然比卡方检验</span></div><div class="line"><span class="comment"># Analysis of Deviance Table</span></div><div class="line"><span class="comment"># Model: binomial, link: logit</span></div><div class="line"><span class="comment"># Response: data1</span></div><div class="line"><span class="comment"># Terms added sequentially (first to last)</span></div><div class="line"><span class="comment"># Df Deviance Resid. Df Resid. Dev  Pr(&gt;Chi)    </span></div><div class="line"><span class="comment"># NULL                      3     71.966              </span></div><div class="line"><span class="comment"># smoke  1   57.315         2     14.651 3.713e-14 ***</span></div><div class="line"><span class="comment">#   wine   1   11.230         1      3.420 0.0008047 ***</span></div><div class="line"><span class="comment">#   ---</span></div><div class="line"><span class="comment">#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span></div></pre></td></tr></table></figure>
+<p>从结果可能看出来，wine能够产生11.23的偏差，其p值小于0.01，对模型的影响是十分显著的。模型偏差度量了自变量对模型的影响程度，该值越小，就说明自变量造的偏差越小，对因变量的分类越没有帮助；该值越大，就说明自变量造成的偏差越大，对因变量的分类帮助越多，根据模型偏差的显著与否，能合理地判断自变量是否适合引物Logistic回归模型。</p>
+<h4 id="wald检验">Wald检验</h4>
+<p>Wald检验的原理可以再看一下这篇笔记<a href="http://rvdsd.top/2018/06/09/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B008-%E6%AF%94%E6%95%B0%E4%B8%8E%E6%AF%94%E6%95%B0%E6%AF%94/">《比数与比数比》。</a></p>
+<p>Wald只需要将各参数<span class="math inline">\(\beta_{j}\)</span>的估计值<span class="math inline">\(b_{j}\)</span>与0比较，并且它的标准误<span class="math inline">\(S_{b_{j}}\)</span>作为参照；为检验<span class="math inline">\(H_{0}:\beta_{j}=0,H_{1}:\beta_{j} \neq0\)</span>，计算如下统计量</p>
+<p><span class="math inline">\(\mu=\frac{b_{j}}{S_{b_{j}}} \qquad (16-13)\)</span></p>
+<p>或</p>
+<p><span class="math inline">\(\chi^2=(\frac{b_{j}}{S_{b_{j}}})^2 \qquad (16-14)\)</span></p>
+<p>对于大样本资料，在零假设下<span class="math inline">\(\mu\)</span>近似服从标准正态分布，而<span class="math inline">\(\chi^2\)</span>则近似服从自由度<span class="math inline">\(\nu=1\)</span>的<span class="math inline">\(\chi^2\)</span>分布，在本例中，对于<span class="math inline">\(H_{0}:\beta_{1}=0,H_{1}:\beta_{2} \neq 0\)</span>，则有：</p>
+<p><span class="math inline">\(\chi^2=(\frac{0.8856}{0.1500})^2=34.86\)</span></p>
+<p>对于<span class="math inline">\(H_{0}:\beta_{2}=0,H_{1}:\beta_{2} \neq 0\)</span>，则有：</p>
+<p><span class="math inline">\(\chi^2=(\frac{0.5261}{0.1572})^2=11.20\)</span></p>
+<p><span class="math inline">\(\chi^2\)</span>值均大于3.84，说明食管癌与吸烟、吸烟有显著性关系，结论同前。</p>
+<h2 id="logistic回归变量筛选">Logistic回归变量筛选</h2>
+<p>与多元线性回归分析类似，当自变量的个数较多时，为了使建立的logistic回归模型比较稳定和便于解释，应尽可能将回归效果显著的自变量选入模型中，将作用不显著的自变量排除在外，具体的算法有前进法、后退法和逐步法。logistic逐步回归与线性逐步回归过程非常相似，使用其中所用的检验统计量不再是F统计量，而是似然比统计量、Wald统计量和计分统计量之一，例如使用似然比统计量，即利用如下的公式：</p>
+<p><span class="math inline">\(G=2(lnL_{1}^{(l)}-lnL_{0}^{(l)})\)</span></p>
+<p>在进行到第<span class="math inline">\(l\)</span>步时，通过比较含有某一自变量<span class="math inline">\(X_{j}\)</span>和不含有<span class="math inline">\(X_{j}\)</span>的模型，决定<span class="math inline">\(X_{j}\)</span>是否引入模型或从模型中剔除。</p>
+<p>看下面的案例（《医学统计学》，第四版，孙振球）：</p>
+<h3 id="案例b">案例B</h3>
+<p>为了探讨冠心病的有关危险因素，对26例冠心病患者和28便对照者进行病例对照研究，各因素的说明及资料见下表1和表2，试用logistic逐步回归分析法筛选危险因素（<span class="math inline">\(\alpha_{入}=0.10\)</span>，<span class="math inline">\(\alpha_{出}=0.15\)</span>），如下所示：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>表1</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>因素</td>
+<td>变量名</td>
+<td>赋值说明</td>
+</tr>
+<tr class="even">
+<td>年龄（岁）</td>
+<td>X1</td>
+<td>&lt;45=1,45<sub>=2,55</sub>=3,65~=4</td>
+</tr>
+<tr class="odd">
+<td>高血压史</td>
+<td>X2</td>
+<td>无=0,有=1</td>
+</tr>
+<tr class="even">
+<td>高血压家族史</td>
+<td>X3</td>
+<td>无=0,有=1</td>
+</tr>
+<tr class="odd">
+<td>吸烟</td>
+<td>X4</td>
+<td>不吸=0,吸=1</td>
+</tr>
+<tr class="even">
+<td>高血脂史</td>
+<td>X5</td>
+<td>无=0,有=1</td>
+</tr>
+<tr class="odd">
+<td>动物脂肪摄入</td>
+<td>X6</td>
+<td>低=0,高=1</td>
+</tr>
+<tr class="even">
+<td>体重指数（BMI）</td>
+<td>X7</td>
+<td>&lt;24<sub>=1,24</sub>=2,26~=3</td>
+</tr>
+<tr class="odd">
+<td>A型性格</td>
+<td>X8</td>
+<td>否=0,是=1</td>
+</tr>
+<tr class="even">
+<td>冠心病</td>
+<td>Y</td>
+<td>对照=0,病例=1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>表2</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>序号</td>
+<td>X1</td>
+<td>X2</td>
+<td>X3</td>
+<td>…</td>
+<td>X7</td>
+<td>X8</td>
+<td>Y</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>…</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>…</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>0</td>
+<td>…</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td>54</td>
+<td>3</td>
+<td>1</td>
+<td>1</td>
+<td>…</td>
+<td>3</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>（原始数据已放github上）</p>
+<p>计算过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">No &lt;- <span class="number">1</span>:<span class="number">54</span></div><div class="line">X1 &lt;- c(<span class="number">3</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>)</div><div class="line">X2 &lt;- c(<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">X3 &lt;- c(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">X4 &lt;- c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>)</div><div class="line">X5 &lt;- c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">X6 &lt;- c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">X7 &lt;- c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">3</span>)</div><div class="line">X8 &lt;- c(<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">Y &lt;- c(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">data2 &lt;- data.frame(No,X1,X2,X3,X4,X5,X6,X7,X8,Y)</div><div class="line">y.glm &lt;- glm(Y~X1+X2+X5+X6+X7+X8,family=binomial,data=data2)</div><div class="line">summary(y.glm)</div><div class="line">y.step2 &lt;- step(y.glm)</div><div class="line">summary(y.step2)</div><div class="line">y.glm2 &lt;- glm(Y~X1+X5+X6+X8,family=binomial,data=data2)</div><div class="line">summary(y.glm2)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">&gt; summary(y.glm)</div><div class="line"></div><div class="line">Call:</div><div class="line">glm(formula = Y ~ X1 + X2 + X5 + X6 + X7 + X8, family = binomial, </div><div class="line">    data = data2)</div><div class="line"></div><div class="line">Deviance Residuals: </div><div class="line">    Min       1Q   Median       3Q      Max  </div><div class="line">-2.3631  -0.6437  -0.2306   0.5883   2.2950  </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error z value Pr(&gt;|z|)   </div><div class="line">(Intercept)  -5.0195     1.6820  -2.984  0.00284 **</div><div class="line">X1            0.7242     0.4883   1.483  0.13805   </div><div class="line">X2            1.1076     0.8171   1.356  0.17524   </div><div class="line">X5            1.2089     0.7808   1.548  0.12158   </div><div class="line">X6            3.3788     1.3397   2.522  0.01167 * </div><div class="line">X7            0.2881     0.5714   0.504  0.61419   </div><div class="line">X8            1.9090     0.8973   2.128  0.03338 * </div><div class="line">---</div><div class="line">Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class="line"></div><div class="line">(Dispersion parameter for binomial family taken to be 1)</div><div class="line"></div><div class="line">    Null deviance: 74.786  on 53  degrees of freedom</div><div class="line">Residual deviance: 43.907  on 47  degrees of freedom</div><div class="line">AIC: 57.907</div><div class="line"></div><div class="line">Number of Fisher Scoring iterations: 5</div></pre></td></tr></table></figure>
+<p>从结果来看，X6，X8这2项的P值小于0.05，现在再对这2项进行回归拟合，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>孙振球. 医学统计学.第4版[M]. 人民卫生出版社, 2014.</li>
+<li>王斌会. 多元统计分析及R语言建模[M]. 暨南大学出版社, 2010.</li>
+<li><a href="https://zhuanlan.zhihu.com/p/44591359" target="_blank" rel="external">逻辑回归Logistics regression公式推导</a></li>
+<li></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/08/BioStatistics/生物统计-10相关分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/08/BioStatistics/生物统计-10相关分析/" itemprop="url">相关分析笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-08T12:02:00+08:00">
+                2017-06-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  7,891
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  31
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="直线相关linear-correlation">直线相关（Linear correlation）</h2>
+<h2 id="变量之间的关系">变量之间的关系</h2>
+<p>变量之间的关系有两种，一种是变量间存在着完全确定的有关系，这类变量间的关系称为函数关系；另一类是变量间关系不存在完全的确定性，不能用精确的数学公式来表示，这些变量间都存在着十分密切的关系，但不能由一个或几个变量的值精确地求出求出另一个变量的值，这些变量间的关系称为相关关系，存在相关关系的变量是相关变量。</p>
+<h3 id="直线相关的概念">直线相关的概念</h3>
+<p>对于两变量关系的研究，有时并不需要由X估计Y，也就是说我们有时候并不需要考虑直线回归的问题，而是考虑两个变量之间是否有明确的直线相关关系，例如为了研究向量元素锰在胆固醇合成中的作用，探讨大刀肝脏中胆固醇含量和锰含量之间是否存在直线关系？这种关系表现为随着锰含量的增加，胆固醇的是增加还是减少呢？像这类判断两个数值变量之间有元直线相关关系，并回答相关的方向和相关程度如何时，可以采用相关分析。</p>
+<h2 id="回归与相关的区别与联系">回归与相关的区别与联系</h2>
+<h3 id="两者的区别">两者的区别</h3>
+<p>回归和相关都是研究两个变量相互关系的分析方法。相关分析研究两个变量之间相关的方向和相关的密切程度。但是相关分析不能指出两变量相互关系的具体形式，也无法从一个变量的变化来推测另一个变量的变化关系。</p>
+<p>回归方程则是通过一定的数学方程来反映变量之间相互关系的具体形式，以便从一个已知量来推测另一个未知量。为估算预测提供一个重要的方法。具体区别有：</p>
+<ol style="list-style-type: decimal">
+<li><p>相关分析中变量之间处于平等的地位；回归分析中，因变量处在被解释的地位，自变量用于预测因变量的变化；</p></li>
+<li><p>相关分析中不必确定自变量和因变量，所涉及的变量可以都是随机变量；而回归分析则必须事先确定具有相关关系的变量中，哪个是因变量，哪个是因变量。一般来说，回归分析中因变量是随机变量，而把自变量作为研究时给定的非随机变量；</p></li>
+<li><p>相关分析研究变量之间相关的方向和相关的程度，但相关分析不能根据一个变量的变化来推测另一个变量的变化情况；回归分析是研究变量之间相互关系的具体表现形式，根据变量之间的联系确定一个相关的数学表达式，从而可以从已知量来推测未知量。</p></li>
+<li><p>对两个变量来说，相关分析中只能计算出一个相关系数；而回归分析中有时可以根据研究目的的不同建立两个不同的回归方程。</p></li>
+</ol>
+<h3 id="两者的联系">两者的联系</h3>
+<p>相关分析与回归分析是广义相关分析的两个阶段,两者有着密切的联系 ：</p>
+<ol style="list-style-type: decimal">
+<li>相关分析是回归分析的基础和前提，回归分析则是相关分析的深入和继续。相关分析需要依靠回归分析来表现变量之间数量相关的具体形式，而回归分析则需要依靠相关分析来表现变量之间数量变化的相关程度。只有当变量之间存在高度相关时，进行回归分析寻求其相关的具体形式才有意义。如果在没有对变量之间是否相关以及相关方向和程度做出正确判断之前，就进行回归分析，很容易造成“虚假回归”。</li>
+<li>由于相关分析只研究变量之间相关的方向和程度，不能推断变量之间相互关系的具体形式，也无法从一个变量的变化来推测另一个变量的变化情况，因此，在具体应用过程中，只有把相关分析和回归分析结合起来，才能达到研究和分析的目的。</li>
+</ol>
+<p>相关分析与回归分析都是研究变量相互关系的分析方法，相关分析是回归分析的基础，而回归分析则是认识变量之间相关程度的具体形式。</p>
+<h2 id="直线相关的类别">直线相关的类别</h2>
+<p>直线相关（linear correlation）又称简单相关（simple correlation），用于双变量正态分布（bivariate normal distribution）资料，直线在养的性质可由散点图直观的说明，看下图：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/K48HE5gGC4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第1张图和第2张图的散点呈椭圆形分布，若两变量X、Y同时增大或减小，变化趋势是同向的，称为正相关（positive correlation），反之，X、Y间呈反向变化，则是负相关（negative correlation），第5和第6张图中，散点基本上在一条直线上，若X、Y是同向变化，称为完全正相关（perfect positive correlation），反之，X、Y呈反向变化，称为完全负相关（perfect negative correlation），再看第第3、4、7、8这四张图，散点分布为圆形等一些形状，两变量之间没有直线相关关系，称为零相关（zero correlation）。正相关或负相关并不一定表示一个变量的改变是另一个变量变化的原因，有可能同受另一个因素的影响，因此，相关关系并不一定是因果关系，打个比方吧，某个地区每年七八月份溺水死亡的人数与雪糕的销量呈现正相关的关系，我们不能推断出来，是雪糕的销售与溺水死亡之间存在着因果关系，因为它们都受同一个因素的影响，就是天气，天气热，雪糕的销量自然高，下水游泳的人也多。</p>
+<h2 id="pearson相关系数">Pearson相关系数</h2>
+<p><strong>相关系数（coefficient of correlation）</strong>又称<strong>Pearson积差相关系数（coefficient of product-moment correlation）</strong>，以符号r表示样本相关系数，符号<span class="math inline">\(\rho\)</span>表示其总体相关系数，它用来说明直线关系的两个变量间相关的密切程度与相关方向。</p>
+<p>如果<span class="math inline">\((x_{1},y_{1}),\cdots,(x_{n},y_{n})\)</span>为相应于这两个变量x和y的n个观侧值对子，那么Pearson相关系数的总体和样本形式分别如下所示：</p>
+<p>总体相关系数<span class="math inline">\(\rho\)</span>的计算公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/el118fDdkL.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>样本相关系数r的计算公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/c8EjkLii84.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>相关系数没有单位，其值为<span class="math inline">\(-1\leq r \leq 1\)</span>，r值为正，表示正相关，r值为负表示负相关，r的绝对值等于1为完全相关，r=0为零相关，在生物界，由于影响因素众多，因此很少完全相关，注意：这里的r实际上是就总体相关系数<span class="math inline">\(\rho\)</span>来说的，r是<span class="math inline">\(\rho\)</span>的估计值。</p>
+<p>上面的这两个公式反应了两个变量之间的关系。</p>
+<ol style="list-style-type: decimal">
+<li>两个变量正线性相关。这时当x（相对于其样本均值）较大时，多数的y（相对于其样本均值）也应该较大；而当x相对于均值较小时，多数的y也应该相对于均值较小，无论在哪种情况下，分子中的<span class="math inline">\((X-\bar{X})\)</span>的符号和<span class="math inline">\((Y-\bar{Y})\)</span>的符号相同的就多，这样就得到一个较大的正值（但不会超过1）。通常来说，当r的值在0.75以上表示很强的相关，介于0.3到0.7之间为适中的相关性，而在0.25以下为很弱的相关性。</li>
+<li>两个变量负线性相关。这时当x（相对于其样本均值）较大时，多数的y相对于其样本均较小；而当x相对于均值较小时，多数的y也应该相对于均值较大，而分子中的<span class="math inline">\((X-\bar{X})\)</span>的符号和<span class="math inline">\((X-\bar{X})\)</span>的符号相反的就多，这样就得到一个较大的负值（但不会小于-1）。</li>
+<li>两个变量不线性相关。这时分子中的大于零的项和小于零的项的个数差不多，大小也不会差很多，这样公式的结果就是一个接近于0的数目。</li>
+</ol>
+<h2 id="pearson相关系数的计算">Pearson相关系数的计算</h2>
+<p>现在看一个案例，这个案例来源于《医学统计学》（第四版，孙振球）的第九章，具体内容如下所示：</p>
+<p>某医师测量了15名正常成年人的体重（kg）与CT双肾总体积（ml）的大小，数据如下表所示，据引回答，两变量是否有关联？其方向与密切程度如何？</p>
+<table>
+<thead>
+<tr class="header">
+<th>编号</th>
+<th>体重（kg）</th>
+<th>双肾总体积（ml）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>43</td>
+<td>217</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>74</td>
+<td>316.18</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>51</td>
+<td>231.11</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>58</td>
+<td>220.96</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>50</td>
+<td>254.7</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>65</td>
+<td>293.84</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>54</td>
+<td>263.28</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>57</td>
+<td>271.73</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>67</td>
+<td>263.46</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>69</td>
+<td>276.53</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>80</td>
+<td>341.15</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>48</td>
+<td>261</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>38</td>
+<td>213.2</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>85</td>
+<td>315.12</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>54</td>
+<td>252.08</td>
+</tr>
+</tbody>
+</table>
+<p>计算过程如下所示：</p>
+<p>先绘制出散点图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">weight &lt;-c(<span class="number">43</span>,<span class="number">74</span>,<span class="number">51</span>,<span class="number">58</span>,<span class="number">50</span>,<span class="number">65</span>,<span class="number">54</span>,<span class="number">57</span>,<span class="number">67</span>,<span class="number">69</span>,<span class="number">80</span>,<span class="number">48</span>,<span class="number">38</span>,<span class="number">85</span>,<span class="number">54</span>)</div><div class="line">area &lt;-c(<span class="number">217</span>,<span class="number">316.18</span>,<span class="number">231.11</span>,<span class="number">220.96</span>,<span class="number">254.7</span>,<span class="number">293.84</span>,<span class="number">263.28</span>,<span class="number">271.73</span>,<span class="number">263.46</span>,<span class="number">276.53</span>,<span class="number">341.15</span>,<span class="number">261</span>,<span class="number">213.2</span>,<span class="number">315.12</span>,<span class="number">252.08</span>)</div><div class="line">plot(weight,area)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/L2gaj7AA3c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="cor函数">cor()函数</h3>
+<p>现在计算一下相关系数，用<code>cor()</code>函数即可，<code>cor()</code>函数的用法为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cor(x,use=, mehtod= )</div><div class="line">其中，x是数据集，它可以是矩阵，可以是数据框</div><div class="line">use指定缺失数据的处理方式，可选的方式为all.obs（假设不存在缺失数据），everything（遇到缺失数据时，相关系数的计算结果将被设为missing),complete.obs（行删除）以及pairwise.complete.obs（成对删除，pairwise deletion）</div><div class="line">method：指定的相关系数的类型，可选类型为pearson、spearman或kendall</div></pre></td></tr></table></figure>
+<p>现在我们计算的是线性相关，使用的method参数为pearson（默认参数应时pearso，因此method参数可加不加），如果是直接计算两个变量的相关关系，也可以不使用数据框形式，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; cor(weight,area)</div><div class="line">[<span class="number">1</span>] <span class="number">0.8754715</span></div></pre></td></tr></table></figure>
+<h3 id="相关系数的统计推断">相关系数的统计推断</h3>
+<h4 id="相关系数的假设检验">相关系数的假设检验</h4>
+<p>从同一总体中抽出的不同样本会得到不同的样本相关系数，所以要判断X、Y之间是否确有直线相关关系，就要检验r是否来自于<span class="math inline">\(rho\neq 0\)</span>的总体，因为即使从<span class="math inline">\(\rho=0\)</span>的总体作随机抽样，由于抽样误差的影响，所得的r值也常不等于零。因此，当计算出r值后，接着要做<span class="math inline">\(\rho=0\)</span>的假设检验，常用t检验，检验统计量t值的计算公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/3KF6Jc3GCE.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中，分母为相关系数的标准误，求得t值后，查t值表就可以得到p值，这个过程现在用软件就可以计算，现在我们计算以下前面的那个案例，也就浊对于所得到的r值，检验CT双肾总体积与体重是否有直线相关关系？</p>
+<p>它的假设检验如下所示：</p>
+<p><span class="math inline">\(H_{0}:\rho=0\)</span>，即CT双肾减少呢体积与体重之间无直线相关关系</p>
+<p><span class="math inline">\(H_{1}:\rho\neq 0\)</span>，即CT双肾减少呢体积与体重之间有直线相关关系</p>
+<p><span class="math inline">\(\alpha=0.05\)</span>，在本例中，n=15，r=0.8754，根据公式（二），可得</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/de0a8CKeCF.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>按<span class="math inline">\(\nu=13\)</span>，查t值表可知，p&lt;0.001，按<span class="math inline">\(\alpha=0.05\)</span>的检验水准，拒绝<span class="math inline">\(H_{0}\)</span>，接受<span class="math inline">\(H_{1}\)</span>，可以认为CT双肾总体积与体重之间存在正相关，现在用R来计算一下，此时使用<code>cor.test</code>函数，<code>cor.test()</code>函数的使用为<code>cor.test(x,y,alternative=,method=)</code>，参数如下所示：</p>
+<ul>
+<li><p>alternative用来指定进行双侧检验或单侧检验（取值为“two.side”、“less”,“greater”）；</p></li>
+<li><p>method用于指定要计算的类型（“pearson”、“kendall”或“spearman”），</p></li>
+</ul>
+<p>当研究的假设为总体的相关系数小于0时，使用alternative=“less”参数，当研究的假设为总体的相关系数大于0时，使用alternative=“greater”参数，默认性下是使用alternative=“two.side”，表示总体相关系数不等于零，这个案例的计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; cor.test(weight,area)</div><div class="line"></div><div class="line">	Pearson<span class="string">'s product-moment correlation</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">data:  weight and area</span></div><div class="line"><span class="string">t = 6.5317, df = 13, p-value = 1.907e-05</span></div><div class="line"><span class="string">alternative hypothesis: true correlation is not equal to 0</span></div><div class="line"><span class="string">95 percent confidence interval:</span></div><div class="line"><span class="string"> 0.6585492 0.9580681</span></div><div class="line"><span class="string">sample estimates:</span></div><div class="line"><span class="string">      cor </span></div><div class="line"><span class="string">0.8754715</span></div></pre></td></tr></table></figure>
+<p>现在我们看一下这个结果，在这个结果中，我们可以得到这些信息：</p>
+<ol style="list-style-type: decimal">
+<li>对总体相关系数进行t检验，发现t值为6.5317，p值远远小于0.001，因此拒绝原假设，接受备选假设，也就是说，可以认为CT双肾总体积与体重之间存在正相关；</li>
+<li>总体相关系数的95%置信区间为(0.6585492, 0.9580681)。</li>
+</ol>
+<h3 id="决定系数">决定系数</h3>
+<p>直线回归与相关分析中，还有一个非常重要的统计量，称为决定系数（coefficient of determination），定义为回归平方与总平方和之比（这里可以看一下<a href="http://rvdsd.top/2017/06/07/BioStatistics/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-08%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/">《线性回归笔记》</a>），计算公式如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/jib3eBE2I6.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>为了方便描述，在双变量分析和多变量分析中，决定系数都用<span class="math inline">\(R^2\)</span>表示，但是对于双变量分析矾，<span class="math inline">\(R^2\)</span>就等于<span class="math inline">\(r^2\)</span>，具体公式就是公式（一）。</p>
+<p><span class="math inline">\(R^2\)</span>的聚会在0到1之间且无单位，其数值大小反映了回归贡献的相对程度，也就是在Y的总变异中，回归关系所能解释的百分比，公式三也说明了，当<span class="math inline">\(SS_{总}\)</span>固定不变时，回归平方和的大小决定了相关系数r绝对值的大小，回归平方和越接近于总平方和，则r的绝对值越接近于1，说明相关的实际效果越好，在前面的案例中，15名成年人CT双肾总体积与体重之间的直线相关系数r=0.875，那么<span class="math inline">\(R^2\)</span>=0.7656，表示在这批数据中，体重可解释双肾体积变异性的76.56%，另外约23%的变异不能用体重来解释，决定系数除了作为相关或回归拟合效果的概括统计量外，还可以利用它对回归或相关作假设检验，其中对直线回归的拟合优度检验就等价于对总体回归系数的假设检验，检验统计量为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/dLEAe6Lkbj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>将此F统计量开平方根，就等于相对公式（二）中的相关系数做假设检验的t统计量，这又验证了相关与回归的假设检验是等价的。</p>
+<h2 id="多元线性相关分析">多元线性相关分析</h2>
+<p>在相关分析中，研究较多的是两个变量之间的关系，称为简单相关，当涉及的变量为三个或三个以上时，称为偏相关或复相关，实际上偏相关（复相关）是对简单相关的一种推广。在有些情况下，我们只想了解两变量之间有元线性相关关系，并不需要建立它们之间的回归模型，也不需要区分自变量和因变量，这时候就可以使用较为方便的相关分析方法。</p>
+<h3 id="矩阵相关分析">矩阵相关分析</h3>
+<p>设<span class="math inline">\(x_{1},x_{2},\cdots,x_{n}\)</span>来自正态总体<span class="math inline">\(N_{p}(\mu,\sum)\)</span>容量为n的样本，样本资料矩阵为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180720/H36IHG218a.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，任意两个变量间的相关系数构成的矩阵为：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180720/JAIFDed7eG.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>其中，<span class="math inline">\(r_ij\)</span>为任意两个变量之间的简单相关系数，即：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180720/I6jmgkE985.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="多元相关分析案例">多元相关分析案例</h3>
+<p>现在看一个案例，这个案例的数据来源于《医学统计学》第四版.孙振球，案例描述如下：</p>
+<p>27名糖尿病患者的血清总胆固醇、甘油三酯、空腹胰岛素、糖化血红蛋白、空腹血糖的测量值位于下表中，试计算这几个变量两两之间的相关系数。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/aG3BEk29fH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/abbIG27Ajm.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>第一步：计算两两变量之间的相关系数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mlr &lt;- read.table(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/data_szq_1501.csv"</span>,header=<span class="literal">T</span>,sep=<span class="string">","</span>) <span class="comment"># 原始数据集</span></div><div class="line">cor(mlr[<span class="number">2</span>:<span class="number">6</span>])</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; cor(mlr[<span class="number">2</span>:<span class="number">6</span>])</div><div class="line">           X1          X2          X3         X4          Y</div><div class="line">X1  <span class="number">1.0000000</span>  <span class="number">0.63150583</span> -<span class="number">0.35479471</span>  <span class="number">0.4152708</span>  <span class="number">0.5585251</span></div><div class="line">X2  <span class="number">0.6315058</span>  <span class="number">1.00000000</span> -<span class="number">0.03863221</span>  <span class="number">0.2189743</span>  <span class="number">0.4585096</span></div><div class="line">X3 -<span class="number">0.3547947</span> -<span class="number">0.03863221</span>  <span class="number">1.00000000</span> -<span class="number">0.3297787</span> -<span class="number">0.5101213</span></div><div class="line">X4  <span class="number">0.4152708</span>  <span class="number">0.21897432</span> -<span class="number">0.32977870</span>  <span class="number">1.0000000</span>  <span class="number">0.6096420</span></div><div class="line">Y   <span class="number">0.5585251</span>  <span class="number">0.45850963</span> -<span class="number">0.51012130</span>  <span class="number">0.6096420</span>  <span class="number">1.0000000</span></div></pre></td></tr></table></figure>
+<p>从上面的结果可以看出来，X4与血糖的高低最为密切，它的r值为0.609，接着是X1，它的r值是0.558。</p>
+<p>第二步：绘制出两两间的矩阵散点图，使用<code>pairs()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pairs(mlr[<span class="number">2</span>:<span class="number">6</span>])</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180720/a1cca88Jf2.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>现在看一下相关系数的假设检验，这里用到的包是<code>mvstats</code>，但是这个包不在CRAN上，可能是《多元统计分析及R语言建模》（王斌会 ）自己写的，网上有，下载后安装即可，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">library</span>(mvstats)</div><div class="line">&gt; corr.test(mlr[<span class="number">2</span>:<span class="number">6</span>])</div><div class="line">corr test: </div><div class="line">       X1      X2      X3     X4      Y</div><div class="line">X1  <span class="number">0.000</span>  <span class="number">0.0004</span>  <span class="number">0.0694</span> <span class="number">0.0312</span> <span class="number">0.0025</span></div><div class="line">X2  <span class="number">4.072</span>  <span class="number">0.0000</span>  <span class="number">0.8483</span> <span class="number">0.2725</span> <span class="number">0.0162</span></div><div class="line">X3 -<span class="number">1.897</span> -<span class="number">0.1933</span>  <span class="number">0.0000</span> <span class="number">0.0930</span> <span class="number">0.0066</span></div><div class="line">X4  <span class="number">2.283</span>  <span class="number">1.1221</span> -<span class="number">1.7466</span> <span class="number">0.0000</span> <span class="number">0.0007</span></div><div class="line">Y   <span class="number">3.367</span>  <span class="number">2.5797</span> -<span class="number">2.9655</span> <span class="number">3.8455</span> <span class="number">0.0000</span></div><div class="line">lower is t value，upper is p value</div></pre></td></tr></table></figure>
+<p>左下角为t值，右上角为p值，现在把这个表格拆分一下就可以看清楚了，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180720/2Ea6fkmf9B.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>左下角是相关系数的t值，右上三解是p值，至于如何查看，还不清楚，略过，有空补上。</p>
+<h2 id="spearman秩相关">Spearman秩相关</h2>
+<h3 id="秩相关的使用范围">秩相关的使用范围</h3>
+<p>秩相关(rank correlation)又称等级相关，是用双变量等级数据作直线相关分析，这类方法对原变量分布不作要求，属于非参数统计法，这种方法适用于下列资料：</p>
+<ol style="list-style-type: decimal">
+<li>不服从双变量正态分布而不宜作积差相关分析，这一点从原始数据的基本统计描述中或直观的散点图中就可以看出来；</li>
+<li>总体分布型未知，例如限于仪器测量精度，个别样本的具体数值无法读取而出现“超限值”时；</li>
+<li>原始数据是等级资料（例如某些药物治疗疾病的结果用恶化，没改善，好转来表示）。</li>
+</ol>
+<h3 id="秩相关的基本思想">秩相关的基本思想</h3>
+<p>在秩相关中，使用等级相关系数<span class="math inline">\(r_{s}\)</span>来说明两个变量之间直线相关关系的密切程度与相关方向，其基本思想是将n对观察值<span class="math inline">\(X_{i},Y_{i}(i=1,2,\cdots,n)\)</span>分别由小到大偏秩（秩就编号的意思，最小的是1，第2小的是2，最后1个是n），用<span class="math inline">\(P_{i}\)</span>表示<span class="math inline">\(X_{i}\)</span>的秩，用<span class="math inline">\(Q_{i}\)</span>表示<span class="math inline">\(Y_{i}\)</span>的秩，其中，每对<span class="math inline">\(P_{i},Q_{i}\)</span>可能相等，也可能不等，这里考虑用<span class="math inline">\(P_{i}\)</span>与<span class="math inline">\(Q_{i}\)</span>之差来反映X、Y两变量秩排列一致性的情况，令<span class="math inline">\(d_{i}=P_{i}-Q_{i}\)</span>，由于<span class="math inline">\(d_{i}\)</span>可正可负，那么<span class="math inline">\(\sum d_{i}\)</span>就无法准确地反映<span class="math inline">\(P_{i}\)</span>与<span class="math inline">\(Q_{i}\)</span>差值的大小，因此取<span class="math inline">\(\sum {d_{i}}^2=\sum(P_{i}-Q_{i})^2\)</span>。在n为一定值时，当每对<span class="math inline">\(X_{i},Y_{i}\)</span>的秩完全相等时，此为完全正相关，此时，<span class="math inline">\(\sum {d_{i}}^2\)</span>有最小值，为0。当每对<span class="math inline">\(X_{i},Y_{i}\)</span>的秩完全相反时，此为完全负相关，此时，<span class="math inline">\(\sum {d_{i}}^2\)</span>有最大值，最大值如下所示：</p>
+<p><span class="math inline">\(\sum {d_{i}}^2=\sum(P_{i}-Q_{i})^2=\sum[(n+1-i)-i]^2=n(n^2-1)/3\)</span>（公式五）</p>
+<p><span class="math inline">\(\sum {d_{i}}^2\)</span>从0到其最大值的范围的变化，反映了X、Y两变量的相关程度，为了与积差相关系数r（这个r就是直线相关的相关系数）表示相关程度与方向的形式一致，那么过计算Spearman等级相关的系数<span class="math inline">\(r_{s}\)</span>就如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/f66BKgJ424.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p><span class="math inline">\(r_{s}\)</span>的值介于-1到1之间，当为正值时，表示正相关，为负表示负相关，等于0表示零相关，样本等级相关系数<span class="math inline">\(r_{s}\)</span>是总体等级相关系数<span class="math inline">\(\rho_{s}\)</span>的估计值，检验<span class="math inline">\(\rho_{s}\)</span>是否不为零可以查表，当n&gt;50时，可以按下面的这个公式计算 检验统计量u，查u表确定p值，公式如下：</p>
+<p><span class="math inline">\(\mu=r_{s} \sqrt{n-1}\)</span>（公式七）</p>
+<h2 id="秩相关计算案例">秩相关计算案例</h2>
+<p>这个案例来源于《医学统计学》（第四版，孙振球），案例描述如下所示：</p>
+<p>某省调查了1995年到1999年当地居民18类死因的构成以及每种死因导致的潜在工作损失年数WYPLL的构成，结果见下表，以死因构成为X，WYPLL构成为Y，作等级相关分析。</p>
+<table>
+<thead>
+<tr class="header">
+<th>死因类别</th>
+<th>死因构成（%）</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>X</td>
+<td>P</td>
+<td>Y</td>
+<td>Q</td>
+<td>d</td>
+<td><span class="math inline">\(d^2\)</span></td>
+</tr>
+<tr class="even">
+<td>(1)</td>
+<td>(2)</td>
+<td>(3)</td>
+<td>(4)</td>
+<td>(5)</td>
+<td>(6)=(3)-(5)</td>
+<td>(7)=(6)^2</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0.03</td>
+<td>1</td>
+<td>0.05</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0.14</td>
+<td>2</td>
+<td>0.34</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>0.2</td>
+<td>3</td>
+<td>0.93</td>
+<td>6</td>
+<td>-3</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>0.43</td>
+<td>4</td>
+<td>0.69</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>0.44</td>
+<td>5</td>
+<td>0.38</td>
+<td>3</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>0.45</td>
+<td>6</td>
+<td>0.79</td>
+<td>5</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>0.47</td>
+<td>7</td>
+<td>1.19</td>
+<td>8</td>
+<td>-1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>0.65</td>
+<td>8</td>
+<td>4.74</td>
+<td>12</td>
+<td>-4</td>
+<td>16</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>0.95</td>
+<td>9</td>
+<td>2.31</td>
+<td>9</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>0.96</td>
+<td>10</td>
+<td>5.95</td>
+<td>14</td>
+<td>-4</td>
+<td>16</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>2.44</td>
+<td>11</td>
+<td>1.11</td>
+<td>7</td>
+<td>4</td>
+<td>16</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>2.69</td>
+<td>12</td>
+<td>3.53</td>
+<td>11</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>3.207</td>
+<td>13</td>
+<td>3.48</td>
+<td>10</td>
+<td>3</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>7.78</td>
+<td>14</td>
+<td>5.65</td>
+<td>13</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>9.82</td>
+<td>15</td>
+<td>33.95</td>
+<td>18</td>
+<td>-3</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>18.93</td>
+<td>16</td>
+<td>17.16</td>
+<td>17</td>
+<td>-1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td>22.59</td>
+<td>17</td>
+<td>8.42</td>
+<td>15</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>18</td>
+<td>27.96</td>
+<td>18</td>
+<td>9.33</td>
+<td>16</td>
+<td>2</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<p>假设检验：</p>
+<p><span class="math inline">\(H_{0}:\rho_{s}=0\)</span>，即死因构成和WYPLL构成之间无直线相关关系</p>
+<p><span class="math inline">\(H_{1}:\rho_{s} \neq0\)</span>，即死因构成和WYPLL构成之间有直线相关关系</p>
+<p><span class="math inline">\(\alpha=0.05\)</span></p>
+<p>将两变量X、Y的实测值分别从小到大编秩，用<span class="math inline">\(P_{i}\)</span>和<span class="math inline">\({Q_{i}}\)</span>表示，见上表的(3)、(5)列，每个变量中若有观察值相同的秩，则取平均秩。求每天的秩的差值d、<span class="math inline">\(d^2\)</span>，<span class="math inline">\(\sum d^2\)</span>，也就是上表的第(6)、(7)栏，按前面的公式（六）计算<span class="math inline">\(r_{s}\)</span>，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180719/C8GKLGAa77.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在本例中，n=18，查<span class="math inline">\(r_{s}\)</span>的界值表可知，p&lt;0.001，按<span class="math inline">\(\alpha=0.05\)</span>的检验水准，拒绝<span class="math inline">\(H_{0}\)</span>，接受<span class="math inline">\(H_{1}\)</span>，可认为当地居民死因的构成和和各种死因导致的潜在工作损失年数WYPLL的构成存在正相关关系。</p>
+<p>现在用R来计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">death_reason &lt;- c(<span class="number">0.03</span>,<span class="number">0.14</span>,<span class="number">0.2</span>,<span class="number">0.43</span>,<span class="number">0.44</span>,<span class="number">0.45</span>,<span class="number">0.47</span>,<span class="number">0.65</span>,<span class="number">0.95</span>,<span class="number">0.96</span>,<span class="number">2.44</span>,<span class="number">2.69</span>,<span class="number">3.207</span>,<span class="number">7.78</span>,<span class="number">9.82</span>,<span class="number">18.93</span>,<span class="number">22.59</span>,<span class="number">27.96</span>)</div><div class="line">wyypll &lt;-c(<span class="number">0.05</span>,<span class="number">0.34</span>,<span class="number">0.93</span>,<span class="number">0.69</span>,<span class="number">0.38</span>,<span class="number">0.79</span>,<span class="number">1.19</span>,<span class="number">4.74</span>,<span class="number">2.31</span>,<span class="number">5.95</span>,<span class="number">1.11</span>,<span class="number">3.53</span>,<span class="number">3.48</span>,<span class="number">5.65</span>,<span class="number">33.95</span>,<span class="number">17.16</span>,<span class="number">8.42</span>,<span class="number">9.33</span>)</div><div class="line">cor.test(death_reason,wyypll,method=<span class="string">"spearman"</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; cor.test(death_reason,wyypll,method=<span class="string">"spearman"</span>)</div><div class="line"></div><div class="line">	Spearman<span class="string">'s rank correlation rho</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">data:  death_reason and wyypll</span></div><div class="line"><span class="string">S = 92, p-value &lt; 2.2e-16</span></div><div class="line"><span class="string">alternative hypothesis: true rho is not equal to 0</span></div><div class="line"><span class="string">sample estimates:</span></div><div class="line"><span class="string">      rho </span></div><div class="line"><span class="string">0.9050568</span></div></pre></td></tr></table></figure>
+<p>其中，可以发现p值远小于0.01，因此，可认为当地居民死因的构成和和各种死因导致的潜在工作损失年数WYPLL的构成存在正相关关系。</p>
+<h2 id="spearman与pearson相关分析的区别">Spearman与Pearson相关分析的区别</h2>
+<p><strong>Pearson相关系数主要用于正态分布资料，Spearman相关系数主要用于非正态分布资料或等级资料</strong>，看一个案例：</p>
+<p>例6.1 某疾控中心调查了辖区内公务员的体重指数、血压、总胆固醇、空腹血糖等指标，以了解他们的健康状况。现从中随机抽取20人的体重指数、总胆固醇(mmol/L)、空腹血糖(mmol/L)三个指标，分析这三个指标的相关性(《医学案例统计分析与SAS应用》冯国双，第六章 相关分析及SAS实现，例6-2，P103)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">bmi &lt;- c(19.49,21.1,20.56,22.15,22.49,19.56,26.64,22.98,25.8,21.88,21.08,25.25,25.59,23.23,24.17,27.44,27.18,27.46,28.93,24.49)</div><div class="line">tc &lt;- c(4.21,4.25,4.34,4.51,4.72,4.79,4.8,4.84,4.97,5.04,5.14,5.23,5.25,5.28,5.83,5.89,6.05,6.07,6.17,6.68)</div><div class="line">fbg &lt;- c(5.1,5.1,5.1,5.7,5.3,5.6,5.4,5.1,5.6,5.7,5.4,5.9,5,5.8,5.9,5.08,5.7,5.9,6.2,5.9)</div><div class="line"></div><div class="line"># 进行正态检验</div><div class="line"></div><div class="line">normality_test &lt;- function(x)&#123;</div><div class="line">  if(!require(nortest))&#123;</div><div class="line">    install.packages(&quot;nortest&quot;)</div><div class="line">  &#125;</div><div class="line">    SW &lt;- c(shapiro.test(x)$statistic,shapiro.test(x)$p.value)</div><div class="line">    KS &lt;- c(lillie.test(x)$statistic,lillie.test(x)$p.value)</div><div class="line">    CM &lt;- c(cvm.test(x)$statistic,cvm.test(x)$p.value)</div><div class="line">    AD &lt;- c(ad.test(x)$statistic,ad.test(x)$p.value)</div><div class="line">    result &lt;- rbind(SW,KS,CM,AD)</div><div class="line">    colnames(result) &lt;- c(&quot;参数&quot;,&quot;P值&quot;)</div><div class="line">    rownames(result) &lt;- c(&quot;Shapiro-Wilk&quot;,&quot;Kolmogorov-Smirnov&quot;,&quot;Cramer-von Mises&quot;,&quot;Anderson-Darling&quot;)</div><div class="line">    return(result)</div><div class="line">&#125;</div><div class="line"></div><div class="line">normality_test(bmi)</div><div class="line">normality_test(tc)</div><div class="line">normality_test(fbg)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; normality_test(bmi)</div><div class="line">Loading required package: nortest</div><div class="line">                         参数       P值</div><div class="line">Shapiro-Wilk       <span class="number">0.95943187</span> <span class="number">0.5325625</span></div><div class="line">Kolmogorov-Smirnov <span class="number">0.08966131</span> <span class="number">0.9429037</span></div><div class="line">Cramer-von Mises   <span class="number">0.03912813</span> <span class="number">0.6800017</span></div><div class="line">Anderson-Darling   <span class="number">0.26621338</span> <span class="number">0.6521088</span></div><div class="line">&gt; normality_test(tc)</div><div class="line">                         参数       P值</div><div class="line">Shapiro-Wilk       <span class="number">0.94642760</span> <span class="number">0.3160935</span></div><div class="line">Kolmogorov-Smirnov <span class="number">0.15632558</span> <span class="number">0.2254919</span></div><div class="line">Cramer-von Mises   <span class="number">0.07256231</span> <span class="number">0.2452443</span></div><div class="line">Anderson-Darling   <span class="number">0.41984856</span> <span class="number">0.2949359</span></div><div class="line">&gt; normality_test(fbg)</div><div class="line">                         参数        P值</div><div class="line">Shapiro-Wilk       <span class="number">0.91658692</span> <span class="number">0.08519076</span></div><div class="line">Kolmogorov-Smirnov <span class="number">0.17996352</span> <span class="number">0.08886482</span></div><div class="line">Cramer-von Mises   <span class="number">0.09973686</span> <span class="number">0.10482513</span></div><div class="line">Anderson-Darling   <span class="number">0.67392089</span> <span class="number">0.06650739</span></div></pre></td></tr></table></figure>
+<p>正态检验的结果表明，三个指标采用Shapiro-WIlk、Kolmogorov-Smirnov法，bmi与tc的P值均远远大于0.05，fbg的P值仅略大于0.05，为稳妥起见，下面分别按正态分布与非正态分布进行线性相关分析，即分别采用Pearson与Spearman相关分析。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">cor.test(bmi,tc)</div><div class="line"># </div><div class="line"># Pearson&apos;s product-moment correlation</div><div class="line"># </div><div class="line"># data:  bmi and tc</div><div class="line"># t = 4.3734, df = 18, p-value = 0.0003664</div><div class="line"># alternative hypothesis: true correlation is not equal to 0</div><div class="line"># 95 percent confidence interval:</div><div class="line"># 0.4033506 0.8805849</div><div class="line"># sample estimates:</div><div class="line"># cor </div><div class="line"># 0.717758</div></pre></td></tr></table></figure>
+<p>Pearson相关分析结果：bmi与tc间的相关系数是0.718,有统计学意义(P=0.0003664)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">cor.test(bmi,fbg)</div><div class="line"># Pearson&apos;s product-moment correlation</div><div class="line"># </div><div class="line"># data:  bmi and fbg</div><div class="line"># t = 1.8681, df = 18, p-value = 0.07811</div><div class="line"># alternative hypothesis: true correlation is not equal to 0</div><div class="line"># 95 percent confidence interval:</div><div class="line"># -0.04811789  0.71754554</div><div class="line"># sample estimates:</div><div class="line"># cor </div><div class="line"># 0.4029837</div></pre></td></tr></table></figure>
+<p>Pearson相关分析结果：bmi与fbg间的相关系数是0.403,无统计学意义(P=0.07811)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">cor.test(tc,fbg)</div><div class="line"># Pearson&apos;s product-moment correlation</div><div class="line"># </div><div class="line"># data:  tc and fbg</div><div class="line"># t = 3.2599, df = 18, p-value = 0.004349</div><div class="line"># alternative hypothesis: true correlation is not equal to 0</div><div class="line"># 95 percent confidence interval:</div><div class="line"># 0.2283232 0.8284398</div><div class="line"># sample estimates:</div><div class="line"># cor </div><div class="line"># 0.6092833</div></pre></td></tr></table></figure>
+<p>Pearson相关分析结果：bmi与tc间的相关系数是0.609,有统计学意义(P=0.004349)</p>
+<p><strong>接着进行Spearman分析</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">cor.test(bmi,tc,method=c(&quot;spearman&quot;)) # Spearman检验</div><div class="line"># Spearman&apos;s rank correlation rho</div><div class="line"># </div><div class="line"># data:  bmi and tc</div><div class="line"># S = 330, p-value = 0.0002006</div><div class="line"># alternative hypothesis: true rho is not equal to 0</div><div class="line"># sample estimates:</div><div class="line">#       rho </div><div class="line"># 0.7518797</div></pre></td></tr></table></figure>
+<p>Spearman相关分析结果：bmi与tc间的相关系数是0.752,有统计学意义(P=0.0002006)</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">cor.test(bmi,fbg,method=c(<span class="string">"spearman"</span>)) <span class="comment"># Spearman检验</span></div><div class="line"><span class="comment"># Spearman's rank correlation rho</span></div><div class="line"><span class="comment"># </span></div><div class="line"><span class="comment"># data:  bmi and fbg</span></div><div class="line"><span class="comment"># S = 859.38, p-value = 0.1259</span></div><div class="line"><span class="comment"># alternative hypothesis: true rho is not equal to 0</span></div><div class="line"><span class="comment"># sample estimates:</span></div><div class="line"><span class="comment"># rho </span></div><div class="line"><span class="comment"># 0.3538517</span></div></pre></td></tr></table></figure>
+<p>Spearman相关分析结果：bmi与fbg间的相关系数是0.354,无统计学意义(P=0.1259)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">cor.test(tc,fbg,method=c(&quot;spearman&quot;)) # Spearman检验</div><div class="line"># Spearman&apos;s rank correlation rho</div><div class="line"># </div><div class="line"># data:  tc and fbg</div><div class="line"># S = 564.48, p-value = 0.007919</div><div class="line"># alternative hypothesis: true rho is not equal to 0</div><div class="line"># sample estimates:</div><div class="line"># rho </div><div class="line"># 0.5755785</div></pre></td></tr></table></figure>
+<p>Spearman相关分析结果：fbg与tc间的相关系数是0.576,有统计学意义(P=0.007919)</p>
+<h2 id="kendall-τ相关系数">Kendall τ相关系数</h2>
+<p>Kendall τ相关系数也是一种关于两个变量相关的度量，它的原理是把所有的样本点配对，如果<span class="math inline">\((x_{1},y_{1}),\cdots,(x_{n},y_{n})\)</span>是这两个变量的n个观测值对子。</p>
+<p>如果每一个点由x和y组成的坐标(x,y)代表，一对点，就是诸如<span class="math inline">\((x_{i},y_{i})\)</span>和<span class="math inline">\((x_{j},y_{j})\)</span>的点对（这里的i和j不同）；然后看每一对中的x和y的观测值是否同时增加（或减少），比如由点对<span class="math inline">\((x_{1},y_{1})\)</span>和<span class="math inline">\((x_{2},y_{2})\)</span>可以算出乘积<span class="math inline">\((x_{2}-x_{1})(y_{2}-y_{1})\)</span>是否大于0。如果<span class="math inline">\((x_{2}-x_{1})(y_{2}-y_{1})\)</span>大于0，则说明这点中的x和y同时增长或下降。我们就说这两点<strong>协同(concordant)</strong>，如果这个乘积小于0，那么说明这两个点中的x和y并非同时增长或同时下降，我们称这两点<strong>不协同(discordant)</strong>。如果样本中协同的点数目多，两个变量就更加正相关一些；如果样本中不协同的点数目多，两个变量就更加负相关一些；如果既不正相关，也不负相关，则为不相关。</p>
+<p>Kendall系统的公式为</p>
+<div class="figure">
+<img src="http://a4.att.hudong.com/21/34/01200000123509134436340797162_s.jpg">
+
+</div>
+<p>其中n是项目的数量，和P的总和，对所有的项目，项目的数量排名后，给予这两个项目的排名。 P也可以被解释为是一致的对数。分母可以解释为总对数。因此，一个高价值的P，大多数是一致的，表明这两个序列是一致的。请注意，并列一双不被视为一致或不一致。如果有大量的关系，总人数的双（分母中的表达τ ）应作相应调整。</p>
+<p>该肯德尔系数（τ,或tau）具有下列属性</p>
+<p>如果排列双方的排名是完美的（即两个排名是相同的）的系数的价值1。如果两排列之间的分歧排名是完美的（即一个排名是扭转其他）的系数价值-1 。对于所有其他的值在于介于-1和1之间的排列，增加值意味着增加之间的排列的排名。如果排名是完全独立的，该系数已值为0的平均水平。</p>
+<p>这种方法用不差对总体做任何假定也可以检验，因此这是一个非参数的检验（所谓非参数方法，就是它不依赖于变量背后的总体分布）。Kendall τ也是在-1和1之间的娄和，也是越接近1或-1就越相关，越接近于0就不相关。 和Kendall τ相联系也有零假设是“两个变量独立”的假设检验，即使在正态假定成立时，相对于和Pearson相关系数有关检验，这个检验的效率也很高，在正态假定不那么确定时，与Kendall τ有关的检验对查看两个变量的独立性是非常有用的。</p>
+<p>现在我们看一下秩相关分析案例使用Kenall进行计算的结果，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">death_reason &lt;- c(<span class="number">0.03</span>,<span class="number">0.14</span>,<span class="number">0.2</span>,<span class="number">0.43</span>,<span class="number">0.44</span>,<span class="number">0.45</span>,<span class="number">0.47</span>,<span class="number">0.65</span>,<span class="number">0.95</span>,<span class="number">0.96</span>,<span class="number">2.44</span>,<span class="number">2.69</span>,<span class="number">3.207</span>,<span class="number">7.78</span>,<span class="number">9.82</span>,<span class="number">18.93</span>,<span class="number">22.59</span>,<span class="number">27.96</span>)</div><div class="line">wyypll &lt;-c(<span class="number">0.05</span>,<span class="number">0.34</span>,<span class="number">0.93</span>,<span class="number">0.69</span>,<span class="number">0.38</span>,<span class="number">0.79</span>,<span class="number">1.19</span>,<span class="number">4.74</span>,<span class="number">2.31</span>,<span class="number">5.95</span>,<span class="number">1.11</span>,<span class="number">3.53</span>,<span class="number">3.48</span>,<span class="number">5.65</span>,<span class="number">33.95</span>,<span class="number">17.16</span>,<span class="number">8.42</span>,<span class="number">9.33</span>)</div><div class="line">cor.test(death_reason,wyypll,method=<span class="string">"kendall"</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; cor.test(death_reason,wyypll,method=<span class="string">"kendall"</span>)</div><div class="line"></div><div class="line">	Kendall<span class="string">'s rank correlation tau</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">data:  death_reason and wyypll</span></div><div class="line"><span class="string">T = 133, p-value = 2.522e-06</span></div><div class="line"><span class="string">alternative hypothesis: true tau is not equal to 0</span></div><div class="line"><span class="string">sample estimates:</span></div><div class="line"><span class="string">      tau </span></div><div class="line"><span class="string">0.7385621</span></div></pre></td></tr></table></figure>
+<p>从上面的结果我们可以看到，p值几乎为0，τ的相关系数为0.7385621。</p>
+<h2 id="关于这三个相关系数的区别">关于这三个相关系数的区别</h2>
+<p>Pearson相关系数描述的是两个变量的线性关系，而Spearman和Kendall τ这两个非参数度量更为一般的关于单调关系的度量，这是因为一个变量的秩不会被任何对该变量的单调的严格递增的变换所改变，因此，把这两个非参数度量称为关联(association)的度量可能更为合适。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>孙振球. 医学统计学.第3版[M]. 人民卫生出版社, 2010.</li>
+<li>DawnGriffiths. 深入浅出统计学[M]. 电子工业出版社, 2012.</li>
+<li>王斌会. 多元统计分析及R语言建模[M]. 暨南大学出版社, 2010.</li>
+<li>吴喜之. 统计学:从数据到结论(第四版)[J]. 中国统计, 2013(6):2.</li>
+<li>冯国双, 罗凤基. 医学案例统计分析与SAS应用[M]. 北京大学医学出版社, 2011.</li>
+<li><a href="https://mp.weixin.qq.com/s/7mLvwssuR4W1kyaenrL5PA" target="_blank" rel="external">聊聊统计学三大相关性系数</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/07/BioStatistics/生物统计-09线性回归/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3315,233 +4589,6 @@ f(x)=\frac{\sqrt{\frac{\left(d_{1} x\right)^{d_{1}} d_{2}^{d_{2}}}{\left(d_{1} x
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/03/BioStatistics/生物统计-03假设检验笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/03/BioStatistics/生物统计-03假设检验笔记/" itemprop="url">假设检验笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-03T12:00:00+08:00">
-                2017-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,196
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  15
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="用小概率事件进行判断">用小概率事件进行判断</h2>
-<p>我们有时候会听到“意外发生了”这样的说法，这句话意味着我们相信某个事件发生的概率很小，也就是说它预期不会发生，但是它发生了，例如，没有人会对一个大城市某一天发生交通事故感到意外，因为这要瓣城市每天都发生大量的交通事故，但如果某一天没有发生交通事故，就真是意外了，即小概率事件发生了，另外，人们会觉得一个从来没有出过事故的老司机出事故的概率很小，如果这个司机发生事故了，人们会由于小概率事件发生了而觉得意外。</p>
-<p>在统计中，我们常用小概率事件对某项论述进行判断，假如我们对于某个说法表示怀疑，并且试图否定这个说法，那么，我们就要表示，这个说法成立的情况下，我们所观测的数据出现的概率很小。我们用下面的例子说明，人们如何计算用来否定某种说法的这种概率。比如，某大型百货商场说它的抽奖活动有10%的可能抽到奖，而有人注意到有70人抽奖，结果都未中奖，这样人们就会怀疑这个商场作假，在奖券很多的情况下，我们可以假定抽奖70次中成功的次数应该服从二项分布Bin(70,p)，按照商场的说法，每次中奖概率p=0.10，因此我们可以诈出70次抽奖没有人中奖的概率是0.0006265787</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; dbinom(<span class="number">0</span>,<span class="number">70</span>,<span class="number">0.1</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.0006265787</span></div></pre></td></tr></table></figure>
-<p>也就是说，按照商场的差距中奖概率的说法，70次抽奖都没有抽中的概率只有约万分之六，由此70交抽奖没有人中奖就是发生了小概率事件，这里的“小概率”事件是根据商场提供的参数p=0.1计算出来的，因此我们有理由怀疑商场中关于p=0.1说法的合理性。这里我们所做的就是按照某个假定（这里的商场的说法）来计算随机试验发生某结果的概率，如果小概率事件发生，那么我们有理由质疑那个假定。</p>
-<p>假设检验的原理也是如此。</p>
-<h2 id="假设检验的基本原理">假设检验的基本原理</h2>
-<p>在实际中我们会遇到这样的问题：某一样本均数是否来自于某已知均数的总体？两个不同样本均数是否来自均数不相等的总体等？要回答这类问题，经常使用统计推断的一个方法，即假设检验（hypothesis test）来解决。 假设检验过去称为显著性检验（significance test），它是利用小概率反证法的思想，从问题的对立面（<span class="math inline">\(H_{0}\)</span>）出发，间接判断要解决的问题（<span class="math inline">\(H_{0}\)</span>）是否成立。即在假设<span class="math inline">\(H_{1}\)</span>成立的条件下计算检验统计是不是，然后根据获得的P值来判断。其原理和步骤用以下实例说明。</p>
-<h3 id="案例">案例</h3>
-<p>例3-5 某医生测量了36名人事铅作用男性工人的血红蛋白含量，算得其均数为130.83g/L，标准差为25.74g/L，问：人事铅作用男性工人的血红蛋白含量均数(<span class="math inline">\(\mu\)</span>)是否不等于正常成年男性的无数140g/L（<span class="math inline">\(\mu_{0}\)</span>）？（医学统计学第四版，孙振球）</p>
-<p>本题的目的是判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>，从所给的条件来看，样本均数<span class="math inline">\(\bar{X}\)</span>与已知总体均数<span class="math inline">\(\mu_{0}\)</span>不等，造成两者不等的原因有二：①从事铅作用工人的血红蛋白含量确实高于正常成年男性，即非同一总体（<span class="math inline">\(\mu \neq \mu_{0}\)</span>）；②因抽样误差导致两者不等，即为同一总体（<span class="math inline">\(\mu = \mu_{0}\)</span>）。 要直接证明是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>很难，但可以利用反证法的思想，从<span class="math inline">\(\mu \neq \mu_{0}\)</span>的对立面<span class="math inline">\(\mu = \mu_{0}\)</span>出发，间接判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>。 假设：<span class="math inline">\(\mu = \mu_{0}\)</span>，判断由于抽样误差造成不相等的可能性有多大？</p>
-<p>如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>接近，其差别可用抽样误差解释，可认为<span class="math inline">\(\bar{X}\)</span>来自<span class="math inline">\(\mu_{0}\)</span>总体；如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关甚远，不宜用抽样误差解释，则怀疑<span class="math inline">\(\bar{X}\)</span>不是来自<span class="math inline">\(\mu_{0}\)</span>总体，那么<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关多大算是由抽样误差造成的呢？若假设<span class="math inline">\(\mu = \mu_{0}\)</span>成立，则可用公式<span class="math inline">\(\frac{\bar{X}-\mu}{S/\sqrt{n}} =t\)</span>或<span class="math inline">\(\frac{\bar{X}-\mu}{\delta/ \sqrt{n}} =\mu\)</span>计算t值或<span class="math inline">\(\mu\)</span>值，然后由t值或<span class="math inline">\(\mu\)</span>值求得P值来判断。如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相差较过错，t或<span class="math inline">\(\mu\)</span>值就大，P值就小，当P小于或等于预先规定的概率值<span class="math inline">\(\alpha\)</span>，如0.05时，则为小概率事件。小概率事件在一次抽样中发生的可能性很小，如果它发生了，则有理由怀疑原假设<span class="math inline">\(\mu = \mu_{0}\)</span>可能不成立，认为其对立面<span class="math inline">\(\mu \neq \mu_{0}\)</span>成立，该结婚的正确性冒着5%的错误风险。</p>
-<p>从上面分析可以看出，假设检验可归纳为三大基本步骤。 1. 建立检验假设，确定检验水准，假设有两种： (1) <span class="math inline">\(\mu = \mu _{0}\)</span>，常称为无效假设或零假设，用<span class="math inline">\(H_{0}\)</span>表示。 (2) <span class="math inline">\(\mu \neq \mu _{0}\)</span>，常称为备选假设，用<span class="math inline">\(H_{1}\)</span>表示。</p>
-<p>对于假设检验，需要注意的是：</p>
-<ol style="list-style-type: decimal">
-<li>检验假设针对的是总体，而不是样本；</li>
-<li><span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>是相互关系、对立的假设，后面统计推断的结论是根据<span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>作出的，两者缺一不可；</li>
-<li><span class="math inline">\(H_{0}\)</span>为无效假设，其假定通常是：某两个（或多个）总体参数相等，或某两个总体参数之差为0，或某资料服从某一特定分布；</li>
-<li><span class="math inline">\(H_{1}\)</span>的内容直接反映了检验的单双侧，若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &gt; \mu_{0}\)</span>或<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &lt; \mu_{0}\)</span>，则此检验为单侧检验，它不仅考虑是否有差异，而且还考虑差异的方向，假如上述例3-5中医生只关心铅作业男性工人的血红蛋白含量均数是否低于正常男性的均数；若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu \neq \mu_{0}\)</span>，则此检验为双侧检验，例如上述例题中的问题，从事铅作业男性工人的血红蛋白含量均数是否不等于男性的均数140g/L，此时高于和低于正常男性这两种可能性都存在。单侧检验的确定，首先要根据专业知识，其次是根据所要解决的问题来确定。若从专业上看一种方法的结果不可能低于或高于另一种方法，尽量提问为：两种方法的测定结果是否相同？此时仍用单侧检验。一般认为，双侧检验比较保守和稳妥，探索性研究多用双侧检验；而证实性研究多用单侧检验。现在以单样本和两样本均数比较的t检验为例，用下面两张表说明单双侧检验的确定。 <img src="http://ortxpw68f.bkt.clouddn.com/hypothesis%20test2.png"></li>
-</ol>
-<p>(3)<span class="math inline">\(\alpha\)</span>：即检验水准，也称显著性水准，它属于I型错误的范畴，<span class="math inline">\(\alpha\)</span>是预先规定的概率值，它确定了小概率事件的标准，在实际工作中，常取<span class="math inline">\(\alpha=0.05\)</span>。除了I型错误外，还有II型错误。后面会详细说明第1类错误和第2类错误。</p>
-<h2 id="第一类错误和第二类错误">第一类错误和第二类错误</h2>
-<h3 id="第一类错误">第一类错误</h3>
-<p>第一类错误又称Ⅰ型错误、拒真错误，是指拒绝了实际上成立的、正确的假设，为“弃真”的错误，其概率通常用α表示。即“原假设是正确的，却拒绝了原假设”。我们平时遇到的文献里，基本上都是与第一类错误有关的假设检验，这就是我们常说的“假阳性”，即无中生有，本来实验结果是阳性，非常高兴，后来才发现这是假阳性，把本来不存在的事情，当作了存在。</p>
-<h3 id="第二类错误">第二类错误</h3>
-<p>第二类错误又称Ⅱ型错误，接受了实际上不成立的H0 ，也就是错误地判为无差别，这类取伪的错误称为第二类错误，其概率用β表示。即“原假设是错误的，却没有拒绝原假设”，这可以理解为“假阴性“，下面的一幅图可以很清楚地说明第一类错误与第二类错误：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190703212334.png">
-
-</div>
-<h3 id="第一类错误和第二类错误的关系">第一类错误和第二类错误的关系</h3>
-<p>当样本例数固定时，α愈小，β愈大；反之，α愈大，β愈小。因而可通过选定α控制β大小。要同时减小α和β，唯有增加样本例数。统计上将1-β称为检验效能或把握度(power of a test)，即两个总体确有差别存在，而以α为检验水准，假设检验能发现它们有差别的能力。实际工作中应权衡两类错误中哪一个重要以选择检验水准的大小。</p>
-<h3 id="对第一类错误和第二类错误的简单理解">对第一类错误和第二类错误的简单理解</h3>
-<p>我们常把假设检验比作法庭判案，我们想知道被告是好人还是坏人。原假设是“被告是好人”，备择假设是“被告是坏人”。法庭判案会犯两种错误：如果被告真是好人，而你判他有罪，这是第一类错误(错杀好人)；如果被告真是坏人，而你判他无罪，这是第二类错误(放走坏人)。</p>
-<p>记忆方法：我们可以把第一类错误记为“以真为假”，把第二类错误记为“以假为真”。当然我们也可以将第一类错误记为“错杀好人”，把第二类错误记为“放走坏人”。</p>
-<p>在其他条件不变的情况下，如果要求犯第一类错误概率越小，那么犯第二类错误的概率就会越大。这个结论比较容易理解，当我们要求“错杀好人”的概率降低时，那么往往就会“放走坏人”。</p>
-<p>同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。</p>
-<h2 id="p值的理解">p值的理解</h2>
-<p>在假设检验中，拒绝零假设时所允许的最大的犯第一类错误的概率称为显著性水平(level of significance或significance level)，通常用α表示。显著性水平通常是由进行检验的根据实际目标确定的。最常用的显著性水平为0.05，0.01，0.005，0.001等。</p>
-<p>在假设检验中，我们通常使用样本的一个统计量作为证据来称量零假设的真伪，该统计量称为检验统计量(test statistic)，和检验统计量关联的一个概念是p值(p-value)，它是在零假设下，出现检验统计量的实现值以及（向备选假设方向）更极端的值的概率，有关p值的更好理解，可以参见这一篇文章<a href="https://mp.weixin.qq.com/s/4LmVdoQdxDlZ6xOgSfXRaA" target="_blank" rel="external">《p值详解》</a>。</p>
-<p>p值度量从样本数据得到的信息对零假设的支持程度。因此，p值越小，越有理由说明样本数据不支持零假设。如果p值小于显著性水平α，那么能够拒绝零假设，否则就不能拒绝零假设。因此p值常常被称为该检验的<strong>观测显著性水平(observed level of significance)</strong>。在统计软件的输出中，通常只输出p值，而由用户自己决定p值是多少时拒绝零假设。p值是由数据决定的，而显著性水平是由用户决定的。计算软件仅仅给出p值，而不给出α，例如我们计算得到的p值是0.0005，这时如果以α=0.05为显著性水平，那么此时就拒绝零假设，如果以α=0.001为显著性水平，那么就无法拒绝零假设。α=0.05表明，拒绝零假设时犯错误的概率是百分之五，α=0.001表明，拒绝零假设时犯错误的概率是千分之一。在统计软件的输出结果中，有的使用“p-value”，有的使用significance的缩写，即“Sig”来标明。</p>
-<p>根据数据产生的p值来减少α的值以展示结果的精确性总是没有害处的。这就好比一个身高180cm的男生，可能愿意被认为高于或等于180cm，而不愿意被说成高于或等于155cm，虽然第二种说法在数学上没有丝毫错误。</p>
-<h3 id="在实际情况中如何把握α与β错误">在实际情况中，如何把握α与β错误</h3>
-<p>举个例子，某研究者研究一个化合物A，原假设（H0）：化合物A对于改善糖尿病没有作用。而化合物A可能对改善糖尿病有作用，也可能没有作用。</p>
-<p>如果化合物A真的没有作用，而研究的数据支持A有作用，则是犯了第一类错误（即无中生有）。</p>
-<p>如果化合物A真的有作用，而数据支持A没有作用，则是犯了第二类错误（即有中生无）。 对于研究者来说，如何把握呢？如果把第一类错误标准定得过于宽松，很容易得到化合物A有作用的结论，把没有效果的东西当作是有效果的，他会把自己的研究结果报告，或者发布到学术界中。其他研究者便会去尝试重复实验，投入大量的人力和物力，去搞一个原本就不存在东西上，这就是极大的浪费，就像某医药公司看到了化合物A能够降改善糖尿病的论文，就投入大量资源去研究（事实上化合物A根本没有作用），这样就会造成浪费。因此宁可把第一类错误的标准定得高一些，这样即使犯了第二类错误，也不至于在本不存在的事情上浪费资源。</p>
-<h2 id="假设检验中的一些注意事项">假设检验中的一些注意事项</h2>
-<p>某些书中会提到，不能拒绝零假设就接受零假设的说法，而且没有给出犯第二类错误的概率，这是不恰当的。首选，你说“接受零假设”，那么就应该负责任地提供接受零假设时可能犯第二类错误的概率，这就要算出在备选假设正确的情况下，错误地接近零假设的概率。但是，这只有在备选假设仅仅是一个与零假设不同的确定值（而不是范围）时才有可能，多数初等统计教科书中的备选假设是一个范围，例如前面提到例题，在这个例题中，H0:μ=50，H1:μ&lt;50，在这种情况下，根本无法确定犯第二类错误的概率。</p>
-<p>在实际分析中，通常会把I型错误的阈值设为0.05，把II型错误的阈值设为0.1或0.2。</p>
-<p>在很多应用回归分析的方法中，也有不少书中往往把一系列不能拒绝零假设的检验当成接受这些假设的通行证。比如不能拒绝某样本的正态性就变成了证明该样本是正态的等。其实，不能拒绝这些零假设，仅仅说明，根据当前所使用的检验方法和当前的数据，没有足够证据拒绝这些假设而已。因此，在不能拒绝零假设时，只能够说，按照目前的证据和检验方法，不足以拒绝零假设。</p>
-<h2 id="参考资料">参考资料：</h2>
-<p><a href="https://www.zhihu.com/question/20993864/answer/81244176" target="_blank" rel="external">第一类错误和第二类错误的关系是什么？马志阳的回答</a> <a href="https://zhuanlan.zhihu.com/p/25734905" target="_blank" rel="external">假设检验之五：α风险 vs. β风险</a></p>
-<p>白话统计.冯国双</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/03/BioStatistics/生物统计-06T分布与检验/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3728,6 +4775,233 @@ f(x)=\frac{\sqrt{\frac{\left(d_{1} x\right)^{d_{1}} d_{2}^{d_{2}}}{\left(d_{1} x
 <li>将t检验用于多组实验设计中的两两比较，增加假阳性错误（此时应该使用ANOVA）；</li>
 <li>不考虑资料是否独立，采用独立资料的t检验分析。</li>
 </ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/03/BioStatistics/生物统计-03假设检验笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/03/BioStatistics/生物统计-03假设检验笔记/" itemprop="url">假设检验笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-03T12:00:00+08:00">
+                2017-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,196
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  15
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="用小概率事件进行判断">用小概率事件进行判断</h2>
+<p>我们有时候会听到“意外发生了”这样的说法，这句话意味着我们相信某个事件发生的概率很小，也就是说它预期不会发生，但是它发生了，例如，没有人会对一个大城市某一天发生交通事故感到意外，因为这要瓣城市每天都发生大量的交通事故，但如果某一天没有发生交通事故，就真是意外了，即小概率事件发生了，另外，人们会觉得一个从来没有出过事故的老司机出事故的概率很小，如果这个司机发生事故了，人们会由于小概率事件发生了而觉得意外。</p>
+<p>在统计中，我们常用小概率事件对某项论述进行判断，假如我们对于某个说法表示怀疑，并且试图否定这个说法，那么，我们就要表示，这个说法成立的情况下，我们所观测的数据出现的概率很小。我们用下面的例子说明，人们如何计算用来否定某种说法的这种概率。比如，某大型百货商场说它的抽奖活动有10%的可能抽到奖，而有人注意到有70人抽奖，结果都未中奖，这样人们就会怀疑这个商场作假，在奖券很多的情况下，我们可以假定抽奖70次中成功的次数应该服从二项分布Bin(70,p)，按照商场的说法，每次中奖概率p=0.10，因此我们可以诈出70次抽奖没有人中奖的概率是0.0006265787</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; dbinom(<span class="number">0</span>,<span class="number">70</span>,<span class="number">0.1</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.0006265787</span></div></pre></td></tr></table></figure>
+<p>也就是说，按照商场的差距中奖概率的说法，70次抽奖都没有抽中的概率只有约万分之六，由此70交抽奖没有人中奖就是发生了小概率事件，这里的“小概率”事件是根据商场提供的参数p=0.1计算出来的，因此我们有理由怀疑商场中关于p=0.1说法的合理性。这里我们所做的就是按照某个假定（这里的商场的说法）来计算随机试验发生某结果的概率，如果小概率事件发生，那么我们有理由质疑那个假定。</p>
+<p>假设检验的原理也是如此。</p>
+<h2 id="假设检验的基本原理">假设检验的基本原理</h2>
+<p>在实际中我们会遇到这样的问题：某一样本均数是否来自于某已知均数的总体？两个不同样本均数是否来自均数不相等的总体等？要回答这类问题，经常使用统计推断的一个方法，即假设检验（hypothesis test）来解决。 假设检验过去称为显著性检验（significance test），它是利用小概率反证法的思想，从问题的对立面（<span class="math inline">\(H_{0}\)</span>）出发，间接判断要解决的问题（<span class="math inline">\(H_{0}\)</span>）是否成立。即在假设<span class="math inline">\(H_{1}\)</span>成立的条件下计算检验统计是不是，然后根据获得的P值来判断。其原理和步骤用以下实例说明。</p>
+<h3 id="案例">案例</h3>
+<p>例3-5 某医生测量了36名人事铅作用男性工人的血红蛋白含量，算得其均数为130.83g/L，标准差为25.74g/L，问：人事铅作用男性工人的血红蛋白含量均数(<span class="math inline">\(\mu\)</span>)是否不等于正常成年男性的无数140g/L（<span class="math inline">\(\mu_{0}\)</span>）？（医学统计学第四版，孙振球）</p>
+<p>本题的目的是判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>，从所给的条件来看，样本均数<span class="math inline">\(\bar{X}\)</span>与已知总体均数<span class="math inline">\(\mu_{0}\)</span>不等，造成两者不等的原因有二：①从事铅作用工人的血红蛋白含量确实高于正常成年男性，即非同一总体（<span class="math inline">\(\mu \neq \mu_{0}\)</span>）；②因抽样误差导致两者不等，即为同一总体（<span class="math inline">\(\mu = \mu_{0}\)</span>）。 要直接证明是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>很难，但可以利用反证法的思想，从<span class="math inline">\(\mu \neq \mu_{0}\)</span>的对立面<span class="math inline">\(\mu = \mu_{0}\)</span>出发，间接判断是否<span class="math inline">\(\mu \neq \mu_{0}\)</span>。 假设：<span class="math inline">\(\mu = \mu_{0}\)</span>，判断由于抽样误差造成不相等的可能性有多大？</p>
+<p>如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>接近，其差别可用抽样误差解释，可认为<span class="math inline">\(\bar{X}\)</span>来自<span class="math inline">\(\mu_{0}\)</span>总体；如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关甚远，不宜用抽样误差解释，则怀疑<span class="math inline">\(\bar{X}\)</span>不是来自<span class="math inline">\(\mu_{0}\)</span>总体，那么<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相关多大算是由抽样误差造成的呢？若假设<span class="math inline">\(\mu = \mu_{0}\)</span>成立，则可用公式<span class="math inline">\(\frac{\bar{X}-\mu}{S/\sqrt{n}} =t\)</span>或<span class="math inline">\(\frac{\bar{X}-\mu}{\delta/ \sqrt{n}} =\mu\)</span>计算t值或<span class="math inline">\(\mu\)</span>值，然后由t值或<span class="math inline">\(\mu\)</span>值求得P值来判断。如果<span class="math inline">\(\bar{X}\)</span>与<span class="math inline">\(\mu_{0}\)</span>相差较过错，t或<span class="math inline">\(\mu\)</span>值就大，P值就小，当P小于或等于预先规定的概率值<span class="math inline">\(\alpha\)</span>，如0.05时，则为小概率事件。小概率事件在一次抽样中发生的可能性很小，如果它发生了，则有理由怀疑原假设<span class="math inline">\(\mu = \mu_{0}\)</span>可能不成立，认为其对立面<span class="math inline">\(\mu \neq \mu_{0}\)</span>成立，该结婚的正确性冒着5%的错误风险。</p>
+<p>从上面分析可以看出，假设检验可归纳为三大基本步骤。 1. 建立检验假设，确定检验水准，假设有两种： (1) <span class="math inline">\(\mu = \mu _{0}\)</span>，常称为无效假设或零假设，用<span class="math inline">\(H_{0}\)</span>表示。 (2) <span class="math inline">\(\mu \neq \mu _{0}\)</span>，常称为备选假设，用<span class="math inline">\(H_{1}\)</span>表示。</p>
+<p>对于假设检验，需要注意的是：</p>
+<ol style="list-style-type: decimal">
+<li>检验假设针对的是总体，而不是样本；</li>
+<li><span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>是相互关系、对立的假设，后面统计推断的结论是根据<span class="math inline">\(H_{0}\)</span>和<span class="math inline">\(H_{1}\)</span>作出的，两者缺一不可；</li>
+<li><span class="math inline">\(H_{0}\)</span>为无效假设，其假定通常是：某两个（或多个）总体参数相等，或某两个总体参数之差为0，或某资料服从某一特定分布；</li>
+<li><span class="math inline">\(H_{1}\)</span>的内容直接反映了检验的单双侧，若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &gt; \mu_{0}\)</span>或<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu &lt; \mu_{0}\)</span>，则此检验为单侧检验，它不仅考虑是否有差异，而且还考虑差异的方向，假如上述例3-5中医生只关心铅作业男性工人的血红蛋白含量均数是否低于正常男性的均数；若<span class="math inline">\(H_{1}\)</span>为<span class="math inline">\(\mu \neq \mu_{0}\)</span>，则此检验为双侧检验，例如上述例题中的问题，从事铅作业男性工人的血红蛋白含量均数是否不等于男性的均数140g/L，此时高于和低于正常男性这两种可能性都存在。单侧检验的确定，首先要根据专业知识，其次是根据所要解决的问题来确定。若从专业上看一种方法的结果不可能低于或高于另一种方法，尽量提问为：两种方法的测定结果是否相同？此时仍用单侧检验。一般认为，双侧检验比较保守和稳妥，探索性研究多用双侧检验；而证实性研究多用单侧检验。现在以单样本和两样本均数比较的t检验为例，用下面两张表说明单双侧检验的确定。 <img src="http://ortxpw68f.bkt.clouddn.com/hypothesis%20test2.png"></li>
+</ol>
+<p>(3)<span class="math inline">\(\alpha\)</span>：即检验水准，也称显著性水准，它属于I型错误的范畴，<span class="math inline">\(\alpha\)</span>是预先规定的概率值，它确定了小概率事件的标准，在实际工作中，常取<span class="math inline">\(\alpha=0.05\)</span>。除了I型错误外，还有II型错误。后面会详细说明第1类错误和第2类错误。</p>
+<h2 id="第一类错误和第二类错误">第一类错误和第二类错误</h2>
+<h3 id="第一类错误">第一类错误</h3>
+<p>第一类错误又称Ⅰ型错误、拒真错误，是指拒绝了实际上成立的、正确的假设，为“弃真”的错误，其概率通常用α表示。即“原假设是正确的，却拒绝了原假设”。我们平时遇到的文献里，基本上都是与第一类错误有关的假设检验，这就是我们常说的“假阳性”，即无中生有，本来实验结果是阳性，非常高兴，后来才发现这是假阳性，把本来不存在的事情，当作了存在。</p>
+<h3 id="第二类错误">第二类错误</h3>
+<p>第二类错误又称Ⅱ型错误，接受了实际上不成立的H0 ，也就是错误地判为无差别，这类取伪的错误称为第二类错误，其概率用β表示。即“原假设是错误的，却没有拒绝原假设”，这可以理解为“假阴性“，下面的一幅图可以很清楚地说明第一类错误与第二类错误：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190703212334.png">
+
+</div>
+<h3 id="第一类错误和第二类错误的关系">第一类错误和第二类错误的关系</h3>
+<p>当样本例数固定时，α愈小，β愈大；反之，α愈大，β愈小。因而可通过选定α控制β大小。要同时减小α和β，唯有增加样本例数。统计上将1-β称为检验效能或把握度(power of a test)，即两个总体确有差别存在，而以α为检验水准，假设检验能发现它们有差别的能力。实际工作中应权衡两类错误中哪一个重要以选择检验水准的大小。</p>
+<h3 id="对第一类错误和第二类错误的简单理解">对第一类错误和第二类错误的简单理解</h3>
+<p>我们常把假设检验比作法庭判案，我们想知道被告是好人还是坏人。原假设是“被告是好人”，备择假设是“被告是坏人”。法庭判案会犯两种错误：如果被告真是好人，而你判他有罪，这是第一类错误(错杀好人)；如果被告真是坏人，而你判他无罪，这是第二类错误(放走坏人)。</p>
+<p>记忆方法：我们可以把第一类错误记为“以真为假”，把第二类错误记为“以假为真”。当然我们也可以将第一类错误记为“错杀好人”，把第二类错误记为“放走坏人”。</p>
+<p>在其他条件不变的情况下，如果要求犯第一类错误概率越小，那么犯第二类错误的概率就会越大。这个结论比较容易理解，当我们要求“错杀好人”的概率降低时，那么往往就会“放走坏人”。</p>
+<p>同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。同样的，在其他条件不变的情况下，如果要求犯第二类错误概率越小，那么犯第一类错误的概率就会越大。当我们要求“放走坏人”的概率降低时，那么往往就会“错杀好人”。</p>
+<h2 id="p值的理解">p值的理解</h2>
+<p>在假设检验中，拒绝零假设时所允许的最大的犯第一类错误的概率称为显著性水平(level of significance或significance level)，通常用α表示。显著性水平通常是由进行检验的根据实际目标确定的。最常用的显著性水平为0.05，0.01，0.005，0.001等。</p>
+<p>在假设检验中，我们通常使用样本的一个统计量作为证据来称量零假设的真伪，该统计量称为检验统计量(test statistic)，和检验统计量关联的一个概念是p值(p-value)，它是在零假设下，出现检验统计量的实现值以及（向备选假设方向）更极端的值的概率，有关p值的更好理解，可以参见这一篇文章<a href="https://mp.weixin.qq.com/s/4LmVdoQdxDlZ6xOgSfXRaA" target="_blank" rel="external">《p值详解》</a>。</p>
+<p>p值度量从样本数据得到的信息对零假设的支持程度。因此，p值越小，越有理由说明样本数据不支持零假设。如果p值小于显著性水平α，那么能够拒绝零假设，否则就不能拒绝零假设。因此p值常常被称为该检验的<strong>观测显著性水平(observed level of significance)</strong>。在统计软件的输出中，通常只输出p值，而由用户自己决定p值是多少时拒绝零假设。p值是由数据决定的，而显著性水平是由用户决定的。计算软件仅仅给出p值，而不给出α，例如我们计算得到的p值是0.0005，这时如果以α=0.05为显著性水平，那么此时就拒绝零假设，如果以α=0.001为显著性水平，那么就无法拒绝零假设。α=0.05表明，拒绝零假设时犯错误的概率是百分之五，α=0.001表明，拒绝零假设时犯错误的概率是千分之一。在统计软件的输出结果中，有的使用“p-value”，有的使用significance的缩写，即“Sig”来标明。</p>
+<p>根据数据产生的p值来减少α的值以展示结果的精确性总是没有害处的。这就好比一个身高180cm的男生，可能愿意被认为高于或等于180cm，而不愿意被说成高于或等于155cm，虽然第二种说法在数学上没有丝毫错误。</p>
+<h3 id="在实际情况中如何把握α与β错误">在实际情况中，如何把握α与β错误</h3>
+<p>举个例子，某研究者研究一个化合物A，原假设（H0）：化合物A对于改善糖尿病没有作用。而化合物A可能对改善糖尿病有作用，也可能没有作用。</p>
+<p>如果化合物A真的没有作用，而研究的数据支持A有作用，则是犯了第一类错误（即无中生有）。</p>
+<p>如果化合物A真的有作用，而数据支持A没有作用，则是犯了第二类错误（即有中生无）。 对于研究者来说，如何把握呢？如果把第一类错误标准定得过于宽松，很容易得到化合物A有作用的结论，把没有效果的东西当作是有效果的，他会把自己的研究结果报告，或者发布到学术界中。其他研究者便会去尝试重复实验，投入大量的人力和物力，去搞一个原本就不存在东西上，这就是极大的浪费，就像某医药公司看到了化合物A能够降改善糖尿病的论文，就投入大量资源去研究（事实上化合物A根本没有作用），这样就会造成浪费。因此宁可把第一类错误的标准定得高一些，这样即使犯了第二类错误，也不至于在本不存在的事情上浪费资源。</p>
+<h2 id="假设检验中的一些注意事项">假设检验中的一些注意事项</h2>
+<p>某些书中会提到，不能拒绝零假设就接受零假设的说法，而且没有给出犯第二类错误的概率，这是不恰当的。首选，你说“接受零假设”，那么就应该负责任地提供接受零假设时可能犯第二类错误的概率，这就要算出在备选假设正确的情况下，错误地接近零假设的概率。但是，这只有在备选假设仅仅是一个与零假设不同的确定值（而不是范围）时才有可能，多数初等统计教科书中的备选假设是一个范围，例如前面提到例题，在这个例题中，H0:μ=50，H1:μ&lt;50，在这种情况下，根本无法确定犯第二类错误的概率。</p>
+<p>在实际分析中，通常会把I型错误的阈值设为0.05，把II型错误的阈值设为0.1或0.2。</p>
+<p>在很多应用回归分析的方法中，也有不少书中往往把一系列不能拒绝零假设的检验当成接受这些假设的通行证。比如不能拒绝某样本的正态性就变成了证明该样本是正态的等。其实，不能拒绝这些零假设，仅仅说明，根据当前所使用的检验方法和当前的数据，没有足够证据拒绝这些假设而已。因此，在不能拒绝零假设时，只能够说，按照目前的证据和检验方法，不足以拒绝零假设。</p>
+<h2 id="参考资料">参考资料：</h2>
+<p><a href="https://www.zhihu.com/question/20993864/answer/81244176" target="_blank" rel="external">第一类错误和第二类错误的关系是什么？马志阳的回答</a> <a href="https://zhuanlan.zhihu.com/p/25734905" target="_blank" rel="external">假设检验之五：α风险 vs. β风险</a></p>
+<p>白话统计.冯国双</p>
 
           
         
@@ -4106,591 +5380,6 @@ f(x)=\frac{\sqrt{\frac{\left(d_{1} x\right)^{d_{1}} d_{2}^{d_{2}}}{\left(d_{1} x
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/06/01/BioStatistics/生物统计-01统计学基础/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/01/BioStatistics/生物统计-01统计学基础/" itemprop="url">统计学基础汇总</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-01T12:00:00+08:00">
-                2017-06-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物统计/" itemprop="url" rel="index">
-                    <span itemprop="name">生物统计</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  11,099
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  44
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="统计学术语">统计学术语</h2>
-<p>下面是一些常见的医学或生物学统计学术语。</p>
-<h2 id="数据和变量">数据和变量</h2>
-<p>在了解这两个术语之前，先看一组数据，从这组数据出发，说明这几个术语。</p>
-<p>这组数据是R中自带的数据集，即<code>iris</code>这个数据集，iris数据集的中文名是安德森鸢尾花卉数据集，英文全称是Anderson’s Iris data set。iris包含150个样本，对应数据集的每行数据。每行数据包含每个样本的四个特征和样本的类别信息，所以iris数据集是一个150行5列的二维表，我们先看一下这个数据集的结构，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; str(iris)</div><div class="line"><span class="string">'data.frame'</span>:   <span class="number">150</span> obs. of  <span class="number">5</span> variables:</div><div class="line"> $ Sepal.Length: num  <span class="number">5.1</span> <span class="number">4.9</span> <span class="number">4.7</span> <span class="number">4.6</span> <span class="number">5</span> <span class="number">5.4</span> <span class="number">4.6</span> <span class="number">5</span> <span class="number">4.4</span> <span class="number">4.9</span> <span class="keyword">...</span></div><div class="line"> $ Sepal.Width : num  <span class="number">3.5</span> <span class="number">3</span> <span class="number">3.2</span> <span class="number">3.1</span> <span class="number">3.6</span> <span class="number">3.9</span> <span class="number">3.4</span> <span class="number">3.4</span> <span class="number">2.9</span> <span class="number">3.1</span> <span class="keyword">...</span></div><div class="line"> $ Petal.Length: num  <span class="number">1.4</span> <span class="number">1.4</span> <span class="number">1.3</span> <span class="number">1.5</span> <span class="number">1.4</span> <span class="number">1.7</span> <span class="number">1.4</span> <span class="number">1.5</span> <span class="number">1.4</span> <span class="number">1.5</span> <span class="keyword">...</span></div><div class="line"> $ Petal.Width : num  <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.4</span> <span class="number">0.3</span> <span class="number">0.2</span> <span class="number">0.2</span> <span class="number">0.1</span> <span class="keyword">...</span></div><div class="line"> $ Species     : Factor w/ <span class="number">3</span> levels <span class="string">"setosa"</span>,<span class="string">"versicolor"</span>,..: <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>再看一下前几条信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(iris)</div><div class="line">  Sepal.Length Sepal.Width Petal.Length Petal.Width Species</div><div class="line"><span class="number">1</span>          <span class="number">5.1</span>         <span class="number">3.5</span>          <span class="number">1.4</span>         <span class="number">0.2</span>  setosa</div><div class="line"><span class="number">2</span>          <span class="number">4.9</span>         <span class="number">3.0</span>          <span class="number">1.4</span>         <span class="number">0.2</span>  setosa</div><div class="line"><span class="number">3</span>          <span class="number">4.7</span>         <span class="number">3.2</span>          <span class="number">1.3</span>         <span class="number">0.2</span>  setosa</div><div class="line"><span class="number">4</span>          <span class="number">4.6</span>         <span class="number">3.1</span>          <span class="number">1.5</span>         <span class="number">0.2</span>  setosa</div><div class="line"><span class="number">5</span>          <span class="number">5.0</span>         <span class="number">3.6</span>          <span class="number">1.4</span>         <span class="number">0.2</span>  setosa</div><div class="line"><span class="number">6</span>          <span class="number">5.4</span>         <span class="number">3.9</span>          <span class="number">1.7</span>         <span class="number">0.4</span>  setosa</div></pre></td></tr></table></figure>
-<p>从上面的这两个结果，我们可以得到这些信息：</p>
-<p>第一，这个数据集一共有150行，5列。</p>
-<p>第二，每1列的名称分别为<code>Sepal.Length</code>、<code>Sepal.Width</code>、<code>Petal.Length</code>、<code>Petal.Width</code>和<code>Species</code>，它们分别表示鸢尾花的花萼长度，花萼宽度、花瓣长度，花瓣宽度，种属，也就是说第1行中一共有这5个信息，我们把这5个信息称为<code>变量(variable)</code>。这里需要说明一下的是，变量(variable)在计算机/数据库等领域也叫属性(attribute)、特征(feature)、特性(characteristic)、字段(field)等等。</p>
-<p>再回到<code>iris</code>这个数据集中。</p>
-<p>其中，我们把种属(Species)这个信息称为<code>定性变量（qualitative variable）</code>，定性变量取的值称为<code>水平(level)</code>或<code>类(class)</code>。定性变量有其它的教材中也会称为分类变量(categorical variable)、属性变量(attributives variable)、名义变量/标称变量(nominal variable)或维度(dimension)。</p>
-<p>再看其它的4个变量，它们是用具体的数字表示，这些变量称为<code>定量变量(quantitative variable)</code>，有也领域也称为指标。</p>
-<p>定性变量的例子除了种属外，还有其他的例子，例如我们常见的性别，颜色等，在有些情况下，定量变量也会按照定性变量去处理，例如，为了调查方便，我们在问卷中可以只问高收入、中收入还是低收入，而不是问具体多少钱，这种定性变量还能进行排序，它们也常常称为定序变量（ordinal variable）。</p>
-<p>定量变量还能分为<code>连续型变量(continuous variable)</code>和<code>离散型变量(discrete variable)</code>。</p>
-<p>连续型变量的例子有身高、体重、热量、速度、长度等，它们的取值 是实数轴的某一个区间或者是某些区间集合中的所有可能点的变量。</p>
-<p>离散型变量的例子有，某种事件发生的次数，例如抛5次硬币，在描述有几次正面朝上的时候，只可能是0次，1次，2次，3次，4次，5次，而不可能是1.5次这种小数，离散型变量只能取正整数或0。</p>
-<p>还看上面的案例，整个<code>iris</code>这个数据集中，除了第1行的变量名称外，剩下的内容则是与这些变量对应的数据(data)，可以把数据看成变量的观测值，或者是试验结果，例如，身高是一个变量，测量一个人的身高，就好比一次试验，可观测到一次试验结果，就是<code>观测值(observation)</code>。这里还要提一下，观测值(observation)在计算机/数据库领域也叫记录(record)、对象(object)、向量(vector)、模式(pattern)、事件(event)、例(case,instance)、样本(sample)、或项、实体(entity)等等。</p>
-<p>我们一般所说的数据是一个集合名词，每一个数字包含很多观测值，每个观测值也称为一个数据点(data point, point)或例(case)。就以这个<code>iris</code>的数据集为例，它的每1列代表一个变量，而每1行则为一个对象关于各个变量的观测值，簇也把这种数据方阵的每一行叫做一个观测（值），就像下面的样子，它就是一个观测：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101801.png">
-
-</div>
-<p>这也是一个观测值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101825.png">
-
-</div>
-<h2 id="横断面研究和纵贯研究">横断面研究和纵贯研究</h2>
-<p><code>横断面研究(cross-sectional  study)</code>是指，它的数据是一群人在某个时间点的情况。</p>
-<p><code>纵贯研究(longitudinal study)</code>是指，在一段时间内手里观察同一群人。</p>
-<h2 id="概率和随机变量">概率和随机变量</h2>
-<p>在统计学研究中，有很多对象都被认为具有随机性(randomness)，随机的事情也有规律的，例如我们抛一个硬币，在硬币落在地面之前，硬币朝哪面我们是不知道的，它是随机的，事先无法准确地预测。但是，只要这个硬币是正常的，没问题的，那么我们就知道，硬币朝上与朝下的概率基本上是相等的。</p>
-<p>在这里，硬币的朝上与朝下的这个变量，它就是随机变量(random variable)。而一个随机变量的性质则完全被与其相关的概率或概率分布决定。那什么是概率？</p>
-<p>一个事件(event)的概率(probability)是该事件发生可能性的一个数量度量，它的聚会范围是0到1，也可能是0或1.当一个事件的概率接近1时，则说明这个事件很可能发生；如果概率接近0，则说明不太可能发生，如果概率为0.5，那么说明该事件发生和不发生的可能性一样。</p>
-<p>简单来说，概率称量某个事件出现的机会，有些概率在某种假定条件下可以算出来，例如抛硬币，得到正面朝上与反面朝上的概率都是0.5，这种可能计算概率的事件称为等可能事件（equally likely event)，这种可能是假定的，对于硬币来说，就是假定正面与反面朝上的㜅一样，如果我们抛了一千次，其中得到正面与反面朝上的频率或相对频数(relative frequency)都接近0.5，那么就说明这个硬币是公平的，是正常的，这些事件理论上可能通过重复试验中出现的频率来计算其发生的概率。</p>
-<p>不过有些概率是无法用重复计算来估计的，例如有人认为，最近3个月内中东地区发生大规模军事冲突的概率是80%，这显著无法用重复试剂来估计，这只是他们基于过去的经合和掌握的信息形成的信息，这种概率称为主观概率(subjective probability)。</p>
-<h2 id="利用r产生随机数">利用R产生随机数</h2>
-<p>在进行抽样时，或者是模拟某个分布时，我们常常要用到随机数，现在都是用软件来生成随机数，虽然这种随机数不晃真正的随机数，但是已经足够使用了，使用软件生成的这种随机数称为伪随机数(pseudo-random number)，现在介绍一下用R来如何生成随机数。</p>
-<p>现在生成10个2到3之间的，服从均匀分布的伪随机数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; set.seed(<span class="number">1000</span>)</div><div class="line">&gt; runif(<span class="number">10</span>,<span class="number">2</span>,<span class="number">3</span>)</div><div class="line"> [<span class="number">1</span>] <span class="number">2.327879</span> <span class="number">2.758846</span> <span class="number">2.113936</span> <span class="number">2.690755</span> <span class="number">2.516402</span> <span class="number">2.067738</span> <span class="number">2.738715</span> <span class="number">2.583535</span></div><div class="line"> [<span class="number">9</span>] <span class="number">2.215771</span> <span class="number">2.256122</span></div></pre></td></tr></table></figure>
-<p>现在解释一下，先看<code>runif()</code>这个函数，在R中，这个函数前面的<code>r</code>表示随机，<code>unif</code>表示服从均匀分布，类似的还有<code>rnorm()</code>，它的功能类似，只是它生成的是服从正态分布的随机数，其中<code>norm</code>就是正态分布的意思。</p>
-<p>现在，再看<code>set.seed(1000)</code>的作用是保证你随机生成的数字前后一致，如果它的参数就是一个数字，这个数字可以随意指定，括号里的数字只要一致，那么每次生成的随机数就一致，如果不使用这个函数，那么我们每次运行<code>runif(10,2,3)</code>，它生成的随机数就不一样，现在看一下下面的代码：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; runif(<span class="number">10</span>,<span class="number">2</span>,<span class="number">3</span>) <span class="comment"># 不指定set.seed()</span></div><div class="line"> [<span class="number">1</span>] <span class="number">2.567518</span> <span class="number">2.049710</span> <span class="number">2.561620</span> <span class="number">2.966179</span> <span class="number">2.509945</span> <span class="number">2.700937</span> <span class="number">2.020349</span> <span class="number">2.783569</span></div><div class="line"> [<span class="number">9</span>] <span class="number">2.584397</span> <span class="number">2.317293</span></div><div class="line">&gt; runif(<span class="number">10</span>,<span class="number">2</span>,<span class="number">3</span>) <span class="comment"># 再次运行runif(10,2,3),生成的结果就不一样</span></div><div class="line"> [<span class="number">1</span>] <span class="number">2.996208</span> <span class="number">2.531047</span> <span class="number">2.109908</span> <span class="number">2.633212</span> <span class="number">2.797929</span> <span class="number">2.712990</span> <span class="number">2.702835</span> <span class="number">2.562833</span></div><div class="line"> [<span class="number">9</span>] <span class="number">2.258873</span> <span class="number">2.506937</span></div><div class="line">&gt; set.seed(<span class="number">1000</span>) <span class="comment"># 指定set.seed(1000)</span></div><div class="line">&gt; runif(<span class="number">10</span>,<span class="number">2</span>,<span class="number">3</span>) <span class="comment"># 生成的结果就与前面的一样</span></div><div class="line"> [<span class="number">1</span>] <span class="number">2.327879</span> <span class="number">2.758846</span> <span class="number">2.113936</span> <span class="number">2.690755</span> <span class="number">2.516402</span> <span class="number">2.067738</span> <span class="number">2.738715</span> <span class="number">2.583535</span></div><div class="line"> [<span class="number">9</span>] <span class="number">2.215771</span> <span class="number">2.256122</span></div></pre></td></tr></table></figure>
-<h2 id="个体总体样本和抽样">个体、总体、样本和抽样</h2>
-<p>为了说明这几个术语，我们还要看一个案例。</p>
-<p>我们要调查一下外地游客在重庆认路的情况进行调查，那么我们可以这么设计问题，“请问，你在重庆旅游时，是否很容易找到目的地？”可能的回答有这些：“很容易”，“不容易“，”不知道“。调查的目的是希望知道在重庆的游客中，对这个问题的三种回答所占的比例，显然不可能调查所有的游客，但我们可以调查其中的一部分，进而估计出在重庆的所有游客的回答。</p>
-<p>在这个例子中，单个游客称为调查的对象(object)，他们的回答称为个体(element,或individual, unit)，而所有在重庆的游客对这个问题的回答称为一个总体(population)，总体是包含所有要研究的个体的集合，而调查时，问到那些游客则称为该总体的一个样本(sample)，是总体中挑选出来的一部分。</p>
-<p>在抽取样本时，如果总体中的每一个体都有同等机会被选到样本中，这种抽样称为简单随机抽样(sample random sampling)，这样得到的样本称为随机样本(random sample)。不过即使是随机抽样，也不可能保证样本与总体的对应特征完全一样，会出现与总体的误差，这种误差无法避免，这样的误差称为抽样误差(sampling error)。</p>
-<h3 id="观察单位observed-unit">观察单位（observed unit）</h3>
-<p>观察单位也叫个体（individual），是统计研究中的基本单位，它可以是一个人，一头动物，也可能是特指一群人（例如一个家庭、一个幼儿园，一个自然村）。</p>
-<h3 id="总体population">总体（population）</h3>
-<p>根据研究目的而确定的同质观察单位的全体，更确切地说，它是同质的所有观察单位某种观察值的集合，例如调查某地2008年7岁正常女童的身高，而其中的观察单位（个体）则是每个女童。由于这里的总体明确规定了空间、时间、人群范围内有限个观察单位，因此称为<strong>有限总体（finite populaton）</strong>。而在一些情况下，总体的概念则是设想的或抽象的，例如研究某治疗慢性前列腺增生的药物的疗效，这里的总体的同质基础是慢性前列腺增生患者，该总体应包括用该药治疗的所有前列腺增生症患者的治疗结果，没有时间和空间的限制，其观察单位的全体数只是理论上存在的，因此可以视为“无限”，称为<strong>无限总体（infinite populaton）</strong>。</p>
-<p>虽然我们要研究某个问题是关于整个总体的，但是研究者通常不可能考察总体中的所有个体，为了降低成本，因此在医学研究中通常彩从总体中抽取样本（sample）的方法，根据样本信息来推断总体特征，这种方法叫<strong>抽样研究（sampling research）</strong>，从总体中抽取部分观察单位的过程称为<strong>抽样（sampling）</strong>。</p>
-<p>为了保证样本的代表性，抽样必须遵循<strong>随机化（randomization）</strong>原则。从总体中随机抽得的部分观察单位，其实际测量的集合就是样本，该样本中包含的观察单位数称为该样本的<strong>样本含量（sample size）</strong>。例中从某地2008年7岁正常女童中，随机抽取了110名女童，测量身高，得到了110名女童的身高测量值，组成了样本；也可能从就诊的前列腺增生症患者中随机抽取了100名患者，并观察药物的治疗效果，就组成了治疗效果的样本。</p>
-<h3 id="变量variable">变量（variable）</h3>
-<p>确定总体后，研究者对每个观察单位的某项特征进行观察或测量，这种特征能表现观察单位的变量异，就是变量。例如某地7岁女童的身高，体重都可以视为变量。</p>
-<h3 id="统计推断">统计推断</h3>
-<p>在实际研究工作中，受条件所限，在研究中很难得到整个总体，往往堡垒有得到总体中的一个子集，即实际工作中往往按随机的方式从总体中抽取若干有代表性的同质个体所构成的一个样本（sample）进行研究，这就需要通过样本有限的、不确定的信息来歓有关总体的特征，这就是统计推断（statistical inference），简言之，统计推断是指由样本所提供的信息对总体数量规律做出推断。</p>
-<h3 id="强度相对数">强度相对数</h3>
-<p>说明某现象发生的频率或强度，称为率。常以百分率(%)、千分率(‰)、万分率(1/万)、十万分率（1/10万）等表示。 例5-1：2839名职工，发生高血压5人，高血压发病率为5/2839=1.76‰。</p>
-<h3 id="结构相对数">结构相对数</h3>
-<p>表示事物内部某一部分的个体数与该事物部分个体数的总和之比，用来说明各构成部分在总体中所占的比重或分布，称为构成比，通常以100%为比例基数。 例5-2 某医院1990年因五种疾病死亡的人数共190人，其中死于恶性肿瘤者58人，恶性肿瘤死亡人数占五种疾病死亡人数的构成比为58/190=30.53% 。</p>
-<h3 id="相对比">相对比</h3>
-<p>相对比简称比(ratio)，是两个有关指标之比，说明两指标间的比例关系，通常以倍数或百分数（%）表示。例如某年医院出生婴儿中，男性为370，女性为358，则婴儿性别比为370/358*100=103</p>
-<h3 id="同比">同比</h3>
-<p>发展速度主要是为了消除季节变动的影响，用以说明本期发展水平与去年同期发展水平对比而达到的相对发展速度。如，本期2月比去年2月，本期6月比去年6月等。其计算公式为：同比发展速度=本期发展水平/去年同期发展水平×100%。</p>
-<h3 id="环比">环比</h3>
-<p>当前水平与前一时期水平之比，表明现象逐期的发展速度。如计算一年内各月与前一个月对比，即2月比1月，3月比2月，4月比3月 ……12月比11月，说明逐月的发展程度。</p>
-<h2 id="数据的描述">数据的描述</h2>
-<p>我们拿到一批数据，可能会考虑这些问题，这些数据是什么，这些数据如何表示，如何从整体上来描述这批数据。</p>
-<h3 id="如何查看数据">如何查看数据</h3>
-<h2 id="计量资料measurement-data">计量资料（measurement data）</h2>
-<p>计量资料又叫定量资料（quantitative data）或数值变量资料(numerical variable)，表现为数值大小，一般有计量单位，例如身高多少厘米，体重多少公斤。根据测量值是否连续，又可分为连续型（continuous）和离散型（discrete），连续理革可在褛范围内聚任意值，例如身高，体重，而离散型只能取整数值，例如死亡人数。</p>
-<h3 id="离散型数据discrete-data">离散型数据(discrete data)</h3>
-<p>离散型数据本质上是一种分类。最典型的例子，就是性别、种族、职业、教育程度等。在多数情况下，离散型数据并没有具体的数值（比如性别中的男和女），或者虽然形式上由数值表示，但数值本身并没有明确的意义（比如用邮政编码来记录受试者居住的地域）。有些离散变量是有某种顺序关系的，比如说教育程度可以从低到高排列，而有些离散变量并没有这种顺序，比如说某个基因的基因型。这两种情况分别称为有序变量(ordinal variable)和名义变量(nominal variable)。</p>
-<h3 id="连续型数据continuous-data">连续型数据(continuous data)</h3>
-<p>连续型数据的数值有具体的科学意义，并且可以在数轴上的某个范围连续取值比如身高、体重、血糖浓度、肾小球滤过率等。</p>
-<h2 id="计数资料enumeration-data">计数资料（enumeration data）</h2>
-<p>计数资料又称定性资料(qualitative data )或无序分类（unordered categorical variable）变量资料，亦称为名义变量资料，它的变量值是定性的，表现为互不相容的特性，例如结果的阴阳，家族史的有无等，分为两种：一种是二分类，例如治愈与未治愈，另一种是多分类，例如血型，A型，B型，AB型和O型。</p>
-<h2 id="等级资料ranked-data">等级资料（ranked data）</h2>
-<p>又称半定量资料（semi-quantitative data）或有序分类变量（ordinal categorical variable）资料：它将观察单位按某种程度分为等级，例如某药物治疗的效果为治愈、显效、好转、无效。</p>
-<h2 id="数据整体的一般描述">数据整体的一般描述</h2>
-<h3 id="极差">极差</h3>
-<p>又叫全距(Range)，是用来表示统计资料中的变异量数(measures of variation)，其最大值与最小值之间的差距；即最大值减最小值后所得之数据。</p>
-<h3 id="均值">均值</h3>
-<p>通常情况下，我们所说的均值都是所有的数据之和除以数据的数目，但是，在一些特殊的情况下，会指明均值的类型，例如是算术均值，还是几何均值。</p>
-<h3 id="算术均值arithmetic-mean">算术均值(arithmetic mean)</h3>
-<p>算术平均数是对集中趋势的最常用的描述。我们对某个量进行了n次观测，把测量到的数值分别记为X1, X2,…, Xn，那么要得到算术平均数，只需把X1到Xn加起来，再除以数据的个数n。数学公式为： <span class="math display">\[ \bar{X}=\frac{\sum_{i=1}^nX{_i}}{n}  \]</span></p>
-<h3 id="几何均值geometric-mean">几何均值（geometric mean）</h3>
-<p>几何平均数是指n个观察值连乘积的n次方根。</p>
-<h3 id="中位数median">中位数(median)</h3>
-<p>中位数是把该变量所有取值从小到大（或从大到小）排序，取最中间的一个（例如总共有21个数，则取排行第11的）。如果样本量是偶数，则取中间两个数的平均。</p>
-<h3 id="众数mode">众数(mode)</h3>
-<p>一组数据中出现次数最多的数值，叫众数，有时众数在一组数中有好几个。用M表示。 理性理解：简单的说，就是一组数据中占比例最多的那个数。</p>
-<p>例如：2，3，3，3，4，5的众数是3。 但是，如果有两个或两个以上个数出现次数都是最多的，那么这几个数都是这组数据的众数。 例如：2，2，3，3，4，5的众数是2和3。 其次，如果所有数据出现的次数都一样，那么这组数据没有众数。 例如：2，3，4，5没有众数。</p>
-<h3 id="百分位数percentile">百分位数(percentile)</h3>
-<p>如果将一组数据从小到大排序，并计算相应的累计百分位，则某一百分位所对应数据的值就称为这一百分位的百分位数。可表示为：一组n个观测值按数值大小排列。如，处于p%位置的值称第p百分位数。</p>
-<h3 id="百分位数的计算">百分位数的计算</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">w&lt;-c(75.0,64.0,47.4,66.9,62.2,62.2,58.7,63.5,66.6,64.0,57.0,69.0,56.9,50.0,72.0) # 建立向量w</div><div class="line">quantile(w) # 给出w的四分位数</div><div class="line">quantile(w,probs=seq(0,1,0.2),na.rm=FALSE) # 给出向量w的20%，40%分位数</div><div class="line">quantile(w,0.80) # 求w的80%分位数</div><div class="line">quantile(w,0.75)- quantile(w,0.25) #半极差计算</div></pre></td></tr></table></figure>
-<p>结果如下： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; quantile(w) # 给出w的四分位数</div><div class="line">   0%   25%   50%   75%  100% </div><div class="line">47.40 57.85 63.50 66.75 75.00 </div><div class="line">&gt; quantile(w,probs=seq(0,1,0.2),na.rm=FALSE) # 给出向量w的20%，40%分位数</div><div class="line">   0%   20%   40%   60%   80%  100% </div><div class="line">47.40 56.98 62.20 64.00 67.32 75.00 </div><div class="line">&gt; quantile(w,0.80) # 求w的80%分位数</div><div class="line">  80% </div><div class="line">67.32 </div><div class="line">&gt; quantile(w,0.75)- quantile(w,0.25) #半极差计算</div><div class="line">75% </div><div class="line">8.9</div></pre></td></tr></table></figure></p>
-<p>另外一种方法是用<code>cumsum()</code>函数来计算：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cumsum(round(table(w)/length(w)*100,2)) # cumsum表示的是累积之和</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; cumsum(round(table(w)/length(w)*100,2)) # cumsum表示的是累积之和</div><div class="line">  47.4     50   56.9     57   58.7   62.2   63.5     64   66.6   66.9     69     72     75 </div><div class="line">  6.67  13.34  20.01  26.68  33.35  46.68  53.35  66.68  73.35  80.02  86.69  93.36 100.03</div></pre></td></tr></table></figure>
-<h3 id="四分位数quartile">四分位数（Quartile)</h3>
-<p>统计学中，把所有数值由小到大排列并分成四等份，处于三个分割点位置的数值就是四分位数。第一，四分位数 (Q1)，又称“较小四分位数”，等于该样本中所有数值由小到大排列后第25%的数字。第二，四分位数 (Q2)，又称“中位数”，等于该样本中所有数值由小到大排列后第50%的数字。第三，四分位数 (Q3)，又称“较大四分位数”，等于该样本中所有数值由小到大排列后第75%的数字。第三，四分位数与第一四分位数的差距又称四分位距（InterQuartile Range,IQR）。四分位距的优点在于，与全距（极差）相比，较少受异常值的影响。 R中用来显示四分位数的函数是quantile，另外用boxplot可以绘制出某个数据集的箱线图。</p>
-<p>箱线图结果<code>boxplot(w)</code>如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190703182218.png">
-
-</div>
-<p>条睛线图的解读：最下面是下界，最上面的圆圈是上界，上界的圆圈是异常值，中间矩形的底边是下分位数，上边是上四分位数，中间的粗线是中位数，箱体的高是四分位距。</p>
-<h2 id="数据离散程度的描述">数据离散程度的描述</h2>
-<p>对于一批数据来说，我们有时候需要看一下这批数据的波动分散程度如何，这就需要一些指标。</p>
-<h3 id="变异">变异</h3>
-<p>医学研究的对象虽功能复杂的有机作整体。不同的个体在相同的条件下，对外因环境因素可以发生不同的反应，这种同质基础上个体特征值之间的差异，称为变异（variation）（医学统计学及SAS应用，王炳顺）。</p>
-<h3 id="离均差deviation-from-the-mean">离均差(deviation from the mean)</h3>
-<p>每一个变量值X与均数<span class="math inline">\(\mu\)</span>的差值，即离均差(X-<span class="math inline">\(\mu\)</span>)。</p>
-<h3 id="离均差平方和">离均差平方和</h3>
-<p>由于离均差有正有负，最终所有离均差的和即<span class="math inline">\((X-\mu)\)</span>为0，因此离均差的和无法描述一组数据的变异大小。因此将离均差平方后相加得到平方和<span class="math inline">\(Var(X)=E(X-\mu)^2\)</span>，这就是离均差平方和（sum of squares of deviations from mean, SS）。</p>
-<h3 id="总体方差">总体方差</h3>
-<p>虽然离均差平方和消除了正负的影响，但是如果变量值N越大，则离均差平方和也越大，为此，将离均离平方和除以N就得到了方差，方差用<span class="math inline">\(\delta^2\)</span>表示，计算公式为：</p>
-<p><span class="math display">\[ \delta^2={\frac{\sum(X-\mu)^2}{N}}  \]</span></p>
-<p>另外，方差（variance）也称均方差（mean square deviation）。</p>
-<p>在R中求方差的函数是<code>var()</code>。</p>
-<h3 id="样本方差">样本方差</h3>
-<p>上面的是总体方差，如果是样本方差，那么总体均值<span class="math inline">\(\mu\)</span>是未知的，因此，这个时候就要用样本的均值来替代总体的均值，这个时候也不能用<span class="math inline">\(\delta^2\)</span>来表示样本方差，需要用<span class="math inline">\(s^2\)</span>来表示方差，此外，N值也要减去1，公式就如下所示：</p>
-<p><span class="math display">\[s^2={\frac{\sum(X-\bar{X})^2}{N-1}}  \]</span></p>
-<h3 id="标准差">标准差</h3>
-<p>标准差（standard deviation）是方差的正平方根，其单位与原变量值的单位相同，总体标准差用<span class="math inline">\(\delta\)</span>表示，计算公式为： <span class="math display">\[ \delta=\sqrt{\frac{\sum(X-\mu)^2}{N}}  \]</span></p>
-<p>R中求标准差的函数是<code>sd()</code>。</p>
-<h3 id="为什么是n-1">为什么是N-1？</h3>
-<p>前面我们看到了总体方差与样本方差的分母不太一样，总体方差的分母是N，而样本方差则是N-1，为什么不一样呢？</p>
-<p>在了解这个问题之前，我们先要了解一个统计学中的概念，自由度（degree of freedom）。</p>
-<h3 id="自由度的理解">自由度的理解</h3>
-<p>这里的N严格意义上来讲，就是自由度，在统计学中，几乎所有的方法、所有指标都会涉及自由度，因为自由度跟样本的数目有关，任何统计学方法都离不开样本数目这个变量。自由度的字面意思是，计算样本统计量时能够自由取值的个数，一般用df来表示，来看一个简单的例子，如果有一个方程为x+y+z=100，一旦y和z的值固定，那么x的值也就固定了，因此x=100-y-z，因此，x，y，z这三个变量是不可能同时自由取值的，能够自由取值的个数只有2个，而不是3个，这就是说，自由度为2。</p>
-<p>现在再来看一下样本的自由度为什么是N-1，因为我们在用样本统计量来估计总体参数时，我们有一个暗含的假定，即假定统计量是参数的无偏估计，也就是说样本的参数与总体的参数是相等的，这就相当于我们默认了一个限定（就像x+y+z=100一样），因此，样本的自由度就不是N，而是n-1。在不同的统计方法中，自由度都不一样，但基本原则都是每估计1个参数，就要降低一个自由度，现在看一下其他的统计学方法。</p>
-<ol style="list-style-type: decimal">
-<li>在单样本t检验中，自由度是t-1，因为只需要估计1个参数（均数），所以只需要消耗1个自由度，所以自由度是t-1.</li>
-<li>在两组比较的t检验中，自由度是n1+n2-2，这是因为需要估计的参数有2个，也就是两组的均值，对于每一组而言，一旦均值固定，能够自由取值的个数就只有n1-1个（n1是第一组的例数），即自由度为n1-1。同样的道理，对于第二组而言，其自由度为n2-2，所以，总体自由度就是n1+n2-2。</li>
-<li>在多组比较的方差分析中，当有k个组的时候，需要估计k值组的均数，所以总的自由度是(n1+n2+…nk)-k。而对于组间变异所用到的自由度，因为总均数是固定的，所以需要减去1个自由度，即k-1。</li>
-<li>在回归分析中，如果有m个自变量，就有m个参数需要估计，而且还需要估计截距项，因此待估计的参数有m+a个（m个自变量加1个截矩项），所以模型的F检验用到的自由度为n-(m+1)。它意味着只剩下n-(m+1)个可以自由取值的数值来估计模型误差，当自变量数m固定时，如果样本n比较小，就会导致有效估计例数不足，从而导致结果不可靠。</li>
-</ol>
-<p>因此，样本方差的分母使用n-1才更接近于总体的参数，这是无偏估计（unbiased estimator），如果直接使用n，那就是有偏估计（biased estimator ），不过当样本数量大到一定程度时，分母是n-1和n差别不大。</p>
-<p>自由度这个角度是一种比较粗糙的理解方式，不过知乎上有人列出了证明过程，如下所示：</p>
-<p>本来，按照定义，方差的估计值应时是这个：</p>
-<p><span class="math inline">\(S_{1}^{2}=\frac{1}{n} \sum_{i=1}^{n}\left(X_{i}-\overline{X}\right)^{2}\)</span>，<span class="math inline">\(S_{1}^{2}=\frac{1}{n} \sum_{i=1}^{n}\left(X_{i}-\overline{X}\right)^{2}\)</span></p>
-<p>但是这个估计是有编的，因为： <span class="math display">\[
-\begin{aligned} E\left(S_{1}^{2}\right) &amp;=\frac{1}{n} \sum_{i=1}^{n} E\left(\left(X_{i}-\overline{X}\right)^{2}\right)=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(X_{i}-\mu+\mu-\overline{X}\right)^{2}\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(\left(X_{i}-\mu\right)^{2}-2\left(X_{i}-\mu\right)(\overline{X}-\mu)+(\overline{X}-\mu)^{2}\right)\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(X_{i}-\mu\right)^{2}-2 \sum_{i=1}^{n}\left(X_{i}-\mu\right)(\overline{X}-\mu)+n(\overline{X}-\mu)^{2}\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(X_{i}-\mu\right)^{2}-n(\overline{X}-\mu)(\overline{X}-\mu)+n(\overline{X}-\mu)^{2}\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(X_{i}-\mu\right)^{2}-n E\left((\overline{X}-\mu)^{2}\right)\right) \\ &amp;=\frac{1}{n}(\operatorname{nVar}(X)-n \operatorname{Var}(\overline{X}))\\&amp;=\operatorname{Var}(X)-\operatorname{Var}(\overline{X})\\&amp;=\sigma^{2}-\frac{\sigma^{2}}{n}\\&amp;=\frac{n-1}{n} \sigma^{2} \end{aligned}
-\]</span> 接着，</p>
-<p><span class="math display">\[
-\begin{aligned} E\left(S_{1}^{2}\right) &amp;=\frac{1}{n} \sum_{i=1}^{n} E\left(\left(X_{i}-\overline{X}\right)^{2}\right)=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(X_{i}-\mu+\mu-\overline{X}\right)^{2}\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(\left(X_{i}-\mu\right)^{2}-2\left(X_{i}-\mu\right)(\overline{X}-\mu)+(\overline{X}-\mu)^{2}\right)\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(X_{i}-\mu\right)^{2}-2 \sum_{i=1}^{n}\left(X_{i}-\mu\right)(\overline{X}-\mu)+n(\overline{X}-\mu)^{2}\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n}\left(X_{i}-\mu\right)^{2}-n(\overline{X}-\mu)(\overline{X}-\mu)+n(\overline{X}-\mu)^{2}\right) \\ &amp;=\frac{1}{n} E\left(\sum_{i=1}^{n} E\left(\left(X_{i}-\mu\right)^{2}-n E(\overline{X}-\mu)^{2}\right)\right) \\ &amp;=\frac{1}{n}(\operatorname{nVar}(X)-n \operatorname{Var}(\overline{X}))\\&amp;=\operatorname{Var}(X)-\operatorname{Var}(\overline{X})\\&amp;=\sigma^{2}-\frac{\sigma^{2}}{n}=\frac{n-1}{n} \sigma^{2}\end{aligned}
-\]</span> 而<span class="math inline">\((\mathrm{n}-1) / \mathrm{n} \times \sigma^{2} \neq \sigma^{2}\)</span>。所以，为了避免使用有偏的估计值，我们通常使用它的修正值<span class="math inline">\(S^2\)</span>，如下所示：<span class="math inline">\(S^{2}=\frac{1}{n-1} \sum_{i=1}^{n}\left(X_{i}-\overline{X}\right)^{2}\)</span>，<span class="math inline">\(S^{2}=\frac{1}{n-1} \sum_{i=1}^{n}\left(X_{i}-\overline{X}\right)^{2}\)</span></p>
-<h3 id="样本标准差">样本标准差</h3>
-<p>样本标准差的公式如下所示： <span class="math display">\[ s=\sqrt{\frac{\sum(X-\bar{X})^2}{n-1}}  \]</span></p>
-<h3 id="标准差计算函数">标准差计算函数</h3>
-<p>在Excel中计算方差的公式为<code>STDEV.P</code>和<code>STDEV.S</code>其中，STDEV.P计算时，认为你给出的数据是总体（即P表示population），因此它的分母为N，而STDEV.S计算时，认为你给出的数据是样本（即S表示Sample），因此它的分母为N-1。在R中，用到的函数为<code>sd</code>，默认的就是样本，因此分母为N-1</p>
-<h3 id="标准误与标准差的区别">标准误与标准差的区别</h3>
-<p>在医学统计中，还经常遇到标准差与标准误。例如我们要调查地区A中10岁男孩的身高。如果全部都统计下来，直接测是最准确的数据。但是成本高，不现实。因此需要进行采样，一次测量100个男孩的身高，求这一次的均值M1与标准差S1，如果采样10次，每次都取100人，我们会得到10个均值，分别记为M1，M2，M3…M10，对这10个均值再求一个均值M以及标准差S，其中这个标准差S就是<code>标准误(standard error)</code>，即<code>均值的标准误差(standard error of mean)</code>。</p>
-<p>从上面的描述我们就知道了，标准差与标准误的区别在于：</p>
-<p>第一，标准差是对一次抽样的原始数据进行计算的，而标准误则是对多次抽样的样本统计量进行计算的（这个统计量可以是均值，可以是率）；</p>
-<p>第二，标准差只是一个描述性指标，只是描述原始数据的波动情况，而标准误是跟统计推断有关的指标，大多数的统计量计算都需要用到标准误。</p>
-<p>很多统计量都跟标准误有关，以简单的<em>t</em>检验为例，可能以前有的人都没有注意过。仔细观察一下就可以发现，<em>t</em>检验统计量的分子是两组样本数据的均值差值，反映了样本数据的差异；分母是标准误，反映了抽样误差。所以<em>t</em>检验反映了什么呢？其实就是看到底是抽样误差大还是真实差异大。如果分母的抽样误差大，那就说明结果可能不可靠，所以P值就会比较大；如果分子的差异大，说明抽样误差造成这种差异的可能性不大，所以P值就会比较小。</p>
-<h3 id="标准误与标准差的联系">标准误与标准差的联系</h3>
-<p>SEM表示每次抽样获得的均数的标准差，因此如果要获取SEM，就必须做很多次抽样，这样也非常麻烦，但是标准误与标准差虽然不是一个概念，但在数学上有一定的联系，其公式如下所示（参考资料：补充）： <span class="math display">\[ SEM=SD/\sqrt{N}  \]</span></p>
-<h3 id="变异系数coefficient-of-variation">变异系数(coefficient of variation)</h3>
-<p>简称为CV，标准差与均值的比值。公式为： <span class="math display">\[ CV=\frac{S}{\bar{X}}\times100\% \]</span></p>
-<h3 id="mse">MSE</h3>
-<p>MSE的全称为mean square error，即均方误差，公式为： <span class="math display">\[
-M S E=\frac{1}{n} \sum_{i=1}^{n}\left(\hat{y}_{i}-y_{i}\right)^{2}
-\]</span> 其范围是<span class="math inline">\([0,+ \infty)\)</span>，当预测值与真实值完全吻合时等于0，即完美模型；误差越大，该值越大。</p>
-<h3 id="rmse">RMSE</h3>
-<p>RMSE的全称为Root Mean Squared Error，即均方根误差，它研究的是预测值与真实值的误差平方根的均值，其实就是MSE加了个根号，这个数量级上比较直观，与检测值的单位一样，例如RMSE=10，可以认为回归效果相比真实值平均相差10，公式如下所示： <span class="math display">\[
-R M S E=\sqrt{\frac{1}{n} \sum_{i=1}^{n}\left(\hat{y}_{i}-y_{i}\right)^{2}}
-\]</span> 其范围是<span class="math inline">\([0,+ \infty)\)</span>，当预测值与真实值完全吻合时等于0，即完美模型；误差越大，该值越大。</p>
-<h2 id="数据整体的呈现方式">数据整体的呈现方式</h2>
-<h3 id="箱线图和频率直方图">箱线图和频率直方图</h3>
-<p>箱线图(boxplot)汇集了中位数、四分位差以及一些其他信息，能够使我们对样本的分布有一个直观的了解，也可以让我们快速发现数据中可能存在的错误（例如因为数据录入或单位错误导致的异常值）。它之所以被称为箱线图，是因为它用一个“箱子”来表示我们的数据中最靠中间的一半（即Q1和Q3之间的所有数据点），而用箱子上下的两根“胡须”来表示数据的上下限范围。箱线图的画法以及含义见下图。</p>
-<h2 id="正态分布">正态分布</h2>
-<p>若随机变量X服从一个数学期望为<span class="math inline">\(\mu\)</span>、方差为<span class="math inline">\({\sigma}^2\)</span>的正态分布，记为<span class="math inline">\(N(\mu,{\sigma}^2)\)</span>。其概率密度函数为正态分布的期望值<span class="math inline">\(\mu\)</span>决定了其位置，其标准差<span class="math inline">\(\sigma\)</span>决定了分布的幅度。因其曲线呈钟形，因此人们又经常称之为钟形曲线。我们通常所说的标准正态分布，即<span class="math inline">\(\mu\)</span> = 0,<span class="math inline">\(\sigma\)</span> = 1的正态分布，其公式为： <span class="math display">\[ p(x|\mu,\sigma)=\mathcal{N}(x|\mu,\sigma)=\frac{1}{\sigma\sqrt{2\pi}}\exp(-\frac{(x-\mu)^2}{2\sigma^2})\]</span></p>
-<h2 id="医学参考值">医学参考值</h2>
-<p>医学参考值（reference value）是指包括约大多数正常人的人体形态、功能和代谢产物等各种生理及生化指标常数，也称正常值。由于存在个体差异，生物医学数据并非常数而是在一定范围内波动，帮采用学参考值范围（medical reference range）作为判定正常和异常的参考标准。 医学参考值范围涉及采用单侧界值还是双侧界值的问题，这通常是依据医学专业知识而定，例如课本（医学统计学，孙振球，第四版）中的例2-1的红细胞数无论过低或过高均属异常，就采用双侧参考值范围制定下侧和上侧界值；血清转氨酶仅过高异常，应采用单侧参考值范围制定上侧界值；肺活量仅过低异常，就采用单侧参考值范围制定下侧界值。医学上常用的参考值范围有90%，95%，99%等，其中95%最常用。</p>
-<p>其中确定参考值的方法通常有两种，分别为正态分布法和百分位数法。</p>
-<h3 id="正态分布法">正态分布法</h3>
-<p>对于服从正态分布的医学数据，可采用正态分布法计算参考值的范围，其计和公式为： 双侧1-<span class="math inline">\(1-\alpha\)</span>参考值范围为：<span class="math inline">\(\bar{X}\pm\mu_{\alpha/2}S\)</span> 单侧1-<span class="math inline">\(\alpha\)</span>的参考值范围为：<span class="math inline">\(&gt;\bar{X}-\mu_{\alpha/2}S\)</span>。 其中<span class="math inline">\(bar{X}\)</span>为无数，S为标准差，<span class="math inline">\(\mu\)</span>值可以查表得到。</p>
-<p>案例：现在我们计算课本[^１]例2-1的资料估计正常成年女子的红细胞数的95%的参考值范围。计算结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">raw_data &lt;- read.csv(&quot;https://raw.githubusercontent.com/20170505a/raw_data/master/data_szq_201.csv&quot;) #导入数据</div><div class="line">extract_data &lt;- raw_data[,1] # 提取第一列数据</div><div class="line">sd1 &lt;- sd(extract_data)</div><div class="line">mean1 &lt;- mean(extract_data)</div><div class="line">mean1 - 1.96*sd1 # 参考值的下限</div><div class="line">mean1 + 1.96*sd1 # 参考值的上限</div></pre></td></tr></table></figure></p>
-<p>因此参考值的范围为3.353299，5.104657。</p>
-<h3 id="百分位数法">百分位数法</h3>
-<p>偏态分布资料医学参考值范围的制定通常采用百分位数法，所要求的样本含量比正态分布法要多（不低于100），其计算公式为： 双侧<span class="math inline">\(1-\alpha\)</span>参透值范围为：<span class="math inline">\(P_{100\alpha/2}{\sim}P_{100-100\alpha/2}\)</span></p>
-<p>单侧<span class="math inline">\(1-\alpha\)</span>参透值范围为：<span class="math inline">\(&gt;P_{100\alpha}\)</span>或<span class="math inline">\(&gt;P_{100-100\alpha}\)</span> 案例：课本无原始数据，此题略过。</p>
-<h2 id="数据描述的练习">数据描述的练习</h2>
-<h3 id="例题2-1的描述性统计">例题2-1的描述性统计</h3>
-<p>（医学统计学.第四版.孙振球）</p>
-<p>某医院用随机抽样方法检查了138名正常成年女子的红细胞数 ，其测量结果如下，试编制频数分布表。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">raw_data &lt;- read.csv(<span class="string">"https://raw.githubusercontent.com/20170505a/raw_data/master/data_szq_201.csv"</span>) </div><div class="line"><span class="comment">#导入数据</span></div><div class="line"></div><div class="line">extract_data &lt;- raw_data[,<span class="number">1</span>] </div><div class="line"><span class="comment"># 提取第一列数据</span></div><div class="line"></div><div class="line"><span class="keyword">library</span>(reshape2)</div><div class="line">breaks&lt;-seq(from = <span class="number">3.07</span>, to = <span class="number">5.47</span>, by = <span class="number">0.2</span>) </div><div class="line"><span class="comment"># 产生各个组距</span></div><div class="line"></div><div class="line">data_table&lt;-cut(extract_data,breaks=breaks,right=<span class="literal">FALSE</span>) </div><div class="line"><span class="comment">#分组,right=FALSE表示左闭右开</span></div><div class="line"></div><div class="line"><span class="keyword">library</span>(reshape2) </div><div class="line"><span class="comment">#载入reshape2包，使用其中的melt函数</span></div><div class="line"></div><div class="line">melt(table(data_table)) </div><div class="line"><span class="comment">#查看频数分布</span></div><div class="line"></div><div class="line">middle_data&lt;-c() </div><div class="line"><span class="comment">#求组中值，组中值从表中可以看出来就是区间两边的数的平均数</span></div><div class="line"></div><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> seq(<span class="number">1</span>,<span class="number">12</span>))&#123;</div><div class="line">  middle &lt;- (breaks[i]+breaks[i+<span class="number">1</span>])*<span class="number">0.5</span></div><div class="line">  middle_data&lt;-append(middle_data,middle)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment"># 绘图表</span></div><div class="line">hist(extract_data,breaks,</div><div class="line">     right=<span class="literal">FALSE</span>,main=<span class="string">""</span>,</div><div class="line">     xlab=<span class="string">""</span>,ylab=<span class="string">"频数"</span>,</div><div class="line">     axes=<span class="literal">FALSE</span>,</div><div class="line">     border=<span class="string">"grey"</span>,</div><div class="line">     col=<span class="string">"red"</span>,freq=<span class="literal">F</span>)</div><div class="line"><span class="comment">#data为数据集，breaks则是分组依据，right=FALSE则是左开右闭,xlab，ylab控制坐标</span></div><div class="line"></div><div class="line">lines(density(extract_data)) </div><div class="line"><span class="comment">#加入概率密度曲线</span></div><div class="line"></div><div class="line">title(xlab=<span class="string">"红细胞数(×10e-12/L)"</span>,line=<span class="number">0.8</span>)</div><div class="line"><span class="comment">#加x轴的标题，往下超过x轴垂直距离为0.8个行距</span></div><div class="line"></div><div class="line">text(<span class="number">4.5</span>,-<span class="number">2.8</span>,<span class="string">"-12"</span>,cex=<span class="number">0.5</span>)</div><div class="line">mtext(<span class="string">"138名正常成年女性红细胞数的频数分布"</span>,<span class="number">1</span>,line=<span class="number">2.5</span>,cex=<span class="number">1.2</span>,font=<span class="number">2</span>)</div><div class="line"><span class="comment">#加主标题,1表示为下方</span></div><div class="line"><span class="comment"># line=2.5表示超过x轴垂直距离为2.5个行距</span></div><div class="line"><span class="comment"># cex为字体扩大倍数</span></div><div class="line"><span class="comment"># font=2表示加粗</span></div><div class="line"></div><div class="line">abline(h=<span class="number">0</span>)</div><div class="line"><span class="comment">#绘制y=0的线段，用此线表示x轴</span></div><div class="line"></div><div class="line">axis(<span class="number">1</span>,at=middle_data,tick=<span class="literal">FALSE</span>,pos=<span class="number">0.03</span>)</div><div class="line"><span class="comment"># 绘制x轴，坐标为middle_data</span></div><div class="line"><span class="comment"># tick=FALSE表示坐标刻度不绘出,pos=1表示坐标轴在y=1处</span></div><div class="line"></div><div class="line">axis(<span class="number">2</span>)</div><div class="line"><span class="comment">#绘制y轴</span></div></pre></td></tr></table></figure>
-<p>频数分布如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&gt; melt(table(data_table)) <span class="comment">#查看频数分布</span></div><div class="line">    data_table value</div><div class="line"><span class="number">1</span>  [<span class="number">3.07</span>,<span class="number">3.27</span>)     <span class="number">2</span></div><div class="line"><span class="number">2</span>  [<span class="number">3.27</span>,<span class="number">3.47</span>)     <span class="number">3</span></div><div class="line"><span class="number">3</span>  [<span class="number">3.47</span>,<span class="number">3.67</span>)     <span class="number">9</span></div><div class="line"><span class="number">4</span>  [<span class="number">3.67</span>,<span class="number">3.87</span>)    <span class="number">14</span></div><div class="line"><span class="number">5</span>  [<span class="number">3.87</span>,<span class="number">4.07</span>)    <span class="number">22</span></div><div class="line"><span class="number">6</span>  [<span class="number">4.07</span>,<span class="number">4.27</span>)    <span class="number">30</span></div><div class="line"><span class="number">7</span>  [<span class="number">4.27</span>,<span class="number">4.47</span>)    <span class="number">21</span></div><div class="line"><span class="number">8</span>  [<span class="number">4.47</span>,<span class="number">4.67</span>)    <span class="number">15</span></div><div class="line"><span class="number">9</span>  [<span class="number">4.67</span>,<span class="number">4.87</span>)    <span class="number">10</span></div><div class="line"><span class="number">10</span> [<span class="number">4.87</span>,<span class="number">5.07</span>)     <span class="number">6</span></div><div class="line"><span class="number">11</span> [<span class="number">5.07</span>,<span class="number">5.27</span>)     <span class="number">4</span></div><div class="line"><span class="number">12</span> [<span class="number">5.27</span>,<span class="number">5.47</span>)     <span class="number">2</span></div></pre></td></tr></table></figure>
-<p>图表如下所示</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101705.png">
-
-</div>
-<p>对例2-1，例2-2和例2-14已计算出某医院随机抽查的138名成年女子的红细胞数均数 ，标准差 。试估计该医院所抽查成年女子的红细胞数：①在4.0 以下者占成年女子总人数的百分比；②在4.00~5.00 之间者占成年女子总人数的百分比；③在5.00 以上者占成年女子总人数的百分比。 计算过程如下： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">mean.data &lt;- mean(extract_data)</div><div class="line">sd.data &lt;- sd(extract_data)</div><div class="line">pnorm((4-mean.data)/sd.data) # 4.0以下的百分比</div><div class="line">pnorm((5-mean.data)/sd.data) #5.0以下的百分比</div><div class="line">1-pnorm((5-mean.data)/sd.data) #5.0以上的百分比</div><div class="line">pnorm((5-mean.data)/sd.data)-pnorm((4-mean.data)/sd.data) #在4.00~5.00 之间的百分比</div><div class="line"></div><div class="line">#或者是：</div><div class="line">pnorm(5,mean(data),sd(data))-pnorm(4,mean(data),sd(data))</div><div class="line"></div><div class="line"># 绘制数据集的正态分布图</div><div class="line">x &lt;- seq(min(extract_data)-0.52,max(extract_data)+0.52,length=1000)</div><div class="line">y &lt;- dnorm(x,mean(extract_data),sd(extract_data))</div><div class="line">r1 &lt;- 4</div><div class="line">r2 &lt;- 5</div><div class="line">x2 &lt;- c(r1,r1,x[x&lt;r2&amp;x&gt;r1],r2,r2)</div><div class="line">y2=c(0,dnorm(c(r1,x[x&lt;r2&amp;x&gt;r1],r2),mean(data),sd(data)),0)</div><div class="line">plot(x,y,type=&quot;l&quot;,xlab=&quot;&quot;,ylab=&quot;&quot;,lty=1)</div><div class="line">abline(0,0)</div><div class="line">polygon(x2,y2,col=&quot;grey&quot;)</div></pre></td></tr></table></figure></p>
-<p><strong>结果如下所示：</strong> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">[1] 0.3041459</div><div class="line">&gt; pnorm((5-mean.data)/sd.data) #5.0以下的百分比</div><div class="line">[1] 0.9578038</div><div class="line">&gt; 1-pnorm((5-mean.data)/sd.data) #5.0以上的百分比</div><div class="line">[1] 0.04219616</div><div class="line">&gt; pnorm((5-mean.data)/sd.data)-pnorm((4-mean.data)/sd.data) #在4.00~5.00 之间的百分比</div><div class="line">[1] 0.653658</div><div class="line">&gt; pnorm(5,mean(data),sd(data))-pnorm(4,mean(data),sd(data))</div><div class="line">[1] 0.6532998</div><div class="line">结果与书中的不太一样，但结果接近，我估计是因为书中是查表，用的是近似值，R中的比较精确</div></pre></td></tr></table></figure></p>
-<p>数据的正态分布图如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303101726.png">
-
-</div>
-<h3 id="例2-4几何均数">例2-4：几何均数</h3>
-<p>某地5例微丝蚴血症患者治疗7年后用间接荧光抗体试验没得某抗体满意度例数分别为10，20，40，40，160，求几何均数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">data24&lt;-c(10,20,40,40,160)</div><div class="line">exp(mean(log(data24)))</div></pre></td></tr></table></figure>
-<p>结果如下： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; data24</div><div class="line">[1]  10  20  40  40 160</div><div class="line">&gt; exp(mean(log(data24)))</div><div class="line">[1] 34.82202</div></pre></td></tr></table></figure></p>
-<h3 id="例2-5-平均抗体滴度">例2-5 平均抗体滴度</h3>
-<p>69例风湿关节炎(RA)患者血清EBV-VCA-IgG抗体满意度的分布，求其平均抗体滴度。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">data25&lt;-c(<span class="number">10</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">160</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">640</span>,<span class="number">10</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">160</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">640</span>,</div><div class="line"><span class="number">10</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">320</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">640</span>,<span class="number">10</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">320</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">640</span>,<span class="number">20</span>,<span class="number">40</span>,<span class="number">80</span>,</div><div class="line"><span class="number">160</span>,<span class="number">320</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">1280</span>,<span class="number">20</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">320</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">1280</span>,<span class="number">20</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">320</span>,</div><div class="line"><span class="number">320</span>,<span class="number">640</span>,<span class="number">40</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">320</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">80</span>,<span class="number">160</span>,<span class="number">320</span>,<span class="number">640</span>,<span class="number">640</span>)</div><div class="line">x &lt;- table(data25)</div><div class="line">x &lt;- data.frame(x)</div><div class="line">x$countdown &lt;- as.numeric(levels(x$data25))</div><div class="line">x$lgX &lt;- round(log10(x$countdown),<span class="number">4</span>)</div><div class="line">x$flgX &lt;- round(x$Freq*x$lgX,<span class="number">4</span>)</div></pre></td></tr></table></figure>
-<p>结果为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; x</div><div class="line">  data25 Freq countdown    lgX    flgX</div><div class="line"><span class="number">1</span>     <span class="number">10</span>    <span class="number">4</span>        <span class="number">10</span> <span class="number">1.0000</span>  <span class="number">4.0000</span></div><div class="line"><span class="number">2</span>     <span class="number">20</span>    <span class="number">3</span>        <span class="number">20</span> <span class="number">1.3010</span>  <span class="number">3.9030</span></div><div class="line"><span class="number">3</span>     <span class="number">40</span>   <span class="number">10</span>        <span class="number">40</span> <span class="number">1.6021</span> <span class="number">16.0210</span></div><div class="line"><span class="number">4</span>     <span class="number">80</span>   <span class="number">10</span>        <span class="number">80</span> <span class="number">1.9031</span> <span class="number">19.0310</span></div><div class="line"><span class="number">5</span>    <span class="number">160</span>   <span class="number">11</span>       <span class="number">160</span> <span class="number">2.2041</span> <span class="number">24.2451</span></div><div class="line"><span class="number">6</span>    <span class="number">320</span>   <span class="number">15</span>       <span class="number">320</span> <span class="number">2.5051</span> <span class="number">37.5765</span></div><div class="line"><span class="number">7</span>    <span class="number">640</span>   <span class="number">14</span>       <span class="number">640</span> <span class="number">2.8062</span> <span class="number">39.2868</span></div><div class="line"><span class="number">8</span>   <span class="number">1280</span>    <span class="number">2</span>      <span class="number">1280</span> <span class="number">3.1072</span>  <span class="number">6.2144</span></div><div class="line"></div><div class="line">上述结果是书中的频数表，与R的计算关系不大，在R中可以直接计算，如下</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; exp(mean(log(data25)))</div><div class="line">[1] 150.6411</div></pre></td></tr></table></figure>
-<h3 id="例2-6-中位数">例2-6 中位数</h3>
-<p>7名病人患某病的潜伏期分别为2，3，4，5，6，9，16天，求其中位数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; data26&lt;-c(2,3,4,5,6,9,16)</div><div class="line">&gt; median(data26)</div><div class="line">[1] 5</div></pre></td></tr></table></figure>
-<h3 id="例2-11均数和极差">例2-11：均数和极差</h3>
-<p>试计算下面三组同龄男孩的身高 均数和极差。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">range.f &lt;- function (x) (max(x)-min(x))</div><div class="line">甲组 &lt;- c(90,95,100,105,110)</div><div class="line">乙组 &lt;- c(96,98,100,102,104)</div><div class="line">丙组 &lt;- c(96,99,100,101,104)</div><div class="line">range.f(甲组)</div><div class="line">mean(甲组)</div><div class="line">range.f(乙组)</div><div class="line">mean(乙组)</div><div class="line">range.f(丙组)</div><div class="line">mean(丙组)</div></pre></td></tr></table></figure></p>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; range.f(甲组)</div><div class="line">[<span class="number">1</span>] <span class="number">20</span></div><div class="line">&gt; mean(甲组)</div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div><div class="line">&gt; range.f(乙组)</div><div class="line">[<span class="number">1</span>] <span class="number">8</span></div><div class="line">&gt; mean(乙组)</div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div><div class="line">&gt; range.f(丙组)</div><div class="line">[<span class="number">1</span>] <span class="number">8</span></div><div class="line">&gt; mean(丙组)</div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div></pre></td></tr></table></figure>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>医学统计学.第四版.孙振球</li>
-<li>小白统计.冯国双</li>
-<li><a href="https://www.zhihu.com/question/20099757?rf=21126585" target="_blank" rel="external">为什么样本方差（sample variance）的分母是 n-1？</a></li>
-<li>统计思维：程序员数学之概率统计.作者: Allen B.Downey，译者: 张建锋 / 陈钢 出版社: 人民邮电出版社</li>
-<li><a href="https://blog.csdn.net/guolindonggld/article/details/87856780" target="_blank" rel="external">预测评价指标RMSE、MSE、MAE、MAPE、SMAPE</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/24/ggplot2/ggplot2_图片保存/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/04/24/ggplot2/ggplot2_图片保存/" itemprop="url">ggplot2-图片保存</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T12:00:00+08:00">
-                2017-04-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ggplot2/" itemprop="url" rel="index">
-                    <span itemprop="name">ggplot2</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  0
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4741,7 +5430,7 @@ R M S E=\sqrt{\frac{1}{n} \sum_{i=1}^{n}\left(\hat{y}_{i}-y_{i}\right)^{2}}
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">226</span>
+                  <span class="site-state-item-count">228</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4840,7 +5529,7 @@ R M S E=\sqrt{\frac{1}{n} \sum_{i=1}^{n}\left(\hat{y}_{i}-y_{i}\right)^{2}}
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共915.6k字</span>
+  <span class="post-count">博客全站共917.9k字</span>
 </div>
 
         
