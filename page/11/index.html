@@ -259,6 +259,749 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/26/StatQuest/生物统计-StatQuest学习笔记15-MDS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/26/StatQuest/生物统计-StatQuest学习笔记15-MDS/" itemprop="url">StatQuest学习笔记15——MDS</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-26T12:10:54+08:00">
+                2018-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
+                    <span itemprop="name">生统之StatQuest</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,452
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  15
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言主要内容">前言——主要内容</h2>
+<p>这篇笔记是StatQuest系列视频教程的第44和第45节，其中，第44讲的是多维尺度变换（multidimensional scaling，MDS）与主坐标分析（principal coordinate analysis,PCoA）。第45节讲的是用R来计算MDS和PCoA。</p>
+<h2 id="mds">MDS</h2>
+<h3 id="mds的分类">MDS的分类</h3>
+<p>MDS与PCA非常相似，都是一种降维的方法。MDS分为度量MDS（Metric Multidimensional scaling）和非度量MDS（Non-metric Multidimensional scaling），其中非度量MDS也称为经典（Classical）MDS，也叫做主坐标分析（principal coordinate analysis,PCoA），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161349.jpg">
+
+</div>
+<h3 id="mds的基本思想">MDS的基本思想</h3>
+<p>为了更方便地理解MDS，我们还是像介绍PCA那些，先讲一个比较简单的例子，例如，我们在下面的图形中，我们先看一群绿色的点，把它们当成是一群正常的细胞（当然了，如果你不是做生物的，你也可以把它们视为一群人，或一批汽车，或者城市等），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161355.jpg">
+
+</div>
+<p>虽然这群细胞看起来比较像，但实际上，它们有可能不同，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161359.jpg">
+
+</div>
+<p>当然了，还有可能像这个样子，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161403.jpg">
+
+</div>
+<p>但问题就在于，仅从直观的角度来看，我们不太容易区分它们，但我们可以通过类似RNA-Seq这样的手段来发现这些细胞有哪些基因是活跃的，这样就可以理解这些细胞的具体功能，如果这是一群人，我们可以测量他们的血压，身高等数据，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161407.jpg">
+
+</div>
+<p>我们就当它们是细胞，这是测完RNA-seq的一些数据，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161412.jpg">
+
+</div>
+<p>其中，第1行表示的是样本，第1列是基因名，其余的部分是不同样本某个基因的表达水平，此时，如果根据我们前面介绍的PCA法对这些数据进行分析，那么我们就能把不同样本之间的相互关系转换到一个二维的坐标图上，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161416.jpg">
+
+</div>
+<p>那些高度相关的样本就会聚集成一块，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161420.jpg">
+
+</div>
+<p>此时，我们再回到MDS和PCoA上来，这两种方法非常像PCA，只是它们不是把样本之间的相互关系转换成二维坐标，而是把不同样本之间的距离转换成二维坐标，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161423.jpg">
+
+</div>
+<p>为了进行MDS和PCoA分析，我们可以计算两两样本之间的距离，就像下面的这个样子，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161428.jpg">
+
+</div>
+<p>为了方便理解，我们此时就只计算一下Cell1和Cell2的距离，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161434.jpg">
+
+</div>
+<h3 id="欧氏距离">欧氏距离</h3>
+<p>一种常见的计算两个样本之间距离的方法是欧氏距离(Euclidean Distance) 计算法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161449.jpg">
+
+</div>
+<p>如果此时我们只有两个基因，就像下面的这个样子，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161454.jpg">
+
+</div>
+<p>为了计算这两个样本之间的欧氏距离，我们可以用线段来表示它们基因之间的距离，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161457.jpg">
+
+</div>
+<p>然后通过勾股定理，计算出欧氏距离，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161501.jpg">
+
+</div>
+<p>如果我们有更多的基因，那么就按照这种方法，求出两个样本中，相同基因的差值，再求其平方和的平方根，像下面的这个样子：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161505.jpg">
+
+</div>
+<p>一旦我们计算好了不同样本之间的欧氏距离，那么我们就可以把这些样本绘制到一个二维坐标图上，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161509.jpg">
+
+</div>
+<p>利用欧氏距离（Euclidean Distance）来进行的MDS和PCoA分析的一个局限就是，最终生成的二维坐标轴基本上与PCA生成的二维坐标图是一样的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161513.jpg">
+
+</div>
+<p>换句话讲，这种基于最小线性距离的聚类（clustering）与最大化线性相关是一样的，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161517.jpg">
+
+</div>
+<p>不过，计算两两样本之间的距离并非只有欧氏距离（Euclidean Distance）一种方法，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161521.jpg">
+
+</div>
+<h3 id="其他距离方法">其他距离方法</h3>
+<p>例如，另外一种计算两两样本之间的距离方法就是计算基因间差值的log转换的平均值，例如在下面的案例中，对于Cell1和Cell2的Gene1，它经过log转换后的数值就是<code>log(3/0.25)</code>，同理，Gene2和Gene 8的计算也同样如此，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161521.jpg">
+
+</div>
+<p>经过计算，再取它们的绝对值，最终我们计算出这些数值的平均值，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161532.jpg">
+
+</div>
+<p>最终我们看一下分别使用了欧氏距离的MDS图（左侧）和使用了差异倍数log转换的MDS图的坐标轴（右侧），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161537.jpg">
+
+</div>
+<p>不过，在生物学家眼中，通常会选择表达差异倍数的log转换值来计算两两样本之间的距离，因为他们研究的基因通常是成倍变化的，这样用表达差异倍数的log转换会比较合适，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161543.jpg">
+
+</div>
+<p>我们常见的计算样本间距离的方法有：曼哈顿距离（Manhattan Distance）、汉明距离（Hamming Distance）、大圆距离（Great Circle Distance）等，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161546.jpg">
+
+</div>
+<h2 id="总结">总结</h2>
+<p>PCA构建二维坐标图的方法基础是不同样本之间的相关性，而MDS和PCoA构建二维坐标图的方法基础则是基于不同样本之间的距离，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161552.jpg">
+
+</div>
+<p>PCA的计算流程为：计算样本间的相关性 -&gt; 复杂数学运算（主要是特征值分解） -&gt; 绘图、主成分变异，Loading Scores。</p>
+<p>而MDS和PCoA的计算流程与PCA的计算流程的不同之处就在于，第一步是计算样本间的距离，其余的部分与PCA的计算差异不大。</p>
+<h2 id="r与mdspcoa">R与MDS/PCoA</h2>
+<h3 id="生成模拟数据集">生成模拟数据集</h3>
+<p>在使用R进行MDS/PCoA分析之前，我们还需要使用R来生成一些随机数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line">data.matrix &lt;- matrix(nrow=<span class="number">100</span>, ncol=<span class="number">10</span>)</div><div class="line"><span class="comment"># generate some fake data</span></div><div class="line"><span class="comment"># This dataset consists of a matrix with 10 columns, corresponding to 10 samples</span></div><div class="line"><span class="comment"># and 100 rows, corresponding to measurements from 100 genes</span></div><div class="line"></div><div class="line">colnames(data.matrix) &lt;- c(</div><div class="line">  paste(<span class="string">"wt"</span>, <span class="number">1</span>:<span class="number">5</span>, sep=<span class="string">""</span>),</div><div class="line">  paste(<span class="string">"ko"</span>, <span class="number">1</span>:<span class="number">5</span>, sep=<span class="string">""</span>))</div><div class="line"></div><div class="line">rownames(data.matrix) &lt;- paste(<span class="string">"gene"</span>, <span class="number">1</span>:<span class="number">100</span>, sep=<span class="string">""</span>)</div><div class="line"></div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">100</span>)&#123;</div><div class="line">  wt.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size = <span class="number">1</span>))</div><div class="line">  ko.values &lt;- rpois(<span class="number">5</span>, lambda = sample(x=<span class="number">10</span>:<span class="number">1000</span>, size = <span class="number">1</span>))</div><div class="line"></div><div class="line">  data.matrix[i,] &lt;- c(wt.values, ko.values)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终生成的数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data.matrix)</div><div class="line">      wt1 wt2 wt3 wt4 wt5 ko1 ko2 ko3 ko4 ko5</div><div class="line">gene1 <span class="number">257</span> <span class="number">263</span> <span class="number">246</span> <span class="number">246</span> <span class="number">233</span> <span class="number">993</span> <span class="number">945</span> <span class="number">961</span> <span class="number">931</span> <span class="number">958</span></div><div class="line">gene2 <span class="number">822</span> <span class="number">888</span> <span class="number">866</span> <span class="number">845</span> <span class="number">855</span> <span class="number">232</span> <span class="number">210</span> <span class="number">217</span> <span class="number">209</span> <span class="number">225</span></div><div class="line">gene3 <span class="number">122</span> <span class="number">127</span> <span class="number">139</span> <span class="number">156</span> <span class="number">140</span> <span class="number">370</span> <span class="number">336</span> <span class="number">366</span> <span class="number">371</span> <span class="number">370</span></div><div class="line">gene4 <span class="number">812</span> <span class="number">806</span> <span class="number">874</span> <span class="number">860</span> <span class="number">896</span> <span class="number">918</span> <span class="number">934</span> <span class="number">963</span> <span class="number">939</span> <span class="number">982</span></div><div class="line">gene5 <span class="number">925</span> <span class="number">870</span> <span class="number">845</span> <span class="number">931</span> <span class="number">921</span> <span class="number">583</span> <span class="number">582</span> <span class="number">547</span> <span class="number">539</span> <span class="number">546</span></div><div class="line">gene6 <span class="number">646</span> <span class="number">611</span> <span class="number">644</span> <span class="number">676</span> <span class="number">644</span> <span class="number">535</span> <span class="number">590</span> <span class="number">530</span> <span class="number">537</span> <span class="number">551</span></div></pre></td></tr></table></figure>
+<h3 id="pca分析">PCA分析</h3>
+<p>为了比较MDS/PCoA分析和PCA分析的区别，在这里，我们先进行一下PCA的分析，代码跟上一篇笔记的PCA分析中的代码类似，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">pca &lt;- prcomp(t(data.matrix), scale = <span class="literal">TRUE</span>, center=<span class="literal">TRUE</span>)</div><div class="line">pca.var &lt;- pca$sdev^<span class="number">2</span></div><div class="line">pca.var.per &lt;- round(pca.var/sum(pca.var)*<span class="number">100</span>, <span class="number">1</span>)</div><div class="line">pca.var.per</div><div class="line">pca.data &lt;- data.frame(Sample=rownames(pca$x),</div><div class="line">                       X=pca$x[,<span class="number">1</span>],</div><div class="line">                       Y=pca$x[,<span class="number">2</span>])</div><div class="line">pca.data</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt; pca.var.per</div><div class="line"> [<span class="number">1</span>] <span class="number">87.8</span>  <span class="number">3.3</span>  <span class="number">2.6</span>  <span class="number">1.5</span>  <span class="number">1.4</span>  <span class="number">1.2</span>  <span class="number">0.8</span>  <span class="number">0.8</span>  <span class="number">0.6</span>  <span class="number">0.0</span></div><div class="line">&gt; pca.data &lt;- data.frame(Sample=rownames(pca$x),</div><div class="line">+                        X=pca$x[,<span class="number">1</span>],</div><div class="line">+                        Y=pca$x[,<span class="number">2</span>])</div><div class="line">&gt; pca.data</div><div class="line">    Sample         X          Y</div><div class="line">wt1    wt1 -<span class="number">8.698916</span>  <span class="number">1.8065989</span></div><div class="line">wt2    wt2 -<span class="number">8.724745</span> -<span class="number">2.5129243</span></div><div class="line">wt3    wt3 -<span class="number">8.848156</span>  <span class="number">0.1415564</span></div><div class="line">wt4    wt4 -<span class="number">9.161110</span>  <span class="number">1.2735904</span></div><div class="line">wt5    wt5 -<span class="number">8.993328</span> -<span class="number">0.7037979</span></div><div class="line">ko1    ko1  <span class="number">9.387947</span>  <span class="number">0.9745217</span></div><div class="line">ko2    ko2  <span class="number">9.093852</span> -<span class="number">1.2375433</span></div><div class="line">ko3    ko3  <span class="number">8.764754</span>  <span class="number">1.6803429</span></div><div class="line">ko4    ko4  <span class="number">8.584933</span>  <span class="number">1.6705990</span></div><div class="line">ko5    ko5  <span class="number">8.594769</span> -<span class="number">3.0929438</span></div></pre></td></tr></table></figure>
+<p>绘制PCA图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ggplot(data=pca.data, aes(x=X, y=Y, label=Sample))+</div><div class="line">  geom_text() +</div><div class="line">  xlab(paste(<span class="string">"PC1 - "</span>, pca.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"PC2 - "</span>, pca.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  theme_bw()+</div><div class="line">  ggtitle(<span class="string">"My PCA Graph"</span>)</div></pre></td></tr></table></figure>
+<p>最终图形如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161557.png">
+
+</div>
+<p>其中PC1占据了总变异的87.7%，PC2占据了总变异的3.3%。另外，在图上我们可以看出，wt组都位于左侧，ko组都位于右侧，它们主要是被PC1区分了开来。</p>
+<h3 id="mdspcoa分析">MDS/PCoA分析</h3>
+<p>第一步，构建距离距离，使用<code>dist()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">distance.matrix &lt;- dist(scale(t(data.matrix), center=<span class="literal">TRUE</span>, scale=<span class="literal">TRUE</span>),</div><div class="line">                        method=<span class="string">"euclidean"</span>)</div><div class="line"><span class="comment"># parameter of method has 6 types different distnace to choose</span></div></pre></td></tr></table></figure>
+<p>第二步：在距离矩阵的基础上进行多维尺度变换，这里使用<code>cmdscale()</code>函数，这个函数的名称比较奇怪，其实它是Classical Muti-Dimensional Scaling的缩写，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.stuff &lt;- cmdscale(distance.matrix, eig=<span class="literal">TRUE</span>, x.ret=<span class="literal">TRUE</span>)</div><div class="line"><span class="comment"># eig=TRUE willl return eigen values</span></div></pre></td></tr></table></figure>
+<p>其中使用<code>eig=TRUE</code>会返回特征值，用这些特征来计算最终MDS图中的每个坐标占距离矩阵总变异的比例。<code>x.ret=TRUE</code>用于表示是否返回双中心对称的距离矩阵。如果使用<code>eigen()</code>函数替代<code>cmdscale()</code>函数来演示做MDS分析时，这就比较有用（不太理解这一段的意思），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161607.jpg">
+
+</div>
+<p>第三步：计算MDS图中的每个坐标占总变异的比例，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.var.per &lt;- round(mds.stuff$eig/sum(mds.stuff$eig)*<span class="number">100</span>,<span class="number">1</span>)</div><div class="line">mds.var.per</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mds.var.per</div><div class="line"> [<span class="number">1</span>] <span class="number">87.8</span>  <span class="number">3.3</span>  <span class="number">2.6</span>  <span class="number">1.5</span>  <span class="number">1.4</span>  <span class="number">1.2</span>  <span class="number">0.8</span>  <span class="number">0.8</span>  <span class="number">0.6</span>  <span class="number">0.0</span></div></pre></td></tr></table></figure>
+<p>第四步：绘图，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">mds.values &lt;- mds.stuff$points</div><div class="line">mds.data &lt;- data.frame(Sample=rownames(mds.values),</div><div class="line">                       X=mds.values[,<span class="number">1</span>],</div><div class="line">                       Y=mds.values[,<span class="number">2</span>])</div><div class="line"></div><div class="line">ggplot(data=mds.data, aes(x=X, y=Y, label=Sample))+</div><div class="line">  geom_text() +</div><div class="line">  xlab(paste(<span class="string">"MDS1 - "</span>, mds.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"MDS2 - "</span>, mds.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  theme_bw()+</div><div class="line">  ggtitle(<span class="string">"MDS plot using Euclidean distance"</span>)</div></pre></td></tr></table></figure>
+<p>最终图形如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161612.png">
+
+</div>
+<p>从MDS的这个图形中我们可以看出来，它的结果与PCA比较类似，都是wt组位于左侧，ko组位于右侧，其中MDS1所占总变异的87.8%，MDS2占总变异的3.3%。</p>
+<p>实地上，PCA的图与MDS的图不仅看上去相似，实际上它们是一样的，我们把PCA的图与MDS的图放一起来比较看一下：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161617.png">
+
+</div>
+<p>我生成的图形与教程中不太一样，教程中的这两张图基本上是一样的，并且发现，貌似MDS中的点的位置正好与PCA中的相应点的位置正好相反，此时，还不清楚怎么解决，先放这里。</p>
+<h4 id="使用其它的距离">使用其它的距离</h4>
+<p>前面使用的欧氏距离，此时我们使用一下其它的距离，例如表达差异的log值转换，其实对于基因表达差异的常用分析，通常是用<code>edgeR</code>来完成的，此处我们使用<code>plotMDS()</code>函数进行表达差异的log值计算，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161622.jpg">
+
+</div>
+<p>第一步：计算每个基因表达是不是的log2值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">log2.data.matrix &lt;- log2(data.matrix)</div></pre></td></tr></table></figure>
+<p>由于差异倍数的log转换值的平均值并不是一种距离度量，无法直接被<code>dist()</code>函数调用，因此我们需要手动来计算距离，下面的代码是创建一个空矩阵，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">log2.data.matrix &lt;- log2(data.matrix)</div><div class="line"></div><div class="line">log2.distance.matrix&lt;- matrix(<span class="number">0</span>,</div><div class="line">                              nrow=ncol(log2.data.matrix),</div><div class="line">                              ncol=ncol(log2.data.matrix),</div><div class="line">                              dimnames = list(colnames(log2.data.matrix),</div><div class="line">                                              colnames(log2.data.matrix)))</div><div class="line">log2.distance.matrix</div></pre></td></tr></table></figure>
+<p>log2.distance.matrix的这个矩阵如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; log2.distance.matrix</div><div class="line">    wt1 wt2 wt3 wt4 wt5 ko1 ko2 ko3 ko4 ko5</div><div class="line">wt1   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt2   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt3   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt4   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">wt5   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko1   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko2   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko3   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko4   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div><div class="line">ko5   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span>   <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>然后，向这个矩阵填表达差异倍数log转换值绝对值平均值，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161633.jpg">
+
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:ncol(log2.distance.matrix))&#123;</div><div class="line">  <span class="keyword">for</span>(j <span class="keyword">in</span> <span class="number">1</span>:i)&#123;</div><div class="line">    log2.distance.matrix[i,j]&lt;-</div><div class="line">      mean(abs(log2.data.matrix[,i] - log2.data.matrix[,j]))</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>填充后的矩阵如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; log2.distance.matrix</div><div class="line">           wt1       wt2        wt3        wt4      wt5        ko1        ko2</div><div class="line">wt1 <span class="number">0.00000000</span> <span class="number">0.0000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt2 <span class="number">0.11484382</span> <span class="number">0.0000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt3 <span class="number">0.09904503</span> <span class="number">0.1019653</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt4 <span class="number">0.09221168</span> <span class="number">0.1037076</span> <span class="number">0.09493001</span> <span class="number">0.00000000</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">wt5 <span class="number">0.09885778</span> <span class="number">0.1108717</span> <span class="number">0.09948529</span> <span class="number">0.09023129</span> <span class="number">0.000000</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">ko1 <span class="number">1.31334287</span> <span class="number">1.2943370</span> <span class="number">1.29838285</span> <span class="number">1.29338723</span> <span class="number">1.282153</span> <span class="number">0.00000000</span> <span class="number">0.00000000</span></div><div class="line">ko2 <span class="number">1.29918744</span> <span class="number">1.2802797</span> <span class="number">1.28559603</span> <span class="number">1.28138419</span> <span class="number">1.268754</span> <span class="number">0.09949390</span> <span class="number">0.00000000</span></div><div class="line">ko3 <span class="number">1.29038890</span> <span class="number">1.2721498</span> <span class="number">1.27904237</span> <span class="number">1.27301615</span> <span class="number">1.263254</span> <span class="number">0.09166573</span> <span class="number">0.09141794</span></div><div class="line">ko4 <span class="number">1.30741667</span> <span class="number">1.2850593</span> <span class="number">1.29054531</span> <span class="number">1.28755635</span> <span class="number">1.273766</span> <span class="number">0.09707109</span> <span class="number">0.09566890</span></div><div class="line">ko5 <span class="number">1.29516621</span> <span class="number">1.2726247</span> <span class="number">1.27697549</span> <span class="number">1.27384192</span> <span class="number">1.260347</span> <span class="number">0.10435400</span> <span class="number">0.10674809</span></div><div class="line">           ko3        ko4 ko5</div><div class="line">wt1 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt2 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt3 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt4 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">wt5 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko1 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko2 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko3 <span class="number">0.00000000</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko4 <span class="number">0.08960051</span> <span class="number">0.00000000</span>   <span class="number">0</span></div><div class="line">ko5 <span class="number">0.10106993</span> <span class="number">0.09935345</span>   <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>此时，使用新的矩阵进行MDS分析，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mds.stuff &lt;- cmdscale(as.dist(log2.distance.matrix),</div><div class="line">                      eig=<span class="literal">TRUE</span>,</div><div class="line">                      x.ret=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<p>接着计算MDS图中每个坐标所占总变异的比例，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.var.per &lt;- round(mds.stuff$eig/sum(mds.stuff$eig)*<span class="number">100</span>,<span class="number">1</span>)</div><div class="line">mds.var.per</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mds.var.per</div><div class="line"> [<span class="number">1</span>] <span class="number">99.1</span>  <span class="number">0.3</span>  <span class="number">0.2</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.1</span>  <span class="number">0.0</span>  <span class="number">0.0</span></div></pre></td></tr></table></figure>
+<p>绘图，绘图前先把数据转换成ggplot能识别的格式，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mds.values &lt;- mds.stuff$points</div><div class="line">mds.data &lt;- data.frame(Sample=rownames(mds.values),</div><div class="line">                       X=mds.values[,<span class="number">1</span>],</div><div class="line">                       Y=mds.values[,<span class="number">2</span>])</div><div class="line">mds.data</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; mds.data</div><div class="line">    Sample          X           Y</div><div class="line">wt1    wt1 -<span class="number">0.6577291</span>  <span class="number">0.05852077</span></div><div class="line">wt2    wt2 -<span class="number">0.6369172</span> -<span class="number">0.01660477</span></div><div class="line">wt3    wt3 -<span class="number">0.6427329</span> -<span class="number">0.02665479</span></div><div class="line">wt4    wt4 -<span class="number">0.6386594</span>  <span class="number">0.01136691</span></div><div class="line">wt5    wt5 -<span class="number">0.6262231</span> -<span class="number">0.02766676</span></div><div class="line">ko1    ko1  <span class="number">0.6529016</span>  <span class="number">0.01159350</span></div><div class="line">ko2    ko2  <span class="number">0.6394952</span>  <span class="number">0.02054915</span></div><div class="line">ko3    ko3  <span class="number">0.6323059</span>  <span class="number">0.04457294</span></div><div class="line">ko4    ko4  <span class="number">0.6455593</span> -<span class="number">0.02576489</span></div><div class="line">ko5    ko5  <span class="number">0.6319998</span> -<span class="number">0.04991206</span></div></pre></td></tr></table></figure>
+<p>此时，使用ggplot绘图，代码如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ggplot(data=mds.data, aes(x=X, y=Y, label=Sample)) +</div><div class="line">  geom_text()+</div><div class="line">  theme_bw()+</div><div class="line">  xlab(paste(<span class="string">"MDS1 - "</span>, mds.var.per[<span class="number">1</span>],<span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ylab(paste(<span class="string">"MDS2 - "</span>, mds.var.per[<span class="number">2</span>],<span class="string">"%"</span>, sep=<span class="string">""</span>))+</div><div class="line">  ggtitle(<span class="string">"MDS plot using avg(logFC) as the distance"</span>)</div></pre></td></tr></table></figure>
+<p>图形如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161640.png">
+
+</div>
+<p>此时，我们把利用欧氏距离绘制的MDS图和表达差异log转换后的MDS图比较一下，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714161644.png">
+
+</div>
+<p>从上图中可以发现，这两个图比较相似，但是不一样。我们看一下两张图的坐标轴，右侧MDS-1的是99.1%，左图是87.8%，也就是说使用了log转换后的表达倍数差异值所占总变异的比例更高。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/24/BioTools/各种基因名转换/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/24/BioTools/各种基因名转换/" itemprop="url">各种基因名转换</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-24T12:00:00+08:00">
+                2018-06-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,757
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  17
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="基因名">基因名</h2>
+<p>不同的数据据中的对于一个基因的描述不同，例如p53，它又叫P53，又叫TP53，或BCC7，或ENSG00000141510或OTTHUMG00000162125。通常来说，对p53的描述使用的是Official Gene Symbol（例如TP53）。</p>
+<p>另外，在NCBI数据库中我们查找TP53，会出现下面这些信息：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190303173528.png">
+
+</div>
+<p>现在我们从第一行开始解释：</p>
+<ol style="list-style-type: decimal">
+<li><code>TP53 tumor protein p53 [ Homo sapiens (human) ]</code>：它表示这个基因是TP53肿瘤蛋白53，TP表示的是tumor protein，p表示的是protein，53的意思是这个蛋白的分子量是53kDa（其实当初在跑SDS-PAGE胶时，这个蛋白位于53kDa附近，就命名为p53，其实后来发现，这个蛋白中富含脯氨酸，在SDS-PAGE胶中迁移速度偏慢，它表示出来的分子量要比实际的分子量大，此蛋白的实际分子量是43.7kDa，不过由于命名太久了，也就将错就错了），后面的<code>Homo sapiens (human)</code>是人类的意思，它表示这个基因是人源的。</li>
+<li><code>Gene ID</code>：7157，表示的是基因的entrez的系统代号，Entrez 是美国国家生物技术信息中心所提供的在线资源检索器。该资源将GenBank序列与其原始文献出处链接在一起。如果我们在Entrez中直接检索7157，也能直接搜索到TP53。Entrez ID实际上是指的Entrez gene ID，是对应于染色体上一个gene location的。每一个发现的基因都会被编制一个统一的编号，而Entrez ID是指的来自于NCBI旗下的Entrez gene数据库所使用的编号。每个基因的编号具有唯一性，包括不同种属生物间的同源基因编号也不相同，例如同样是TP53基因，人源TP53的Entrez ID为7157，zebrafish源的Entrez ID为30590，chichen源的Entrez ID为396200。EntrezID标记的基因具有唯一性，可以理解为它就是基因的身份证，通过一串数字就能区分每个基因。</li>
+<li><code>Official Symbol</code>，这个是我们常用的这个基因的名称，即TP53，这个命名是由HGNC批准的，HGNC的全称是HUGO Gene Nomenclature Committee，其中HUGO的全称是Human Genome Organisation，即国际人类基因组组织，而HGNC则是HUGO基因命名委员会。</li>
+<li><code>Official Full Name</code>，官方的全称。</li>
+<li><code>Ensembl:ENSG00000141510</code>：ENSEMBL是一个由由英国Sanger研究所Wellcome基金会及欧洲分子生物学实验室所属分部欧洲生物信息学研究所共同协作运营的一个数据库。Ensembl数据库的基因名称后面有的还有个小数点，这个表示基因的版本号，没多少用处，在进行生信分析的时候，可以去掉。</li>
+<li>MIM:191170。OMIM 为“0nline Mendelian Inheritance in Man”的简称，即在线《人类孟德尔遗传》，是一个关于人类基因和遗传紊乱的数据库（持续更新）。主要着眼于遗传性的基因疾病，包括文本信息和相关参考信息、序列纪录、图谱和相关其他数据库。其中MIM号就是在OMIM数据库中的基因编号。</li>
+<li><code>Vega:OTTHUMG00000162125</code>。脊椎动物基因组注释（Vertebrate Genome Annotation，Vega）数据库已经被设计为浏览来自各种脊椎动物基因组的完结序列的人工注释的一个社区资源。它的核心数据库是基于Ensembl样式的模式，扩展到包含精选-特异的元数据。</li>
+</ol>
+<p>常用的基因名转换工具：</p>
+<ol style="list-style-type: decimal">
+<li><p>DAVID：https://david.ncifcrf.gov/</p></li>
+<li><p>Absolute Gene ID Conversion Tools：http://bioinformatics.louisville.edu/abid/</p></li>
+<li><p>bioDBnet：（https://biodbnet-abcc.ncifcrf.gov/db/db2db.php）</p></li>
+<li><p>ENSEMBL biomart：（http://asia.ensembl.org/biomart/martview/bbd9fa2dd0eac95aa098be3514472b0e）</p></li>
+</ol>
+<h2 id="r包转换基因名">R包转换基因名</h2>
+<p>使用R包来转换基因通常有三种方法。</p>
+<h3 id="clusterprofiler包的bitr函数">clusterProfiler包的bitr函数</h3>
+<p>bitr<code>是</code>clusterProfiler`包中的一个函数，它用于生物ID的转换，用法如下所示:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bitr(geneID, fromType, toType, OrgDb, drop = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<p>其中，geneID是输入的基因ID，fromType是输入的ID类型，<code>toType</code>是输出的ID类型，<code>OrgDb</code>注释的db文件，<code>drop</code>剔除NA数据与否。</p>
+<p><code>bitr</code>中的各种基因ID参数名称如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; keytypes(org.Mm.eg.db)</div><div class="line"> [<span class="number">1</span>] <span class="string">"ACCNUM"</span>       <span class="string">"ALIAS"</span>        <span class="string">"ENSEMBL"</span>      <span class="string">"ENSEMBLPROT"</span>  <span class="string">"ENSEMBLTRANS"</span></div><div class="line"> [<span class="number">6</span>] <span class="string">"ENTREZID"</span>     <span class="string">"ENZYME"</span>       <span class="string">"EVIDENCE"</span>     <span class="string">"EVIDENCEALL"</span>  <span class="string">"GENENAME"</span>    </div><div class="line">[<span class="number">11</span>] <span class="string">"GO"</span>           <span class="string">"GOALL"</span>        <span class="string">"IPI"</span>          <span class="string">"MGI"</span>          <span class="string">"ONTOLOGY"</span>    </div><div class="line">[<span class="number">16</span>] <span class="string">"ONTOLOGYALL"</span>  <span class="string">"PATH"</span>         <span class="string">"PFAM"</span>         <span class="string">"PMID"</span>         <span class="string">"PROSITE"</span>     </div><div class="line">[<span class="number">21</span>] <span class="string">"REFSEQ"</span>       <span class="string">"SYMBOL"</span>       <span class="string">"UNIGENE"</span>      <span class="string">"UNIPROT"</span></div></pre></td></tr></table></figure>
+<p>首先需要加载注释文件，小鼠使用<code>org.Mm.eg.db</code>文件，人类使用<code>org.Hs.eg.db</code>文件。如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">source</span>(<span class="string">"http://bioconductor.org/biocLite.R"</span>)</div><div class="line">options(BioC_mirror=<span class="string">"http://mirrors.ustc.edu.cn/bioc/"</span>)</div><div class="line">biocLite(<span class="string">"clusterProfiler"</span>)</div><div class="line">biocLite(<span class="string">'org.Hs.eg.db'</span>)</div><div class="line">biocLite(<span class="string">'org.Mn.eg.db'</span>)</div><div class="line"><span class="keyword">library</span>(<span class="string">"clusterProfiler"</span>)</div><div class="line">gene.df &lt;- bitr(gene, fromType = <span class="string">"ENTREZID"</span>, <span class="comment">#fromType是指你的数据ID类型是属于哪一类的</span></div><div class="line">                toType = c(<span class="string">"ENSEMBL"</span>, <span class="string">"SYMBOL"</span>), <span class="comment">#toType是指你要转换成哪种ID类型，可以写多种，也可以只写一种</span></div><div class="line">                OrgDb = org.Hs.eg.db)<span class="comment">#Orgdb是指对应的注释包是哪个</span></div><div class="line">head(gene.df)</div></pre></td></tr></table></figure>
+<p>上面的代码运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(gene.df)</div><div class="line">  ENTREZID         ENSEMBL SYMBOL</div><div class="line"><span class="number">1</span>     <span class="number">4312</span> ENSG00000196611   MMP1</div><div class="line"><span class="number">2</span>     <span class="number">8318</span> ENSG00000093009  CDC45</div><div class="line"><span class="number">3</span>    <span class="number">10874</span> ENSG00000109255    NMU</div><div class="line"><span class="number">4</span>    <span class="number">55143</span> ENSG00000134690  CDCA8</div><div class="line"><span class="number">5</span>    <span class="number">55388</span> ENSG00000065328  MCM10</div><div class="line"><span class="number">6</span>      <span class="number">991</span> ENSG00000117399  CDC20</div></pre></td></tr></table></figure>
+<h2 id="使用mget函数">使用mget函数</h2>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(AnnotationDbi)</div><div class="line">mySymbols &lt;- mget(gene,</div><div class="line">                  org.Hs.egSYMBOL, <span class="comment">#这个是可以选择的，选择不同，转换的ID类型也不一样</span></div><div class="line">                  ifnotfound=<span class="literal">NA</span>)</div><div class="line">head(mySymbols)</div><div class="line">class(mySymbols)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&gt; head(mySymbols)</div><div class="line">$`4312`</div><div class="line">[<span class="number">1</span>] <span class="string">"MMP1"</span></div><div class="line"></div><div class="line">$`8318`</div><div class="line">[<span class="number">1</span>] <span class="string">"CDC45"</span></div><div class="line"></div><div class="line">$`10874`</div><div class="line">[<span class="number">1</span>] <span class="string">"NMU"</span></div><div class="line"></div><div class="line">$`55143`</div><div class="line">[<span class="number">1</span>] <span class="string">"CDCA8"</span></div><div class="line"></div><div class="line">$`55388`</div><div class="line">[<span class="number">1</span>] <span class="string">"MCM10"</span></div><div class="line"></div><div class="line">$`991`</div><div class="line">[<span class="number">1</span>] <span class="string">"CDC20"</span></div><div class="line"></div><div class="line">&gt; class(mySymbols)</div><div class="line">[<span class="number">1</span>] <span class="string">"list"</span></div></pre></td></tr></table></figure>
+<h3 id="select函数">select()函数</h3>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">geneIDselect &lt;-select(org.Hs.eg.db, <span class="comment">#.db是这个芯片数据对应的注释包</span></div><div class="line">                      keys=gene,</div><div class="line">                      columns=c(<span class="string">"SYMBOL"</span>,<span class="string">"ENSEMBL"</span>,<span class="string">"GENENAME"</span>), <span class="comment">#clolumns参数是你要转换的ID类型是什么，这里选择三个。</span></div><div class="line">                      keytype=<span class="string">"ENTREZID"</span> )<span class="comment">#函数里面的keytype与keys参数是对应的，keys是你输入的那些数据，keytype是指这些数据是属于什么类型的数据。 </span></div><div class="line">head(geneIDselect)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; head(geneIDselect)</div><div class="line">  ENTREZID SYMBOL         ENSEMBL</div><div class="line"><span class="number">1</span>     <span class="number">4312</span>   MMP1 ENSG00000196611</div><div class="line"><span class="number">2</span>     <span class="number">8318</span>  CDC45 ENSG00000093009</div><div class="line"><span class="number">3</span>    <span class="number">10874</span>    NMU ENSG00000109255</div><div class="line"><span class="number">4</span>    <span class="number">55143</span>  CDCA8 ENSG00000134690</div><div class="line"><span class="number">5</span>    <span class="number">55388</span>  MCM10 ENSG00000065328</div><div class="line"><span class="number">6</span>      <span class="number">991</span>  CDC20 ENSG00000117399</div><div class="line">                                                     GENENAME</div><div class="line"><span class="number">1</span>                                   matrix metallopeptidase <span class="number">1</span></div><div class="line"><span class="number">2</span>                                      cell division cycle <span class="number">45</span></div><div class="line"><span class="number">3</span>                                                neuromedin U</div><div class="line"><span class="number">4</span>                            cell division cycle associated <span class="number">8</span></div><div class="line"><span class="number">5</span> minichromosome maintenance <span class="number">10</span> replication initiation factor</div><div class="line"><span class="number">6</span>                                      cell division cycle <span class="number">20</span></div></pre></td></tr></table></figure>
+<h2 id="使用biomart包来转换基因名">使用<code>biomaRt</code>包来转换基因名</h2>
+<p><code>biomaRt</code>工具包是一个连接<code>bioMart</code>数据库的R语言接口，能够通过这个软件包自由地链接到bioMart数据库，方便得读取该数据库的数据，并进一步进行数据处理，从名称中的<code>Mart</code>这个英文字符就可以知道，这是一个有数据中心类似功能的包（注：Mart在英文中有中心，集市的意思）。</p>
+<p>bioMart是一个集成了生物学数据的大型集成数据库，包括Ensemble，Uniprot，NCBI，EBI，TAIR等常用的数据库。具体说来，使用这个工具包可以做以下几个工作：</p>
+<ol style="list-style-type: decimal">
+<li><p>查找某个基因在染色体上的位置。反之，给定染色体每一区间，返回该区间的基因s；</p></li>
+<li><p>通过EntrezGene的ID查找到相关序列的GO注释。反之，给定相关的GO注释，获取相关的EntrezGene的ID；</p></li>
+<li><p>通过EntrezGene的ID查找到相关序列的上游100bp序列（可能包含启动子等调控元件）；</p></li>
+<li><p>查找人类染色体上每一段区域中已知的SNPs；</p></li>
+<li><p>给定一组的序列ID，获得其中具体的序列。</p></li>
+</ol>
+<h3 id="biomart包中函数"><code>biomaRt</code>包中函数</h3>
+<p>先了解几个这个包中的函数。</p>
+<h4 id="usemart函数"><code>useMart()</code>函数</h4>
+<p><code>useMart()</code>函数是<code>biomaRt</code>包中的函数，其功能在于选择BioMart数据库，如果要查看能使用BioMart的哪个数据库，可以使用<code>listMarts</code>函数，这个函数后面会有介绍。</p>
+<p><code>useMart()</code>参数为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">useMart(biomart, dataset, host=<span class="string">"www.ensembl.org"</span>,</div><div class="line">path=<span class="string">"/biomart/martservice"</span>, port=<span class="number">80</span>, archive=<span class="literal">FALSE</span>, ssl.verifypeer =</div><div class="line"><span class="literal">TRUE</span>, ensemblRedirect = <span class="literal">NULL</span>, version, verbose = <span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
+<ol style="list-style-type: decimal">
+<li><code>biomart</code>：BioMart所用的数据库名称；</li>
+<li><code>dataset</code>：biomart参数选中的大数据中的小数据库，使用我们先选ENSMBL数据库，再选人的数据库，语句就是如下所示：</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(biomaRt)</div><div class="line"></div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>, dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line"><span class="comment"># Or as the same following command lines:</span></div><div class="line"><span class="comment"># ensembl &lt;- useMart("ensembl")</span></div><div class="line">ensembl</div><div class="line">class(ensembl)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">library</span>(biomaRt)</div><div class="line">&gt; ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>, dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">&gt; <span class="comment"># Or as the same following command lines:</span></div><div class="line">&gt; <span class="comment"># ensembl &lt;- useMart("ensembl")</span></div><div class="line">&gt; ensembl</div><div class="line">Object of class <span class="string">'Mart'</span>:</div><div class="line">  Using the ENSEMBL_MART_ENSEMBL BioMart database</div><div class="line">  Using the hsapiens_gene_ensembl dataset</div><div class="line">&gt; class(ensembl)</div><div class="line">[<span class="number">1</span>] <span class="string">"Mart"</span></div><div class="line">attr(,<span class="string">"package"</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"biomaRt"</span></div></pre></td></tr></table></figure>
+<p>从中可以发现，<code>ensembl</code>是一个<code>Mart</code>类型的对象。</p>
+<h4 id="listmarts函数"><code>listMarts()</code>函数</h4>
+<p><code>listMarts</code>：返回BioMart的数据库名称，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; listMarts()</div><div class="line">               biomart               version</div><div class="line"><span class="number">1</span> ENSEMBL_MART_ENSEMBL      Ensembl Genes <span class="number">97</span></div><div class="line"><span class="number">2</span>   ENSEMBL_MART_MOUSE      Mouse strains <span class="number">97</span></div><div class="line"><span class="number">3</span>     ENSEMBL_MART_SNP  Ensembl Variation <span class="number">97</span></div><div class="line"><span class="number">4</span> ENSEMBL_MART_FUNCGEN Ensembl Regulation <span class="number">97</span></div></pre></td></tr></table></figure>
+<p>在使用<code>useMart()</code>创建一个查询对象时，可以使用<code>test_gene_id &lt;- useMart(biomart = &quot;ensembl&quot;)</code>这个语句来创建，它就相当于<code>test_gene_id &lt;- useMart(biomart = &quot;ENSEMBL_MART_ENSEMBL&quot;)</code>。</p>
+<p>另外，<code>ENSEMBL_MART_MOUSE</code>是不同品系小鼠的数据库。<code>ENSEMBL_MART_SNP</code>这个从字面上应该是SNP数据库，<code>ENSEMBL_MART_FUNCGEN</code>应该是基因调控元件的一些数据库。</p>
+<h4 id="listdatasets函数"><code>listDatasets()</code>函数</h4>
+<p>当我们使用<code>useMart()</code>函数选择了总数据库（例如ensembl这个大数据库）后，就可以使用<code>listDatasets()</code>函数来查看可用的数据库的子数据库（小鼠的，还是人的），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">test_ensembl &lt;- useMart(<span class="string">"ensembl"</span>)</div><div class="line">list_dataset &lt;- listDatasets(test_ensembl)</div><div class="line">head(list_dataset)</div><div class="line">str(list_dataset)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; head(list_dataset)</div><div class="line">                       dataset                           description     version</div><div class="line"><span class="number">1</span> abrachyrhynchus_gene_ensembl Pink-footed goose genes (ASM259213v1) ASM259213v1</div><div class="line"><span class="number">2</span>     acalliptera_gene_ensembl      Eastern happy genes (fAstCal1.2)  fAstCal1.2</div><div class="line"><span class="number">3</span>   acarolinensis_gene_ensembl        Anole lizard genes (AnoCar2.0)   AnoCar2.0</div><div class="line"><span class="number">4</span>    acitrinellus_gene_ensembl        Midas cichlid genes (Midas_v5)    Midas_v5</div><div class="line"><span class="number">5</span>        ahaastii_gene_ensembl    Great spotted kiwi genes (aptHaa1)     aptHaa1</div><div class="line"><span class="number">6</span>    amelanoleuca_gene_ensembl                 Panda genes (ailMel1)     ailMel1</div><div class="line">&gt; str(list_dataset)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">190</span> obs. of  <span class="number">3</span> variables:</div><div class="line"> $ dataset    : <span class="string">'AsIs'</span> chr  <span class="string">"abrachyrhynchus_gene_ensembl"</span> <span class="string">"acalliptera_gene_ensembl"</span> <span class="string">"acarolinensis_gene_ensembl"</span> <span class="string">"acitrinellus_gene_ensembl"</span> <span class="keyword">...</span></div><div class="line"> $ description: <span class="string">'AsIs'</span> chr  <span class="string">"Pink-footed goose genes (ASM259213v1)"</span> <span class="string">"Eastern happy genes (fAstCal1.2)"</span> <span class="string">"Anole lizard genes (AnoCar2.0)"</span> <span class="string">"Midas cichlid genes (Midas_v5)"</span> <span class="keyword">...</span></div><div class="line"> $ version    : <span class="string">'AsIs'</span> chr  <span class="string">"ASM259213v1"</span> <span class="string">"fAstCal1.2"</span> <span class="string">"AnoCar2.0"</span> <span class="string">"Midas_v5"</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
+<p>从结果中我们可以看出来，使用<code>useMart()</code>函数创建的<code>ensemebl</code>这个变量是一个<code>Mart</code>类型的变量。</p>
+<p>而<code>listDatasets(ensembl)</code>返回的结果则是查看在Ensembl这个数据库中，有多少能用的子数据库列表，从结果可以看出，有190个数据库能用，部分表格如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190710185051.png">
+
+</div>
+<p>其中第1列是数据库名，第2列是对数据库的描述，第3列是版本信息，现在来查看一下人类与小鼠的有关数据库，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">number_data &lt;- grep(<span class="string">"[Mm]ouse|[Hm]uman"</span>, list_dataset$description)</div><div class="line">list_dataset[number_data,]</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; list_dataset[number_data,]</div><div class="line">                     dataset                                      description         version</div><div class="line"><span class="number">76</span>     hsapiens_gene_ensembl                         Human genes (GRCh38.p12)      GRCh38.p12</div><div class="line"><span class="number">92</span>      mcaroli_gene_ensembl             Ryukyu mouse genes (CAROLI_EIJ_v1.1) CAROLI_EIJ_v1.1</div><div class="line"><span class="number">102</span>    mmurinus_gene_ensembl                     Mouse Lemur genes (Mmur_3.0)        Mmur_3.0</div><div class="line"><span class="number">103</span>   mmusculus_gene_ensembl                          Mouse genes (GRCm38.p6)       GRCm38.p6</div><div class="line"><span class="number">106</span>     mpahari_gene_ensembl              Shrew mouse genes (PAHARI_EIJ_v1.1) PAHARI_EIJ_v1.1</div><div class="line"><span class="number">107</span> mspicilegus_gene_ensembl                     Steppe mouse genes (MUSP714)         MUSP714</div><div class="line"><span class="number">108</span>    mspretus_gene_ensembl              Algerian mouse genes (SPRET_EiJ_v1)    SPRET_EiJ_v1</div><div class="line"><span class="number">135</span>    pbairdii_gene_ensembl Northern American deer mouse genes (HU_Pman_2.1)     HU_Pman_2.1</div></pre></td></tr></table></figure>
+<p>从上面的结果我们可以知道，人类基因数据库只有1个，即<code>hsapiens_gene_ensembl</code>，这也是前面的那个使用<code>useMart</code>来要创建查询语句中的<code>dataset</code>参数，即<code>ensembl= useMart(&quot;ENSEMBL_MART_ENSEMBL&quot;,dataset=&quot;hsapiens_gene_ensembl&quot;)</code>。</p>
+<p>而小鼠的数据库有7个，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190710191821.png">
+
+</div>
+<p>不过，就我们常用的小鼠而言，通常是C57BL/6小鼠，使用的数据库是<code>mmusculus_gene_ensembl</code>这个，也就是版本号为<code>GRCm38.p6</code>的数据库。</p>
+<p>也可以使用<code>searchDatasets()</code>函数来检索子数据库的类型，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">searchDatasets(mart = ensembl, pattern = <span class="string">"mouse"</span>)</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; searchDatasets(mart = ensembl, pattern = <span class="string">"mouse"</span>)</div><div class="line">                     dataset                                      description         version</div><div class="line"><span class="number">92</span>      mcaroli_gene_ensembl             Ryukyu mouse genes (CAROLI_EIJ_v1.1) CAROLI_EIJ_v1.1</div><div class="line"><span class="number">106</span>     mpahari_gene_ensembl              Shrew mouse genes (PAHARI_EIJ_v1.1) PAHARI_EIJ_v1.1</div><div class="line"><span class="number">107</span> mspicilegus_gene_ensembl                     Steppe mouse genes (MUSP714)         MUSP714</div><div class="line"><span class="number">108</span>    mspretus_gene_ensembl              Algerian mouse genes (SPRET_EiJ_v1)    SPRET_EiJ_v1</div><div class="line"><span class="number">135</span>    pbairdii_gene_ensembl Northern American deer mouse genes (HU_Pman_2.1)     HU_Pman_2.1</div></pre></td></tr></table></figure>
+<p>总之，如果我们要使用人数据库时，在构建一个检索对象时，就如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ensembl= useMart(<span class="string">"ENSEMBL_MART_ENSEMBL"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div></pre></td></tr></table></figure>
+<p>小鼠的话，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mus = useMart(<span class="string">"ENSEMBL_MART_ENSEMBL"</span>,dataset=<span class="string">"mmusculus_gene_ensembl"</span>)</div></pre></td></tr></table></figure>
+<h4 id="参数选择相关函数">参数选择相关函数</h4>
+<p>在选中数据库后，就可以进行基因名的转换了，在转换之前，我们可以看一下要输入什么参数，以及能输出什么参数。</p>
+<p><code>listFilters()</code>可以得到所有的输入结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; listFilters(ensembl)[<span class="number">1</span>:<span class="number">5</span>,]</div><div class="line">             name              description</div><div class="line"><span class="number">1</span> chromosome_name Chromosome/scaffold name</div><div class="line"><span class="number">2</span>           start                    Start</div><div class="line"><span class="number">3</span>             end                      End</div><div class="line"><span class="number">4</span>      band_start               Band Start</div><div class="line"><span class="number">5</span>        band_end                 Band End</div></pre></td></tr></table></figure>
+<p><code>listAttributes</code>获得所有输出结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; listAttributes(ensembl)[<span class="number">1</span>:<span class="number">5</span>,]</div><div class="line">                           name                  description         page</div><div class="line"><span class="number">1</span>               ensembl_gene_id               Gene stable ID feature_page</div><div class="line"><span class="number">2</span>       ensembl_gene_id_version       Gene stable ID version feature_page</div><div class="line"><span class="number">3</span>         ensembl_transcript_id         Transcript stable ID feature_page</div><div class="line"><span class="number">4</span> ensembl_transcript_id_version Transcript stable ID version feature_page</div><div class="line"><span class="number">5</span>            ensembl_peptide_id            Protein stable ID feature_page</div></pre></td></tr></table></figure>
+<p><code>searchFilters</code>与<code>searchAttributes</code>定向搜索想要结果的关键词：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; searchFilters(mart = ensembl, <span class="string">'entrez|hgnc'</span>)</div><div class="line">                         name                                                description</div><div class="line"><span class="number">19</span> with_entrezgene_trans_name                      With EntrezGene transcript name ID(s)</div><div class="line"><span class="number">25</span>                  with_hgnc                                     With HGNC Symbol ID(s)</div><div class="line"><span class="number">26</span>       with_hgnc_trans_name                            With HGNC transcript name ID(s)</div><div class="line"><span class="number">37</span>            with_entrezgene                                       With NCBI gene ID(s)</div><div class="line"><span class="number">76</span>      entrezgene_trans_name EntrezGene transcript name ID(s) [e.g. ARMCX5-GPRASP2-<span class="number">211</span>]</div><div class="line"><span class="number">82</span>                    hgnc_id                                 HGNC ID(s) [e.g. HGNC:<span class="number">100</span>]</div><div class="line"><span class="number">83</span>                hgnc_symbol                                 HGNC symbol(s) [e.g. A1BG]</div><div class="line"><span class="number">84</span>            hgnc_trans_name                 HGNC transcript name ID(s) [e.g. A1BG-<span class="number">201</span>]</div><div class="line"><span class="number">97</span>       entrezgene_accession                         NCBI gene accession(s) [e.g. A1BG]</div><div class="line"><span class="number">98</span>              entrezgene_id                                   NCBI gene ID(s) [e.g. <span class="number">1</span>]</div></pre></td></tr></table></figure>
+<h4 id="getbm函数"><code>getBM()</code>函数</h4>
+<p><code>getBM()</code>函数的参数如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">getBM(attributes, filters = <span class="string">""</span>, values = <span class="string">""</span>, mart, curl = <span class="literal">NULL</span>, </div><div class="line">checkFilters = <span class="literal">TRUE</span>, verbose = <span class="literal">FALSE</span>, uniqueRows = <span class="literal">TRUE</span>, bmHeader = <span class="literal">FALSE</span>,</div><div class="line">quote = <span class="string">"\""</span>)</div></pre></td></tr></table></figure>
+<p>参数如下：</p>
+<ul>
+<li><code>attributes</code>：输出的数据；</li>
+<li><code>filters</code>：输入数据的类型，例如<code>hgnc_symbol</code>就是说我们输入的基因名是HGNC协会指定的基因名。</li>
+</ul>
+<blockquote>
+<p>HGNC是指雨果基因命名委员会，它负责制定人类基因命名标准，HGNC的全称是hugo gene nomenclature committee，而其中hugo的全称则是 Human Genome Organisation，即人类基因组组织。</p>
+</blockquote>
+<ul>
+<li><code>values</code>：想要转换的基因名，例如在下面的案例中，我们想转换3个基因的名称，即<code>trans_gene_id &lt;- c(&quot;TP53&quot;, &quot;SMAD4&quot;, &quot;BRCA1&quot;)</code>。</li>
+<li><code>mart</code>：检索的数据库。</li>
+</ul>
+<p>第一个案例：将HGNC基因名转换为<code>Entrez</code>名称，使用案例如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">result_gene_entrez &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>, <span class="string">'entrezgene_id'</span>))</div><div class="line">result_gene_entrez</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_entrez</div><div class="line">  hgnc_symbol entrezgene_id</div><div class="line"><span class="number">1</span>       BRCA1           <span class="number">672</span></div><div class="line"><span class="number">2</span>       SMAD4          <span class="number">4089</span></div><div class="line"><span class="number">3</span>        TP53          <span class="number">7157</span></div></pre></td></tr></table></figure>
+<p>第二个案例：将HGNC基因名转换为Ensembl名称，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">result_gene_emsembl &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>))</div><div class="line">result_gene_emsembl</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_emsembl</div><div class="line">  hgnc_symbol ensembl_gene_id</div><div class="line"><span class="number">1</span>       BRCA1 ENSG00000012048</div><div class="line"><span class="number">2</span>       SMAD4 ENSG00000141646</div><div class="line"><span class="number">3</span>        TP53 ENSG00000141510</div></pre></td></tr></table></figure>
+<p>如果是想输出多个结果，就在<code>attributes</code>中添加多个参数即可：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">result_gene_emsembl2 &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">'entrezgene_id'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>))</div><div class="line">result_gene_emsembl2</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_emsembl2</div><div class="line">  hgnc_symbol entrezgene_id ensembl_gene_id</div><div class="line"><span class="number">1</span>       BRCA1           <span class="number">672</span> ENSG00000012048</div><div class="line"><span class="number">2</span>       SMAD4          <span class="number">4089</span> ENSG00000141646</div><div class="line"><span class="number">3</span>        TP53          <span class="number">7157</span> ENSG00000141510</div></pre></td></tr></table></figure>
+<p>第三个案例：将HGNC基因名转换为转录本名称，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">trans_gene_id &lt;- c(<span class="string">"OTUD1"</span>, <span class="string">"SMAD4"</span>, <span class="string">"IRAK1"</span>,<span class="string">"EPHA2"</span>,<span class="string">"RAB32"</span>)</div><div class="line">result_gene_transcript &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>,</div><div class="line">                                     <span class="string">'entrezgene_id'</span>,</div><div class="line">                                     <span class="string">"ensembl_gene_id"</span>,</div><div class="line">                                     <span class="string">"ensembl_transcript_id"</span>,</div><div class="line">                                     <span class="string">"refseq_mrna"</span>))</div><div class="line">result_gene_transcript</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">&gt; result_gene_transcript</div><div class="line">   hgnc_symbol entrezgene_id ensembl_gene_id ensembl_transcript_id  refseq_mrna</div><div class="line"><span class="number">1</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000358432 NM_001329090</div><div class="line"><span class="number">2</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000358432    NM_004431</div><div class="line"><span class="number">3</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000462805             </div><div class="line"><span class="number">4</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000480202             </div><div class="line"><span class="number">5</span>        EPHA2          <span class="number">1969</span> ENSG00000142627       ENST00000461614             </div><div class="line"><span class="number">6</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369980    NM_001569</div><div class="line"><span class="number">7</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369974 NM_001025243</div><div class="line"><span class="number">8</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000444230             </div><div class="line"><span class="number">9</span>        IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000477274             </div><div class="line"><span class="number">10</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000455690             </div><div class="line"><span class="number">11</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000369973             </div><div class="line"><span class="number">12</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000444254             </div><div class="line"><span class="number">13</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000437278             </div><div class="line"><span class="number">14</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000393687 NM_001025242</div><div class="line"><span class="number">15</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000429936             </div><div class="line"><span class="number">16</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000443220             </div><div class="line"><span class="number">17</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000467236             </div><div class="line"><span class="number">18</span>       IRAK1          <span class="number">3654</span> ENSG00000184216       ENST00000463031             </div><div class="line"><span class="number">19</span>       OTUD1        <span class="number">220213</span> ENSG00000165312       ENST00000376495 NM_001145373</div><div class="line"><span class="number">20</span>       RAB32         <span class="number">10981</span> ENSG00000118508       ENST00000367495    NM_006834</div><div class="line"><span class="number">21</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000588860             </div><div class="line"><span class="number">22</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000398417             </div><div class="line"><span class="number">23</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589076             </div><div class="line"><span class="number">24</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000590061             </div><div class="line"><span class="number">25</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000591914             </div><div class="line"><span class="number">26</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000592911             </div><div class="line"><span class="number">27</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589941             </div><div class="line"><span class="number">28</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000588745             </div><div class="line"><span class="number">29</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000592186             </div><div class="line"><span class="number">30</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000589706             </div><div class="line"><span class="number">31</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000585448             </div><div class="line"><span class="number">32</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000591126             </div><div class="line"><span class="number">33</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000611848             </div><div class="line"><span class="number">34</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000590499             </div><div class="line"><span class="number">35</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000593223             </div><div class="line"><span class="number">36</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000586253             </div><div class="line"><span class="number">37</span>       SMAD4          <span class="number">4089</span> ENSG00000141646       ENST00000342988    NM_005359</div></pre></td></tr></table></figure>
+<p>## <code>biomaRt</code>包转换代码总结</p>
+<p>总结一下代码：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(biomaRt)</div><div class="line">trans_gene_id &lt;- c(<span class="string">"TP53"</span>, <span class="string">"SMAD4"</span>, <span class="string">"BRCA1"</span>)</div><div class="line">ensembl &lt;- useMart(biomart=<span class="string">"ensembl"</span>,dataset=<span class="string">"hsapiens_gene_ensembl"</span>)</div><div class="line">result_gene_entrez &lt;- getBM(values = trans_gene_id,</div><div class="line">                      filters = <span class="string">'hgnc_symbol'</span>, </div><div class="line">                      mart = ensembl,</div><div class="line">                      attributes = c(<span class="string">'hgnc_symbol'</span>, <span class="string">'entrezgene_id'</span>))</div><div class="line">result_gene_entrez</div></pre></td></tr></table></figure>
+<h2 id="在线转换工具">在线转换工具</h2>
+<ol style="list-style-type: decimal">
+<li>g:profiler：https://biit.cs.ut.ee/gprofiler/gost</li>
+</ol>
+<p>这个貌似有R包，学习完补充笔记。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://blog.csdn.net/liufeichendi/article/details/78819884" target="_blank" rel="external">各类基因ID转换</a></li>
+<li>简述几种Gene ID的转换方法<br>
+</li>
+<li><a href="https://www.douban.com/note/544090098/" target="_blank" rel="external">OMIM数据库</a></li>
+<li><a href="https://vip.biotrainee.com/d/109-entrez-id" target="_blank" rel="external">浅谈Entrez ID</a></li>
+<li><a href="https://blog.csdn.net/weixin_40739969/article/details/89354167" target="_blank" rel="external">Gene id 转换(三种基因各种id转换方法)</a></li>
+<li><a href="https://mp.weixin.qq.com/s/wsiceQmNVveoggiqeDSlmQ" target="_blank" rel="external">如何让基因名称在多个数据库间随意转换？</a></li>
+<li><a href="https://www.jianshu.com/p/f284e5a2069e" target="_blank" rel="external">g:profiler-富集分析/ID转换神器</a></li>
+<li><a href="https://blog.csdn.net/jiuyizhizhu/article/details/5649834" target="_blank" rel="external">R语言biomaRt工具包（package）的使用</a></li>
+<li><a href="https://www.jianshu.com/p/33093fc4f2ca" target="_blank" rel="external">biomaRt:基因类型转换R包使用</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/23/StatQuest/生物统计-StatQuest学习笔记14-PCA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4132,1238 +4875,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/09/StatQuest/生物统计-StatQuest学习笔记08-比数与比数比/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/09/StatQuest/生物统计-StatQuest学习笔记08-比数与比数比/" itemprop="url">StatQuest学习笔记08——比数与比数比</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T12:10:54+08:00">
-                2018-06-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,073
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  18
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言主要内容">前言——主要内容</h2>
-<p>这篇笔记的主要内容是StatQuest视频教程的第29与30，第29的内容是比值比（Odds）与比值比的log转换（LogOdds）。第30的内容是oddo ratio。</p>
-<h2 id="ratio与rate的区别">ratio与rate的区别</h2>
-<p>原视频中有几个术语比较容易混淆，下面是几个英文的注释。</p>
-<p>ratio：译为“相对比”，通常简称为“比”，是指一个数字与另外一个数字的比值，它可以是两个有关的同类指标之比，也可以是不同性质的指标之比，常以倍数或百分数来表示，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113643.png">
-
-</div>
-<p>这里的甲、乙指标值可以是绝对数、相对数或平均数等。我们看下面的一个表：</p>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th>某地区某年居民钩虫感染人数</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>年龄组/岁</td>
-<td>检查人数</td>
-<td>感染人数</td>
-</tr>
-<tr class="even">
-<td>0-14</td>
-<td>453</td>
-<td>48</td>
-</tr>
-<tr class="odd">
-<td>15-49</td>
-<td>824</td>
-<td>78</td>
-</tr>
-<tr class="even">
-<td>50及以上</td>
-<td>206</td>
-<td>18</td>
-</tr>
-<tr class="odd">
-<td>合计</td>
-<td>1483</td>
-<td>144</td>
-</tr>
-</tbody>
-</table>
-<p>这个表示中，0-14岁组与15-49岁组钩虫感染人数相对比为48/78X100%=61.54%，0-14岁组与15-49岁组钩虫感染率的相对比为10.60%/9.47%=1.12（倍）。</p>
-<p>rate：对应的中文翻译是“率”，率是一个具有时间概率的比，用于说明在某一时期内某个现象发生的频率或旨度。某事件在某时间的发生率为表示为：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113656.png">
-
-</div>
-<p>率常以百分率（%）、千分率、万分率（1/万）、十万分率（1/10万）等表示，在用率的指标时，应说明观察时时期的时间单位。常用的率有生存率、发病率。例如2000年初，在某地区调查了1000名60岁以上的老人，经检查发现，有80人患糖尿病。在2001年初随访这1000名60岁以上的老人，并进行体验，发生其中有95名老人患有糖尿病，那么糖尿病的发病率为：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113705.png">
-
-</div>
-<p>也就是说，这个地区60岁以上的老人在2000年的糖尿病发病率为1.63%。</p>
-<p>——上述内容引用自《医学统计学及SAS应用》（王炳顺.2014）</p>
-<h2 id="odds与odds-ratio翻译的区别">odds与odds ratio翻译的区别</h2>
-<p>odds与odds ratio这两个词容易弄混，后来找了一本书（颜虹. 医学统计学.第2版[M]. 人民卫生出版社, 2010.），根据书里的翻译如下：</p>
-<p>odds：翻译为<code>优势比</code>或<code>比数</code>或<code>比值</code>，在不同的情况下，可以译成不同的名称，例如在比赛时，可以译为“胜算”，在赌博时，也可以译为“胜率”，在疾病方面，也可以译为“风险”。为了方便理解与描述，后文中我会在括号中注明。</p>
-<p>odds ratio：翻译为<code>比数比</code>或<code>比值比</code>。</p>
-<p>后文会详细讲这两个术语的区别，为了避免搞混淆，此篇笔记都会使用中英文来描述比数和比数比。</p>
-<h2 id="odds">odds</h2>
-<p>关于比数（odds），我们先举一个例子。</p>
-<p>你或许这么说过，“我支持的球队踢赢的概率可能是1:4”。这里暗含的意思就是有5场比赛，其中我的支持的球队会赢1场（下图蓝点所示），会输4场（下图红点所示），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113717.jpg">
-
-</div>
-<p>那么此时我们使用比数（odds）来表示<code>1:4</code>，我们也可以说是<code>1/4</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113725.jpg">
-
-</div>
-<p>计算一下，就是0.25。也就是说我支持的球队赢的胜算是0.25（注：odds在这里译为了胜算，因为我觉得在球赛这种场合使用比数比较不太合适，这里可以理解为“胜算”）。</p>
-<p>再把这个案例修改一下，如果我支持的球队赢得比赛的胜算（odds）是5:3，那么实际上暗示会有8场比赛，在这8场比赛中，我支持的球队会赢5场（蓝点所示），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113732.jpg">
-
-</div>
-<p>因此球队赢的胜算（odds）就是<code>5/3</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113737.jpg">
-
-</div>
-<p>计算结果就是1.7。我们可以说我支持的球队赢的胜算（odds）是1.7。</p>
-<p>需要注意的是，比数（odds，这里又切换到了统计学术语）与概率（probability）不同，比数（odds）指的是某些发生的事情与不发生的事情的比值，那么在这个案例中，比数（odds）的计算就是赢的事件数目（蓝色点）除以输的事件数目（红色点）如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113745.jpg">
-
-</div>
-<p>而概率（probability）则指的发生的事情数目（蓝色点）除以所有的事件数目（赢的（蓝色点）和输的（红色点）），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113753.jpg">
-
-</div>
-<p>因此，在前文中介绍的案例里，赢的比数就是5比3，也就是1.7，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113800.jpg">
-
-</div>
-<p>而赢的概率则是5/8，也就是0.625，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113805.jpg">
-
-</div>
-<p>此时我们就理解了比数（odds）与概率（probability）的区别。</p>
-<p>此时我们看一下如何从概率（probability）中计算比值比（odds）。在上个案例中，我们看到了，赢的比数（odds）为1.7，概率为0.625，我们还可以计算一下输入的概率，也就是3/8=0.375。其实也就是<code>1-赢的概率=1-5/8=3/8=0.375</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113813.jpg">
-
-</div>
-<p>此时我们用赢的概率除以输的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113819.jpg">
-
-</div>
-<p>计算后，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113826.jpg">
-
-</div>
-<p>上述讲了两种计算比数（odds）的方式，一种是根据事件数目计算，一种是根据概率计算。但经常使用的是则是第二种，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113835.jpg">
-
-</div>
-<h2 id="log-odds">log odds</h2>
-<p>再回到最初的案例，也就是我支持的球队在5场比赛中，可能赢1场的那个案例，它的比数（odds）计算如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113849.jpg">
-
-</div>
-<p>如果我支持的球队表现更差，胜算（odds，就是比数，我是为了方便描述比赛）为1:8，那么就是下面的情况：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113855.jpg">
-
-</div>
-<p>如果我支持的球队表现再差，假设胜算（odds）为1:16，那么就是下面的情况：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113901.jpg">
-
-</div>
-<p>或者还差呢，比如1:32，这基本上就接近0了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113907.jpg">
-
-</div>
-<p>我们再假设一下，我支持的球队很好，有可能踢个4:3，或1.3，也就是下面的样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113914.jpg">
-
-</div>
-<p>如果还好，比如8:3（或2.7），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113919.jpg">
-
-</div>
-<p>如果非常好，例如32:3（或者说是10.7），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113923.jpg">
-
-</div>
-<p>在这个案例中，我们知道，最初球队的胜算（odds，比数）是1，然后上下波动，差的时候，是从很小的值（基本上接近于0了）到1，如果很好的时候，则是从1到很大。此时，我们把这个比数（odds）放到一个数轴上表示，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113930.jpg">
-
-</div>
-<p>红色的箭头表示的就是球队比较差的时候，输的胜算（odds，比数），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113947.jpg">
-
-</div>
-<p>蓝色的则相反，表示的是球队赢的胜算（odds，比数），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707113954.jpg">
-
-</div>
-<p>但是，这个数轴不太直观，因为红色与蓝色不对称，比较起来不方便，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114003.jpg">
-
-</div>
-<p>例如，如果胜算（odds）是1比6的话，也就是说1/6=0.17，它就在下面的这个位置：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114009.jpg">
-
-</div>
-<p>如果胜算（odds，比数）是6比1的话，也就是6/1=6，它就在很远处，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114018.jpg">
-
-</div>
-<p>但是这些比数（odds）的程度都比较类似（一个是1比6，一个是6比1），但是区别很大，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114027.jpg">
-
-</div>
-<p>为了方便观察，我们可以把比数（odds）进行一个log转换来解决这个问题，转换后的数轴如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114034.jpg">
-
-</div>
-<p>例如，如果比数是1:6，那么经过log转换（<code>log(1/6)=log(0.17)=-1.79</code>）则是下面这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114043.jpg">
-
-</div>
-<p>如果比数（odds）是6比1，经过log转换，则是下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114049.jpg">
-
-</div>
-<p>我们通过使用log转换，这两个相似的值就很对称了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114102.jpg">
-
-</div>
-<p>注：在学习统计学的时候，有时候我们可能看到一个指标，觉得很奇怪，但是只要深入其中最根本的原理部分，就会发现，这有一定的合理性。</p>
-<h2 id="odds深入">odds深入</h2>
-<p>在我们刚涉及比数（odds）时，是按事件数目计算的，接着我们又按概率进行了计算，这两种方法在本质上是相同的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114144.jpg">
-
-</div>
-<p>最后我们又涉及了比数（odds）的log转换，此时我们需要注意的是，概率的比值（ratio of probabilities）的log转换称为logit函数（logit function），它是logistic回归（logistic regression)的基础，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114151.jpg">
-
-</div>
-<p>此时我们明白了比数（odds）和比数的log转换，那么它有什么用处呢，看下面的一个案例。在下面的这个案例里，如果随机选择一对加起来的值为100的两个数字，然后利用这对数字计算log(odds)，并且绘制出直方图，这个直方图就比较类似于正态分布了，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114203.jpg">
-
-</div>
-<p>添加上正态分布曲线，就是下面的这个样子：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114211.jpg">
-
-</div>
-<p>使用log(odds)在解决某些统计学问题方面很有用，尤其是在我们计算赢/输概率方面，或者是yes/no，或者是true/false这些情况时（我觉得这与二项分布有些类似，以后补一下）。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114216.jpg">
-
-</div>
-<p>最后，我们需要注意的是比数（odds）虽然是一个比率（ratio），但它与比数比（odds ratio）是不同的，至于有哪些不同，后文会提到。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114220.jpg">
-
-</div>
-<h2 id="odds-ratio">odds ratio</h2>
-<p>当我们说比数（odds）的时候，我们仅指两个事件发生的<code>比（ratio）</code>的<code>比值</code>，还以前面的案例为例说明，例如比数（odds）我们指的是我支持的球队获胜的<code>比（ratio）</code>除以我支持的球队失败的比例，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114226.jpg">
-
-</div>
-<p>我们用图型表示就是下面的这个样子，蓝色圆形表示赢，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114231.jpg">
-
-</div>
-<p>红色圆形表示输，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114236.jpg">
-
-</div>
-<p>那么我支持的球队赢的<code>比数（odds）</code>就是蓝色的圆形除以红色的圆形，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114256.jpg">
-
-</div>
-<p>此时，我们计算一下圆形的数目，就可以计算出<code>比数（odds）</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114303.jpg">
-
-</div>
-<p>此时需要注意的是，即使<code>比数（odds）</code>是一个<code>比（ratio）</code>，它也不是人们所谓的<code>比数比（odds ratio）</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114313.jpg">
-
-</div>
-<p>当人们说<code>比数比（odds ratio）</code>的时候，事实上他们是在说<code>比数的比（ratio of odds）</code>（这几个术语很拗口，为了避免混淆，我都会在括号时注明英文），分子与分母都是一个比数（odds），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114319.jpg">
-
-</div>
-<p>计算可得0.17，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114325.jpg">
-
-</div>
-<p>就像我们计算某件事情的比数（odds）时，如果分母比分子大很多，那么比数比（odds ratio）就位于0到1这个区间上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114331.jpg">
-
-</div>
-<p>相反，如果分子很大，分母很小，那么比数比（odds ratio）就位于1到极大这个区间上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114336.jpg">
-
-</div>
-<p>与比数（odds）类似，我们也可以把比数比（odds ratio）进行log转换，让它们看起来比较对称，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114341.jpg">
-
-</div>
-<p>例如，比数比（odds ratio）为<code>(2/4)/(3/1)</code>，进行log转换，即<code>log(odds ratio)=-1.79</code>，比数比（odds ratio）为<code>(3/1)/(2/4)</code>，进行log转换，即<code>log(odds ratio)=1.79</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114346.jpg">
-
-</div>
-<p>此时我们就得到了转换后的比数比（odds ratio），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114346.jpg">
-
-</div>
-<h2 id="odds-ratio案例">odds ratio案例</h2>
-<p>此时，我们看一个案例，<code>Has cancer</code>表示得癌症的情况，Yes是得，No是不得，<code>Has the mutated gene</code>表示含有突变基因的情况，Yes是含有突变基因，No是不含突变基因，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114911.jpg">
-
-</div>
-<p>方框中的数据是356个（356=23+117+6+210），其中，我们从是否得癌症的角度来看，29个人得癌症（29=23+3），327人不得癌症（327=117+210），我们从是否含有突变基因的角度来看，含有突变基因的人数是140（140=23+117），不含突变基因的人数是216（216=6+210）。</p>
-<p>此时，我们可以使用比数比（odds ratio）来研究突变基因与癌症之间的关系，如果一个人含有突变基因，那么它得病症的风险（odds，比数）有多高？如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114404.jpg">
-
-</div>
-<p>如果一个人含有突变基因，那么他得癌症的的风险（odds）为<code>23/117</code>，如果一个人不含突变基因，那么他得癌症的风险就是<code>6/210</code>，此时我们把<code>23/117</code>放在分子上，把<code>6/210</code>放在分母上，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114409.jpg">
-
-</div>
-<p>它们整体上被称为比数比（odds ratio），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114414.jpg">
-
-</div>
-<p>经计算，可得比数比（odds ratio）为6.88，这个数字告诉我们，含有突变基因的人得癌症的风险要比不含突变基因的人风险高出6.88倍，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114419.jpg">
-
-</div>
-<p>把6.88进行log转换，就得到了1.93，这个转换的意义类似于线性回归中的<span class="math inline">\({R}^2\)</span>，它表示的是两个事件（在这个案例中是突变基因与癌症的关系）的关联程度，它们的值反映了事件的效应程度（effect size），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114438.jpg">
-
-</div>
-<p>当这个值很大的时候，表示突变基因是癌症的一个很好的指标，如果这个值比较小，那么突变基因就不是癌症的一个很好指标，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114438.jpg">
-
-</div>
-<p>此时还有一个问题，还是与线性回归中的<span class="math inline">\({R}^2\)</span>一样，我们要知道，这个值是否有统计学上的意义，一共有3种方式来计算比数比（odds ratio），如下所示：</p>
-<ol style="list-style-type: decimal">
-<li>Fisher’s 精确检验</li>
-<li>Chi-Square检验</li>
-<li>The Wald检验（有人喜欢用这种方法来计算p值与置信区间）</li>
-</ol>
-<p>至于哪种方法好，目前还没有一个统计的认识，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707114445.jpg">
-
-</div>
-<h3 id="fisher精确检验">Fisher精确检验</h3>
-<p>我们先用Fisher精确检验来计算。</p>
-<p>第一步，我们先把这几个数字当作是某个袋子中的不同颜色的巧克力豆（注：原视频说把这些豆子是M&amp;M豆，后来查了一下，这是美国的一个巧克力豆品牌，简称为MM豆，它有各种颜色），得癌症的用红色表示，不得的用蓝色表示，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115027.jpg">
-
-</div>
-<p>第二步，在得癌症的人中，数字是29，也就是29=26+3，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115039.jpg">
-
-</div>
-<p>第三步：不得癌症的人的数字是327，也就是327=117+210，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115044.jpg">
-
-</div>
-<p>第四步：计算我们抓到23个红豆和117个蓝豆的p值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115049.jpg">
-
-</div>
-<p>经计算，这个p值为0.00001，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115053.jpg">
-
-</div>
-<h3 id="chi-square检验">Chi-square检验</h3>
-<p>我们再用Chi-square来检验一下p值，它的原理就是通过比较理论值与真实值之间的差异来计算p值的。</p>
-<p>第一步，我们先假设突变基因与癌症没有关系，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115059.jpg">
-
-</div>
-<p>第二步：计算整体中得癌症的概率，在这个数据集中，得癌症的人是29个，即29=23+6，那么它除以总的人数356（356=23+117+6+210）就是得癌症的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115103.jpg">
-
-</div>
-<p>第三步：计算不同组中得得癌症的理论人数，以含有这个突变基因的组为例（这个组的人数是140，即140=23+117），那么这个组中得癌症的理论人数应该为140 x 0.08 = 11.2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115107.jpg">
-
-</div>
-<p>按照同样的方法，把所有组的理论得癌症人数都计算出来，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115118.jpg">
-
-</div>
-<p>第四步：比较理论值与观察值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115123.jpg">
-
-</div>
-<p>至于有2个p值，这主要是因为卡方检验通常是不连续数据，但样本量足够大的话，可以视为连续数据。因此在进行卡方检验时，可以使用连续性校正，也可以不使用。</p>
-<h3 id="wald检验">Wald检验</h3>
-<p>这种检验常常用于计算logistic回归中的比数比（odds ratios）的显示性与置信区间，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115128.jpg">
-
-</div>
-<p>Wald检验会充分利用<code>log(odds ratios)</code>，它通常是服从正态分布的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115135.jpg">
-
-</div>
-<p>这个直方图是由10000个随机的<code>log(odds ratio)</code>生成的，它告诉我们如果突变基因与癌症没有关系的话，可能的p值大小，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115140.jpg">
-
-</div>
-<p>如果要在自己的计算机上绘制这个直方图，那么随机选择的人的数目就是300到400。在这个案例中我们计算的步骤如下（Wald检验不懂，我只能照着字面翻译）：</p>
-<p>第一，我们选择的是325（数字位于300到400之间）；</p>
-<p>第二，针对每个样本选择一个0到1之间的随机数，例如0.01，0.73，0.95；</p>
-<p>第三，小于0.08的那些随机数就是得样本得癌症的概率，例如，17除以325就是0.05，小于0.08；</p>
-<p>第四，为每个样本再挑选1个位于0到1之间的随机数字；</p>
-<p>第五，小于0.05的那些随机数字就是含有突变基因的人数。</p>
-<p>至少，我们会得到一个矩阵，这个矩阵中的值和基因与癌症之间的关系无关，下面主是这个矩阵，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115144.jpg">
-
-</div>
-<p>𦘀，计算<code>log(odds ratio)</code>，做10000万次，然后绘制出直方图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115157.jpg">
-
-</div>
-<p>这个直方图的正态分布曲线如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115203.jpg">
-
-</div>
-<p>在x=0处，log(odds ratio)=0，它表示不同组之间的比数（odds）没有差异，这个正态分布的标准差为0.43，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115210.jpg">
-
-</div>
-<p>通常使用观测值来估计标准差，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115218.jpg">
-
-</div>
-<p>计算过程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115223.jpg">
-
-</div>
-<p>最终结果是0.47，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115227.jpg">
-
-</div>
-<p>我们可以发现，这个0.47与0.43还是比较接近的。</p>
-<p>Wald检验所做的就是观测值的<code>log(odds ratio)</code>距离0有多少个标准差，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115231.jpg">
-
-</div>
-<p>由于Wald检验通常使用估计的标准差（这里就是0.47），那么我们使用一个中心为0，标准差为0.47的正态分布区曲线来替换原来的直方图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115235.jpg">
-
-</div>
-<p>此时计算一下观测值的<code>log(odds ratio)</code>，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115239.jpg">
-
-</div>
-<p>计算可得<code>log(odds ratio)=1.93</code>，它位于曲线的右侧部分，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115243.jpg">
-
-</div>
-<p>此时我们计算一个这个值距离0有几个标准差，我们只用它除以标准差即可，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115248.jpg">
-
-</div>
-<p>经计算可得，观测值的<code>log(odds ratio)</code>距离0有4.11个标准差，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115253.jpg">
-
-</div>
-<p>按照我们平时的计算规则，通常偏离2个标准差的p值会小于0.05，那么此时我们就可以知道<code>log(odds ratio)</code>在统计学上的显著的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115253.jpg">
-
-</div>
-<p>不过，为了得到一个精确的双尾检验的p值，我们可以求出大于1.93以及小于-的.93的曲线下面积，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115257.jpg">
-
-</div>
-<p>不过上述是传统的，利用标准正态曲线计算的方式，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115312.jpg">
-
-</div>
-<p>利用这种方法就意味着，大于4.11以及小于-4.11的曲线下面积的点都加在了一起，其中4.11是<code>log(odds ratio)</code>离均值标准差的数目，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115312.jpg">
-
-</div>
-<p>最终我们计算的结果就是，突变基因与癌症之间没有关系的p值是0.00005，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115318.jpg">
-
-</div>
-<h3 id="三种方法总结">三种方法总结</h3>
-<p>前面我们使用了3种方法来计算p值，当我们生成10000个随机的<code>log(odds ratios)</code>时，我们分别使用这3种方法来检验，如果检验符合预期，那么有5%的可能性p值是小于0.05的，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115322.jpg">
-
-</div>
-<p>从这三种方法的计算结果来看，它们在限制p值方面都表现得很好，因此你所做的就是找出你自己专业领域中最常用的方法。就作者个人的看法，如果都能通过所有的检验，那么他会选择一个在边界上的p值。</p>
-<h2 id="总结">总结</h2>
-<p>比数比（odds ratio）就是比数（odds）的比，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115352.jpg">
-
-</div>
-<p><code>log(odds ratio)</code>就是<code>odds ratio</code>进行log转换，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115356.jpg">
-
-</div>
-<p>比数比（odds ratio）会告诉我们两件事情之间的联系，例如有某种突变基因的人是否会增加其得癌症的风险（odds），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115402.jpg">
-
-</div>
-<p>有三种方法来计算两个事件之间的p值，分别为Fisher精确检验，Chi-Square检验，Wald检验，在前面的案例中，这3个检验得到的p值如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707115406.jpg">
-
-</div>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/08/StatQuest/生物统计-StatQuest学习笔记07-最大似然法详解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/08/StatQuest/生物统计-StatQuest学习笔记07-最大似然法详解/" itemprop="url">StatQuest学习笔记07——最大似然法详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-08T12:10:54+08:00">
-                2018-06-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,123
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  11
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="主要内容">主要内容</h2>
-<p>这篇笔记的主要内容是讲最大似然法的，笔记源于StatQuest的视频文件26，27，28。其中文件26内容为最大似然法（Maximun likelihood）的原理；文件27内容为指数分布；文件28内容为概率和似然。</p>
-<h2 id="最大似然法">最大似然法</h2>
-<p>我们先看一种情况，下面是一批小鼠的体重数据：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104421.jpg">
-
-</div>
-<p>最大似然法的目的就是找出这批数据最符合哪种分布，而分布呢，有很多种，例如正态分布（Normal），指数分布（Exponential），γ分布（Gamma）等，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104432.jpg">
-
-</div>
-<p>再次回到小鼠的体重数据，小鼠的体重貌似是服合正态分布的，就是下面的这种分布：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104438.jpg">
-
-</div>
-<p>如果是服从正态分布，那么这批数据就有以下这些特点：</p>
-<p>第一，大多数的测量数据（小鼠的体重）都接近于均值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104441.jpg">
-
-</div>
-<p>第二，这一批的数据都在均值的左右两侧大概呈对称分布，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104446.jpg">
-
-</div>
-<p>不过正态分布也有各种形状，下图中的形状从左到右就是比较瘦的（skinny），正常的（medium），比较胖的（Large Boned），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104452.jpg">
-
-</div>
-<p>一旦我们确定了我们这批数据是服从正态分布的，那么我们就要确定这批数据的中心在哪里，在这么多的正态分布中，为什么这个比那个更好：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104456.jpg">
-
-</div>
-<p>在找到想要正态分布之前，我们先随便看一个正态分布，看它与我们的数据匹配的程度，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104500.jpg">
-
-</div>
-<p>在下图中，这个正态分布的均值（也就是中间的虚线直线）意思就是，我们测量的多个数据应该在它附近分布。不过，我们的小鼠数据貌似不太在它的均值附近分布，大多数的数据都远离它，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104504.jpg">
-
-</div>
-<p>此时，我们再换一个正态分布，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104507.jpg">
-
-</div>
-<p>在这个正态分布中，我们可以看到，小鼠的体重有很大概率分布在这个曲线的下方，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104514.jpg">
-
-</div>
-<p>我们继续换正态分布曲线，在下面的这个曲线中，我们看到，小鼠体重的数值在很大程度上是分布在曲线的左侧，离曲线的中心位置很远，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104517.jpg">
-
-</div>
-<p>现在我们绘制一下，不同的正态分布曲线能够覆盖小鼠体重数据的可能性（likelihood），黑色的虚线就是正态分布曲线的均值所在位置，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105225.png">
-
-</div>
-<p>从这张图可以看出，红色圈上方的点所在的位置有最大的可能性（maximizes the likelihood）观测到小鼠体重。把这个点所在的正态分布曲线提取出来，就是下面的这条曲线：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105300.png">
-
-</div>
-<p>此时，我们就找到均值的最大可能的估计值，就是下面的这个黑色虚线：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105508.png">
-
-</div>
-<p>此时，我们再绘制对标准差的最大可能估计值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105624.png">
-
-</div>
-<p>按照上面的绘制不同曲线均值的方法来绘制标准差的最大可能观测值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105644.png">
-
-</div>
-<p>其中的绿色曲线就是符合我们的小鼠体重数据的曲线，能够最大可能地估计这批数据的均值与标准差，它是最终我们想要的正态分布曲线，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105644.png">
-
-</div>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707104619.jpg">
-
-</div>
-<p>此时我们明白，当有人说他们最大可能地估计了均值或标准差的时候，你就知道，你所观察到的东西就是你最大可能所观察所到的东西，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105829.png">
-
-</div>
-<p>对于大多数人来说，“概率（probability）”和“似然（likelihood）”就是一样的。但是，在我们这个教程里，“似然”专门指的是我们所讲的内容，也就是说，似然指的是，你有一批数据，你要找到符合这个数据的某个分布，寻找方法就是找到这个分布的均值和标准差（我觉得这两个参数只适用于正态分布），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105910.png">
-
-</div>
-<p>另外我又找了一些资料，总结一下最大似然法与概率的区别（在后文还会讲到）：</p>
-<p>极大似然估计，通俗理解来说，就是利用已知的样本结果信息，反推最具有可能（最大概率）导致这些样本结果出现的模型参数值。举个例子。</p>
-<p>假如有一个罐子，里面有黑白两种颜色的球，数目多少不知，两种颜色的比例也不知。我 们想知道罐中白球和黑球的比例，但我们不能把罐中的球全部拿出来数。现在我们可以每次任意从已经摇匀的罐中拿一个球出来，记录球的颜色，然后把拿出来的球 再放回罐中。这个过程可以重复，我们可以用记录的球的颜色来估计罐中黑白球的比例。假如在前面的一百次重复记录中，有七十次是白球，请问罐中白球所占的比例最有可能是多少？很多人马上就有答案了：70%。而其后的理论支撑是什么呢？就最大似然法。</p>
-<p>而概率，就是我们已知现在某事件的概率，来计算它可能的结果。打个比方就是，我们知道一个袋子里有100个球，30个白球，70个黑球，伸手进去抓一个球，是黑球的概率是多少？这就是概率。</p>
-<h2 id="最大似然法与指数分布">最大似然法与指数分布</h2>
-<h3 id="什么是指数分布">什么是指数分布</h3>
-<p>指数分布研究的是事件的时间间隔的概率，像下面这些都属于指数分布：你收到两条微信之间的时间间隔，婴儿出生的时间间隔，来电的时间间隔，奶粉销售的时间间隔，网站访问的时间间隔，它的分布曲线如下所示，其中y轴和x轴与曲线围成的面积是1：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110055.png">
-
-</div>
-<p>如果我们对某个事件感兴趣，那么它在在0到5秒内发生的概率就是<code>x=0</code>到<code>x=5</code>之间的这个面积，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707105941.jpg">
-
-</div>
-<p>这个曲线的方程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110132.png">
-
-</div>
-<p>此时我们在x轴上找到一个值（红叉所在位置），把它代入方程，得到y值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110145.png">
-
-</div>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110205.png">
-
-</div>
-<p>其中λ表示是的“率”(rate)，它表示的是事情发生的频率，如果λ=1，那么这个公式描述的就是正在发生的事情（就像你此时正在看这个视频这个事件），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110239.png">
-
-</div>
-<p>如果λ=2（红线），这条曲线描述的就是某些人正在看视频，频率是每秒发生2次，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110306.png">
-
-</div>
-<p>如果λ=0.5（黑线），它描述的就是每2秒有1个人在看视频，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110316.png">
-
-</div>
-<h3 id="最大似然法与指数分布-1">最大似然法与指数分布</h3>
-<p>我们利用最大然法来找某组数据符合指数分布的目标就是要找到<code>λ</code>值，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110331.png">
-
-</div>
-<p>因此，我们（指作者自己）收入了一些该视频观看的时间，其中数据如下：</p>
-<p>x1=第1次观看视频与第2次观看视频之间的时间；</p>
-<p>x2=第2次观看视频与第3次观看视频之间的时间；</p>
-<p>x3=第3次观看视频与第4次观看视频之间的时间；</p>
-<p>…</p>
-<p>xn=第n次观看视频与第n+1次观看视频之间的时间，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110401.png">
-
-</div>
-<p>其中n就是我们的数据数目，此时我们假设我们已经有了一个很好的<code>λ</code>值。那么这个<code>λ</code>是我们第1次数据<code>x1</code>值的可能性是多少呢，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110422.png">
-
-</div>
-<p>在上面的公式里，<code>L</code>表示概率，整个公式表示，<code>x1</code>时的概率，同样的，我们可以代入x2，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110444.png">
-
-</div>
-<p>那么在x1和x2存在时，λ可能的值是多少呢？下面是计算过程：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110528.png">
-
-</div>
-<p>如果是x1，x2到xn呢？计算过程如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110616.png">
-
-</div>
-<p>但是，如果我们没有一个很好的λ值呢，为了找到这个λ值，我们需要这么计算（其实就是对下面的这个方程求导，然后令导数等于0即可），<code>L</code>及其后面的公式总体叫做“最大似然函数”（Likelihood function），求它的过程如下所示：</p>
-<p>第一步，求出最大似然函数的导数，我们发现，导数的右边含有自然常数<code>e</code>，因此我们可以进行一个log转换，接着计算就行，如下所示：如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110719.png">
-
-</div>
-<p>第二步，令导数等于0，接着再计算，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110757.png">
-
-</div>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110810.png">
-
-</div>
-<p>从最终的计算结果来看，当我们收集了很多事件之间的时间间隔时，我们把它们代入公式，我们就得到了对λ的最佳估计值，然后我们就可以将这个λ代入指数方程了。</p>
-<h3 id="一个案例">一个案例</h3>
-<p>例如，如果在第1次观看和第2次观看之间的时间间隔是2秒，也就是说x1=2，在第2次观看和第3次观看之间的时间间隔是2.5秒，那么x2=2.5，而在第3次和第4次观看之间的时间间隔是1.5秒，那么x3=1.5，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110838.png">
-
-</div>
-<p>代入方程，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707110903.png">
-
-</div>
-<h2 id="概率与最大似然估计">概率与最大似然估计</h2>
-<p>我们先看一下小鼠体重的正态分布，它的均值是32，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112146.png">
-
-</div>
-<p>标准差为2.5，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112157.png">
-
-</div>
-<p>最低值是24，最高值是40，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112210.png">
-
-</div>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112226.png">
-
-</div>
-<p>此时，我们计算一下32克到34克之间小鼠的概率：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112251.png">
-
-</div>
-<p>它的概率就是由正态分布曲线，x轴，以及x=32，x=34围成的面积，就是下面的红色面积部分，经计算，这个面积是0.29，这就是说当我们随机选择一个小鼠时，它的体重在32克到34克之间的概率是29%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112335.png">
-
-</div>
-<p>那么在数学上，我们可以用<code>pr</code>这个符号来表示表示这个概率，完整的表示方法就是<code>pr(体重在32到43之间 | 均值 = 32，标准差=2.5)=0.29</code>，这个公式中间有一个竖线，即<code>|</code>，它表示<code>given</code>，就是说给定的条件，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112407.png">
-
-</div>
-<p>现在我们计算一下，随机挑选一只小鼠，它体重大于34克的概率，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112440.png">
-
-</div>
-<p>当我们在讨论概率的时候，我们讨论的就是在一个已知分布下，求满足某个条件的概率，就是前面两个案例。现在我们转向最大似然法，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112530.png">
-
-</div>
-<p>在讲最大似然法时，我们先假定已经称了1只小鼠的体重了（其实也可以是几只），它的体重是34，它在图中的位置就是红点所在位置：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112546.png">
-
-</div>
-<p>那么我们称1只小鼠是34克在下图正态分布曲线上的可能性就在下面的这个点上：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112614.png">
-
-</div>
-<p>从数学上，我们可以用下面的这个公式来表示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112631.png">
-
-</div>
-<p><code>L</code>就是Likelihood的缩写，<code>L(mean = 32 and standard deviation = 2.5)</code>表示：某点个在一个分布（均值为32，标准差为2.5）的可能性，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112703.png">
-
-</div>
-<p>这个竖线<code>|</code>表示给定条件（其实就是我们称的小鼠的体重）的意思：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112722.png">
-
-</div>
-<p>竖线后面的就是具体的条件（小鼠体重是34克），最终计算的结果是0.12，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112731.png">
-
-</div>
-<p>此时，我们就可以说，我们称了一只小鼠，它的体重是34克，它在某个正态分布曲线（均值为32，标准差为2.5）上的可能性（likelihood）是12%。此时，我们再换一个正态分布曲线（它的均值是34，标准差为2.5），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112749.png">
-
-</div>
-<p>经计算，它在这条曲线上的可能性是21%，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112813.png">
-
-</div>
-<p>从上面的讲解我们可以得到这些结论：</p>
-<ol style="list-style-type: decimal">
-<li><p>概率（probability）指的是某个固定曲线下的面积，它表示为<code>pr(data | distribution)</code>。</p></li>
-<li><p>似然（Likelihood）指的是对于某个固定的点，它对应的y轴上的数值，这个y轴上的数值在不同的曲线上的取值是不同的，用数学表示就是<code>L(distribution | data)</code>，如下所示：</p></li>
-</ol>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112918.png">
-
-</div>
-<p>概率的计算公式如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190707112938.png">
-
-</div>
-<p>## 参考资料</p>
-<p><a href="https://www.zhihu.com/question/20447622" target="_blank" rel="external">1.最大似然估计和最小二乘法怎么理解？</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -5409,7 +4925,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">229</span>
+                  <span class="site-state-item-count">231</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -5508,7 +5024,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共920.5k字</span>
+  <span class="post-count">博客全站共930.0k字</span>
 </div>
 
         

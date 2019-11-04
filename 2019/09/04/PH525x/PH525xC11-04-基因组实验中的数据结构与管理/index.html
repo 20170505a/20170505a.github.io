@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Bioconductor," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 在科学研究中，大家都认为数据管理是一项专业且乏味的工作。因为数据管理一旦出现问题，会导致自身的资源与声誉付出高昂的代价，因此，数据管理必须要高度可靠且有效。在传统实验室中，研究人员通常使用电子表格来管理数据，但是这种方式存在着风险。因此，我们希望通常简化可靠的数据管理操作来增加数据的价值。 在Bioconductor中，指导软件开发的原则也可以应用于数据管理。模块化和可扩展的数据结构能够">
+<meta name="keywords" content="Bioconductor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PH525xC11-04-基因组实验中的数据结构与管理">
+<meta property="og:url" content="http://rvdsd.top/2019/09/04/PH525x/PH525xC11-04-基因组实验中的数据结构与管理/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言 在科学研究中，大家都认为数据管理是一项专业且乏味的工作。因为数据管理一旦出现问题，会导致自身的资源与声誉付出高昂的代价，因此，数据管理必须要高度可靠且有效。在传统实验室中，研究人员通常使用电子表格来管理数据，但是这种方式存在着风险。因此，我们希望通常简化可靠的数据管理操作来增加数据的价值。 在Bioconductor中，指导软件开发的原则也可以应用于数据管理。模块化和可扩展的数据结构能够">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191029171318.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191029171338.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/dataman2019-lkstpr-1.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191104094334.png">
+<meta property="og:updated_time" content="2019-11-04T02:22:12.098Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PH525xC11-04-基因组实验中的数据结构与管理">
+<meta name="twitter:description" content="前言 在科学研究中，大家都认为数据管理是一项专业且乏味的工作。因为数据管理一旦出现问题，会导致自身的资源与声誉付出高昂的代价，因此，数据管理必须要高度可靠且有效。在传统实验室中，研究人员通常使用电子表格来管理数据，但是这种方式存在着风险。因此，我们希望通常简化可靠的数据管理操作来增加数据的价值。 在Bioconductor中，指导软件开发的原则也可以应用于数据管理。模块化和可扩展的数据结构能够">
+<meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191029171318.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/09/04/PH525x/PH525xC11-04-基因组实验中的数据结构与管理/"/>
+
+
+
+
+
+  <title>PH525xC11-04-基因组实验中的数据结构与管理 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/04/PH525x/PH525xC11-04-基因组实验中的数据结构与管理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PH525xC11-04-基因组实验中的数据结构与管理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-04T12:00:00+08:00">
+                2019-09-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PH525x/" itemprop="url" rel="index">
+                    <span itemprop="name">PH525x</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  9,924
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  45
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言">前言</h1>
+<p>在科学研究中，大家都认为数据管理是一项专业且乏味的工作。因为数据管理一旦出现问题，会导致自身的资源与声誉付出高昂的代价，因此，数据管理必须要高度可靠且有效。在传统实验室中，研究人员通常使用电子表格来管理数据，但是这种方式存在着风险。因此，我们希望通常简化可靠的数据管理操作来增加数据的价值。</p>
+<p>在Bioconductor中，指导软件开发的原则也可以应用于数据管理。模块化和可扩展的数据结构能够发挥更高的价值。打包和版本控制协议适用于定义数据类(data class)。我们可以将电子表格转化为语义丰富的对象，并联合使用NCBI GEO数据库，处理BAM和BED文件，以及外部存储来促进与大型多组学数据库（例如TCGA）衔接来说明一下上述的这些思路。</p>
+<h1 id="汇总多个表格信息">汇总多个表格信息</h1>
+<h2 id="演示包gse5859subset">演示包：GSE5859Subset</h2>
+<p>GSE5859Subset是一个包，里面含有一个实验的表达数据。当加载了这个包后，我们可以看到这个包有三个组件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">library(GSE5859Subset)</div><div class="line">data(GSE5859Subset)</div><div class="line">dim(geneExpression)</div><div class="line">## [1] 8793   24</div><div class="line">dim(geneAnnotation)</div><div class="line">## [1] 8793    4</div><div class="line">dim(sampleInfo)</div><div class="line">## [1] 24  4</div></pre></td></tr></table></figure>
+<p>我们来查看一下这3个组件是否有关（一个矩阵，两个数据框），如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">all.equal(sampleInfo$filename, colnames(geneExpression))</div><div class="line">## [1] TRUE</div><div class="line">all.equal(rownames(geneExpression), geneAnnotation$PROBEID)</div><div class="line">## [1] TRUE</div></pre></td></tr></table></figure>
+<p>简单来讲，我们可以把 <code>sampleInfo$filename</code> 视为一个按行连接的节点(key)，它连接了样本信息表格与基因表达表格。<code>colnames(geneExpression)</code>将该矩阵的列连接到<code>sampleInfo</code>的行中对应的样本。简单来说就是，geneExpression的列名是样本名，而sampleInfo中的某1列中也含有这些样本名，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191029171318.png">
+
+</div>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191029171338.png">
+
+</div>
+<p>与之类似, <code>geneExpression</code> 的行名，对应了<code>geneAnnotation</code>中探针数据，即 <code>PROBEID</code> ，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">options(digits=2)</div><div class="line">cbind(sampleInfo[1:3,], colnames(geneExpression)[1:3], </div><div class="line">    t(geneExpression)[1:3,1:4])</div><div class="line">##     ethnicity       date         filename group</div><div class="line">## 107       ASN 2005-06-23 GSM136508.CEL.gz     1</div><div class="line">## 122       ASN 2005-06-27 GSM136530.CEL.gz     1</div><div class="line">## 113       ASN 2005-06-27 GSM136517.CEL.gz     1</div><div class="line">##     colnames(geneExpression)[1:3] 1007_s_at 1053_at 117_at 121_at</div><div class="line">## 107              GSM136508.CEL.gz       6.5     7.5    5.4    7.9</div><div class="line">## 122              GSM136530.CEL.gz       6.4     7.3    5.1    7.7</div><div class="line">## 113              GSM136517.CEL.gz       6.3     7.2    5.0    7.5</div></pre></td></tr></table></figure>
+<h2 id="在expressionset汇总表格">在ExpressionSet汇总表格</h2>
+<p><code>ExpressionSet</code> 容器用于管理一个项目中的所有信息。为了改善基因名与样本名命名的可视化效果，我们可以以下每个组件的注释信息，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">head(rownames(sampleInfo))</div><div class="line">head(rownames(geneAnnotation))</div><div class="line">rownames(sampleInfo) = sampleInfo$filename</div><div class="line">rownames(geneAnnotation) = geneAnnotation$PROBEID</div><div class="line">head(rownames(sampleInfo))</div><div class="line">head(rownames(geneAnnotation))</div></pre></td></tr></table></figure>
+<p>结果如下所：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; head(rownames(sampleInfo))</div><div class="line">[<span class="number">1</span>] <span class="string">"107"</span> <span class="string">"122"</span> <span class="string">"113"</span> <span class="string">"163"</span> <span class="string">"153"</span> <span class="string">"161"</span></div><div class="line">&gt; head(rownames(geneAnnotation))</div><div class="line">[<span class="number">1</span>] <span class="string">"1"</span>  <span class="string">"30"</span> <span class="string">"31"</span> <span class="string">"32"</span> <span class="string">"33"</span> <span class="string">"34"</span></div><div class="line">&gt; rownames(sampleInfo) = sampleInfo$filename</div><div class="line">&gt; rownames(geneAnnotation) = geneAnnotation$PROBEID</div><div class="line">&gt; head(rownames(sampleInfo))</div><div class="line">[<span class="number">1</span>] <span class="string">"GSM136508.CEL.gz"</span> <span class="string">"GSM136530.CEL.gz"</span> <span class="string">"GSM136517.CEL.gz"</span></div><div class="line">[<span class="number">4</span>] <span class="string">"GSM136576.CEL.gz"</span> <span class="string">"GSM136566.CEL.gz"</span> <span class="string">"GSM136574.CEL.gz"</span></div><div class="line">&gt; head(rownames(geneAnnotation))</div><div class="line">[<span class="number">1</span>] <span class="string">"1007_s_at"</span> <span class="string">"1053_at"</span>   <span class="string">"117_at"</span>    <span class="string">"121_at"</span>    <span class="string">"1255_g_at"</span></div><div class="line">[<span class="number">6</span>] <span class="string">"1294_at"</span></div></pre></td></tr></table></figure>
+<p>现在我们已经将样本的信息进行了更改，现在我们生成 <code>ExpressionSet</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Biobase)</div><div class="line">es5859 = ExpressionSet(assayData=geneExpression)</div><div class="line">pData(es5859) = sampleInfo</div><div class="line">fData(es5859) = geneAnnotation</div><div class="line">es5859</div><div class="line"><span class="comment">## ExpressionSet (storageMode: lockedEnvironment)</span></div><div class="line"><span class="comment">## assayData: 8793 features, 24 samples </span></div><div class="line"><span class="comment">##   element names: exprs </span></div><div class="line"><span class="comment">## protocolData: none</span></div><div class="line"><span class="comment">## phenoData</span></div><div class="line"><span class="comment">##   sampleNames: GSM136508.CEL.gz GSM136530.CEL.gz ...</span></div><div class="line"><span class="comment">##     GSM136572.CEL.gz (24 total)</span></div><div class="line"><span class="comment">##   varLabels: ethnicity date filename group</span></div><div class="line"><span class="comment">##   varMetadata: labelDescription</span></div><div class="line"><span class="comment">## featureData</span></div><div class="line"><span class="comment">##   featureNames: 1007_s_at 1053_at ... AFFX-r2-P1-cre-5_at (8793</span></div><div class="line"><span class="comment">##     total)</span></div><div class="line"><span class="comment">##   fvarLabels: PROBEID CHR CHRLOC SYMBOL</span></div><div class="line"><span class="comment">##   fvarMetadata: labelDescription</span></div><div class="line"><span class="comment">## experimentData: use 'experimentData(object)'</span></div><div class="line"><span class="comment">## Annotation:</span></div></pre></td></tr></table></figure>
+<p>这样做的一个好处的就是，我们可以使用<code>fData</code>和<code>pData</code>组件中更高层次的注释来选择特征。例如，我们现在只提取Y染色体上的基因表达特征：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">es5859[which(fData(es5859)$CHR==<span class="string">"chrY"</span>),]</div><div class="line"><span class="comment">## ExpressionSet (storageMode: lockedEnvironment)</span></div><div class="line"><span class="comment">## assayData: 21 features, 24 samples </span></div><div class="line"><span class="comment">##   element names: exprs </span></div><div class="line"><span class="comment">## protocolData: none</span></div><div class="line"><span class="comment">## phenoData</span></div><div class="line"><span class="comment">##   sampleNames: GSM136508.CEL.gz GSM136530.CEL.gz ...</span></div><div class="line"><span class="comment">##     GSM136572.CEL.gz (24 total)</span></div><div class="line"><span class="comment">##   varLabels: ethnicity date filename group</span></div><div class="line"><span class="comment">##   varMetadata: labelDescription</span></div><div class="line"><span class="comment">## featureData</span></div><div class="line"><span class="comment">##   featureNames: 201909_at 204409_s_at ... 211149_at (21 total)</span></div><div class="line"><span class="comment">##   fvarLabels: PROBEID CHR CHRLOC SYMBOL</span></div><div class="line"><span class="comment">##   fvarMetadata: labelDescription</span></div><div class="line"><span class="comment">## experimentData: use 'experimentData(object)'</span></div><div class="line"><span class="comment">## Annotation:</span></div></pre></td></tr></table></figure>
+<p>我们可以看一下可<code>ExpressionSet</code>这种类所能使用的所有方法，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">methods(class=<span class="string">"ExpressionSet"</span>)</div><div class="line"><span class="comment">##  [1] [                [[               [[&lt;-             $$               </span></div><div class="line"><span class="comment">##  [5] $$&lt;-              abstract         annotation       annotation&lt;-    </span></div><div class="line"><span class="comment">##  [9] as.data.frame    as.matrix        assayData        assayData&lt;-     </span></div><div class="line"><span class="comment">## [13] boxplot          classVersion     classVersion&lt;-   coerce          </span></div><div class="line"><span class="comment">## [17] combine          description      description&lt;-    dim             </span></div><div class="line"><span class="comment">## [21] dimnames         dimnames&lt;-       dims             esApply         </span></div><div class="line"><span class="comment">## [25] experimentData   experimentData&lt;- exprs            exprs&lt;-         </span></div><div class="line"><span class="comment">## [29] fData            fData&lt;-          featureData      featureData&lt;-   </span></div><div class="line"><span class="comment">## [33] featureNames     featureNames&lt;-   fvarLabels       fvarLabels&lt;-    </span></div><div class="line"><span class="comment">## [37] fvarMetadata     fvarMetadata&lt;-   initialize       isCurrent       </span></div><div class="line"><span class="comment">## [41] isVersioned      KEGG2heatmap     KEGGmnplot       makeDataPackage </span></div><div class="line"><span class="comment">## [45] notes            notes&lt;-          pData            pData&lt;-         </span></div><div class="line"><span class="comment">## [49] phenoData        phenoData&lt;-      preproc          preproc&lt;-       </span></div><div class="line"><span class="comment">## [53] protocolData     protocolData&lt;-   pubMedIds        pubMedIds&lt;-     </span></div><div class="line"><span class="comment">## [57] rowMedians       rowQ             sampleNames      sampleNames&lt;-   </span></div><div class="line"><span class="comment">## [61] show             storageMode      storageMode&lt;-    updateObject    </span></div><div class="line"><span class="comment">## [65] updateObjectTo   varLabels        varLabels&lt;-      varMetadata     </span></div><div class="line"><span class="comment">## [69] varMetadata&lt;-    write.exprs     </span></div><div class="line"><span class="comment">## see '?methods' for accessing help and source code</span></div></pre></td></tr></table></figure>
+<p>在这些方法中比较重要的有以下几个：</p>
+<ul>
+<li><code>exprs()</code>: 获取数值型表达值；</li>
+<li><code>pData()</code>: 获取样本数据，就是样本名；</li>
+<li><code>fData()</code>: 获取特征数据，就是基因表达值；</li>
+<li><code>annotation()</code>: 获取特征名的标签；get a tag that identifies nomenclature for feature names</li>
+<li><code>experimentData()</code>: 获取符合 <a href="https://www.ncbi.nlm.nih.gov/geo/info/MIAME.html" target="_blank" rel="external">MIAME</a>的元数据结构。</li>
+</ul>
+<p>许多方法都具有<code>setter</code>属性（注：这里的<code>setter</code>应该是R面向对象编程中的一个方法，我猜测可能是赋值一类的操作，具体的我还不清楚）。例如，</p>
+<p><code>exprs&lt;-</code> 可以用于指定表达数值。此外，所有的组件都是可选的，因此我们的<code>es5859</code>对象中没有<code>annotation</code>或<code>experimentData</code>也不奇怪。我们随后会改善一下这个对象的自身的描述，首选我们设置注释信息，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">annotation(es5859)</div><div class="line">annotation(es5859) = &quot;hgfocus.db&quot; # need to look at GSE record in GEO, and know .db</div><div class="line">annotation(es5859)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; annotation(es5859)</div><div class="line">character(<span class="number">0</span>)</div><div class="line">&gt; annotation(es5859) = <span class="string">"hgfocus.db"</span> <span class="comment"># need to look at GSE record in GEO, and know .db</span></div><div class="line">&gt; </div><div class="line">&gt; annotation(es5859)</div><div class="line">[<span class="number">1</span>] <span class="string">"hgfocus.db"</span></div></pre></td></tr></table></figure>
+<p>第二，获取符合MIAME文档的实验元数据信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(annotate)</div><div class="line">es5859</div><div class="line">mi = pmid2MIAME(<span class="string">"17206142"</span>)</div><div class="line">experimentData(es5859) = mi</div><div class="line">es5859</div><div class="line"><span class="comment">## ExpressionSet (storageMode: lockedEnvironment)</span></div><div class="line"><span class="comment">## assayData: 8793 features, 24 samples </span></div><div class="line"><span class="comment">##   element names: exprs </span></div><div class="line"><span class="comment">## protocolData: none</span></div><div class="line"><span class="comment">## phenoData</span></div><div class="line"><span class="comment">##   sampleNames: GSM136508.CEL.gz GSM136530.CEL.gz ...</span></div><div class="line"><span class="comment">##     GSM136572.CEL.gz (24 total)</span></div><div class="line"><span class="comment">##   varLabels: ethnicity date filename group</span></div><div class="line"><span class="comment">##   varMetadata: labelDescription</span></div><div class="line"><span class="comment">## featureData</span></div><div class="line"><span class="comment">##   featureNames: 1007_s_at 1053_at ... AFFX-r2-P1-cre-5_at (8793</span></div><div class="line"><span class="comment">##     total)</span></div><div class="line"><span class="comment">##   fvarLabels: PROBEID CHR CHRLOC SYMBOL</span></div><div class="line"><span class="comment">##   fvarMetadata: labelDescription</span></div><div class="line"><span class="comment">## experimentData: use 'experimentData(object)'</span></div><div class="line"><span class="comment">##   pubMedIds: 17206142 </span></div><div class="line"><span class="comment">## Annotation: hgfocus.db</span></div></pre></td></tr></table></figure>
+<p>现在我们通过<code>abstract</code>方法就能获取一定信息：</p>
+<p>Now, for example, the <code>abstract</code> method will function well:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">nchar(abstract(es5859))</div><div class="line"><span class="comment">## [1] 1057</span></div><div class="line">substr(abstract(es5859),<span class="number">1</span>,<span class="number">50</span>)</div><div class="line"><span class="comment">## [1] "Variation in DNA sequence contributes to individua"</span></div></pre></td></tr></table></figure>
+<p>用于汇总这些表格的最新方法就是使用<code>SummarizedExperiment</code>类，我们后面会讲到。</p>
+<h2 id="自同态环概念endomorphism">*自同态环概念(endomorphism)</h2>
+<p>关于ExpressionSet容器设计的一个最后备注：假设 <code>x</code> 是一个ExpressionSet。方括号被定义为一操作符，当<code>G</code>和<code>S</code>分别是标识特征和合适样本的合适向量时，那么<code>X[G,S]</code>是具有仅限于<code>G</code>和<code>S</code>中标记的那些特征值和样本的ExrpessionSet。对<code>X</code>有限的所有操作也都对 <code>X[G, S]</code> 有效。此属性称为ExpressionSet相对于中括号进行子集的自同态。</p>
+<p>上面一段不太懂，以下是原文：</p>
+<blockquote>
+<p>A final remark about the ExpressionSet container design: Suppose <code>X</code> is an ExpressionSet. The bracket operator has been defined so that whenever <code>G</code> and <code>S</code> are suitable vectors identifying features and samples respectively, <code>X[G, S]</code> is an ExpressionSet with features and samples restricted to those identified in <code>G</code> and <code>S</code>. All operations that are valid for <code>X</code> are valid for <code>X[G, S]</code>. This property is called the <em>endomorphism of ExpressionSet with respect to subsetting with bracket</em>.</p>
+</blockquote>
+<h1 id="geo-geoquery-arrayexpress与表达数据储存">GEO, GEOquery, ArrayExpress与表达数据储存</h1>
+<p>基因表达数据库(GEO)储存了源于NIH资助的所有微阵列实验的数据。 Bioconductor的GEOquery软件包可以很方便地获取这些数据。而ArrayExpress软件包则可以很容易地获取欧洲分子生物学实验室赞助的ArrayExpress数据。</p>
+<h2 id="geometadb">GEOmetadb</h2>
+<p>GEO中有数以万计的实验结果。<em>GEOmetadb</em>包括了用于获取和检索SQLite数据库的工具，SQLite数据库含有对GEO内容的广泛注释信息。2017年10月检索到的信息超过了6G。因此，我们并不需要你使用这个包。如果你有兴趣的话，可以参考vignette中案例，介绍得非常详细。</p>
+<h2 id="getgeo获取geo中的expressionset">getGEO获取GEO中的ExpressionSet</h2>
+<p>例如我们对胶质母细胞瘤的基因组学特别感兴趣，并且已经性了一篇论文(Pmid 27746144)讨论了一种新陈代谢途径作可能会增强其治疗开发策略。这个实验使用了Affymetrix PrimeView阵列，并储存在GEO。现在我们使用getGEO获取这些数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GEOquery)</div><div class="line">glioMA = getGEO(<span class="string">"GSE78703"</span>)[[<span class="number">1</span>]]</div><div class="line"><span class="comment">## Found 1 file(s)</span></div><div class="line"><span class="comment">## GSE78703_series_matrix.txt.gz</span></div><div class="line"><span class="comment">## Parsed with column specification:</span></div><div class="line"><span class="comment">## cols(</span></div><div class="line"><span class="comment">##   ID_REF = col_character(),</span></div><div class="line"><span class="comment">##   GSM2072905 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072906 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072907 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072908 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072909 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072910 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072911 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072912 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072913 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072914 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072915 = col_double(),</span></div><div class="line"><span class="comment">##   GSM2072916 = col_double()</span></div><div class="line"><span class="comment">## )</span></div><div class="line"><span class="comment">## File stored at:</span></div><div class="line"><span class="comment">## /var/folders/5_/14ld0y7s0vbg_z0g2c9l8v300000gr/T//RtmpKRbO0i/GPL15207.soft</span></div><div class="line"><span class="comment">## Warning: 102 parsing failures.</span></div><div class="line"><span class="comment">##   row     col           expected         actual         file</span></div><div class="line"><span class="comment">## 49294 SPOT_ID 1/0/T/F/TRUE/FALSE AFFX-BioB-3_at literal data</span></div><div class="line"><span class="comment">## 49295 SPOT_ID 1/0/T/F/TRUE/FALSE AFFX-BioB-5_at literal data</span></div><div class="line"><span class="comment">## 49296 SPOT_ID 1/0/T/F/TRUE/FALSE AFFX-BioB-M_at literal data</span></div><div class="line"><span class="comment">## 49297 SPOT_ID 1/0/T/F/TRUE/FALSE AFFX-BioC-3_at literal data</span></div><div class="line"><span class="comment">## 49298 SPOT_ID 1/0/T/F/TRUE/FALSE AFFX-BioC-5_at literal data</span></div><div class="line"><span class="comment">## ..... ....... .................. .............. ............</span></div><div class="line"><span class="comment">## See problems(...) for more details.</span></div><div class="line">glioMA</div><div class="line"><span class="comment">## ExpressionSet (storageMode: lockedEnvironment)</span></div><div class="line"><span class="comment">## assayData: 49395 features, 12 samples </span></div><div class="line"><span class="comment">##   element names: exprs </span></div><div class="line"><span class="comment">## protocolData: none</span></div><div class="line"><span class="comment">## phenoData</span></div><div class="line"><span class="comment">##   sampleNames: GSM2072905 GSM2072906 ... GSM2072916 (12 total)</span></div><div class="line"><span class="comment">##   varLabels: title geo_accession ... treated with:ch1 (35 total)</span></div><div class="line"><span class="comment">##   varMetadata: labelDescription</span></div><div class="line"><span class="comment">## featureData</span></div><div class="line"><span class="comment">##   featureNames: 11715100_at 11715101_s_at ... AFFX-TrpnX-M_at</span></div><div class="line"><span class="comment">##     (49395 total)</span></div><div class="line"><span class="comment">##   fvarLabels: ID GeneChip Array ... SPOT_ID (36 total)</span></div><div class="line"><span class="comment">##   fvarMetadata: Column Description labelDescription</span></div><div class="line"><span class="comment">## experimentData: use 'experimentData(object)'</span></div><div class="line"><span class="comment">##   pubMedIds: 27746144 </span></div><div class="line"><span class="comment">## Annotation: GPL15207</span></div></pre></td></tr></table></figure>
+<p>通过以上操作中，我们可以看到使用这个对象（数据集）可以查看使用LXR-623处理能够影响基因ABCA1的表达，文献对应的PubMed ID为27746144。</p>
+<h2 id="arrayexpress检索并获取embl-ebi的arrayexpress">ArrayExpress检索并获取EMBL-EBI的ArrayExpress</h2>
+<p><a href="https://www.ebi.ac.uk/arrayexpress/" target="_blank" rel="external">ArrayExpress Archive of Functional Genomics Data</a>储存了高通量功能基因组实验的数据，并为其他研究者再次使用这些数据提供方便。最近，ArrayExpress还从NCBI GEO导入了所有表达数据。</p>
+<p><em>ArrayExpress</em>包支持使用<code>queryAE</code>直接查询EMBL-EBI数据库，现在我们来试一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ArrayExpress)</div><div class="line">sets = queryAE(keywords = <span class="string">"glioblastoma"</span>, species = <span class="string">"homo+sapiens"</span>)</div><div class="line">dim(sets)</div><div class="line"><span class="comment">## [1] 546   8</span></div><div class="line">sets[<span class="number">5</span>:<span class="number">7</span>,-c(<span class="number">7</span>,<span class="number">8</span>)]</div><div class="line"><span class="comment">##                      ID Raw Processed ReleaseDate PubmedID      Species</span></div><div class="line"><span class="comment">## E-MTAB-6881 E-MTAB-6881  no        no  2019-04-30       NA Homo sapiens</span></div><div class="line"><span class="comment">## E-MTAB-6882 E-MTAB-6882  no        no  2019-04-29       NA Homo sapiens</span></div><div class="line"><span class="comment">## E-MTAB-7490 E-MTAB-7490 yes        no  2019-03-22       NA Homo sapiens</span></div></pre></td></tr></table></figure>
+<p><code>PubmedID</code>这一列显示的是Pubmed号，有的有，有的没有（没有的用NA标记），通过<code>getAE</code>函数则可以获取原始数据，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">initdir = dir()</div><div class="line">if (!file.exists(&quot;E-MTAB-5797.sdrf.txt&quot;)) nano = getAE(&quot;E-MTAB-5797&quot;)</div></pre></td></tr></table></figure>
+<p>上面的代码将与该实验相关的数据下载到当前文件夹，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">afterget = dir()</div><div class="line">setdiff(afterget, initdir)</div><div class="line">##  [1] &quot;9406922003_R01C01_Grn.idat&quot; &quot;9406922003_R01C01_Red.idat&quot;</div><div class="line">##  [3] &quot;9406922003_R02C01_Grn.idat&quot; &quot;9406922003_R02C01_Red.idat&quot;</div><div class="line">##  [5] &quot;9406922003_R03C02_Grn.idat&quot; &quot;9406922003_R03C02_Red.idat&quot;</div><div class="line">##  [7] &quot;9406922003_R04C02_Grn.idat&quot; &quot;9406922003_R04C02_Red.idat&quot;</div><div class="line">##  [9] &quot;9406922003_R05C01_Grn.idat&quot; &quot;9406922003_R05C01_Red.idat&quot;</div><div class="line">## [11] &quot;A-MEXP-2255.adf.txt&quot;        &quot;E-MTAB-5797.idf.txt&quot;       </div><div class="line">## [13] &quot;E-MTAB-5797.raw.1.zip&quot;      &quot;E-MTAB-5797.sdrf.txt&quot;</div></pre></td></tr></table></figure>
+<p>在接下来的部分里，我们会讲解一下如何导入并处理这些数据。</p>
+<h1 id="summarizedexperiment实例">SummarizedExperiment实例</h1>
+<p>在使用微阵列的时代，目标核酸的是由微阵列里面的探针决定的。而在现在广泛使用的短读长测序方法则为目标核酸的定量提供了更大的灵活性。因此，Bioconductor针对大规模的基因检测设计了一种更加灵活的容器。这种容器的一个重要思路就是我们仅仅通过基因组的坐标就能对我们的目标核酸进行识别。这种容器容器可以使用户们仅仅使用基因组坐标就能方便地分析各种数据。通用方法<code>subsetByOverlaps</code>可以与<code>SummarizedExperiment</code>实例配合使用来实现这一目标。</p>
+<h2 id="常规思路">常规思路</h2>
+<p>应用于<code>SummarizedExperiment</code>的方法要比<code>ExpressionSet</code>的多，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">methods(class=<span class="string">"SummarizedExperiment"</span>)</div><div class="line"><span class="comment">##   [1] !=                [                 [[               </span></div><div class="line"><span class="comment">##   [4] [[&lt;-              [&lt;-               %in%             </span></div><div class="line"><span class="comment">##   [7] &lt;                 &lt;=                ==               </span></div><div class="line"><span class="comment">##  [10] &gt;                 &gt;=                $$                </span></div><div class="line"><span class="comment">##  [13] $$&lt;-               aggregate         anyDuplicated    </span></div><div class="line"><span class="comment">##  [16] anyNA             append            as.character     </span></div><div class="line"><span class="comment">##  [19] as.complex        as.data.frame     as.env           </span></div><div class="line"><span class="comment">##  [22] as.integer        as.list           as.logical       </span></div><div class="line"><span class="comment">##  [25] as.matrix         as.numeric        as.raw           </span></div><div class="line"><span class="comment">##  [28] assay             assay&lt;-           assayNames       </span></div><div class="line"><span class="comment">##  [31] assayNames&lt;-      assays            assays&lt;-         </span></div><div class="line"><span class="comment">##  [34] bindROWS          by                c                </span></div><div class="line"><span class="comment">##  [37] cbind             coerce            coerce&lt;-         </span></div><div class="line"><span class="comment">##  [40] colData           colData&lt;-         countOverlaps    </span></div><div class="line"><span class="comment">##  [43] dim               dimnames          dimnames&lt;-       </span></div><div class="line"><span class="comment">##  [46] duplicated        elementMetadata   elementMetadata&lt;-</span></div><div class="line"><span class="comment">##  [49] eval              expand            expand.grid      </span></div><div class="line"><span class="comment">##  [52] extractROWS       FactorToClass     findOverlaps     </span></div><div class="line"><span class="comment">##  [55] head              intersect         is.na            </span></div><div class="line"><span class="comment">##  [58] length            lengths           match            </span></div><div class="line"><span class="comment">##  [61] mcols             mcols&lt;-           merge            </span></div><div class="line"><span class="comment">##  [64] mergeROWS         metadata          metadata&lt;-       </span></div><div class="line"><span class="comment">##  [67] mstack            names             names&lt;-          </span></div><div class="line"><span class="comment">##  [70] NROW              overlapsAny       parallelSlotNames</span></div><div class="line"><span class="comment">##  [73] pcompare          rank              rbind            </span></div><div class="line"><span class="comment">##  [76] realize           relist            rename           </span></div><div class="line"><span class="comment">##  [79] rep               rep.int           replaceROWS      </span></div><div class="line"><span class="comment">##  [82] rev               rowData           rowData&lt;-        </span></div><div class="line"><span class="comment">##  [85] ROWNAMES          rowRanges         rowRanges&lt;-      </span></div><div class="line"><span class="comment">##  [88] selfmatch         seqlevelsInUse    setdiff          </span></div><div class="line"><span class="comment">##  [91] setequal          shiftApply        show             </span></div><div class="line"><span class="comment">##  [94] sort              split             split&lt;-          </span></div><div class="line"><span class="comment">##  [97] subset            subsetByOverlaps  summary          </span></div><div class="line"><span class="comment">## [100] table             tail              tapply           </span></div><div class="line"><span class="comment">## [103] transform         union             unique           </span></div><div class="line"><span class="comment">## [106] updateObject      values            values&lt;-         </span></div><div class="line"><span class="comment">## [109] window            window&lt;-          with             </span></div><div class="line"><span class="comment">## [112] xtabs             xtfrm            </span></div><div class="line"><span class="comment">## see '?methods' for accessing help and source code</span></div></pre></td></tr></table></figure>
+<p>不过其中的一些关键方法的使用类似于<code>ExpressionSet</code>中的方法，如下所示：</p>
+<ul>
+<li><code>assay()</code>: 获取原始数值量化结果，这里需要注意的是，该方法支持多个分析结果，使用<code>assays()</code>可以以列表的形式获取多个结果</li>
+<li><code>colData()</code>: 获取样本信息（从名字上来看，就是列信息）。</li>
+<li><code>rowData()</code>: 获取表达值信息。当表达值信息是使用基因组坐标来表示时，则可以使用 <code>rowRanges()</code> 。</li>
+<li><code>metadata()</code>: 获取可能包含相关实验的任何相关元数据的列表。</li>
+</ul>
+<h2 id="rna-seq实验">RNA-seq实验</h2>
+<p>现在我们使用 <code>airway</code> 包来演示一下 <code>SummarizedExperiment</code>的概念，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(airway)</div><div class="line">data(airway)</div><div class="line">airway</div><div class="line"><span class="comment">## class: RangedSummarizedExperiment </span></div><div class="line"><span class="comment">## dim: 64102 8 </span></div><div class="line"><span class="comment">## metadata(1): ''</span></div><div class="line"><span class="comment">## assays(1): counts</span></div><div class="line"><span class="comment">## rownames(64102): ENSG00000000003 ENSG00000000005 ... LRG_98 LRG_99</span></div><div class="line"><span class="comment">## rowData names(0):</span></div><div class="line"><span class="comment">## colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521</span></div><div class="line"><span class="comment">## colData names(9): SampleName cell ... Sample BioSample</span></div></pre></td></tr></table></figure>
+<p>元数据(Metadata)是以列表的形式储存的，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">metadata(airway)</div><div class="line"><span class="comment">## [[1]]</span></div><div class="line"><span class="comment">## Experiment data</span></div><div class="line"><span class="comment">##   Experimenter name: Himes BE </span></div><div class="line"><span class="comment">##   Laboratory: NA </span></div><div class="line"><span class="comment">##   Contact information:  </span></div><div class="line"><span class="comment">##   Title: RNA-Seq transcriptome profiling identifies CRISPLD2 as a glucocorticoid responsive gene that modulates cytokine function in airway smooth muscle cells. </span></div><div class="line"><span class="comment">##   URL: http://www.ncbi.nlm.nih.gov/pubmed/24926665 </span></div><div class="line"><span class="comment">##   PMIDs: 24926665 </span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##   Abstract: A 226 word abstract is available. Use 'abstract' method.</span></div></pre></td></tr></table></figure>
+<p>这个数据集中的表达矩阵有64102行，它们的使用ENSEMBL数据库的命名方法定量了外显子的表达量，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">rowRanges(airway)</div><div class="line"><span class="comment">## GRangesList object of length 64102:</span></div><div class="line"><span class="comment">## $$ENSG00000000003</span></div><div class="line"><span class="comment">## GRanges object with 17 ranges and 2 metadata columns:</span></div><div class="line"><span class="comment">##        seqnames            ranges strand |   exon_id       exon_name</span></div><div class="line"><span class="comment">##           &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;     &lt;character&gt;</span></div><div class="line"><span class="comment">##    [1]        X 99883667-99884983      - |    667145 ENSE00001459322</span></div><div class="line"><span class="comment">##    [2]        X 99885756-99885863      - |    667146 ENSE00000868868</span></div><div class="line"><span class="comment">##    [3]        X 99887482-99887565      - |    667147 ENSE00000401072</span></div><div class="line"><span class="comment">##    [4]        X 99887538-99887565      - |    667148 ENSE00001849132</span></div><div class="line"><span class="comment">##    [5]        X 99888402-99888536      - |    667149 ENSE00003554016</span></div><div class="line"><span class="comment">##    ...      ...               ...    ... .       ...             ...</span></div><div class="line"><span class="comment">##   [13]        X 99890555-99890743      - |    667156 ENSE00003512331</span></div><div class="line"><span class="comment">##   [14]        X 99891188-99891686      - |    667158 ENSE00001886883</span></div><div class="line"><span class="comment">##   [15]        X 99891605-99891803      - |    667159 ENSE00001855382</span></div><div class="line"><span class="comment">##   [16]        X 99891790-99892101      - |    667160 ENSE00001863395</span></div><div class="line"><span class="comment">##   [17]        X 99894942-99894988      - |    667161 ENSE00001828996</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 722 sequences (1 circular) from an unspecified genome</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## ...</span></div><div class="line"><span class="comment">## &lt;64101 more elements&gt;</span></div></pre></td></tr></table></figure>
+<p>在以前使用微阵列的时候，我们可能习惯于基因水平的定量信息。但在这个案例中，我们使用的外显子水平的定量信息，因此这里需要一个特定的计算方法将其转换为基因的定量信息。例如，基因ORMDL3在ENSEMBL中的标记符为ENSG00000172057，那么在<code>SummarizedExperiment</code>对象中，它所对应的坐标如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">rowRanges(airway)$ENSG00000172057</div><div class="line"><span class="comment">## GRanges object with 20 ranges and 2 metadata columns:</span></div><div class="line"><span class="comment">##        seqnames            ranges strand |   exon_id       exon_name</span></div><div class="line"><span class="comment">##           &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;     &lt;character&gt;</span></div><div class="line"><span class="comment">##    [1]       17 38077294-38078938      - |    549057 ENSE00001316037</span></div><div class="line"><span class="comment">##    [2]       17 38077296-38077570      - |    549058 ENSE00002684279</span></div><div class="line"><span class="comment">##    [3]       17 38077929-38078002      - |    549059 ENSE00002697088</span></div><div class="line"><span class="comment">##    [4]       17 38078351-38078552      - |    549060 ENSE00002718599</span></div><div class="line"><span class="comment">##    [5]       17 38078530-38078938      - |    549061 ENSE00001517665</span></div><div class="line"><span class="comment">##    ...      ...               ...    ... .       ...             ...</span></div><div class="line"><span class="comment">##   [16]       17 38081876-38083094      - |    549072 ENSE00001517669</span></div><div class="line"><span class="comment">##   [17]       17 38082049-38082592      - |    549073 ENSE00002700064</span></div><div class="line"><span class="comment">##   [18]       17 38083070-38083099      - |    549074 ENSE00002688012</span></div><div class="line"><span class="comment">##   [19]       17 38083320-38083482      - |    549075 ENSE00002700595</span></div><div class="line"><span class="comment">##   [20]       17 38083737-38083854      - |    549076 ENSE00001283878</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 722 sequences (1 circular) from an unspecified genome</span></div></pre></td></tr></table></figure>
+<p>另外，<code>GenomicRanges</code>的工作类似于<code>rowRanges()</code> 。 如果要查看在这个列表中外显子坐标是否存在重叠区域，可以使用 <code>reduce()</code>方法，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">reduce(rowRanges(airway)$ENSG00000172057)</div><div class="line"><span class="comment">## GRanges object with 8 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames            ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]       17 38077294-38078938      -</span></div><div class="line"><span class="comment">##   [2]       17 38079365-38079516      -</span></div><div class="line"><span class="comment">##   [3]       17 38080283-38080478      -</span></div><div class="line"><span class="comment">##   [4]       17 38081008-38081058      -</span></div><div class="line"><span class="comment">##   [5]       17 38081422-38081624      -</span></div><div class="line"><span class="comment">##   [6]       17 38081876-38083099      -</span></div><div class="line"><span class="comment">##   [7]       17 38083320-38083482      -</span></div><div class="line"><span class="comment">##   [8]       17 38083737-38083854      -</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 722 sequences (1 circular) from an unspecified genome</span></div></pre></td></tr></table></figure>
+<p>这表明从外显子集合投身到基因组中的信息有可能包含8个被转录的亚区域。关于如何将这些信息转换为基因水平的定量信息，可以参考其它章节 <a href="http://genomicsclass.github.io/book/pages/rnaseq_gene_level.html" target="_blank" rel="external">elsewhere in the genomicsclass book.</a></p>
+<p>除了对表达值进行详细地注释外，我们还需要<code>colData()</code>来处理样本信息。其中 <code>$</code> 符号可以从列中提取样本信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">names(colData(airway))</div><div class="line"><span class="comment">## [1] "SampleName" "cell"       "dex"        "albut"      "Run"       </span></div><div class="line"><span class="comment">## [6] "avgLength"  "Experiment" "Sample"     "BioSample"</span></div><div class="line">table(airway$dex) <span class="comment"># main treatment factor</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##   trt untrt </span></div><div class="line"><span class="comment">##     4     4</span></div></pre></td></tr></table></figure>
+<h2 id="处理由illumina-450k甲基化芯片生成的数据">处理由Illumina 450k甲基化芯片生成的数据</h2>
+<p><code>SummarizedExperiment</code> 类设计出来用于储存所有类似的芯片数据或短序列读长测序数据。前面我们提到的 <code>getAE</code> 用于从ArrayExpress提取了一批文件，这批文件是胶质母细胞瘤组织中的甲基化定量数据。</p>
+<p>而样本信息储存在 <code>sdrf.txt</code> 文件中，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(data.table)</div><div class="line">sd5797 = fread(<span class="string">"E-MTAB-5797.sdrf.txt"</span>)</div><div class="line">head(sd5797[,c(<span class="number">3</span>,<span class="number">16</span>,<span class="number">18</span>)])</div><div class="line"><span class="comment">##    Characteristics[age] Label                   Performer</span></div><div class="line"><span class="comment">## 1:                   58   Cy3 IntegraGen SA, Evry, France</span></div><div class="line"><span class="comment">## 2:                   58   Cy5 IntegraGen SA, Evry, France</span></div><div class="line"><span class="comment">## 3:                   72   Cy3 IntegraGen SA, Evry, France</span></div><div class="line"><span class="comment">## 4:                   72   Cy5 IntegraGen SA, Evry, France</span></div><div class="line"><span class="comment">## 5:                   70   Cy3 IntegraGen SA, Evry, France</span></div><div class="line"><span class="comment">## 6:                   70   Cy5 IntegraGen SA, Evry, France</span></div></pre></td></tr></table></figure>
+<p>原始表达数据储存在 <code>idat</code> 文件中。现在我们使用 <code>mnfi</code> 包中的<code>read.metharray()</code> 函数将其提取出来，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(minfi)</div><div class="line">pref = unique(substr(dir(patt=<span class="string">"idat"</span>),<span class="number">1</span>,<span class="number">17</span>)) <span class="comment"># find the prefix strings</span></div><div class="line">raw = read.metharray(pref)</div><div class="line">raw</div><div class="line"><span class="comment">## class: RGChannelSet </span></div><div class="line"><span class="comment">## dim: 622399 5 </span></div><div class="line"><span class="comment">## metadata(0):</span></div><div class="line"><span class="comment">## assays(2): Green Red</span></div><div class="line"><span class="comment">## rownames(622399): 10600313 10600322 ... 74810490 74810492</span></div><div class="line"><span class="comment">## rowData names(0):</span></div><div class="line"><span class="comment">## colnames(5): 9406922003_R01C01 9406922003_R02C01 9406922003_R03C02</span></div><div class="line"><span class="comment">##   9406922003_R04C02 9406922003_R05C01</span></div><div class="line"><span class="comment">## colData names(0):</span></div><div class="line"><span class="comment">## Annotation</span></div><div class="line"><span class="comment">##   array: IlluminaHumanMethylation450k</span></div><div class="line"><span class="comment">##   annotation: ilmn12.hg19</span></div></pre></td></tr></table></figure>
+<p>现在已经出现了很多算法可以将原始数值转换为生物学上可以解释的相对甲基化数值。在这个案例中我们使用分位数归一化算法(quantile normalization)来将红色和绿色的信号转换为相对甲基化数值(M)，并且估计<code>SummarizedExperiment</code> 实例中的拷贝数(CN, copy number)，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">glioMeth = preprocessQuantile(raw) <span class="comment"># generate SummarizedExperiment</span></div><div class="line"><span class="comment"># Require IlluminaHumanMethylation450kmanifest packages</span></div><div class="line"><span class="comment"># BiocManager::install("IlluminaHumanMethylation450kmanifest")</span></div><div class="line"><span class="comment"># BiocManager::install("IlluminaHumanMethylation450kanno.ilmn12.hg19")</span></div><div class="line"><span class="comment">## [preprocessQuantile] Mapping to genome.</span></div><div class="line"><span class="comment">## [preprocessQuantile] Fixing outliers.</span></div><div class="line"><span class="comment">## [preprocessQuantile] Quantile normalizing.</span></div><div class="line">glioMeth</div><div class="line"><span class="comment">## class: GenomicRatioSet </span></div><div class="line"><span class="comment">## dim: 485512 5 </span></div><div class="line"><span class="comment">## metadata(0):</span></div><div class="line"><span class="comment">## assays(2): M CN</span></div><div class="line"><span class="comment">## rownames(485512): cg13869341 cg14008030 ... cg08265308 cg14273923</span></div><div class="line"><span class="comment">## rowData names(0):</span></div><div class="line"><span class="comment">## colnames(5): 9406922003_R01C01 9406922003_R02C01 9406922003_R03C02</span></div><div class="line"><span class="comment">##   9406922003_R04C02 9406922003_R05C01</span></div><div class="line"><span class="comment">## colData names(3): xMed yMed predictedSex</span></div><div class="line"><span class="comment">## Annotation</span></div><div class="line"><span class="comment">##   array: IlluminaHumanMethylation450k</span></div><div class="line"><span class="comment">##   annotation: ilmn12.hg19</span></div><div class="line"><span class="comment">## Preprocessing</span></div><div class="line"><span class="comment">##   Method: Raw (no normalization or bg correction)</span></div><div class="line"><span class="comment">##   minfi version: 1.31.1</span></div><div class="line"><span class="comment">##   Manifest version: 0.4.0</span></div></pre></td></tr></table></figure>
+<p>在后面部分中，我们会来讲解一下如何处理这些数据。</p>
+<h1 id="外部数据储存hdf5array-savehdf5summarizedexperiment">外部数据储存—HDF5Array, saveHDF5SummarizedExperiment</h1>
+<h2 id="测试内存占用">测试内存占用</h2>
+<p>在常规的交互式使用中，R数据都是驻留在内存中。我们可以使用 <code>gc()</code>函数来估计一下某个任务占用的内存。Ncell所占用的空间用于处理语言结构，例如解析树(parse tree)和名称空间(namespaces)，Vcell的空间用于储存会话中加载的数字和字符数据，现在我们打开R，查看一下，如下所示：</p>
+<p>专用于Ncell的空间用于处理语言结构，如解析树和名称空间，而专用于Vcell的空间用于存储会话中加载的数字和字符数据。在我的MacBook Air上，R的香草启动收益率</p>
+<p>Space devoted to Ncells is used to deal with language constructs such as parse trees and namespaces, while space devoted to Vcells is used to store numerical and character data loaded in the session. On my macbook air, a vanilla startup of R yields</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; gc()</div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells <span class="number">10410962</span> <span class="number">556.1</span>   <span class="number">18810631</span> <span class="number">1004.6</span>  <span class="number">16638654</span> <span class="number">888.6</span></div><div class="line">Vcells <span class="number">38615493</span> <span class="number">294.7</span>  <span class="number">128861398</span>  <span class="number">983.2</span> <span class="number">128847953</span> <span class="number">983.1</span></div></pre></td></tr></table></figure>
+<p>当我们加载了 <code>airway</code> 包后，再查看一下，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; suppressMessages(&#123;library(airway)&#125;)</div><div class="line">&gt; gc()</div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells 10410859 556.0   18810631 1004.6  16638654 888.6</div><div class="line">Vcells 38613228 294.6  128861398  983.2 128847953 983.1</div></pre></td></tr></table></figure>
+<p>现在加载 <code>airway</code> 这个 SummarizedExperiment实例，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; data(airway)</div><div class="line">&gt; gc()</div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells 11229539 599.8   18810631 1004.6  16638654 888.6</div><div class="line">Vcells 42534679 324.6  128861398  983.2 128847953 983.1</div><div class="line">&gt; dim(airway)</div><div class="line">[1] 64102     8</div></pre></td></tr></table></figure>
+<p>随着加载数据的增多，内存的占用也在增大。使用 <code>rm()</code> 函数可以清除一些不使用的对象，从而释放内存，不过在实际分析过程中很少这样做，或者说这样做效率并不高。</p>
+<h2 id="hdf5用于外部存储">HDF5用于外部存储</h2>
+<p><a href="https://blog.csdn.net/mzpmzk/article/details/89188968" target="_blank" rel="external">HDF5</a> 的全称是Hierarchical Data Format Version 5，即层次性数据格式第五版，它是一种广泛用于储存数值型的数据结构，并且提供了各种科学编程语言的接口。<code>HDF5Array</code> 包简化了管理大量数据型数组的操作，它的使用如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(airway)</div><div class="line"><span class="keyword">library</span>(HDF5Array)  <span class="comment"># setup for external serialization</span></div><div class="line"><span class="comment">## Loading required package: rhdf5</span></div><div class="line">data(airway)</div><div class="line">airass = assay(airway)  <span class="comment"># obtain numerical data, then save as HDF5</span></div><div class="line">href = writeHDF5Array(airass, <span class="string">"airass.h5"</span>, <span class="string">"airway"</span>)</div></pre></td></tr></table></figure>
+<p>现在我们可以发现，当我们访问相同的数值型数据时，内存的占用并没有增长，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; gc()  <span class="comment"># after attaching HDF5Array package</span></div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells <span class="number">11246377</span> <span class="number">600.7</span>   <span class="number">18810631</span> <span class="number">1004.6</span>  <span class="number">16638654</span> <span class="number">888.6</span></div><div class="line">Vcells <span class="number">42828456</span> <span class="number">326.8</span>  <span class="number">128861398</span>  <span class="number">983.2</span> <span class="number">128847953</span> <span class="number">983.1</span></div><div class="line">&gt; myd = HDF5Array(<span class="string">"airass.h5"</span>, <span class="string">"airway"</span>)  <span class="comment"># get reference to data</span></div><div class="line">&gt; gc()</div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells <span class="number">11246488</span> <span class="number">600.7</span>   <span class="number">18810631</span> <span class="number">1004.6</span>  <span class="number">16638654</span> <span class="number">888.6</span></div><div class="line">Vcells <span class="number">42828777</span> <span class="number">326.8</span>  <span class="number">128861398</span>  <span class="number">983.2</span> <span class="number">128847953</span> <span class="number">983.1</span></div><div class="line">&gt; dim(myd)</div><div class="line">[<span class="number">1</span>] <span class="number">64102</span>     <span class="number">8</span></div></pre></td></tr></table></figure>
+<p>这样运行起来一切还都正常，不过我们更常用 <code>SummarizedExperiment</code> 容器来操作airway数据，也就是我们下面要讲解的内容。</p>
+<h2 id="summarizedexperiment支持hdf5">SummarizedExperiment支持HDF5</h2>
+<p>针对某个特定的 SummarizedExperiment 实例，<code>saveHDF5SummarizedExperiment</code>能将数据与元素数据汇集在一起，控制内存占用，同时保留容器中丰度的信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">saveHDF5SummarizedExperiment(airway, <span class="string">"externalAirway"</span>, replace=<span class="literal">TRUE</span>)</div><div class="line">newse = loadHDF5SummarizedExperiment(<span class="string">"externalAirway"</span>)</div><div class="line">newse</div><div class="line"><span class="comment">## class: RangedSummarizedExperiment </span></div><div class="line"><span class="comment">## dim: 64102 8 </span></div><div class="line"><span class="comment">## metadata(1): ''</span></div><div class="line"><span class="comment">## assays(1): counts</span></div><div class="line"><span class="comment">## rownames(64102): ENSG00000000003 ENSG00000000005 ... LRG_98 LRG_99</span></div><div class="line"><span class="comment">## rowData names(0):</span></div><div class="line"><span class="comment">## colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521</span></div><div class="line"><span class="comment">## colData names(9): SampleName cell ... Sample BioSample</span></div><div class="line">assay(newse[c(<span class="string">"ENSG00000000005"</span>, <span class="string">"LRG_99"</span>), </div><div class="line">        which(newse$dex == <span class="string">"trt"</span>)]) <span class="comment"># use familiar subsetting</span></div><div class="line"><span class="comment">## &lt;2 x 4&gt; DelayedMatrix object of type "integer":</span></div><div class="line"><span class="comment">##                 SRR1039509 SRR1039513 SRR1039517 SRR1039521</span></div><div class="line"><span class="comment">## ENSG00000000005          0          0          0          0</span></div><div class="line"><span class="comment">## LRG_99                   0          0          0          0</span></div></pre></td></tr></table></figure>
+<p>在这个案例中，处理SummarizedExperiment元数据的操作抵抗了外部化这些数据的优势，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; gc() <span class="comment"># after loading SummarizedExperiment</span></div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells <span class="number">11252592</span> <span class="number">601.0</span>   <span class="number">18810631</span> <span class="number">1004.6</span>  <span class="number">16638654</span> <span class="number">888.6</span></div><div class="line">Vcells <span class="number">42840344</span> <span class="number">326.9</span>  <span class="number">128861398</span>  <span class="number">983.2</span> <span class="number">128847953</span> <span class="number">983.1</span></div><div class="line">&gt; gc() <span class="comment"># after loading SummarizedExperiment</span></div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells <span class="number">11252592</span> <span class="number">601.0</span>   <span class="number">18810631</span> <span class="number">1004.6</span>  <span class="number">16638654</span> <span class="number">888.6</span></div><div class="line">Vcells <span class="number">42840344</span> <span class="number">326.9</span>  <span class="number">128861398</span>  <span class="number">983.2</span> <span class="number">128847953</span> <span class="number">983.1</span></div><div class="line">&gt; newse = loadHDF5SummarizedExperiment(<span class="string">"externalAirway"</span>)</div><div class="line">&gt; gc()</div><div class="line">           used  (Mb) gc trigger   (Mb)  max used  (Mb)</div><div class="line">Ncells <span class="number">11252922</span> <span class="number">601.0</span>   <span class="number">18810631</span> <span class="number">1004.6</span>  <span class="number">16638654</span> <span class="number">888.6</span></div><div class="line">Vcells <span class="number">44883257</span> <span class="number">342.5</span>  <span class="number">128861398</span>  <span class="number">983.2</span> <span class="number">128847953</span> <span class="number">983.1</span></div></pre></td></tr></table></figure>
+<p>对那些大量的数据，支持HDF5的SummarizedExperiment会在内存不够的情况下，提供灵活的计算。</p>
+<h1 id="genomicfiles某个特定类型的文件家族">GenomicFiles某个特定类型的文件家族</h1>
+<p><code>GenomicFiles</code> 是一个用于管理文件集合的包。当我们不想整体对某批数据进行解析和建模时，这个包就比较重要了，它可以导入某些文件的部分内容。</p>
+<p><code>GenomicFiles</code> 类的实例有<code>rowRanges</code> 和 <code>colData</code> 方法。我们可以在 <code>GenomicFiles</code> 实例的 <code>colData</code> 组件中提取有关样本或实验的元数据，并且可以使用 <code>rowRanges</code> 组件来查看感兴趣的基因组间隔信息。</p>
+<h2 id="bam-文件集">BAM 文件集</h2>
+<p>现在我们使用一个案例来说明一下这个文件集。我们所使用的案例是由 <a href="http://dx.doi.org/10.1016/j.cell.2012.12.023" target="_blank" rel="external">Zarnack团队</a>在2013年进行的一个HNRNPC敲除后的RNA-seq测序项目。在这个项目中，一共有8个Hela细胞样本，其中4个是野生型，4个使用了RNAi敲低了HNRNPC，这个基因位于14号染色体上。</p>
+<p><code>RNAseqData.HNRNPC.bam.chr14</code> 中已经包含了比对好的读长。BAM文件被储存在了一个名为 <code>RNAseqData.HNRNPC.bam.chr14_BAMFILES</code> 的向量中，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(RNAseqData.HNRNPC.bam.chr14)</div><div class="line"><span class="keyword">library</span>(GenomicFiles)</div><div class="line">gf = GenomicFiles(files=RNAseqData.HNRNPC.bam.chr14_BAMFILES)</div><div class="line">gf</div><div class="line"><span class="comment">## GenomicFiles object with 0 ranges and 8 files: </span></div><div class="line"><span class="comment">## files: ERR127306_chr14.bam, ERR127307_chr14.bam, ..., ERR127304_chr14.bam, ERR127305_chr14.bam </span></div><div class="line"><span class="comment">## detail: use files(), rowRanges(), colData(), ...</span></div></pre></td></tr></table></figure>
+<p>我们可以通过将感兴趣的区域绑定到对象中，从而增强一个文件的信息，现在我们使用 <code>GRanges</code> 来检索HNRNPC，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hn = GRanges(&quot;chr14&quot;, IRanges(21677296, 21737638), strand=&quot;-&quot;)</div><div class="line">rowRanges(gf) = hn</div></pre></td></tr></table></figure>
+<p>如果要提取与感兴趣的区域重叠的比对信息(alignments)，我们可以使用<code>GenomicFiles</code>包中的 <code>reduceByRange</code> 方法。我们需要定义一个映射函数来加入到 <code>reduceByRange</code> 函数中。这个映射函数我们在下面会定义为 <code>MAP()</code> ， 它的参数有两个，其中 <code>r</code> 表示感兴趣的范围，<code>f</code> 指的是，被解析的文件中比对信息的重叠范围。在<code>MAP()</code> 函数中我们还使用了 <code>readGAlignmentPairs</code> 函数，这是因为我们霜肆处理配对的末端测序数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GenomicAlignments)</div><div class="line">MAP = <span class="keyword">function</span>(r, f) </div><div class="line">    readGAlignmentPairs(f, param=ScanBamParam(which=r))</div><div class="line">ali = reduceByRange(gf, MAP=MAP)</div><div class="line"><span class="comment">## Warning in .make_GAlignmentPairs_from_GAlignments(gal, strandMode = strandMode, :   4 alignments with ambiguous pairing were dumped.</span></div><div class="line"><span class="comment">##     Use 'getDumpedAlignments()' to retrieve them from the dump environment.</span></div><div class="line">sapply(ali[[<span class="number">1</span>]], length)</div><div class="line"><span class="comment">## ERR127306 ERR127307 ERR127308 ERR127309 ERR127302 ERR127303 ERR127304 </span></div><div class="line"><span class="comment">##      2711      3160      2946      2779        86        98       158 </span></div><div class="line"><span class="comment">## ERR127305 </span></div><div class="line"><span class="comment">##       141</span></div></pre></td></tr></table></figure>
+<p>在这个案例中，我们大致比较了一下这8个样本的目标范围，对于前4个样本来说，有更多的读长与HNRNPC区域比对上了，因此我们可以知道前4个样本是野生型细胞，后4个样本有较少的读长与HNRNPC区域比对上，这表明它们是敲低的HNRNPC。这里我们注意的是，敲低的效率并不是100%的，也就是说，我们仍然有可能会检测到有HNRNPC的一些转录本。</p>
+<h2 id="bed-文件集">BED 文件集</h2>
+<p><code>erma</code> 这个包设计用来演示在内存不足的情况下，基于表观遗传学中各种细胞类型数据分析，如何打包大量的数据。 这个包创建的基础容器是对 <code>GenomicFiles</code> 的简单扩展，它使用 <code>makeErmaSet()</code> 函数进行构建，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(erma)</div><div class="line">erset = makeErmaSet()</div><div class="line"><span class="comment">## <span class="doctag">NOTE:</span> input data had non-ASCII characters replaced by ' '.</span></div><div class="line">erset</div><div class="line"><span class="comment">## ErmaSet object with 0 ranges and 31 files: </span></div><div class="line"><span class="comment">## files: E002_25_imputed12marks_mnemonics.bed.gz, E003_25_imputed12marks_mnemonics.bed.gz, ..., E088_25_imputed12marks_mnemonics.bed.gz, E096_25_imputed12marks_mnemonics.bed.gz </span></div><div class="line"><span class="comment">## detail: use files(), rowRanges(), colData(), ... </span></div><div class="line"><span class="comment">## cellTypes() for type names; data(short_celltype) for abbr.</span></div></pre></td></tr></table></figure>
+<p>我们可以使用 <code>colData</code> 来查看样本信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">colData(erset)</div><div class="line"><span class="comment">## (showing narrow slice of  31 x 95  DataFrame)   narrDF with 31 rows and 6 columns</span></div><div class="line"><span class="comment">##      Epigenome.ID..EID.          GROUP  Epigenome.Mnemonic     ANATOMY</span></div><div class="line"><span class="comment">##             &lt;character&gt;    &lt;character&gt;         &lt;character&gt; &lt;character&gt;</span></div><div class="line"><span class="comment">## E002               E002            ESC             ESC.WA7         ESC</span></div><div class="line"><span class="comment">## E003               E003            ESC              ESC.H1         ESC</span></div><div class="line"><span class="comment">## E021               E021           iPSC         IPSC.DF.6.9        IPSC</span></div><div class="line"><span class="comment">## E032               E032   HSC &amp; B-cell        BLD.CD19.PPC       BLOOD</span></div><div class="line"><span class="comment">## E033               E033 Blood &amp; T-cell         BLD.CD3.CPC       BLOOD</span></div><div class="line"><span class="comment">## ...                 ...            ...                 ...         ...</span></div><div class="line"><span class="comment">## E071               E071          Brain        BRN.HIPP.MID       BRAIN</span></div><div class="line"><span class="comment">## E072               E072          Brain         BRN.INF.TMP       BRAIN</span></div><div class="line"><span class="comment">## E073               E073          Brain BRN.DL.PRFRNTL.CRTX       BRAIN</span></div><div class="line"><span class="comment">## E088               E088          Other             LNG.FET        LUNG</span></div><div class="line"><span class="comment">## E096               E096          Other                 LNG        LUNG</span></div><div class="line"><span class="comment">##                TYPE            SEX</span></div><div class="line"><span class="comment">##         &lt;character&gt;    &lt;character&gt;</span></div><div class="line"><span class="comment">## E002 PrimaryCulture         Female</span></div><div class="line"><span class="comment">## E003 PrimaryCulture           Male</span></div><div class="line"><span class="comment">## E021 PrimaryCulture           Male</span></div><div class="line"><span class="comment">## E032    PrimaryCell           Male</span></div><div class="line"><span class="comment">## E033    PrimaryCell        Unknown</span></div><div class="line"><span class="comment">## ...             ...            ...</span></div><div class="line"><span class="comment">## E071  PrimaryTissue           Male</span></div><div class="line"><span class="comment">## E072  PrimaryTissue          Mixed</span></div><div class="line"><span class="comment">## E073  PrimaryTissue          Mixed</span></div><div class="line"><span class="comment">## E088  PrimaryTissue Female/Unknown</span></div><div class="line"><span class="comment">## E096  PrimaryTissue         Female</span></div><div class="line"><span class="comment">## use colnames() for full set of metadata attributes.</span></div></pre></td></tr></table></figure>
+<p>我们可以使用熟悉的简捷方式来查看样本元数据的表格信息：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">table(erset$ANATOMY)</div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##    BLOOD    BRAIN      ESC      FAT     IPSC    LIVER     LUNG     SKIN </span></div><div class="line"><span class="comment">##       15        7        2        1        1        1        2        1 </span></div><div class="line"><span class="comment">## VASCULAR </span></div><div class="line"><span class="comment">##        1</span></div></pre></td></tr></table></figure>
+<p>因此我们可以在R中通过轻量级的接口（仅限于关于示例和文件路径的元数据）来访问大量的BED文件集。如果这些文件是用tabix建立索引的，那么我们就可以非常快速地针对性地检索特定范围的数据，我们可以使用 <code>stateProfile</code> 函数来说明这一点，如下所示：</p>
+<blockquote>
+<p>注：tabix是第一个能够对排序好的TAB分割数据进行处理，例如GEF，BED，PSL，SAM与SQL的输出数据等，它能快速地检索特定区域的重合部分。具体的使用方法可以参考本文的参考资料。</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">stateProfile(erset[,<span class="number">26</span>:<span class="number">31</span>], shortCellType=<span class="literal">FALSE</span>)</div><div class="line"><span class="comment">## 'select()' returned 1:many mapping between keys and columns</span></div><div class="line"><span class="comment">## Scale for 'y' is already present. Adding another scale for 'y', which</span></div><div class="line"><span class="comment">## will replace the existing scale.</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/dataman2019-lkstpr-1.png" alt="plot of chunk lkstpr">
+<p class="caption">plot of chunk lkstpr</p>
+</div>
+<p>这张图描述在chr9的正义链上，基因IL33的启动子区域的表观遗传状态中的的解剖位点之间的变异。需要注意的是，胎儿肺样本似乎说明，与成人肺样本在这个区域的静默相比，胎儿肺样本则表现出增强子活性。。</p>
+<h1 id="管理大量的dna变异信息">管理大量的DNA变异信息</h1>
+<h2 id="vcf背景">VCF背景</h2>
+<p>处理大量SNP基因型（或小indels）的最常用方法就是处理VCF文件（Variant Call Format）。从Wikipedia或相关文档，例如<a href="http://samtools.github.io/hts-specs/VCFv4.3.pdf" target="_blank" rel="external">spec</a>和<a href="http://vcftools.sourceforge.net/VCF-poster.pdf" target="_blank" rel="external">diagram</a>很容易查看VCF文件的内容。VCF文件的基本设计中含有一个头部信息，这个头部信息提供了关于VCF文件的元数据，并且包括了每个基因组的突变体(variant)信息。这些突变体信息记录了突变体的性质（那些已经检测出来与参考基因组的差异信息），以及包括用于描述存在于突变体结构(variant configuration)中的样本字段(field)。一些突变体是已经确定的，而一些突变体则无法确定，在这种情况下，基因型的可能性就会被记录下来。突变体也许是阶段性的(phased)，这就意味着，在某条具体的染色体上，突变的位置也有可能不同。</p>
+<blockquote>
+<p>后两句话不太理解，这里放上原文：Some variants are “called”, others may be uncertain and in this case genotype likelihoods are recorded. Variants may also be <em>phased</em>, meaning that it is possible to locate different variant events on a given chromosome.</p>
+</blockquote>
+<p><code>VariantAnnotation</code> 包定义了处理这种格式的基础工具。<code>Rsamtools</code> 包有一个处理这些文件的tabix索引程序，因此也可以使用这个包。</p>
+<h2 id="基因组vcf">*1000基因组VCF</h2>
+<p>DNA突变体的一个明显案例就是<a href="http://www.internationalgenome.org/" target="_blank" rel="external">1000 genomes project</a>。Bioconductr的 <code>ldblock</code> 包中有一个工具可以处理VCF文件，它能处理压缩的，由tabix建立索引的VCF文件，这个项目位于Amzon的云上，操作如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ldblock)</div><div class="line">sta = stack1kg()</div><div class="line">sta</div><div class="line"><span class="comment">## VcfStack object with 22 files and 2548 samples</span></div><div class="line"><span class="comment">## Seqinfo object with 22 sequences from an unspecified genome; no seqlengths </span></div><div class="line"><span class="comment">## use 'readVcfStack()' to extract VariantAnnotation VCF.</span></div></pre></td></tr></table></figure>
+<p>这里注意一下，创建的基因组标记为<code>b37</code>。这是一个不太寻常的特征，它绑定到了VCF突变体数据中的元数据里，无法被改变。</p>
+<p>我们将在此文件中添加有关样本地理来源的信息。正好 <code>ph525x</code> 这个包中就包含这些地理信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ph525x)</div><div class="line">data(sampInfo_1kg)</div><div class="line">rownames(sampInfo_1kg) = sampInfo_1kg[,<span class="number">1</span>]</div><div class="line">cd = sampInfo_1kg[ colnames(sta), ]</div><div class="line">colData(sta) = DataFrame(cd)</div></pre></td></tr></table></figure>
+<p>注：这一部分的代码运行出错，经检索后，可能是由于网络问题。</p>
+<h2 id="输入并处理vcf数据">输入并处理VCF数据</h2>
+<p>现在我们使用 <code>GenomicFiles</code> 包中的 <code>readVcfStack</code> 函数来提取VCF中的储存的内容。我们提取的内容是针对ORMDL3的编码区，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(erma)</div><div class="line">orm = range(genemodel(<span class="string">"ORMDL3"</span>)) <span class="comment"># quick lookup</span></div><div class="line"><span class="comment">## 'select()' returned 1:many mapping between keys and columns</span></div><div class="line">genome(orm) = <span class="string">"b37"</span>  <span class="comment"># must agree with VCF</span></div><div class="line">seqlevelsStyle(orm) = <span class="string">"NCBI"</span>  <span class="comment"># use integer chromosome codes</span></div><div class="line">ormRead = readVcfStack(sta, orm)</div><div class="line">ormRead</div><div class="line"><span class="comment">## class: CollapsedVCF </span></div><div class="line"><span class="comment">## dim: 3 2548 </span></div><div class="line"><span class="comment">## rowRanges(vcf):</span></div><div class="line"><span class="comment">##   GRanges with 5 metadata columns: paramRangeID, REF, ALT, QUAL, FILTER</span></div><div class="line"><span class="comment">## info(vcf):</span></div><div class="line"><span class="comment">##   DataFrame with 12 columns: AF, AC, NS, AN, EAS_AF, EUR_AF, AFR_AF, AM...</span></div><div class="line"><span class="comment">## info(header(vcf)):</span></div><div class="line"><span class="comment">##              Number Type    Description                                   </span></div><div class="line"><span class="comment">##    AF        A      Float   Estimated allele frequency in the range (0,1) </span></div><div class="line"><span class="comment">##    AC        A      Integer Total number of alternate alleles in called...</span></div><div class="line"><span class="comment">##    NS        1      Integer Number of samples with data                   </span></div><div class="line"><span class="comment">##    AN        1      Integer Total number of alleles in called genotypes   </span></div><div class="line"><span class="comment">##    EAS_AF    A      Float   Allele frequency in the EAS populations cal...</span></div><div class="line"><span class="comment">##    EUR_AF    A      Float   Allele frequency in the EUR populations cal...</span></div><div class="line"><span class="comment">##    AFR_AF    A      Float   Allele frequency in the AFR populations cal...</span></div><div class="line"><span class="comment">##    AMR_AF    A      Float   Allele frequency in the AMR populations cal...</span></div><div class="line"><span class="comment">##    SAS_AF    A      Float   Allele frequency in the SAS populations cal...</span></div><div class="line"><span class="comment">##    VT        .      String  indicates what type of variant the line rep...</span></div><div class="line"><span class="comment">##    EX_TARGET 0      Flag    indicates whether a variant is within the e...</span></div><div class="line"><span class="comment">##    DP        1      Integer Approximate read depth; some reads may have...</span></div><div class="line"><span class="comment">## geno(vcf):</span></div><div class="line"><span class="comment">##   SimpleList of length 1: GT</span></div><div class="line"><span class="comment">## geno(header(vcf)):</span></div><div class="line"><span class="comment">##       Number Type   Description    </span></div><div class="line"><span class="comment">##    GT 1      String Phased Genotype</span></div></pre></td></tr></table></figure>
+<p><code>CollapsedVCF</code> 类用于管理输入的基因型数据。现在我们检索3个突变体的信息。我们将得到的结果的子集转换为 <code>VariantTools</code> 所代表的<code>VRanges</code> 形式，从而可以更加清楚地了解到内容，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(VariantTools)</div><div class="line">vr = as(ormRead[,<span class="number">1</span>:<span class="number">5</span>], <span class="string">"VRanges"</span>)</div><div class="line">vr[<span class="number">1</span>:<span class="number">3</span>,]</div><div class="line"><span class="comment">## VRanges object with 3 ranges and 14 metadata columns:</span></div><div class="line"><span class="comment">##                     seqnames            ranges strand         ref</span></div><div class="line"><span class="comment">##                        &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt; &lt;character&gt;</span></div><div class="line"><span class="comment">##    17:38078372_T/TG       17          38078372      *           T</span></div><div class="line"><span class="comment">##   17:38078393_TGG/T       17 38078393-38078395      *         TGG</span></div><div class="line"><span class="comment">##   17:38078398_G/GGT       17          38078398      *           G</span></div><div class="line"><span class="comment">##                                  alt     totalDepth       refDepth</span></div><div class="line"><span class="comment">##                     &lt;characterOrRle&gt; &lt;integerOrRle&gt; &lt;integerOrRle&gt;</span></div><div class="line"><span class="comment">##    17:38078372_T/TG               TG           &lt;NA&gt;           &lt;NA&gt;</span></div><div class="line"><span class="comment">##   17:38078393_TGG/T                T           &lt;NA&gt;           &lt;NA&gt;</span></div><div class="line"><span class="comment">##   17:38078398_G/GGT              GGT           &lt;NA&gt;           &lt;NA&gt;</span></div><div class="line"><span class="comment">##                           altDepth   sampleNames softFilterMatrix |</span></div><div class="line"><span class="comment">##                     &lt;integerOrRle&gt; &lt;factorOrRle&gt;         &lt;matrix&gt; |</span></div><div class="line"><span class="comment">##    17:38078372_T/TG           &lt;NA&gt;       HG00096                  |</span></div><div class="line"><span class="comment">##   17:38078393_TGG/T           &lt;NA&gt;       HG00096                  |</span></div><div class="line"><span class="comment">##   17:38078398_G/GGT           &lt;NA&gt;       HG00096                  |</span></div><div class="line"><span class="comment">##                          QUAL            AF            AC        NS</span></div><div class="line"><span class="comment">##                     &lt;numeric&gt; &lt;NumericList&gt; &lt;IntegerList&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##    17:38078372_T/TG      &lt;NA&gt;          0.01            61      2548</span></div><div class="line"><span class="comment">##   17:38078393_TGG/T      &lt;NA&gt;          0.04           191      2548</span></div><div class="line"><span class="comment">##   17:38078398_G/GGT      &lt;NA&gt;          0.05           272      2548</span></div><div class="line"><span class="comment">##                            AN        EAS_AF        EUR_AF        AFR_AF</span></div><div class="line"><span class="comment">##                     &lt;integer&gt; &lt;NumericList&gt; &lt;NumericList&gt; &lt;NumericList&gt;</span></div><div class="line"><span class="comment">##    17:38078372_T/TG      5096             0             0          0.04</span></div><div class="line"><span class="comment">##   17:38078393_TGG/T      5096             0          0.01          0.13</span></div><div class="line"><span class="comment">##   17:38078398_G/GGT      5096          0.01          0.04          0.13</span></div><div class="line"><span class="comment">##                            AMR_AF        SAS_AF              VT EX_TARGET</span></div><div class="line"><span class="comment">##                     &lt;NumericList&gt; &lt;NumericList&gt; &lt;CharacterList&gt; &lt;logical&gt;</span></div><div class="line"><span class="comment">##    17:38078372_T/TG             0             0           INDEL     FALSE</span></div><div class="line"><span class="comment">##   17:38078393_TGG/T          0.01          0.01           INDEL     FALSE</span></div><div class="line"><span class="comment">##   17:38078398_G/GGT          0.02          0.03           INDEL     FALSE</span></div><div class="line"><span class="comment">##                            DP          GT</span></div><div class="line"><span class="comment">##                     &lt;integer&gt; &lt;character&gt;</span></div><div class="line"><span class="comment">##    17:38078372_T/TG    240289         0|0</span></div><div class="line"><span class="comment">##   17:38078393_TGG/T    222931         0|0</span></div><div class="line"><span class="comment">##   17:38078398_G/GGT    218409         0|0</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from an unspecified genome; no seqlengths</span></div><div class="line"><span class="comment">##   hardFilters: NULL</span></div></pre></td></tr></table></figure>
+<p>从上面结果我们可以看出来，我们从VCF中提取了完整的信息，如果要列表出某个人的基因型，可以按下面进行操作，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">table(vr[which(sampleNames(vr)==<span class="string">"HG00096"</span>),]$GT)</div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## 0|0 </span></div><div class="line"><span class="comment">##   3</span></div></pre></td></tr></table></figure>
+<p>总结</p>
+<ul>
+<li>VCF文件储存队列(cohorts)的突变体信息，并且通过<code>VariantAnnotation</code>包可以导入这样的文件。</li>
+<li>染色体特异性的VCF文件可以储存在VcfStack类中。</li>
+<li><code>colData</code>可以绑定到VcfStack文件中，并将样本信息与其基因型对应起来。</li>
+<li>VariantTools中的VRanges类可以用于生成丰富的元数据表示的单个样本-突变体表格(metadata-rich variant-by-individual tables)。</li>
+</ul>
+<h1 id="多组学multiassayexperiment以tcga为例说明">多组学：MultiAssayExperiment，以TCGA为例说明</h1>
+<p><a href="https://cancergenome.nih.gov/" target="_blank" rel="external">癌基因组计划(The Cancer Genome Atlas)</a> 收集了来自于14000个人的数据，提供了29个不同肿瘤位点的基因组信息。我们可以通过位于CUNY的<a href="http://waldronlab.org/" target="_blank" rel="external">Levi Waldron实验室</a>实验室下载那些关于多型神经胶质细胞瘤的公共数据。Ｒ中的<code>MultiAssayExperiment</code> 类对象已经储存于Amazon S3中，并且<a href="http://tinyurl.com/MAEOurls" target="_blank" rel="external">Goolge表格</a>提供了详细地说明信息与链接。</p>
+<h2 id="检索神经胶质细胞瘤数据">检索神经胶质细胞瘤数据</h2>
+<p>现在我们来检索一下关于GBM的数据，其些软件可能要使用 <code>updateObject</code>，操作如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(curatedTCGAData)</div><div class="line">gbm = curatedTCGAData(<span class="string">"GBM"</span>, c(<span class="string">"Mutation"</span>, <span class="string">"CNASNP"</span>, <span class="string">"RNASeq2GeneNorm"</span>,</div><div class="line">   <span class="string">"Methylation_methyl27-20160128"</span>), dry.run=<span class="literal">FALSE</span>)</div><div class="line"><span class="comment">## snapshotDate(): 2019-08-13</span></div><div class="line"><span class="comment">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></div><div class="line"><span class="comment">## downloading 0 resources</span></div><div class="line"><span class="comment">## loading from cache</span></div><div class="line"><span class="comment">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></div><div class="line"><span class="comment">## downloading 0 resources</span></div><div class="line"><span class="comment">## loading from cache</span></div><div class="line"><span class="comment">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></div><div class="line"><span class="comment">## downloading 0 resources</span></div><div class="line"><span class="comment">## loading from cache</span></div><div class="line"><span class="comment">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></div><div class="line"><span class="comment">## downloading 0 resources</span></div><div class="line"><span class="comment">## loading from cache</span></div><div class="line"><span class="comment">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></div><div class="line"><span class="comment">## downloading 0 resources</span></div><div class="line"><span class="comment">## loading from cache</span></div><div class="line"><span class="comment">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></div><div class="line"><span class="comment">## downloading 0 resources</span></div><div class="line"><span class="comment">## loading from cache</span></div><div class="line"><span class="comment">## harmonizing input:</span></div><div class="line"><span class="comment">##   removing 6320 sampleMap rows not in names(experiments)</span></div><div class="line"><span class="comment">##   removing 4 colData rownames not in sampleMap 'primary'</span></div><div class="line">gbm</div><div class="line"><span class="comment">## A MultiAssayExperiment object of 3 listed</span></div><div class="line"><span class="comment">##  experiments with user-defined names and respective classes. </span></div><div class="line"><span class="comment">##  Containing an ExperimentList class object of length 3: </span></div><div class="line"><span class="comment">##  [1] GBM_CNASNP-20160128: RaggedExperiment with 602338 rows and 1104 columns </span></div><div class="line"><span class="comment">##  [2] GBM_Mutation-20160128: RaggedExperiment with 22073 rows and 290 columns </span></div><div class="line"><span class="comment">##  [3] GBM_RNASeq2GeneNorm-20160128: SummarizedExperiment with 20501 rows and 166 columns </span></div><div class="line"><span class="comment">## Features: </span></div><div class="line"><span class="comment">##  experiments() - obtain the ExperimentList instance </span></div><div class="line"><span class="comment">##  colData() - the primary/phenotype DataFrame </span></div><div class="line"><span class="comment">##  sampleMap() - the sample availability DataFrame </span></div><div class="line"><span class="comment">##  `$`, `[`, `[[` - extract colData columns, subset, or experiment </span></div><div class="line"><span class="comment">##  *Format() - convert into a long or wide DataFrame </span></div><div class="line"><span class="comment">##  assays() - convert ExperimentList to a SimpleList of matrices</span></div></pre></td></tr></table></figure>
+<p>因此，单一的R变量可以用于处理（子集）593个人的3种不同的分析方法。成分分析(Constituent assays)含有ExpressionSet，SummarizedExperiment和RaggedExperiment。<code>RaggedExperiment</code>是它自己的包，可以通过<code>vignette</code>函数来查看使用方法。</p>
+<p>为了了解GBM数据的范围和完整性，我们可以使用<code>UpSet</code>图来查看一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">upsetSamples(gbm)</div><div class="line"><span class="comment">## Loading required namespace: UpSetR</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191104094334.png">
+
+</div>
+<p>这显示了绝大多数参与者提供的拷贝数变异和基于阵列的表达数据，但是很少有人提供RNA-seq或蛋白质组(PRRA，反相蛋白质组分析)数据。</p>
+<h2 id="处理tcga突变数据">处理TCGA突变数据</h2>
+<p>突变数据的复杂性为统一描述这种异质性数据提出了基本的挑战，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">mut = experiments(gbm)[[<span class="string">"GBM_Mutation-20160128"</span>]]</div><div class="line">mut</div><div class="line"><span class="comment">## class: RaggedExperiment </span></div><div class="line"><span class="comment">## dim: 22073 290 </span></div><div class="line"><span class="comment">## assays(74): Hugo_Symbol Entrez_Gene_Id ... OREGANNO_ID</span></div><div class="line"><span class="comment">##   OREGANNO_Values</span></div><div class="line"><span class="comment">## rownames: NULL</span></div><div class="line"><span class="comment">## colnames(290): TCGA-02-0003-01A-01D-1490-08</span></div><div class="line"><span class="comment">##   TCGA-02-0033-01A-01D-1490-08 ... TCGA-81-5911-01A-12D-1845-08</span></div><div class="line"><span class="comment">##   TCGA-87-5896-01A-01D-1696-08</span></div><div class="line"><span class="comment">## colData names(0):</span></div></pre></td></tr></table></figure>
+<p>一个长度为74的向量已经给出了突变的“阵列”(assay)名称。通常意义上来说，这些都不是数组，而是不同个体之间可能存在着的不同突变特征或背景（注：这里的assay理解不清楚，后面理解清楚后再修改，原文已经列出）。</p>
+<blockquote>
+<p>The names of the ‘assays’ of mutations are given in a vector of length 74. These are not assays in the usual sense, but characteristics or contexts of mutations that may vary between individuals.</p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">head(assayNames(mut))</div><div class="line"><span class="comment">## [1] "Hugo_Symbol"            "Entrez_Gene_Id"        </span></div><div class="line"><span class="comment">## [3] "Center"                 "NCBI_Build"            </span></div><div class="line"><span class="comment">## [5] "Variant_Classification" "Variant_Type"</span></div></pre></td></tr></table></figure>
+<h3 id="突变的位置和基因关联性">突变的位置和基因关联性</h3>
+<p>突变信息包含在了一个<code>GRanges</code>结构中，它记录了突变的坐标，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">rowRanges(mut)</div><div class="line"><span class="comment">## GRanges object with 22073 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##           seqnames    ranges strand</span></div><div class="line"><span class="comment">##              &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##       [1]        1   1430871      +</span></div><div class="line"><span class="comment">##       [2]        1 154148652      +</span></div><div class="line"><span class="comment">##       [3]        1 161206281      +</span></div><div class="line"><span class="comment">##       [4]        1 230846235      +</span></div><div class="line"><span class="comment">##       [5]       10 123810032      +</span></div><div class="line"><span class="comment">##       ...      ...       ...    ...</span></div><div class="line"><span class="comment">##   [22069]        X  77112989      +</span></div><div class="line"><span class="comment">##   [22070]        X 119243159      +</span></div><div class="line"><span class="comment">##   [22071]        X 131348336      +</span></div><div class="line"><span class="comment">##   [22072]        X 138643011      +</span></div><div class="line"><span class="comment">##   [22073]        X 150891145      +</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 24 sequences from 37 genome; no seqlengths</span></div></pre></td></tr></table></figure>
+<p>我们来查看一下哪些基因的突变频率最高，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sort(table(assay(mut, <span class="string">"Hugo_Symbol"</span>)), decreasing=<span class="literal">TRUE</span>)[<span class="number">1</span>:<span class="number">6</span>]</div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## Unknown     TTN    EGFR    TP53    PTEN   MUC16 </span></div><div class="line"><span class="comment">##     126     121     102     101      93      68</span></div></pre></td></tr></table></figure>
+<h3 id="突变类型">突变类型</h3>
+<p>我们可以通过表格形式来查看突变类型，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">table(as.character(assay(mut, <span class="string">"Variant_Classification"</span>)))</div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##        Frame_Shift_Del        Frame_Shift_Ins           In_Frame_Del </span></div><div class="line"><span class="comment">##                    566                    217                    214 </span></div><div class="line"><span class="comment">##           In_Frame_Ins      Missense_Mutation      Nonsense_Mutation </span></div><div class="line"><span class="comment">##                     28                  14213                    851 </span></div><div class="line"><span class="comment">##       Nonstop_Mutation                 Silent            Splice_Site </span></div><div class="line"><span class="comment">##                     17                   5514                    382 </span></div><div class="line"><span class="comment">## Translation_Start_Site </span></div><div class="line"><span class="comment">##                     71</span></div></pre></td></tr></table></figure>
+<p>哪些基因的碱基的删除导致了移码突变呢？</p>
+<p>我们可以使用一个矩阵下标来找到前10个发生移码突变的基因，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">sort(table(assay(mut, <span class="string">"Hugo_Symbol"</span>)[assay(mut, <span class="string">"Variant_Classification"</span>)==</div><div class="line">  <span class="string">"Frame_Shift_Del"</span>]),decreasing=<span class="literal">TRUE</span>)[<span class="number">1</span>:<span class="number">10</span>]</div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##    PTEN     NF1    ATRX     RB1   CDC27    TP53     TTN Unknown    CHD8 </span></div><div class="line"><span class="comment">##      16      10       7       7       6       6       4       4       3 </span></div><div class="line"><span class="comment">##    OGDH </span></div><div class="line"><span class="comment">##       3</span></div></pre></td></tr></table></figure>
+<p>总结</p>
+<ul>
+<li>MultiAssayExperiment统一了各种微阵列数据，并收集了一个队列的不同样本信息。</li>
+<li>TCGA肿瘤特异性数据集已经被序列化为MultiAssayExperiments ，可以从Amzon S3作为公共数据。</li>
+<li>含有复杂注释的异质性数据(Idiosyncratic data)可能通过RaggedAssay结构进行管理；这些结构已经被证明在处理突变和拷贝数变异方面发挥了强大的作用。</li>
+</ul>
+<h1 id="云端管理策略cgc与gdc概念">云端管理策略：CGC与GDC概念</h1>
+<p>在前面部分，我介绍了如何将肿瘤的TCGA数据收集在一个队列对象中，该对象统一管理大量的基因组数据。在这一部分里，我们想说明如何通过单个的R连接对象来访问TCGA的完整数据并用于交互式分析。如果要使用这一部分中的命令，用户需要向由 Institute for Systems Biology管理的Cancer Genomics Cloud 获取权利。可以向[ISB project administrators] (https://www.systemsbiology.org/research/cancer-genomics-cloud/)联系，获取账户。</p>
+<p>在下面的代码，我们使用r-db-stats团队维护的<code>bigrquery</code>包来创建一个连接到 <a href="https://cloud.google.com/bigquery/" target="_blank" rel="external">Google BigQuery</a>,的DBI连接。然后我们列出可用的表，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(bigrquery)</div><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line"><span class="keyword">library</span>(magrittr)</div><div class="line">tcgaCon = DBI::dbConnect(dbi_driver(), project=<span class="string">"isb-cgc"</span>, </div><div class="line">     dataset=<span class="string">"TCGA_hg38_data_v0"</span>, billing = Sys.getenv(<span class="string">"CGC_BILLING"</span>)) </div><div class="line">dbListTables(tcgaCon)</div><div class="line"><span class="comment">##  [1] "Copy_Number_Segment_Masked"  "DNA_Methylation"            </span></div><div class="line"><span class="comment">##  [3] "DNA_Methylation_chr1"        "DNA_Methylation_chr10"      </span></div><div class="line"><span class="comment">##  [5] "DNA_Methylation_chr11"       "DNA_Methylation_chr12"      </span></div><div class="line"><span class="comment">##  [7] "DNA_Methylation_chr13"       "DNA_Methylation_chr14"      </span></div><div class="line"><span class="comment">##  [9] "DNA_Methylation_chr15"       "DNA_Methylation_chr16"      </span></div><div class="line"><span class="comment">## [11] "DNA_Methylation_chr17"       "DNA_Methylation_chr18"      </span></div><div class="line"><span class="comment">## [13] "DNA_Methylation_chr19"       "DNA_Methylation_chr2"       </span></div><div class="line"><span class="comment">## [15] "DNA_Methylation_chr20"       "DNA_Methylation_chr21"      </span></div><div class="line"><span class="comment">## [17] "DNA_Methylation_chr22"       "DNA_Methylation_chr3"       </span></div><div class="line"><span class="comment">## [19] "DNA_Methylation_chr4"        "DNA_Methylation_chr5"       </span></div><div class="line"><span class="comment">## [21] "DNA_Methylation_chr6"        "DNA_Methylation_chr7"       </span></div><div class="line"><span class="comment">## [23] "DNA_Methylation_chr8"        "DNA_Methylation_chr9"       </span></div><div class="line"><span class="comment">## [25] "DNA_Methylation_chrX"        "DNA_Methylation_chrY"       </span></div><div class="line"><span class="comment">## [27] "Protein_Expression"          "RNAseq_Gene_Expression"     </span></div><div class="line"><span class="comment">## [29] "Somatic_Mutation"            "Somatic_Mutation_Jun2017"   </span></div><div class="line"><span class="comment">## [31] "miRNAseq_Expression"         "miRNAseq_Isoform_Expression"</span></div></pre></td></tr></table></figure>
+<p>现在我们使用<code>dplyr</code>来对GBM中的突变类型做一个汇总，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">tcgaCon %&gt;% tbl(<span class="string">"Somatic_Mutation"</span>) %&gt;% dplyr::filter(project_short_name==<span class="string">"TCGA-GBM"</span>) %&gt;% </div><div class="line">      dplyr::select(Variant_Classification, Hugo_Symbol) %&gt;% group_by(Variant_Classification) %&gt;%</div><div class="line">      summarise(n=n())</div><div class="line"><span class="comment">## # Source:   lazy query [?? x 2]</span></div><div class="line"><span class="comment">## # Database: BigQueryConnection</span></div><div class="line"><span class="comment">##    Variant_Classification     n</span></div><div class="line"><span class="comment">##                     &lt;chr&gt; &lt;int&gt;</span></div><div class="line"><span class="comment">##  1                  3'UTR  4166</span></div><div class="line"><span class="comment">##  2                 Intron  3451</span></div><div class="line"><span class="comment">##  3                3'Flank   423</span></div><div class="line"><span class="comment">##  4       Nonstop_Mutation    58</span></div><div class="line"><span class="comment">##  5                    IGR     3</span></div><div class="line"><span class="comment">##  6                    RNA  1338</span></div><div class="line"><span class="comment">##  7            Splice_Site   955</span></div><div class="line"><span class="comment">##  8        Frame_Shift_Del  1487</span></div><div class="line"><span class="comment">##  9      Missense_Mutation 53054</span></div><div class="line"><span class="comment">## 10 Translation_Start_Site    60</span></div><div class="line"><span class="comment">## # ... with more rows</span></div></pre></td></tr></table></figure>
+<p>这从本质上证明了，我们可以使用单个R变量（在本例中是 <code>tcgaCon</code> ）的操作来查看整个TCGA数据的概念。构成这个操作的基础设施是由Google提供的，但是这种基本思路也可以在其它环境中进行重现。</p>
+<p>我们能设想一个类似于 <code>SummarizedExperiment</code> 样的接口来连接这种数据储存的？这是没问题的，可以参考Github上的<code>seByTumor</code> 函数，它位于<code>shwetagopaul92/restfulSE</code> 包（这个包正在进行Bioconductor的评估，不过可以通过Github来进行安装）。</p>
+<p>Institute for Systems Biology的癌症基因组去试点项目(Cancer Genomics Cloud pilot instance)的介绍到此为止。其它的云试点项目则是由 <a href="http://www.cancergenomicscloud.org/" target="_blank" rel="external">Seven Bridges Genomics</a> 和 <a href="https://software.broadinstitute.org/firecloud/" target="_blank" rel="external">Broad Institute</a>创建的。这些项目目前正在努力形成一个云端框架，从而整合大量的通用基因组学数据，从而减少基因组学数据的传输。 <a href="https://grants.nih.gov/grants/guide/rfa-files/RFA-HG-17-011.html" target="_blank" rel="external">RFA</a> 提供了非常丰富的信息。</p>
+<h1 id="总体总结">总体总结</h1>
+<p>我们已经回顾了几个实验案例的基因组数据管理方式，包括这几类：</p>
+<ul>
+<li>基于微阵列的基因表达检测</li>
+<li>基于微阵列的DNA甲基化检测</li>
+<li>RNA-seq比对和由此衍生的基因表达测量</li>
+<li>全基因组基因分型</li>
+<li>肿瘤突变评估</li>
+</ul>
+<p>数据来源包括：</p>
+<ul>
+<li>本地文件</li>
+<li>机构数据库 (NCBI GEO, EMBL ArrayExpress)</li>
+<li>高通量外部数据储存 (HDF5)</li>
+<li>云端分布式数据储存 (Google BigQuery or Amazon S3)</li>
+</ul>
+<p>重要的管理原则包括：</p>
+<ul>
+<li>统一的正式对象类(ExpressionSet，Summary)中的分析，样本和实验元数据。</li>
+<li>当处理一个队列的重叠子集时，要协调分析集的合并 (MultiAssayExperiment)。</li>
+<li>在特征过滤或样本过滤对错中的自同态特征。</li>
+<li>使用Granges作为查询的基因组坐标的过滤工具。</li>
+<li>通过使用关键来源信息（例如构建一个参考基因组）标记对象来检测其一致性。</li>
+</ul>
+<p>这是一个在分子分析技术、数据存储和检索领域正在进行重大创新的时代。制定基准和支持策略的选择是一个非常有价值但不简单的过程。这一章已经向您介绍了一系列概念和解决方案，其中许多内容已经应用于本课程中要进行讲解的分析案例中。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/dataman2019.html" target="_blank" rel="external">Management of genome-scale data (2019, Bioc 3.9)</a></li>
+<li><a href="https://davetang.org/muse/2013/02/22/using-tabix/" target="_blank" rel="external">Using tabix</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Bioconductor/" <i class="fa fa-tag"></i> Bioconductor</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/03/PH525x/PH525xC11-03-安装Bioconductor与获取帮助/" rel="next" title="PH525xC11-03-安装Bioconductor与获取帮助">
+                <i class="fa fa-chevron-left"></i> PH525xC11-03-安装Bioconductor与获取帮助
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/07/Experiment/HIPC介绍/" rel="prev" title="HIPC介绍">
+                HIPC介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">231</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇总多个表格信息"><span class="nav-number">2.</span> <span class="nav-text">汇总多个表格信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#演示包gse5859subset"><span class="nav-number">2.1.</span> <span class="nav-text">演示包：GSE5859Subset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在expressionset汇总表格"><span class="nav-number">2.2.</span> <span class="nav-text">在ExpressionSet汇总表格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自同态环概念endomorphism"><span class="nav-number">2.3.</span> <span class="nav-text">*自同态环概念(endomorphism)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#geo-geoquery-arrayexpress与表达数据储存"><span class="nav-number">3.</span> <span class="nav-text">GEO, GEOquery, ArrayExpress与表达数据储存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#geometadb"><span class="nav-number">3.1.</span> <span class="nav-text">GEOmetadb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getgeo获取geo中的expressionset"><span class="nav-number">3.2.</span> <span class="nav-text">getGEO获取GEO中的ExpressionSet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#arrayexpress检索并获取embl-ebi的arrayexpress"><span class="nav-number">3.3.</span> <span class="nav-text">ArrayExpress检索并获取EMBL-EBI的ArrayExpress</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#summarizedexperiment实例"><span class="nav-number">4.</span> <span class="nav-text">SummarizedExperiment实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#常规思路"><span class="nav-number">4.1.</span> <span class="nav-text">常规思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rna-seq实验"><span class="nav-number">4.2.</span> <span class="nav-text">RNA-seq实验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理由illumina-450k甲基化芯片生成的数据"><span class="nav-number">4.3.</span> <span class="nav-text">处理由Illumina 450k甲基化芯片生成的数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#外部数据储存hdf5array-savehdf5summarizedexperiment"><span class="nav-number">5.</span> <span class="nav-text">外部数据储存—HDF5Array, saveHDF5SummarizedExperiment</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#测试内存占用"><span class="nav-number">5.1.</span> <span class="nav-text">测试内存占用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hdf5用于外部存储"><span class="nav-number">5.2.</span> <span class="nav-text">HDF5用于外部存储</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#summarizedexperiment支持hdf5"><span class="nav-number">5.3.</span> <span class="nav-text">SummarizedExperiment支持HDF5</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#genomicfiles某个特定类型的文件家族"><span class="nav-number">6.</span> <span class="nav-text">GenomicFiles某个特定类型的文件家族</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#bam-文件集"><span class="nav-number">6.1.</span> <span class="nav-text">BAM 文件集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bed-文件集"><span class="nav-number">6.2.</span> <span class="nav-text">BED 文件集</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#管理大量的dna变异信息"><span class="nav-number">7.</span> <span class="nav-text">管理大量的DNA变异信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#vcf背景"><span class="nav-number">7.1.</span> <span class="nav-text">VCF背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基因组vcf"><span class="nav-number">7.2.</span> <span class="nav-text">*1000基因组VCF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入并处理vcf数据"><span class="nav-number">7.3.</span> <span class="nav-text">输入并处理VCF数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多组学multiassayexperiment以tcga为例说明"><span class="nav-number">8.</span> <span class="nav-text">多组学：MultiAssayExperiment，以TCGA为例说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#检索神经胶质细胞瘤数据"><span class="nav-number">8.1.</span> <span class="nav-text">检索神经胶质细胞瘤数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理tcga突变数据"><span class="nav-number">8.2.</span> <span class="nav-text">处理TCGA突变数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#突变的位置和基因关联性"><span class="nav-number">8.2.1.</span> <span class="nav-text">突变的位置和基因关联性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#突变类型"><span class="nav-number">8.2.2.</span> <span class="nav-text">突变类型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#云端管理策略cgc与gdc概念"><span class="nav-number">9.</span> <span class="nav-text">云端管理策略：CGC与GDC概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总体总结"><span class="nav-number">10.</span> <span class="nav-text">总体总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">10.1.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共930.0k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

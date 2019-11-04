@@ -259,6 +259,668 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/09/Linux/Linux-shell09-正则表达式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/09/Linux/Linux-shell09-正则表达式/" itemprop="url">Shell学习笔记（9）——正则表达式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-09T12:12:54+08:00">
+                2018-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/正则表达式/" itemprop="url" rel="index">
+                    <span itemprop="name">正则表达式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  8,861
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  37
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="正则表达式定义">正则表达式定义</h2>
+<h3 id="定义">定义</h3>
+<p>正则表达式是你所定义的模式模板（pattern template），Linux工具可以用它来过滤文本。Linux工具（比如sed编辑器或gawk程序）能够在处理数据时使用正则表达式对数据进行模式匹配。如果数据匹配模式，它就会被接受并进一步处理；如果数据不匹配模式，它就会被滤掉。下图描述了这个过程。</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180509/gJmc5KFHBB.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>正则表达式模式利用通配符来描述数据流中的一个或多个字符。Linux中有很多场景都可以使用通配符来描述不确定的数据。星号通配符允许你只列出满足特定条件的文件，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/sed$ ls data*</div><div class="line">data10.cpp  data1b.txt  data3.txt</div><div class="line">data11.txt  data1.txt   data4.txt</div><div class="line">data12.txt  data2.txt   data9.txt</div></pre></td></tr></table></figure>
+<p><code>data*</code> 参数会让 ls 命令只列出名字以da开头的文件。文件名中da之后可以有任意多个字符（包括什么也没有）。</p>
+<p>正则表达式通配符模式的工作原理与之类似。正则表达式模式含有文本或特殊字符，为sed编辑器和gawk程序定义了一个匹配数据时采用的模板。可以在正则表达式中使用不同的特殊字符来定义特定的数据过滤模式。</p>
+<h3 id="类型">类型</h3>
+<p>使用正则表达式最大的问题在于有不止一种类型的正则表达式。Linux中的不同应用程序可能会用不同类型的正则表达式。这其中包括编程语言（Java、Perl和Python）、Linux实用工具（比如sed编辑器、gawk程序和grep工具）以及主流应用（比如MySQL和PostgreSQL数据库服务器）。正则表达式是通过正则表达式引擎（regular expression engine）实现的。正则表达式引擎是一套底层软件，负责解释正则表达式模式并使用这些模式进行文本匹配。在Linux中，有两种流行的正则表达式引擎：</p>
+<p>第一，POSIX基础正则表达式（basic regular expression，BRE）引擎；</p>
+<p>第二，POSIX扩展正则表达式（extended regular expression，ERE）引擎</p>
+<p>大多数Linux工具都至少符合POSIXBRE引擎规范，能够识别该规范定义的所有模式符号。遗憾的是，有些工具（比如sed编辑器）只符合了BRE引擎规范的子集。这是出于速度方面的考虑导致的，因为sed编辑器希望能尽可能快地处理数据流中的文本。POSIXBRE引擎通常出现在依赖正则表达式进行文本过滤的编程语言中。它为常见模式提供了高级模式符号和特殊符号，比如匹配数字、单词以及按字母排序的字符。gawk程序用ERE引擎来处理它的正则表达式模式。</p>
+<h2 id="定义bre模式">定义BRE模式</h2>
+<p>最基本的BRE模式是匹配数据流中的文本字符。</p>
+<h3 id="纯文本">纯文本</h3>
+<p>下面演示一下如何在sed编辑器和gawk程序中用标准文本字符串来过滤数据，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "This is a test"|sed -n '/test/p'</div><div class="line">This is a test</div><div class="line">biotest@ubuntu:~/regx$ echo "This is a test"|sed -n '/trial/p'</div><div class="line">biotest@ubuntu:~/regx$ echo "This is a test"|gawk '/test/&#123;print $0&#125;'</div><div class="line">This is a test</div><div class="line">biotest@ubuntu:~/regx$ echo "This is a test"|gawk '/trial/&#123;print $0&#125;'</div></pre></td></tr></table></figure>
+<p>第一个模式定义了一个单词test。sed编辑器和gawk程序脚本用它们各自的print命令打印出匹配该正则表达式模式的所有行。由于echo语句在文本字符串中包含了单词test，数据流文本能够匹配所定义的正则表达式模式，因此sed编辑器显示了该行。</p>
+<p>第二个模式也定义了一个单词，这次是trial。因为echo语句文本字符串没包含该单词，所以正则表达式模式没有匹配，因此sed编辑器和gawk程序都没打印该行。你可能注意到了，正则表达式并不关心模式在数据流中的位置。它也不关心模式出现了多少次。一旦正则表达式匹配了文本字符串中任意位置上的模式，它就会将该字符串传回Linux工具。关键在于将正则表达式模式匹配到数据流文本上。重要的是记住正则表达式对匹配的模式非常挑剔。第一条原则就是：正则表达式模式都区分大小写。这意味着它们只会匹配大小写也相符的模式。</p>
+<h4 id="正则表达式区分大小写">正则表达式区分大小写</h4>
+<p>看个例子，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "This is a test"|sed -n '/this/p'</div><div class="line">biotest@ubuntu:~/regx$ echo "This is a test"|sed -n '/This/p'</div><div class="line">This is a test</div></pre></td></tr></table></figure>
+<p>第一次尝试没能匹配成功，因为 this 在字符串中并不都是小写，而第二次尝试在模式中使用大写字母，所以能正常工作。 在正则表达式中，你不用写出整个单词。只要定义的文本出现在数据流中，正则表达式就能够匹配，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "The books are expensive"|sed -n '/book/p'</div><div class="line">The books are expensive</div></pre></td></tr></table></figure>
+<p>尽管数据流中的文本是books，但数据中含有正则表达式book，因此正则表达式模式跟数据匹配。当然，反之正则表达式就不成立了，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "The book is expensive"|sed -n '/books/p'</div><div class="line"><span class="meta">#</span> 完整的正则表达式文本并未在数据流中出现，因此匹配失败，sed编辑器不会显示任何文本。</div></pre></td></tr></table></figure>
+<p>可以在正则表达式中使用空格和数字，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "This is line number 1"|sed -n '/ber 1/p'</div><div class="line">This is line number 1</div><div class="line"><span class="meta">#</span> 空格也能匹配</div></pre></td></tr></table></figure>
+<p>在正则表达式中，空格和其他的字符并没有什么区别，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "This is line number1"|sed -n '/ber 1/p'</div><div class="line">biotest@ubuntu:~/regx$ </div><div class="line"><span class="meta">#</span> number1之间没有空格，/ber 1/p就无法匹配，因此也不显示</div></pre></td></tr></table></figure>
+<p>如果你在正则表达式中定义了空格，那么它必须出现在数据流中。甚至可以创建匹配多个连续空格的正则表达式模式，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data1.txt </div><div class="line">This is a normal line of text.</div><div class="line">This is  a line with too many spaces.</div><div class="line">biotest@ubuntu:~/regx$ sed -n '/  /p' data1.txt </div><div class="line">This is  a line with too many spaces.</div><div class="line"><span class="meta">#</span> This  is这之间有两个空格</div></pre></td></tr></table></figure>
+<h3 id="特殊字符">特殊字符</h3>
+<p>正则表达式识别的特殊字符包括： <code>.*[]^${}\+?|()</code>，在文本模式中不要单独使用这些字符，如果要用某个特殊字符作为文本字符，就必须转义，在转义特殊字符时，你需要在它前面加一个反斜线（），如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data2.txt </div><div class="line">The cost is $4.00</div><div class="line">biotest@ubuntu:~/regx$ sed -n '/\$/p' data2.txt </div><div class="line">The cost is $4.00</div><div class="line"><span class="meta">#</span> 这里添加了反斜线对美元符号进行转义</div></pre></td></tr></table></figure>
+<p>如果要匹配反斜线，需要用反斜线本身对基进行转义，也就是两个反斜线，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "\ is a special character" |sed -n '/\\/p'</div><div class="line">\ is a special character</div><div class="line"><span class="meta">#</span> 在这个案例中，匹配的是\，因此需要需要一个/来进行匹配，就成了//</div></pre></td></tr></table></figure>
+<p>需要注意的是，虽然<code>/</code>不是正则表达式的特殊字符，但是也也需要<code>\</code>进行匹配，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "3/2"|sed -n '/\//p'</div><div class="line">3/2</div><div class="line"><span class="meta">#</span> 匹配模式就是/文本/命令；这里的文本就是/，添加上转义字符就是\/，整体来看就是/\//p。</div></pre></td></tr></table></figure>
+<h3 id="锚字符">锚字符</h3>
+<p>当指定一个正则表达式模式时，只要模式出现在数据流中的任何地方，它就能匹配。有两个特殊字符可以用来将模式锁定在数据流中的行首或行尾。</p>
+<h4 id="锁定在行首">锁定在行首</h4>
+<p>脱字符（<code>^</code>）定义从数据流中文本行的行首开始的模式。如果模式出现在行首之外的位置，正则表达式模式则无法匹配，如果要使用脱字符，就必须将它放到正则表达式中指定的模式前面，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "The book store"|sed -n '/^book/p'</div><div class="line"><span class="meta">#</span> book不是首个单词，加了帽子的book无法匹配</div><div class="line">biotest@ubuntu:~/regx$ echo "Books are great"|sed -n '/^Book/p'</div><div class="line">Books are great</div><div class="line"><span class="meta">#</span> Books是首个单词，加了帽子的Books能够匹配</div></pre></td></tr></table></figure>
+<p>脱字符会在每个由换行符决定的新数据行的行首检查模式，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data3.txt </div><div class="line">This is a test line.</div><div class="line">this is another test line.</div><div class="line">A line that tests this feature.</div><div class="line">Yet more testing of this</div><div class="line">biotest@ubuntu:~/regx$ sed -n '/^this/p' data3.txt</div><div class="line">this is another test line.</div><div class="line"><span class="meta">#</span> 只要模式出现在新行的行首，脱字符就能够发现它。</div></pre></td></tr></table></figure>
+<p>如果你将脱字符放到模式开头之外的其他位置，那么它就跟普通字符一样，不再是特殊字符了，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "This ^ is a test"|sed -n '/This ^/p'</div><div class="line">This ^ is a test</div><div class="line"><span class="meta">#</span> 这里匹配的是This ^，这里不用转义</div><div class="line"></div><div class="line">biotest@ubuntu:~/regx$ echo "This ^is a test"|sed -n '/\^is/p'</div><div class="line">This ^is a test</div><div class="line"><span class="meta">#</span> 这里匹配的是^is，由于^后面有字符，因此需要转义，如果不转义，匹配时会认为是只匹配首个单词</div></pre></td></tr></table></figure>
+<p>需要注意的是，如果指定正则表达式模式时只用了脱字符，就不需要用反斜线来转义。但如果你在模式中先指定了脱字符，随后还有其他一些文本，那么你必须在脱字符前用转义字符。</p>
+<h4 id="锁定在行尾">锁定在行尾</h4>
+<p>特殊字符美元符（<code>$</code>）定义了行尾锚点。将这个特殊字符放在文本模式之后来指明数据行必须以该文本模式结尾，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "This is a good book"|sed -n '/book$/p'</div><div class="line">This is a good book</div><div class="line">biotest@ubuntu:~/regx$ echo "This book is good"|sed -n '/book$/p'</div><div class="line">biotest@ubuntu:~/regx$ echo "There are a lot of good books"|sed -n '/book$/p'</div><div class="line"><span class="meta">#</span> 无法完成匹配，因为原文本是books，而美元符号前面是book,可以理解为，原文本最后两个是ks，而美元符号是ok，肯定不能匹配了</div></pre></td></tr></table></figure>
+<h4 id="组合锚点">组合锚点</h4>
+<p>在一些常见情况下，可以在同一行中将行首锚点和行尾锚点组合在一起使用。在第一种情况中，假定你要查找只含有特定文本模式的数据行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data4.txt </div><div class="line">this is a test of using both anchors</div><div class="line">I said this is a test</div><div class="line">this is a test</div><div class="line">I'm sure this is a test.</div><div class="line">biotest@ubuntu:~/regx$ sed -n '/^this is a test$/p' data4.txt</div><div class="line">this is a test</div><div class="line"><span class="meta">#</span> sed编辑器忽略了那些不单单包含指定的文本的行，例如I said this is a test</div></pre></td></tr></table></figure>
+<p>将两个锚点直接组合在一起，之间不加任何文本，这样过滤出数据流中的空白行，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data5.txt </div><div class="line">No.1 This is one test line.</div><div class="line"></div><div class="line"></div><div class="line">No.2 This is another test line.</div><div class="line"></div><div class="line">No.3 This third test line.</div><div class="line">biotest@ubuntu:~/regx$ sed '/^$/d' data5.txt</div><div class="line">No.1 This is one test line.</div><div class="line">No.2 This is another test line.</div><div class="line">No.3 This third test line.</div><div class="line"><span class="meta">#</span> 定义的正则表达式模式会查找行首和行尾之间什么都没有的那些行</div></pre></td></tr></table></figure>
+<p>定义的正则表达式模式会查找行首和行尾之间什么都没有的那些行。由于空白行在两个换行符之间没有文本，刚好匹配了正则表达式模式。sed编辑器用删除命令d来删除匹配该正则表达式模式的行，因此删除了文本中的所有空白行。这是从文档中删除空白行的有效方法。</p>
+<h3 id="点号字符">点号字符</h3>
+<p>特殊字符点号用来匹配除换行符之外的任意单个字符。它必须匹配一个字符，如果在点号字符的位置没有字符，那么模式就不成立。来看一些在正则表达式模式中使用点号字符的例子。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data6.txt </div><div class="line">This is a test of a line.</div><div class="line">The cat is sleeping.</div><div class="line">That is a very nice hat.</div><div class="line">This test is at line four.</div><div class="line">at ten o'clock we'll go home.:wq</div><div class="line"></div><div class="line">biotest@ubuntu:~/regx$ sed -n '/.at/p' data6.txt </div><div class="line">The cat is sleeping.</div><div class="line">That is a very nice hat.</div><div class="line">This test is at line four.</div><div class="line"><span class="meta">#</span> 在第四行中，at前面有一个空格，这也是一个字符，因此能够匹配。</div></pre></td></tr></table></figure>
+<h3 id="字符组">字符组</h3>
+<p>如果要限定待匹配的具体字符的话，在正则表达式中，这称为字符组（characterclass）。可以定义用来匹配文本模式中某个位置的一组字符。如果字符组中的某个字符出现在了数据流中，那它就匹配了该模式。使用方括号来定义一个字符组。方括号中包含所有你希望出现在该字符组中的字符。然后你可以在模式中使用整个组，就跟使用其他通配符一样，看一个案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ sed -n '/[ch]at/p' data6.txt</div><div class="line">The cat is sleeping.</div><div class="line">That is a very nice hat.</div></pre></td></tr></table></figure>
+<p>匹配这个模式的单词只有 cat 和 hat 。还要注意以 at 开头的行也没有匹配。字符组中必须有个字符来匹配相应的位置。</p>
+<h4 id="不区分大小写">不区分大小写</h4>
+<p>有时候这种方法在不清楚大小写的时候很有用，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "Yes" | sed -n '/[Yy]es/p'</div><div class="line">Yes</div><div class="line">biotest@ubuntu:~/regx$ echo "yes"|sed -n '/[Yy]es/p'</div><div class="line">yes</div><div class="line">biotest@ubuntu:~/regx$ echo "Yes"|sed -n '/[Yy][Ee][Ss]/p'</div><div class="line">Yes</div><div class="line">biotest@ubuntu:~/regx$ echo "yEs"|sed -n '/[Yy][Ee][Ss]/p'</div><div class="line">yEs</div><div class="line">biotest@ubuntu:~/regx$ echo "yeS"|sed -n '/[Yy][Ee][Ss]/p'</div><div class="line">yeS</div></pre></td></tr></table></figure>
+<h4 id="使用数字">使用数字</h4>
+<p>字符组不必只含有字母，也可以在其中使用数字，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data6.txt</div><div class="line">This is a test of a line.</div><div class="line">The cat is sleeping.</div><div class="line">That is a very nice hat.</div><div class="line">This test is at line four.</div><div class="line">at ten o'clock we'll go home.:wq</div><div class="line"></div><div class="line">biotest@ubuntu:~/regx$ sed -n '/[0123]/p' data7.txt </div><div class="line">THis line has 1 number on it.</div><div class="line">THis line a number 2 on it.</div><div class="line"><span class="meta">#</span> 这个正则表达式模式匹配了任意含有数字0、1、2或3的行。含有其他数字以及不含有数字的行都会被忽略掉。</div></pre></td></tr></table></figure>
+<h4 id="匹配某一位数的数字">匹配某一位数的数字</h4>
+<p>有时候需要将字级组组合在一起，以检查数字是否具备正确的格式，比如电话号码和邮编。但当你尝试匹配某种特定格式时，必须小心。这里有个匹配邮编出错的例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data8.txt </div><div class="line">46201</div><div class="line">60633</div><div class="line">223001</div><div class="line">4353</div><div class="line">22203</div><div class="line"></div><div class="line">biotest@ubuntu:~/regx$ sed -n '</div><div class="line"><span class="meta">&gt;</span> /[0123456789][0123456789][0123456789][0123456789][0123456789]/p</div><div class="line"><span class="meta">&gt;</span> ' data8.txt</div><div class="line">46201</div><div class="line">60633</div><div class="line">223001</div><div class="line">22203</div></pre></td></tr></table></figure>
+<p>从结果可以看出，它滤过了4353，因为正则表达式中定义了5个字符组，4位的4353只有4个数字，最后一个数字无法匹配，就滤过了。但是223001这个6位数也通过了。因此正则表达式模式可见于数据流中文本的任何位置，因此我们设定过滤5个数字时，4个数字肯定能滤过去，但是大于5个数字的也能通过，因此如果要确保只匹配五位数，就必须将匹配的字符和其他字符分开，要么用空格，要么像这个例子中这样，指明它们就在行首和行尾，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ sed -n '</div><div class="line">/^[0123456789][0123456789][0123456789][0123456789][0123456789]$/p</div><div class="line">' data8.txt</div><div class="line">46201</div><div class="line">60633</div><div class="line">22203</div></pre></td></tr></table></figure>
+<h4 id="检查拼写">检查拼写</h4>
+<p>字符组的一个极其常见的用法是解析拼错的单词，比如用户表单输入的数据。你可以创建正则表达式来接受数据中常见的拼写错误，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data9.txt </div><div class="line">I need to have some maintenence done on my car.</div><div class="line">I'll pay that in a seperate invoice.</div><div class="line">After I pay for the maintenance my car will be as good as new.</div><div class="line">biotest@ubuntu:~/regx$ sed -n '</div><div class="line">/maint[ea]n[ae]nce/p</div><div class="line">/sep[ea]r[ea]te/p</div><div class="line">' data9.txt</div><div class="line">I need to have some maintenence done on my car.</div><div class="line">I'll pay that in a seperate invoice.</div><div class="line">After I pay for the maintenance my car will be as good as new.</div></pre></td></tr></table></figure>
+<p>本例中的两个sed打印命令利用正则表达式字符组来帮助找到文本中拼错的单词maintenance和separate。同样的正则表达式模式也能匹配正确拼写的maintenance。</p>
+<h3 id="排除型字符组">排除型字符组</h3>
+<p>在正则表达式模式中，也可以反转字符组的作用。可以寻找组中没有的字符，而不是去寻找组中含有的字符。要这么做的话，只要在字符组的开头加个脱字符，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data6.txt </div><div class="line">This is a test of a line.</div><div class="line">The cat is sleeping.</div><div class="line">That is a very nice hat.</div><div class="line">This test is at line four.</div><div class="line">at ten o'clock we'll go home.:wq</div><div class="line"></div><div class="line">biotest@ubuntu:~/regx$ sed -n '/[^ch]at/p' data6.txt</div><div class="line">This test is at line four.</div></pre></td></tr></table></figure>
+<p>通过排除型字符组，正则表达式模式会匹配c或h之外的任何字符以及文本模式。由于空格字符属于这个范围，它通过了模式匹配。但即使是排除，字符组仍然必须匹配一个字符，所以以at开头的行仍然未能匹配模式。</p>
+<h3 id="区间">区间</h3>
+<p>如果必须要在每个字符组中列出所有可能的数字，有点麻烦，单破折线符号在字符组中表示字符区间。只需要指定区间的第一个字符、单破折线以及区间的最后一个字符就行了，正则表达式会包括此区间内的任意字符，可以通过指定数字区间来简化邮编的例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data8.txt</div><div class="line">46201</div><div class="line">60633</div><div class="line">223001</div><div class="line">4353</div><div class="line">22203</div><div class="line"></div><div class="line">biotest@ubuntu:~/regx$ sed -n '/^[0-9][0-9][0-9][0-9][0-9]$/p' data8.txt</div><div class="line">46201</div><div class="line">60633</div><div class="line">22203</div></pre></td></tr></table></figure>
+<p>这样可是节省了不少的键盘输入，每个字符组都会匹配0~9的任意数字。</p>
+<p>这种方法也适用于字母，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ cat data6.txt</div><div class="line">This is a test of a line.</div><div class="line">The cat is sleeping.</div><div class="line">That is a very nice hat.</div><div class="line">This test is at line four.</div><div class="line">at ten o'clock we'll go home.:wq</div><div class="line"></div><div class="line">biotest@ubuntu:~/regx$ sed -n '/[c-h]at/p' data6.txt</div><div class="line">The cat is sleeping.</div><div class="line">That is a very nice hat.</div></pre></td></tr></table></figure>
+<p>新的模式[c-h]at匹配了首字母在字母c和字母h之间的单词。这种情况下，只含有单词at的行将无法匹配该模式。还可以在单个字符组指定多个不连续的区间，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ sed -n '/[a-ch-m]at/p' data6.txtThe cat is sleeping.</div><div class="line">That is a very nice hat.</div></pre></td></tr></table></figure>
+<p>该字符组允许区间a<sub>c、h</sub>m中的字母出现在at文本前，但不允许出现d~g的字母。</p>
+<h3 id="特殊的字符组">特殊的字符组</h3>
+<p>除了定义自己的字符组外，BRE还包含了一些特殊的字符组，可用来匹配特定类型的字符。下表是可用的BRE特殊的字符组。</p>
+<table>
+<thead>
+<tr class="header">
+<th>组</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[[:alpha:]]</td>
+<td>匹配任意字母字符，不管是大写还是小写</td>
+</tr>
+<tr class="even">
+<td>[[:alnum:]]</td>
+<td>匹配任意字母数字字符0~9、A</td>
+</tr>
+<tr class="odd">
+<td>[[:blank:]]</td>
+<td>匹配空格或制表符</td>
+</tr>
+<tr class="even">
+<td>[[:digit:]]</td>
+<td>匹配0~9之间的数字</td>
+</tr>
+<tr class="odd">
+<td>[[:lower:]]</td>
+<td>匹配小写字母字符a~z</td>
+</tr>
+<tr class="even">
+<td>[[:print:]]</td>
+<td>匹配任意可打印字符</td>
+</tr>
+<tr class="odd">
+<td>[[:punct:]]</td>
+<td>匹配标点符号</td>
+</tr>
+<tr class="even">
+<td>[[:space:]]</td>
+<td>匹配任意空白字符：空格、制表符、NL、FF、VT和CR</td>
+</tr>
+<tr class="odd">
+<td>[[:upper:]]</td>
+<td>匹配任意大写字母字符A~Z</td>
+</tr>
+</tbody>
+</table>
+<p>可以在正则表达式模式中将特殊字符组像普通字符组一样使用，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "abc"|sed -n '/[[:digit:]]/p'</div><div class="line">biotest@ubuntu:~/regx$ echo "abc"|sed -n '/[[:alpha:]]/p'</div><div class="line">abc</div><div class="line">biotest@ubuntu:~/regx$ echo "abc123"| sed -n '/[[:digit:]]/p'</div><div class="line">abc123</div><div class="line">biotest@ubuntu:~/regx$ echo "This is , a test"|sed -n '/[[:punct:]]/p'</div><div class="line">This is , a test</div><div class="line">biotest@ubuntu:~/regx$ echo "This is a test"|sed -n '/[[:punct:]]/p'</div></pre></td></tr></table></figure>
+<p>使用特殊字符组可以很方便地定义区间。可以用<code>[[:digit:]]</code>来代替区间<code>[0-9]</code>。</p>
+<h3 id="星号">星号</h3>
+<p>在字符后面放置星号表明该字符必须在匹配模式的文本中出现0次或多次，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "ik"|sed -n '/ie*k/p'</div><div class="line">ik</div><div class="line">biotest@ubuntu:~/regx$ echo "iek"|sed -n '/ie*k/p'</div><div class="line">iek</div><div class="line">biotest@ubuntu:~/regx$ echo "ieek"|sed -n '/ie*k/p'</div><div class="line">ieek</div><div class="line">biotest@ubuntu:~/regx$ echo "ieeek"|sed -n '/ie*k/p'</div><div class="line">ieeek</div></pre></td></tr></table></figure>
+<p>这个模式符号广泛用于处理有常见拼写错误或在不同语言中有拼写变化的单词。举个例子，如果需要写个可能用在美式或英式英语中的脚本，可以这么写：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "I'm getting a color TV"|sed -n '/colou*r/p'</div><div class="line">I'm getting a color TV</div><div class="line">biotest@ubuntu:~/regx$ echo "I'm getting a colour TV"|sed -n '/colou*r/p'</div><div class="line">I'm getting a colour TV</div></pre></td></tr></table></figure>
+<p>模式中的 <code>u*</code> 表明字母u可能出现或不出现在匹配模式的文本中。类似地，如果你知道一个单 词经常被拼错，你可以用星号来允许这种错误，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "I ate a potatoe with my lunch."|sed -n '/potatoe*/p'</div><div class="line">I ate a potatoe with my lunch.</div><div class="line">biotest@ubuntu:~/regx$ echo "I ate a potato with my lunch."|sed -n '/potatoe*/p'</div><div class="line">I ate a potato with my lunch.</div></pre></td></tr></table></figure>
+<p>在可能出现的额外字母后面放个星号将允许接受拼错的单词。另一个方便的特性是将点号特殊字符和星号特殊字符组合起来。这个组合能够匹配任意数量的任意字符。它通常用在数据流中两个可能相邻或不相邻的文本字符串之间。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "this is a regular pattern expression"|sed -n '</div><div class="line"><span class="meta">&gt;</span> /regular.*expression/p'</div><div class="line">this is a regular pattern expression</div></pre></td></tr></table></figure>
+<p>可以使用这个模式轻松查找可能出现在数据流中文本行内任意位置的多个单词。星号还能用在字符组上。它允许指定可能在文本中出现多次的字符组或字符区间，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "bt"|sed -n '/b[ae]*t/p'</div><div class="line">bt</div><div class="line">biotest@ubuntu:~/regx$ echo "bat"|sed -n '/b[ae]*t/p'</div><div class="line">bat</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|sed -n '/b[ae]*t/p'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "btt"|sed -n '/b[ae]*t/p'</div><div class="line">btt</div><div class="line">biotest@ubuntu:~/regx$ echo "baat"|sed -n '/b[ae]*t/p'</div><div class="line">baat</div><div class="line">biotest@ubuntu:~/regx$ echo "baaeeet"|sed -n '/b[ae]*t/p'</div><div class="line">baaeeet</div></pre></td></tr></table></figure>
+<p>只要a和e字符以任何组合形式出现在b和t字符之间（就算完全不出现也行），模式就能够匹配。如果出现了字符组之外的字符，该模式匹配就会不成立。</p>
+<h2 id="正则表达式扩展">正则表达式扩展</h2>
+<p>POSIX ERE模式包括了一些可供Linux应用和工具使用的额外符号。gawk程序能够识别ERE模式，但sed编辑器不能。 记住，sed编辑器和gawk程序的正则表达式引擎之间是有区别的。gawk程序可以使用大多数扩展正则表达式模式符号，并且能提供一些额外过滤功能，而这些功能都是sed编辑器所不具备的。但正因为如此，gawk程序在处理数据流时通常才比较慢。</p>
+<h3 id="问号">问号</h3>
+<p>问号类似于星号，不过有点细微的不同。问号表明前面的字符可以出现0次或1次，但只限于此。它不会匹配多次出现的字符。问号类似于星号，不过有点细微的不同。问号表明前面的字符可以出现0次或1次，但只限于此。它不会匹配多次出现的字符，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "bt"|gawk '/be?t/&#123;print $p&#125;'</div><div class="line">bt</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|gawk '/be?t/&#123;print $0&#125;'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "beet"|gawk '/be?t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "beeet"|gawk '/be?t/&#123;print $0&#125;'</div><div class="line"><span class="meta">#</span> 如果字符 e 并未在文本中出现，或者它只在文本中出现了1次，那么模式会匹配。</div></pre></td></tr></table></figure>
+<p>问号与星号一样，也能与字符组一起使用，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "bt"|gawk '/b[ae]?t/&#123;print $0&#125;'</div><div class="line">bt</div><div class="line">biotest@ubuntu:~/regx$ echo "bat"|gawk '/b[ae]?t/&#123;print $0&#125;'</div><div class="line">bat</div><div class="line">biotest@ubuntu:~/regx$ echo "bot"|gawk '/b[ae]?t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|gawk '/b[ae]?t/&#123;print $0&#125;'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "baet"|gawk '/b[ae]?t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "beat"|gawk '/b[ae]?t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "beet"|gawk '/b[ae]?t/&#123;print $0&#125;'</div></pre></td></tr></table></figure>
+<p>如果字符组中的字符出现了0次或1次，模式匹配就成立。但如果两个字符都出现了，或者其中一个字符出现了2次，模式匹配就不成立。</p>
+<h3 id="加号">加号</h3>
+<p>加号表明前面的字符可以出现1次或多次，但必须至少出现1次。如果该字符没有出现，那么模式就不会匹配，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "beet"|gawk '/be+t/&#123;print $0&#125;'</div><div class="line">beet</div><div class="line">biotest@ubuntu:~/regx$ echo "beeet"|gawk '/be+t/&#123;print $0&#125;'</div><div class="line">beeet</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|gawk '/be+t/&#123;print $0&#125;'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "bt"|gawk '/be+t/&#123;print $0&#125;'</div></pre></td></tr></table></figure>
+<p>如果字符e没有出现，模式匹配就不成立。加号同样适用于字符组，与星号和问号的使用方式相同，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "bt"|gawk '/b[ae]+t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "bat"|gawk '/b[ae]+t/&#123;print $0&#125;'</div><div class="line">bat</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|gawk '/b[ae]+t/&#123;print $0&#125;'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "beat"|gawk '/b[ae]+t/&#123;print $0&#125;'</div><div class="line">beat</div><div class="line">biotest@ubuntu:~/regx$ echo "beet"|gawk '/b[ae]+t/&#123;print $0&#125;'</div><div class="line">beet</div><div class="line">biotest@ubuntu:~/regx$ echo "beeat"|gawk '/b[ae]+t/&#123;print $0&#125;'</div><div class="line">beeat</div></pre></td></tr></table></figure>
+<p>这次如果字符组中定义的任一字符出现了，文本就会匹配指定的模式。</p>
+<h3 id="花括号">花括号</h3>
+<p>ERE中的花括号允许你为可重复的正则表达式指定一个上限。这通常称为间隔（interval）。可以用两种格式来指定区间，其中<code>m</code>是正则表达式出现m次；<code>m,n</code>表现表达式至少出现m次，最多出现n次。这个特性可以精确调整字符或字符集在模式中具体出现的次数。 ，gawk程序不会识别正则表达式间隔。必须指定gawk程序的<code>--re- interval</code>命令行选项才能识别正则表达式间隔，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "bt"|gawk --re-interval '/be&#123;1&#125;t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|gawk --re-interval '/be&#123;1&#125;t/&#123;print $0&#125;'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "beet"|gawk --re-interval '/be&#123;1&#125;t/&#123;print $0&#125;'</div></pre></td></tr></table></figure>
+<p>通过指定间隔为1，限定了该字符在匹配模式的字符串中出现的次数。如果该字符出现多次，模式匹配就不成立。</p>
+<p>可以同时指定下限和上限，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "bt"|gawk --re-interval '/be&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|gawk --re-interval '/be&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "beet"|gawk --re-interval '/be&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">beet</div><div class="line">biotest@ubuntu:~/regx$ echo "beeet"|gawk --re-interval '/be&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line"><span class="meta">#</span> 在这个例子中，字符 e 可以出现1次或2次，这样模式就能匹配；否则，模式无法匹配。</div></pre></td></tr></table></figure>
+<p>间隔模式匹配同样适用于字符组，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "bt"|gawk --re-interval '/b[ae]&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "bat"|gawk --re-interval '/b[ae]&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">bat</div><div class="line">biotest@ubuntu:~/regx$ echo "bet"|gawk --re-interval '/b[ae]&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">bet</div><div class="line">biotest@ubuntu:~/regx$ echo "beat"|gawk --re-interval '/b[ae]&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">beat</div><div class="line">biotest@ubuntu:~/regx$ echo "beet"|gawk --re-interval '/b[ae]&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">beet</div><div class="line">biotest@ubuntu:~/regx$ echo "baeet"|gawk --re-interval '/b[ae]&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "baeaet"|gawk --re-interval '/b[ae]&#123;1,2&#125;t/&#123;print $0&#125;'</div><div class="line"><span class="meta">#</span> 如果字母a或e在文本模式中只出现了1~2次，则正则表达式模式匹配；否则，模式匹配失败。</div></pre></td></tr></table></figure>
+<h3 id="管道符号">管道符号</h3>
+<p>管道符号允许你在检查数据流时，用逻辑OR方式指定正则表达式引擎要用的两个或多个模式。如果任何一个模式匹配了数据流文本，文本就通过测试。如果没有模式匹配，则数据流文本匹配失败。使用管道符号的格式为<code>expr1|expr2</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "The cat is asleep"|gawk '/cat|dog/&#123;print $0&#125;'</div><div class="line">The cat is asleep</div><div class="line">biotest@ubuntu:~/regx$ echo "The dog is asleep"|gawk '/cat|dog/&#123;print $0&#125;'</div><div class="line">The dog is asleep</div><div class="line">biotest@ubuntu:~/regx$ echo "The sheep is asleep"|gawk '/cat|dog/&#123;print $0&#125;'</div><div class="line"><span class="meta">#</span> 这个例子会在数据流中查找正则表达式cat或dog。正则表达式和管道符号之间不能有空格，否则它们也会被认为是正则表达式模式的一部分。</div></pre></td></tr></table></figure>
+<p>管道符号两侧的正则表达式可以采用任何正则表达式模式（包括字符组）来定义文本，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "He has a hat."|gawk '/[ch]at|dog/&#123;print $0&#125;'</div><div class="line">He has a hat.</div><div class="line"><span class="meta">#</span> 这个例子会匹配数据流文本中的 cat 、 hat 或 dog 。</div></pre></td></tr></table></figure>
+<h3 id="表达式分组">表达式分组</h3>
+<p>正则表达式模式也可以用圆括号进行分组。当你将正则表达式模式分组时，该组会被视为一个标准字符。可以像对普通字符一样给该组使用特殊字符，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "Sat"|gawk '/Sat(urday)?/&#123;print $0&#125;'</div><div class="line">Sat</div><div class="line">biotest@ubuntu:~/regx$ echo "Saturday"|gawk '/Sat(urday)?/&#123;print $0&#125;'</div><div class="line">Saturday</div><div class="line"><span class="meta">#</span> 结尾的urday分组以及问号，使得模式能够匹配完整的 Saturday 或缩写 Sat 。</div></pre></td></tr></table></figure>
+<p>将分组和管道符号一起使用来创建可能的模式匹配组是很常见的做法，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo "cat"|gawk '/(c|b)a(b|t)/&#123;print $0&#125;'</div><div class="line">cat</div><div class="line">biotest@ubuntu:~/regx$ echo "cab"|gawk '/(c|b)a(b|t)/&#123;print $0&#125;'</div><div class="line">cab</div><div class="line">biotest@ubuntu:~/regx$ echo "bat"|gawk '/(c|b)a(b|t)/&#123;print $0&#125;'</div><div class="line">bat</div><div class="line">biotest@ubuntu:~/regx$ echo "bab"|gawk '/(c|b)a(b|t)/&#123;print $0&#125;'</div><div class="line">bab</div><div class="line">biotest@ubuntu:~/regx$ echo "tab"|gawk '/(c|b)a(b|t)/&#123;print $0&#125;'</div><div class="line">biotest@ubuntu:~/regx$ echo "tac"|gawk '/(c|b)a(b|t)/&#123;print $0&#125;'</div><div class="line"><span class="meta">#</span> 模式 (c|b)a(b|t) 会匹配第一组中字母的任意组合以及第二组中字母的任意组合。</div></pre></td></tr></table></figure>
+<h2 id="正则表达式实战">正则表达式实战</h2>
+<h3 id="第一案例目录文件计数">第一案例：目录文件计数</h3>
+<p>目标：对<code>PATH</code>环境变量中定义的目录的可执行文件进行计数。</p>
+<p>第一步：查看<code>PATH</code>中的目录名，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ echo $PATH</div><div class="line">/home/biotest/miniconda2/bin:/home/miniconda2/bin:/home/bio/miniconda2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/biotest/home/test:/home/biotest/home/biotest:/home/biotest:/home/biotest/</div></pre></td></tr></table></figure>
+<p>从结果可以看出，<code>PATH</code>中的每个路径都是由冒号分隔的，如果要获取目录列表，就需要用空格来替换冒号。</p>
+<p>第二步：用空格替换冒号，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span> 用空格替换冒号</div><div class="line">biotest@ubuntu:~/regx$ echo $PATH | sed 's/:/ /g'</div><div class="line">/home/biotest/miniconda2/bin /home/miniconda2/bin /home/bio/miniconda2/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/games /usr/local/games /snap/bin /home/biotest/home/test /home/biotest/home/biotest /home/biotest /home/biotest/</div></pre></td></tr></table></figure>
+<p>第三步：用<code>for</code>语句遍历每个目录，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mypath=$(echo $PATH |sed 's/:/ /g')</div><div class="line">for directory in $mypath </div><div class="line">do </div><div class="line">.# 代码先略过</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>第四步：一旦获得了单个目录，就可以用 ls 命令来列出每个目录中的文件，并用另一个 for 语句来遍历每个文件，为文件计数器增值。 这个脚本的最终版本如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> count number of files in your PATH</div><div class="line">mypath=$(echo $PATH | sed 's/:/ /g')</div><div class="line">count=0</div><div class="line">for directory in $mypath</div><div class="line">do</div><div class="line">    check=$(ls $directory)</div><div class="line">    for item in $check</div><div class="line">    do</div><div class="line">        count=$[ $count+1 ]</div><div class="line">    done</div><div class="line">    echo "$directory - $count"</div><div class="line">    count=0</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ sudo bash countfiles.sh </div><div class="line">/usr/local/sbin - 0</div><div class="line">/usr/local/bin - 2</div><div class="line">/usr/sbin - 200</div><div class="line">/usr/bin - 1744</div><div class="line">/sbin - 188</div><div class="line">/bin - 167</div><div class="line">ls: cannot access '/snap/bin': No such file or directory</div><div class="line">/snap/bin - 0</div></pre></td></tr></table></figure>
+<h3 id="第二案例验证电话号码">第二案例：验证电话号码</h3>
+<p>在这个案例中，使用的验证的美国的电话号码，美国的电话号码有这几种形式，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">(123)456-7890 </div><div class="line">(123) 456-7890 </div><div class="line">123-456-7890 </div><div class="line">123.456.7890</div></pre></td></tr></table></figure>
+<p>这样用户在表单中输入的电话号码就有4种可能。</p>
+<p>第一步：左括号。在构建正则表达式时，最好从左手边开始，然后构建用来匹配可能遇到的字符的模式。在这个例子中，电话号码中可能有也可能没有左圆括号。这可以用<code>^/(?</code>这个模式来匹配，脱字符用来表明数据的开始。由于左圆括号是个特殊字符，因此必须将它转义成普通字符。问号表明左圆括号可能出现，也可能不出现。</p>
+<p>第二步：三个连续数字。紧接着就是3位区号。在美国，区号以数字2开始（没有以数字0或1开始的区号），最大可到9。要匹配区号，可以用<code>[2-9][0-9]{2}</code>进行匹配，这要求第一个字符是2~9的数字，后跟任意两位数字。</p>
+<p>第三步：右括号。在区号后面，收尾的右圆括号可能存在，也可能不存在。，使用<code>\)?</code>进行匹配。</p>
+<p>第四步：在区号后，存在如下可能：有一个空格，没有空格，有一条单破折线或一个点。你可以对它们使用管道符号，并用圆括号进行分组，匹配模式为<code>(| |-|\.)</code>，这表示第一个管道符号紧跟在左圆括号后，用来匹配没有空格的情形。你必须将点字符转义，否则它会被解释成可匹配任意字符。</p>
+<p>第五步：匹配3位电话交换机号码，模式为<code>[0-9]{3}</code>。</p>
+<p>第六步：在电话交换机号码之后，你必须匹配一个空格、一条单破折线或一个点（这次不用考虑匹配没有空格的情况，因为在电话交换机号码和其余号码间必须有至少一个空格）。，模式为<code>( |-|\.)</code>。</p>
+<p>第七步：最后，必须在字符串尾部匹配4位本地电话分机号，匹配模式为`[0-9]{4}$。</p>
+<p>完整的模式为<code>^\(?[2-9][0-9]{2}\)?(| |-|\.)[0-9]{3}( |-|\.)[0-9]{4}$</code>。</p>
+<p>在gawk程序中用这个正则表达式模式来过滤掉不符合格式的电话号码。现在只需要在gawk程序中创建一个使用该正则表达式的简单脚本，然后用这个脚本来过滤电话薄。记住，在gawk程序中使用正则表达式间隔时，必须使用–re-interval命令行选项，否则就没法得到正确的结果，代码如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> script to filter out bad phone numbers</div><div class="line">gawk --re-interval '/^\(?[2-9][0-9]&#123;2&#125;\)?(| |-|\.)[0-9]&#123;3&#125;( |-|\.)[0-9]&#123;4&#125;/&#123;print $0&#125;'</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ chmod u+x isphone.sh </div><div class="line">biotest@ubuntu:~/regx$ sudo echo "317-555-1234" |./isphone.sh</div><div class="line">317-555-1234</div></pre></td></tr></table></figure>
+<h3 id="第三案例-解析邮件地址">第三案例： 解析邮件地址</h3>
+<p>电子邮件的基本格式为<code>username$hostname</code>，除此之外，还有可能含有点号，单破折线，加号，下划线等。而邮件的地址<code>hostname</code>部分是由一个或多个域名和一个服务器名组成。服务器名和域名也必须遵照严格的命名规则，只允许字母 数字字符以及点号或下划线组成。</p>
+<p>第一步：顶级域名的数量在过去十分有限，正则表达式模式编写者会尝试将它们都加到验证模式中。然而遗憾的是，随着互联网的发展，可用的顶级域名也增多了。这种方法已经不再可行。从左侧开始构建这个正则表达式模式。我们知道，用户名中可以有多个有效字符。这个相当容易，匹配模式为<code>^([a-zA-Z0-9_\-\.\+]+)@</code>，这个匹配模式指定了用户名中允许的字符，加号表明必须有至少一个字符，最后一个字符是<code>@</code>。</p>
+<p>第二步：hostname 模式使用同样的方法来匹配服务器名和子域名，即<code>([a-zA-Z0-9_\-\.]+)</code>，这个模式可以匹配文本。</p>
+<p>第三步：顶级域名。对于顶级域名，有一些特殊的规则。顶级域名只能是字母字符，必须不少于二个字符（国家或地区代码中使用），并且长度上不得超过五个字符。级级域名用的正则表达式模式为<code>\.([a-zA-Z]{2,5})$</code>。</p>
+<p>整个匹配模式就是<code>^([a-zA-Z0-9_\-\.\+]+)@([a-zA-Z0-9_\-\-\.]+)\.(a-zA-Z]{2,5})$</code>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> script to filter out bad mail</div><div class="line">gawk '/^([a-zA-Z0-9_\-\.\+]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]&#123;2,5&#125;)$/&#123;print $0&#125;'</div></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/regx$ sudo echo "rich@here.now" | ./ismail.sh</div><div class="line">rich@here.now</div><div class="line">biotest@ubuntu:~/regx$ sudo echo "rich#here.now" | ./ismail.sh</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/08/BioTools/测序原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/08/BioTools/测序原理/" itemprop="url">二代测序原理笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-08T00:00:01+08:00">
+                2018-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,885
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Illumina的测序芯片叫flowcell，长得如下所示：</p>
+<p>flowcell的样子如下所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/6lbe0aG5a1.jpg?imageslim" alt="mark"> <img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190302173717.png"></p>
+<p>flowcell的构成为例： 1. 每个flowcell（中文意思是流动池）有8个泳道，一个泳道称为一个Lane（中文意思是通道），每条Lane上有两列，每列有多个有小格子，叫一个tile（中文意思是瓦片），平时我们如果自己建库，送公司测序的话，样品如果比较多，通常就会直接买测序公司的一条lane，例如我们测了12个样本，在建库时，每个样本加上自己独有的index，送到测序公司，例如泛生子，直接告诉公司，我买一条测序仪上的一条lane就行了。</p>
+<ol start="2" style="list-style-type: decimal">
+<li>每一个flowcell上都有8条泳道，用于测序反应，可以添加试剂，洗脱等等。</li>
+<li>tile是每一次测序荧光扫描的最小单位</li>
+</ol>
+<h2 id="建库">建库</h2>
+<p>建库的流程如下图所示： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/dj9l6l81D3.png?imageslim" alt="mark"> 第一步：Shear Genomic DNA or begin with cDNA。这一步是将基因组打断为300~500bp的片段，采用的手段通常是超声波。</p>
+<p>第二步：End Repair（Blunt ends）。由于打断后，DNA的片段的末端会呈现不平整的情况，因此需要用酶来补平，在这一步中，片段的末端都是平末端。</p>
+<p>第三步：Add 3’ A Tail。完成补平以后，在3’端使用酶加上一个特异的碱基A。</p>
+<p>第四步：Ligate Adapters。第三步中加A就是为了这一步加上adapter（接头），这个adapter分为两个部分，一部分是测序的时候所需的引物序列，另一部分是建库扩增的时候需要的引物序列，加接头的过程，以及加完接头的结构如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/E1Lmc67hKg.png?imageslim" alt="mark"> 从上图可以看到，接头的一边含有T，正好与第三步中加了A的片段连接。</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/3EEaA7jhe9.png?imageslim" alt="mark"> <img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/DhL9FliI48.png?imageslim" alt="mark"></p>
+<p>第五步：Enrich/Linearize with PCR。这一步通过PCR扩增，使第四步中完成的接头扩增到足够的浓度。index也是在这一步加进去的，完成后的文库结构如下所示（网上找了好几个，不过都大同小异）： <img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/hI2fcJJ813.png?imageslim" alt="mark"></p>
+<p>现在说明一下这个结构（有的文库是双index结构）：</p>
+<ol style="list-style-type: decimal">
+<li>两端是P5与P7片段，这两个片段与lane上的片段进行互补，与P5互补的的接头称为P5’，与P7互补的称为P7’；</li>
+<li>Rd1 SP和Rd2 SP是测序的引物；</li>
+<li>DNA Insert就是我们要测序的片段；</li>
+<li>Index是用于区分不同样品的，通常是6个碱基，因为一条lane通常可以测多个样品，因此用Index将不同的样品区分开来。</li>
+</ol>
+<p>如果是双index结构的话，如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/kLE8FH6IlJ.png?imageslim" alt="mark"></p>
+<p>这里使用index1和index2是为了区别paired-end测序得到的双端reads。</p>
+<h2 id="桥式pcr">桥式PCR</h2>
+<p>建库以后，将这些文库加到flowcell中，再加入相应的测序试剂，就可以进行测序了，Illumina的测序原理主要是SBS。SBS指的是Sequencing by Synthesis，中文称为边测序连合成。</p>
+<p>flowcell上随机分布了两种不同的序列，分别是P5’和P7，其中P5’与P5互补，P7序列与文库上的P7序列是一样的，当文库加入到flowcell时，先通过P5与flowcell上的P5’序列互补杂交，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/baj6lBcfe1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时，开始PCR，从P5’端开始延伸，完成延伸，为了方便理解，我们将这条新生成的链称为A链，A链与flowcell结合的一端是P5’，另外一端是P7’，此时再用NaOH变性，解开双链，冲走文库片段，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/67bBm6HAjC.png?imageslim" alt="mark"> 因为A链的一端（P5’）在flowcell上，它不会被冲走，再加上flowcell上带有P7序列，A链的一端是能与P7序列互补的P7’序列，因此它能形成一个单链的拱形结构，如下图左图所示。此时再进行PCR，为了方便理解，我们称以A链为模板生成的链为B链，生成的这个B链一端是P7（就是flowcell上的那个序列），另外一端是P5，这就形成了一个双链的拱形结构，这个过程通常叫做桥式PCR，如下图右图所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/hH0FAcCHG0.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>桥式PCR不会只进行一次，而是进行许多次，大量生成A链与B链。现在总结一下A链与B链的结构：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/giG54AcL2c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在生成足够多的双链数目时（这个反应次数大概是35次），用NaOH水解掉双链，只剩下单链的A链与B链，如下图右图所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/l7JLlHjFEe.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>此时利用甲酰胺基嘧啶糖苷酶（Fpg）对8-氧鸟嘌呤糖苷（8-oxo-G）的选择性切断作用，选择性地将P5’与链的连接切断，留下与Flowcell上P7连接的链，也就是Forward strand。因为flowcell上的P5’的第4和第5位的C分别加入了一个-OH，形成的是一个8-oxo-G。在切除8-oxo-G的同时，游离的3’端被阻断，防止不必要的DNA延伸，如下图所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/BDml30ic12.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="测序">测序</h2>
+<h3 id="边合成边测序">边合成边测序</h3>
+<p>此时就可以进行测序了。首先测序引物（sequencing primer）结合到靠近P5的测序引物结合位点1（sequencing primer binding site 1）上，在系统中加入四种dNTP和DNA聚合酶。这里的dNTP有两个特点，第一，它是有荧光基团标记的， 每种碱基标记的荧光基团不一样。第二，它的3’末端连了一个叠氮基。这个叠氮基能够阻断后面的碱基与它相连，如下图所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/75f89CC0Jh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>在聚合酶的作用下，与Forward strand相应位置碱基配对的dNTP就会结合到新合成的链上，而由于叠氮基的存在，后面的dNTP无法继续连接。这时用水将剩余的dNTP和酶给冲掉，对Flowcell进行扫描，扫描出来的荧光对应的碱基的配对碱基即是该链该位置的碱基。同时在这个Flowcell上有成千上万个cluster也在进行同样的反应，因此一个循环就能同时检测多个样本。这个循环完成后，加入化学试剂把叠氮基和标记的荧光基团切掉，进行下一个循环（碱基的连接、检测与切除）。如此重复直至所有链的碱基序列被检测出，也就是Forward read 序列。</p>
+<h3 id="index1测序">index1测序</h3>
+<p>当所有的循环结束后，read products 被洗掉，index1 primer与链上index primer1 结合位点杂交配对，进行index1的合成及检测，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/ai797E1Alf.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>index1测序完成后，洗脱测序产物，此时测序仪已经通过荧光得到了index1的序列。</p>
+<h3 id="index2测序">index2测序</h3>
+<p>Forward strand（B链）顶端的P5序列与Flowcell上的P5’杂交配对，进行index2测序。测序完成后洗脱产物，切掉P7，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/Ilgh9h9bi0.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="pe测序即对reverse-strand测序">PE测序（即对Reverse strand测序）</h3>
+<p>洗脱index2后，以Flowcell上的P5’为引物，Forward strand为模板进行桥式扩增，得到双链，经变性，洗脱后，如下所示：<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/BBF9df06ae.png?imageslim" alt="mark"></p>
+<p>接着的测序就与测B链的过程类似，readprimer2结合到靠近P7’的read primer binding site 2开始对Reverse strand的测 序。测序完成后即可得到Reverse read序列，如下所示：</p>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180508/b0CKdaidjl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>未完待续。。</p>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="https://blog.csdn.net/seallama/article/details/23446865" target="_blank" rel="external">1. 测序发展小结</a> <a href="https://www.illumina.com.cn/technology/next-generation-sequencing/paired-end-sequencing_assay.html" target="_blank" rel="external">2. 双端测序</a> <a href="https://blog.csdn.net/sixu_9days/article/details/78948914" target="_blank" rel="external">3. Illumina SBS测序详解</a> <a href="http://v.youku.com/v_show/id_XMTI1MjA5Mzg5Mg==.html?spm=a2h0k.8191407.0.0&amp;from=s1.8-1-1.2" target="_blank" rel="external">4. Illumina的SBS技术</a> <a href="https://zhuanlan.zhihu.com/p/20702684" target="_blank" rel="external">5. 孟浩巍.20160405 illumina 测序原理介绍</a> <a href="http://tucf-genomics.tufts.edu/home/faq" target="_blank" rel="external">6.建库流程</a> <a href="https://zhuanlan.zhihu.com/p/35278810" target="_blank" rel="external">7.测序之前篇： NGS测序中，接头是如何添加上的，以及如何去接头</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/05/06/Linux/Linux-shell08-sed与gawk(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3167,879 +3829,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/30/Linux/Linux-shell02-if-then和case语句/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/30/Linux/Linux-shell02-if-then和case语句/" itemprop="url">Shell学习笔记（2）——if-then和case语句</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-30T12:10:54+08:00">
-                2018-04-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  7,786
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  35
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>本篇笔记的参考资料是（<a href="https://item.jd.com/12010266.html" target="_blank" rel="external">《Linux命令行与shell脚本编程大全》</a>（第3版），外加百度辅助，本篇笔记的主要内容是if-then和case语句。</p>
-<p>许多程序要求对shell脚本中的命令添加一些逻辑流控制。有一类命令会根据条件使脚本跳过某些命令，这样的命令叫做结构化命令（structured command）。</p>
-<h2 id="if-then语句">if-then语句</h2>
-<p>if-then语句是最基本的结构化命令，if-then的结构如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if commandA</div><div class="line">then commandB</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>解释：if后面跟一个shell命令commandA，如果commandA命令的退出状态码是0（表示此命令成功运行），位于then后面的commandB命令就会被执行，如果commandA命令的退出状态码是其他值，then后面的commandB就不会被执行，而是继续执行脚本中的下一具命令，fi语句用来表示if-theny语句到此结构。</p>
-<h3 id="第1案例简单的if-then">第1案例：简单的if-then</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the if statement</div><div class="line">if pwd</div><div class="line">then</div><div class="line">  echo "It worked"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[20161111.DESKTOP-IVG4HR1] ➤ bash test1.sh</div><div class="line">/home/mobaxterm</div><div class="line">It worked</div></pre></td></tr></table></figure>
-<p>代码解释：if部分用了pwd命令，这个命令运行成功后，echo就会显示后面的字符串。</p>
-<h3 id="第2案例出错的if-then">第2案例：出错的if-then</h3>
-<p>看一段代码，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing a bad command</div><div class="line">if IamNotaCommand;then</div><div class="line">  echo "It worked"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行后，结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[2018-04-28 10:41.15]  ~</div><div class="line">[20161111.DESKTOP-IVG4HR1] ➤ bash test2.sh</div><div class="line">test2.sh: line 3: IamNotaCommand: command not found</div></pre></td></tr></table></figure>
-<p>代码解释：if后面跟的是一个无法工作的命令，它会产生一个非零的退出状态码，bash shell会跳过then部分。</p>
-<h3 id="第3案例then部分的多条命令">第3案例：then部分的多条命令</h3>
-<p>在if-then语句中，then部分可以输入多条命令，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing multiple commands in the then seciton</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=biotest</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then </div><div class="line">  echo "This is my first command"</div><div class="line">  echo "This is my second command"</div><div class="line">  echo "I can even put in other commands besides echo: "</div><div class="line">  ls -a /home/$testuser/.b*</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行后，结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test3.sh</div><div class="line">biotest:x:1000:1000:UBUNTU,,,:/home/biotest:/bin/bash</div><div class="line">This is my first command</div><div class="line">This is my second command</div><div class="line">I can even put in other commands besides echo: </div><div class="line">/home/biotest/.bash_history  /home/biotest/.bash_logout  /home/biotest/.bashrc</div></pre></td></tr></table></figure>
-<p>代码解释：<code>if grep $testuser /etc/passwd</code>这条代码用于查找某个用户名当前是否在系统上使用，如果有用户使用了这个登录名，脚本会显示出一些文本信息，并列出该用户HOME目录中的bash文件。如果没有这个用户，就什么都不显示，现在将<code>testuser=biotest</code>改为<code>testuser=biotest0</code>，运行，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test3.sh</div><div class="line">biotest@ubuntu:~/test$</div></pre></td></tr></table></figure>
-<h2 id="if-then-else语句">if-then-else语句</h2>
-<p>if-then使用的场景是：如果if后面的命令成功执行，就输出then后面的内容，如果无法成功执行，什么都不输出。只有一这一种情况。而if-then-else语句则是能够执行其他的命令，它的格式如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">if commandA</div><div class="line">then </div><div class="line">  commandB</div><div class="line">else </div><div class="line">  commandC</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>命令解释：当if语句中的commandA命令返回退出状态状码0时，then部分中的命令commandB会执行，到此if-then-else语句与if-then语句是相同的。如果if语句中的commandA命令返回非零状态码时，bash shell会执行else部分中的命令。看一个案例。</p>
-<h3 id="第1案例常规if-then-else语句">第1案例：常规if-then-else语句</h3>
-<p>看下面的代码:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing  the else section</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=biotest0</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then </div><div class="line">  echo "The bash files for user $testuser are:   "</div><div class="line">  ls -a /home/$testuser/.b*</div><div class="line">  echo</div><div class="line">else</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test4.sh</div><div class="line">The user biotest0 does not exist on this system.</div></pre></td></tr></table></figure>
-<p>从代码与结果可以看出，<code>if grep $testuser /etc/passwd</code>命令出错，返回状态码是非0，<code>then</code>后面的命令不会执行，路过，执行<code>else</code>后面的命令。</p>
-<h2 id="嵌套if">嵌套if</h2>
-<h3 id="第1个案例常规if-then-else语句">第1个案例：常规if-then-else语句</h3>
-<p>案例：要检验<code>/etc/passwd</code>文件中是否存在某个用户名以及该用户的目录是否存在，可以使用嵌套的<code>if-then</code>语法，嵌套的<code>if-then</code>语句位于主<code>if-then-else</code>语句的<code>else</code>代码块中，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing nested ifs</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=NoSuchUser</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then</div><div class="line">  echo "The user $testuser exists on this system."</div><div class="line">else</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  if ls -d /home/$testuser/</div><div class="line">  then </div><div class="line">    echo "However, $testuser has a directory."</div><div class="line">    fi</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">ls: cannot access &apos;/home/NoSuchUser/&apos;: No such file or directory</div></pre></td></tr></table></figure>
-<p>程序解释：<code>if grep $testuser /etc/passwd</code>这个命令无法运行，状态返回码是非0，跳过了<code>echo &quot;The user $testuser exists on this system.&quot;</code>这个语句，执行后面的语句，即<code>&quot;The user $testuser does not exist on this system.&quot;</code>，接头是个嵌套语句，其中<code>ls -d /home/$testuser/</code>无法执行（因为不存在这个目录），then后面的` `也无法执行。</p>
-<p>从结果可以看出，NoSuchUser这个账户不存在，他的目录也不存在。<code>if-then-else</code>还有一个延伸，即<code>elif</code>，它的格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">if commandA</div><div class="line">then </div><div class="line">  commandB</div><div class="line">elif commandC</div><div class="line">then</div><div class="line">  more commands</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p><code>elif</code>语句提供了一个要测序的命令，这类似于原始的if语句，如果elif后命令的退出状态码是0，bash就执行第二个<code>then</code>语句部分的命令，即more commands这一部分，看一个案例（提前在<code>/home/</code>目录下建立一个<code>NoSuchUser</code>目录）：</p>
-<h3 id="第2个案例elif语句">第2个案例：elif语句</h3>
-<p>这是对第1个案例的修改，所实现的目的是一样的，只是这里用到了elif语句，这种语句在逻辑上更加清晰。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing nested ifs=user elif</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=NoSuchUser</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then</div><div class="line">  echo "The user $testuser exists on this system."</div><div class="line"><span class="meta">#</span></div><div class="line">elif ls -d /home/$testuser</div><div class="line">then</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo "Howerve, $testuser has a directory."</div><div class="line"><span class="meta">#</span></div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行后，结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test6.sh</div><div class="line">/home/NoSuchUser</div><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">Howerve, NoSuchUser has a directory.</div></pre></td></tr></table></figure>
-<p>程序解释：<code>if grep $testuser /etc/passwd</code>这条语句无法执行，执行<code>elif</code>后面的语句，即<code>ls -d /home/$testuser</code>,这条语句可以执行（因为我们提前建立了/home/NoSuchUser这个目录），随后执行then后面的语句。</p>
-<h3 id="第3个案例elif扩展">第3个案例：elif扩展</h3>
-<p>针对上面的案例，对脚本进行更改，让这个脚本的功能变成：一、检查拥有目录的不存在用户；二、检验没有目录的不存在用户，这是通过在嵌套elif中添加了一个else语句来实现的，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing nested ifs - user elif &amp; else</div><div class="line"><span class="meta">#</span></div><div class="line">testuser=NoSuchUser</div><div class="line"><span class="meta">#</span></div><div class="line">if grep $testuser /etc/passwd</div><div class="line">then</div><div class="line">  echo "The user $testuser exists on this system."</div><div class="line"><span class="meta">#</span></div><div class="line">elif ls -d /home/$testuser</div><div class="line">then</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo "Howerve, $testuser has a directory."</div><div class="line"><span class="meta">#</span></div><div class="line">else</div><div class="line">  echo "The user $testuser does not exist on this system."</div><div class="line">  echo "And,$testuser does not have a directory."</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>第1次运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test7.sh</div><div class="line">/home/NoSuchUser</div><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">Howerve, NoSuchUser has a directory.</div></pre></td></tr></table></figure>
-<p>第2次运行结果，现在删除掉<code>/home/NoSuchUser</code>目录，运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ sudo rm -rf /home/NoSuchUser</div><div class="line">biotest@ubuntu:~/test$ bash test7.sh </div><div class="line">ls: cannot access &apos;/home/NoSuchUser&apos;: No such file or directory</div><div class="line">The user NoSuchUser does not exist on this system.</div><div class="line">And,NoSuchUser does not have a directory.</div></pre></td></tr></table></figure>
-<p>从两次的运行结果可以看出，在删除/home/NoSuchUser目录之前，即第1次运行，脚本执行的是<code>elif</code>后面的语句，返回状态码是0，删除了目录之后，elif语句返回的是非零状态码，elif块中的else就开始执行。需要注意的是，在elif语句中，紧跟其后的else语句属于elif代码块，它们并不属于if-then代码块。</p>
-<h2 id="test命令">Test命令</h2>
-<p>test命令是shell环境中测试条件表达式的工具。在前面的案例中，if后面的语句都是普通的shell语句，无法测序命令退出状态码之外的条件。在test命令中，如果test后面列出的条件成立，test命令就会退出并返回退出状态码0，如果条件不成立，test命令就会退出并返回非零的退出状态码，这就会使if-then语句不会被再执行，test的语句格式如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test condition</div></pre></td></tr></table></figure>
-<p>其中，condition是test命令要测试的一系列参数和值，如果test与if-then配合使用的话，格式如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if test condition</div><div class="line">then</div><div class="line">  commands</div><div class="line">  if</div></pre></td></tr></table></figure>
-<p>如果不写test命令的condition部分，它会以非零状态码退出，并执行else语句块，看一个案例。</p>
-<h3 id="第1案例常规testtest不添加condition">第1案例：常规test：test不添加condition</h3>
-<p>测试一下常规的test功能，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing the test command</div><div class="line"><span class="meta">#</span></div><div class="line">if test</div><div class="line">then</div><div class="line">  echo "No expression returns a True"</div><div class="line">else</div><div class="line">  echo "No expression returns a False"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test8.sh</div><div class="line">No expression returns a False</div></pre></td></tr></table></figure>
-<p>程序解释：test后面没有condition，因此它以非零状态码退出，执行else后面的语句，即<code>echo &quot;No expression returns a False&quot;</code>，如果添加上condition，则是下面的案例：</p>
-<h3 id="第2案例常规testtest添加condition">第2案例：常规test：test添加condition</h3>
-<p>代码如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing the test command</div><div class="line"><span class="meta">#</span></div><div class="line">my_variable="Full"</div><div class="line"><span class="meta">#</span></div><div class="line">if test $my_variable</div><div class="line">then </div><div class="line">  echo "The $my_variable expression returns a True"</div><div class="line">else</div><div class="line">  echo "The $my_variable expressoion returns a False"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test9.sh</div><div class="line">The Full expression returns a True</div></pre></td></tr></table></figure>
-<p>代码解释：test后面有内容（Full），因此当test命令测试条件时，返回的状态为0，执行then后面的语句。如果<code>$my_variable=&quot;&quot;</code>时，没有内容，就会执行else后面的语句，就跟第1个案例一样了。</p>
-<h2 id="shell另外一种条件测试方法">shell另外一种条件测试方法</h2>
-<p>shell还有另外一种条件测序方法，无需要在if-then语句中使用test命令，其格式如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if [ condition ]</div><div class="line">then </div><div class="line">  commands</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p><code>[ condition ]</code>中定义了测试条件，需要注意提方括号中，condition前后要加上空格，否则就会报错，test命令可以判断三类条件，分别为①数值比较；②字符串比较；③文件比较。</p>
-<h3 id="数值比较">数值比较</h3>
-<p>test命令常见的情形是对两个数值进行比较，下表就列出了测试两个值可用的条件参数：</p>
-<table>
-<thead>
-<tr class="header">
-<th align="center">比较</th>
-<th align="center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">n1 -eq n2</td>
-<td align="center">检查n1是否与n2相等</td>
-</tr>
-<tr class="even">
-<td align="center">n1 -ge n2</td>
-<td align="center">检查n1是否大于或等于n2</td>
-</tr>
-<tr class="odd">
-<td align="center">n1 -gt n2</td>
-<td align="center">检查n1是否大于n2</td>
-</tr>
-<tr class="even">
-<td align="center">n1 -le n2</td>
-<td align="center">检查n1是否小于或等于n2</td>
-</tr>
-<tr class="odd">
-<td align="center">n1 -lt n2</td>
-<td align="center">检查n1是否小于n2</td>
-</tr>
-<tr class="even">
-<td align="center">n1 -ne n2</td>
-<td align="center">检查n1是否不等于n2</td>
-</tr>
-</tbody>
-</table>
-<h4 id="第1案例数值比较">第1案例：数值比较</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!bin/bash</div><div class="line"><span class="meta">#</span> Using numeric test evaluations</div><div class="line"><span class="meta">#</span></div><div class="line">value1=10</div><div class="line">value2=11</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $value1 -gt 5 ] # test value1 is great 5 or not</div><div class="line">then </div><div class="line">  echo "The test value $value1 is greater than 5"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $value1 -eq $value2 ] # test value1 and value2 is equal or not</div><div class="line">then </div><div class="line">  echo "The values are equal"</div><div class="line">else</div><div class="line">  echo "The values are different"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
-<p>结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test10.sh</div><div class="line">The test value 10 is greater than 5</div><div class="line">The values are different</div></pre></td></tr></table></figure>
-<h4 id="第2案例浮点数的比较">第2案例：浮点数的比较</h4>
-<p>如果涉及浮点比较时，数值条件测试会有一个限制，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!bin/bash</div><div class="line"><span class="meta">#</span> Using floating point numbers in test evaluations</div><div class="line"><span class="meta">#</span></div><div class="line">value1=5.555</div><div class="line"><span class="meta">#</span></div><div class="line">echo "The test value is $value1"</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $value1 -gt 5 ]</div><div class="line">then </div><div class="line">  echo "The test value $value1 is greater than 5"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test11.sh</div><div class="line">The test value is 5.555</div><div class="line">test11.sh: line 8: [: 5.555: integer expression expected</div></pre></td></tr></table></figure>
-<p>结果中提示有问题，因为变量value1中储存提浮点值，脚本对这个值进行了测试，因为bash shell只能处理整数，如果只是要通过echo语句来显示这个结果，没问题，但是如果是基于数字的函数，就会出现了问题，因此需要注意。</p>
-<h3 id="字符串比较">字符串比较</h3>
-<p>字符串的比较方法如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>比较</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>str1 = str2</td>
-<td>检查str1是否和str2相同</td>
-</tr>
-<tr class="even">
-<td>str1 != str2</td>
-<td>检查str1是否和str3不相同</td>
-</tr>
-<tr class="odd">
-<td>str1 &lt; str2</td>
-<td>检查str1是否比str2小</td>
-</tr>
-<tr class="even">
-<td>str1 &gt; str2</td>
-<td>检查str1是否比str2大</td>
-</tr>
-<tr class="odd">
-<td>-n str1</td>
-<td>检查str1的长度是否非0</td>
-</tr>
-<tr class="even">
-<td>-z str1</td>
-<td>检查str1的长度是否为0</td>
-</tr>
-</tbody>
-</table>
-<h4 id="字符串比较第1案例">字符串比较第1案例</h4>
-<p>代码如下；</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!bin/bash</div><div class="line"><span class="meta">#</span> testing string equality</div><div class="line">testuser=biotest</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $USER = $testuser ]</div><div class="line">then</div><div class="line">  echo "Welcom $testuser"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test12.sh</div><div class="line">Welcom biotest</div></pre></td></tr></table></figure>
-<h4 id="字符串比较第2案例判断字符串不等的条件">字符串比较第2案例：判断字符串不等的条件</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing string equality</div><div class="line">testuser=baduser</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $USER != $testuser ]</div><div class="line">then </div><div class="line">  echo "This is not $testuser"</div><div class="line">else</div><div class="line">  echo "Welcome $testuser"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test13.sh</div><div class="line">This is not baduser</div></pre></td></tr></table></figure>
-<h3 id="字符串的大小">字符串的大小</h3>
-<p>在比较字符串方面，有一些事情比较麻烦，主要有两个方面，①大于号和小于号必须要转义，否则shell会将它们当成重定向符号，把字符串值当作文件名；②大于和小于顺序和sort命令所采用的不同，看一个案例。</p>
-<h4 id="第1案例大于或小于号的重定向问题">第1案例：大于或小于号的重定向问题</h4>
-<p>看下面的案例，注意大于号。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> mis-using string comparisons</div><div class="line"><span class="meta">#</span></div><div class="line">val1=baseball</div><div class="line">val2=hockey</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $val1 &gt; $val2 ]</div><div class="line">then</div><div class="line">  echo "$val1 is greater than $val2"</div><div class="line">else</div><div class="line">  echo "$val1 is less than $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash badtest.sh </div><div class="line">val1 is less than val2</div><div class="line">biotest@ubuntu:~/test$ ll</div><div class="line">total 72</div><div class="line">-rw-rw-r--  1 biotest biotest     0 Apr 27 23:21 hockey</div></pre></td></tr></table></figure>
-<p>运行结果时，shell没有报错，但是给出的结果却是错的，因为脚本把大于事情解释成了输出重定向，它在当前目录下创建了一个名为hockey的文件，由于重定向的完成，test命令（就是if语句）返回了退出状态码0。</p>
-<h4 id="第2案例解决字符串比较时大于号的问题">第2案例：解决字符串比较时，大于号的问题</h4>
-<p>如果要解决上述问题，需要对大于号进行转义，前面加上<code>\</code>符号即可，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> mis-using string comparisons</div><div class="line"><span class="meta">#</span></div><div class="line">val1=baseball</div><div class="line">val2=hockey</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $val1 \&gt; $val2 ]</div><div class="line">then</div><div class="line">  echo "$val1 is greater than $val2"</div><div class="line">else</div><div class="line">  echo "$val1 is less than $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash badtest2.sh </div><div class="line">baseball is less than hockey</div></pre></td></tr></table></figure>
-<h4 id="sort命令对字符串的排序问题">sort命令对字符串的排序问题</h4>
-<p>在处理字符串方面，sort和test的方法正好相反， 看一个案例。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing astring osrt order</div><div class="line">val1=Testing</div><div class="line">val2=testing</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $val1 \&gt; $val2 ]</div><div class="line">then</div><div class="line">  echo "$val1 is greater than $val2"</div><div class="line">else</div><div class="line">  echo "$val1 is less than $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test14.sh</div><div class="line">Testing is less than testing</div></pre></td></tr></table></figure>
-<p>结查要显示，Testing比testing小，如果是sort，则是下面的结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ cat testfile </div><div class="line">Testing</div><div class="line">testing</div><div class="line">biotest@ubuntu:~/test$ sort testfile </div><div class="line">testing</div><div class="line">Testing</div></pre></td></tr></table></figure>
-<p>testing要比Testing大。</p>
-<p>在比较测试上，大写字符被认为是小于小写字母的，但是在sort命令中，小写字母会先出现。这是因为比较测试中使用的是标准的ASCII顺序，根据每个字符的ASCII为当会来决定排序结果，而sort命令使用的也是ASCII顺序排序，只是默认情况下，sort会按照ASCII从小到大进行排序，如果加上了-r参数，则是按照默认排序的相反顺序进行排序，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ sort -r testfile </div><div class="line">Testing</div><div class="line">testing</div></pre></td></tr></table></figure>
-<h4 id="判断字符串是否为0">判断字符串是否为0</h4>
-<p><code>-n</code>和<code>-z</code>可以检查一个变量是否含有数据，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing string length</div><div class="line">val1=testing  </div><div class="line">val2='' </div><div class="line"><span class="meta">#</span></div><div class="line">if [ -n $val1 ]</div><div class="line">then</div><div class="line">  echo "The string '$val1' is not empty"</div><div class="line">else</div><div class="line">  echo "The string '$val1' is empty"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div><div class="line"></div><div class="line">if [ -z $val2 ]</div><div class="line">then</div><div class="line">  echo "The string '$val2' is empty"</div><div class="line">else</div><div class="line">  echo "The string '$val2' is not empty"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div><div class="line"></div><div class="line">if [ -z $val3 ]</div><div class="line">then</div><div class="line">  echo "The string '$val3' is empty"</div><div class="line">else</div><div class="line">  echo "The string '$val3' is not empty"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test15.sh</div><div class="line">The string &apos;testing&apos; is not empty</div><div class="line">The string &apos;&apos; is empty</div><div class="line">The string &apos;&apos; is empty</div></pre></td></tr></table></figure>
-<p>程序解释：①先创建了2个字符串变量，val1包含一个字符串，val2包含的是一个空字符串；②<code>if [ -n $val1 ]</code>表示：判断val1的变量是否长度非0，因为val1并不是一个空字符串，它不是0，因此执行后面的then部分；③<code>if [ -z $val2 ]</code>：判断val2的变量是否长度为0，而val2是一个空字符串，它的长度为0，因此执行then部分；④<code>if [ -z $val3 ]</code>：判断val3的变量是否长度为0，由于这个变量并未在shell脚本中定义过，所以它的字符串长度仍然为0。</p>
-<h3 id="文件比较">文件比较</h3>
-<p>文件比较是shell编程中使用比较多的形式，它允许用户测试Linux文件系统上的文件和目录的状态，下表列出了这些比较方式，如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>比较</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>-d file</td>
-<td>检查file是否存在并是一个目录</td>
-</tr>
-<tr class="even">
-<td>-e file</td>
-<td>检查file是否存在</td>
-</tr>
-<tr class="odd">
-<td>-f file</td>
-<td>检查file是否存在并 一个文件</td>
-</tr>
-<tr class="even">
-<td>-r file</td>
-<td>检查file是否存在并可读</td>
-</tr>
-<tr class="odd">
-<td>-s file</td>
-<td>检查file是否存在并非空</td>
-</tr>
-<tr class="even">
-<td>-w file</td>
-<td>检查file是否存在并可写</td>
-</tr>
-<tr class="odd">
-<td>-x file</td>
-<td>检查file是否存在并可执行</td>
-</tr>
-<tr class="even">
-<td>-O file</td>
-<td>检查file是否存在并属当前用户所有</td>
-</tr>
-<tr class="odd">
-<td>-G file</td>
-<td>检查file是否存在并默认组与当前用户相同</td>
-</tr>
-<tr class="even">
-<td>file1 -nt file2</td>
-<td>检查file是否比file2新</td>
-</tr>
-<tr class="odd">
-<td>file1 -ot file2</td>
-<td>检查file是否比file2旧</td>
-</tr>
-</tbody>
-</table>
-<h4 id="检查目录">检查目录</h4>
-<p><code>-d</code>测试会检查指定的目录是否存在于系统中如果打算将文件写入目录或是准备切换到某个目录，先进行测试是一种好习惯，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Look before you leap</div><div class="line"><span class="meta">#</span></div><div class="line">jump_directory=/home/arthur</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -d $jump_directory ]</div><div class="line">then</div><div class="line">  echo "The $jump_directory directory exists"</div><div class="line">  cd $jump_directory</div><div class="line">  ls</div><div class="line">else</div><div class="line">  echo "The $jump_directory directory does not exist"</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
-<p>结果运行如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash directest.sh </div><div class="line">The /home/arthur directory does not exist</div></pre></td></tr></table></figure>
-<p>代码解释：<code>-d</code>测试用于检测jump_directory变量是中目录是否存在，如果存在就使用cd命令进入该目录，如果不存在脚本就输出一条信息，然后退出。</p>
-<h4 id="检查对象是否存在">检查对象是否存在</h4>
-<p><code>-e</code>参数可以使脚本代码在使用文件或上当前检查它们是否存在，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> check if either a directory or file exists</div><div class="line"><span class="meta">#</span></div><div class="line">location=$HOME</div><div class="line">file_name="sentinel"</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $location ]</div><div class="line">then # Directory does exist</div><div class="line">  echo "OK on the $location directory."</div><div class="line">  echo "Now checking on the file, $file_name."</div><div class="line"><span class="meta">#</span></div><div class="line">  if [ -e $location/$file_name ]</div><div class="line">  then # file does exist</div><div class="line">    echo "OK on the filename"</div><div class="line">    echo "Updating Current Date..."</div><div class="line">    date &gt;&gt; $location/$file_name</div><div class="line"><span class="meta">#</span></div><div class="line">  else # file does no exist</div><div class="line">    echo "File does not exist"</div><div class="line">    echo "Nothing to update"</div><div class="line">  fi</div><div class="line"><span class="meta">#</span></div><div class="line">else #Directory does exist</div><div class="line">  echo "The $location directory does not exist."</div><div class="line">  echo "Nothing to update"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>第一次运行，结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash object_exist.sh </div><div class="line">OK on the /home/biotest directory.</div><div class="line">Now checking on the file, sentinel.</div><div class="line">File does not exist</div><div class="line">Nothing to update</div></pre></td></tr></table></figure>
-<p>第二次运行，如果创建了<code>sentinel</code>文件，则如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash object_exist.sh </div><div class="line">OK on the /home/biotest directory.</div><div class="line">Now checking on the file, sentinel.</div><div class="line">OK on the filename</div><div class="line">Updating Current Date...</div><div class="line">biotest@ubuntu:~/test$ cat ~/sentinel </div><div class="line">Sat Apr 28 00:37:31 PDT 2018</div></pre></td></tr></table></figure>
-<p>代码解释：第一次检查用了<code>-e</code>比较来判断用户是否有<code>$HOME</code>目录，如果有接下来的<code>-e</code>会检测sentinel文件是否存在于<code>$HOME</code>目录中，如果不存在，shell脚本就会提示该文件不存在，不需要更新。第二次运行时，在<code>$HOME</code>目录下创建了一个<code>sentinel</code>文件，然后重新运行脚本，由于<code>$HOME</code>和<code>sentinel</code>文件都存在，当前的上期和时间就都追加到了这个文本中。</p>
-<h4 id="检查文件">检查文件</h4>
-<p>如果检查的对象是文件，需要用<code>-f</code>参数，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Check if either a directory or file exists.</div><div class="line"><span class="meta">#</span></div><div class="line">item_name=$HOME</div><div class="line">echo</div><div class="line">echo "The item being checked: $item_name"</div><div class="line">echo</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $item_name ]</div><div class="line">then # Item does exist</div><div class="line">  echo "The item, $item_name, does exist."</div><div class="line">  echo "But is it a file?"</div><div class="line">  echo</div><div class="line"><span class="meta">  #</span></div><div class="line">  if [ -f $item_name ]</div><div class="line">  then # Item is a file</div><div class="line">     echo "Yes, $item_name is a file."</div><div class="line"><span class="meta">  #</span></div><div class="line">  else # Item does not exist</div><div class="line">    echo "No, $item_name is not a file"</div><div class="line">  fi</div><div class="line"></div><div class="line">else #Item doese not exist</div><div class="line">    echo "The item , $item_name, does not exist."</div><div class="line">    echo "Nothing to update"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_file.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest</div><div class="line"></div><div class="line">The item, /home/biotest, does exist.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">No, /home/biotest is not a file</div></pre></td></tr></table></figure>
-<p>代码解释：首先使用了<code>-e</code>比较测序<code>$HOME</code>是否存在，如果存在，继续使用<code>-f</code>来测试它是不是一个文件，如果它不是文件（肯定不是文件），就会显示一条消息，它不是一个文件，如果更改一下代码，把<code>item_name</code>设置为<code>$HOME/sentinel</code>，即如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Check if either a directory or file exists.</div><div class="line"><span class="meta">#</span></div><div class="line">item_name=$HOME/sentinel</div><div class="line">echo</div><div class="line">echo "The item being checked: $item_name"</div><div class="line">echo</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $item_name ]</div><div class="line">then # Item does exist</div><div class="line">  echo "The item, $item_name, does exist."</div><div class="line">  echo "But is it a file?"</div><div class="line">  echo</div><div class="line"><span class="meta">  #</span></div><div class="line">  if [ -f $item_name ]</div><div class="line">  then # Item is a file</div><div class="line">     echo "Yes, $item_name is a file."</div><div class="line"><span class="meta">  #</span></div><div class="line">  else # Item does not exist</div><div class="line">    echo "No, $item_name is not a file"</div><div class="line">  fi</div><div class="line"></div><div class="line">else #Item doese not exist</div><div class="line">    echo "The item , $item_name, does not exist."</div><div class="line">    echo "Nothing to update"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_file2.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest/sentinel</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel, does exist.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">Yes, /home/biotest/sentinel is a file.</div></pre></td></tr></table></figure>
-<h4 id="检查文件是否可读">检查文件是否可读</h4>
-<p>在试图从某个文件中读取数据之前，可以测试一下文件是否可读，参数是<code>-r</code>，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing a file is readable or not</div><div class="line">pwfile=/etc/shadow</div><div class="line"><span class="meta">#</span></div><div class="line"><span class="meta">#</span> first, test if the file exists, and is a file</div><div class="line">if [ -f $pwfile ]</div><div class="line">then </div><div class="line">    # Now test if you can read it</div><div class="line">    if [ -r $pwfile ]</div><div class="line">    then </div><div class="line">        tail $pwfile</div><div class="line">    else</div><div class="line">        echo "Sorry, I am unable to read the $pwfile file"</div><div class="line">    fi</div><div class="line">else</div><div class="line">    echo "Sorry, the file $pwfile does not exist"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_read.sh </div><div class="line">Sorry, I am unable to read the /etc/shadow file</div></pre></td></tr></table></figure>
-<h4 id="检查空文档">检查空文档</h4>
-<p>检查空文档的参数是<code>-s</code>，如果<code>-s</code>比较正确，说明文件中有数据，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing if a file is empty</div><div class="line"><span class="meta">#</span></div><div class="line">file_name=$HOME/sentinel</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -f $file_name ]</div><div class="line">then</div><div class="line">    if [ -s $file_name ]</div><div class="line">    then</div><div class="line">        echo "The $file_name file exists and has data in it."</div><div class="line">        echo "Will not remove this file."</div><div class="line"><span class="meta">#</span></div><div class="line">    else</div><div class="line">        echo "The $file_name file exists, but is empty."</div><div class="line">        echo "Deleting empty file..."</div><div class="line">        rm $file_name</div><div class="line">    fi</div><div class="line">else</div><div class="line">    echo "File, $file_name, does not exist."</div><div class="line">fi</div><div class="line"><span class="meta">#</span></div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ ls -l $HOME/sentinel</div><div class="line">-rw-rw-r-- 1 biotest biotest 29 Apr 28 00:37 /home/biotest/sentinel</div><div class="line">biotest@ubuntu:~/test$ bash test_empty.sh </div><div class="line">The /home/biotest/sentinel file exists and has data in it.</div><div class="line">Will not remove this file.</div></pre></td></tr></table></figure>
-<p>代码解释：首先使用<code>-f</code>测试文件是否存在，如果存在，用<code>-s</code>比较来判断该文件是否为空，空文件会被删除，在运行脚本前，使用<code>ls -l</code>命令检查了<code>$HOME/ssentinel</code>文件，发现不是空的，因此脚本并不会删除它。</p>
-<h4 id="检查是否可写">检查是否可写</h4>
-<p><code>-w</code>比较会判断当前用户对文件是否有可写权限，下面的一段代码应时检测item_name是否存在、是否为文件，是否可写，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Testing if a file is writable</div><div class="line"><span class="meta">#</span></div><div class="line">file_name=$HOME/sentinel</div><div class="line">echo</div><div class="line">echo "The item being checked: $file_name"</div><div class="line">echo</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -e $file_name ]</div><div class="line">then </div><div class="line">    echo "The item, $file_name, does exist."</div><div class="line">    echo "But is it a file?"</div><div class="line">    echo</div><div class="line">    #</div><div class="line">    if [ -f $file_name ]</div><div class="line">    then</div><div class="line">        echo "Yes, $file_name is a file."</div><div class="line">        echo "But is it writable ?"</div><div class="line">        echo</div><div class="line"></div><div class="line">    #</div><div class="line">        if [ -w $file_name ]</div><div class="line">        then</div><div class="line">            echo "Yes, it is writable."</div><div class="line">            echo "Writing current time to $file_name"</div><div class="line">            date +%H%M &gt;&gt; $file_name</div><div class="line">            echo</div><div class="line">        #</div><div class="line">        else</div><div class="line">            echo "The item, $file_name,is not a writable file"</div><div class="line">            echo "Unable to write to $file_name"</div><div class="line">        fi</div><div class="line"></div><div class="line">    else</div><div class="line">        echo "No, $file_name is not a file."</div><div class="line">    fi</div><div class="line">else</div><div class="line">    echo "The item  $file_name does not exist"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_write.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest/sentinel</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel, does exit.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">Yes, /home/biotest/sentinel is a file.</div><div class="line">But is it writable ?</div><div class="line"></div><div class="line">Yes, it is writable.</div><div class="line">Writing current time to /home/biotest/sentinel</div><div class="line">biotest@ubuntu:~/test$ cat /home/biotest/sentinel </div><div class="line">Sat Apr 28 00:37:31 PDT 2018</div><div class="line">0137</div><div class="line">0138</div><div class="line">0141</div></pre></td></tr></table></figure>
-<p>现在使用<code>chmod</code>命令关闭文件sentinel的用户写入权限，再测试一下这个脚本。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">chmod u-w $HOME/sentinel</div><div class="line">biotest@ubuntu:~/test$ bash test_write.sh </div><div class="line"></div><div class="line">The item being checked: /home/biotest/sentinel</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel, does exist.</div><div class="line">But is it a file?</div><div class="line"></div><div class="line">Yes, /home/biotest/sentinel is a file.</div><div class="line">But is it writable ?</div><div class="line"></div><div class="line">The item, /home/biotest/sentinel,is not a writable file</div><div class="line">Unable to write to /home/biotest/sentinel</div></pre></td></tr></table></figure>
-<h4 id="检查文件是否可以执行">检查文件是否可以执行</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing file execution</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -x test11.sh ]</div><div class="line">then </div><div class="line">    echo "You can run the script: "</div><div class="line">    ./test11.sh</div><div class="line">else</div><div class="line">    echo "Sorry, you are unable to execute the script"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test_ex.sh</div><div class="line">Sorry, you are unable to execute the script</div><div class="line"></div><div class="line">biotest@ubuntu:~/test$ ll test11.sh</div><div class="line">-rw-rw-r-- 1 biotest biotest 195 Apr 27 23:06 test11.sh</div><div class="line">biotest@ubuntu:~/test$ chmod u+x test11.sh</div><div class="line">biotest@ubuntu:~/test$ ll test11.sh</div><div class="line">-rwxrw-r-- 1 biotest biotest 195 Apr 27 23:06 test11.sh*</div><div class="line">biotest@ubuntu:~/test$ bash test_ex.sh </div><div class="line">You can run the script: </div><div class="line">The test value is 5.555</div><div class="line">./test11.sh: line 8: [: 5.555: integer expression expected</div></pre></td></tr></table></figure>
-<p>代码及结果解释：代码开头使用了-x参数来判断是滞有权限执行test11.sh脚本，如果有权限就运行这个脚本。在首次运行时，没有权限，随后使用<code>chmod u+x test11.sh</code>命令赋予权限，再次执行，结果显示有权限运行test11.sh这个脚本。</p>
-<h4 id="检查所属关系">检查所属关系</h4>
-<p><code>-O</code>（大写），测试出某个文件的属主，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> check file ownership</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -O /etc/passwd ]</div><div class="line">then</div><div class="line">    echo "You are the owner of the /etc/passwd file"</div><div class="line">else</div><div class="line">    echo "Sorry, you are not the owner of the /etc/passwd file"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash owner.sh </div><div class="line">Sorry, you are not the owner of the /etc/passwd file</div></pre></td></tr></table></figure>
-<p>代码解释：<code>-O</code>田头来测试运行该脚本的用户是否是<code>/etc/passwd</code>文件的属主，这个脚本是运行在普通有入眠账户下的，所以测试失败。</p>
-<h4 id="检查默认属组关系">检查默认属组关系</h4>
-<p><code>-G</code>比较会检查文件的默认组，如果它匹配了用户的默认组，则测试成功。由于-G比较只会检查默认组而非用户所属的所有组，因此会有一定的局限性，如下所示；</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> check file group test</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -G $HOME/testing ]</div><div class="line">then </div><div class="line">    echo "Your are in the same group as the file"</div><div class="line">else</div><div class="line">    echo "The file is not owned by your gruop"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行脚本，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ll testing/  #查看HOME目录下的testing目录详细信息</div><div class="line">drwxr-xr-x 24 biotest biotest 4096 Apr 29 02:55 ../ # testing属于biotest组</div><div class="line">biotest@ubuntu:~$ cd test</div><div class="line">biotest@ubuntu:~/test$ bash group.sh # 运行脚本</div><div class="line">You are in the same group as the file  # testing属于当前biotest组</div><div class="line">biotest@ubuntu:~$ cd</div><div class="line">biotest@ubuntu:~$ sudo chgrp sharing $HOME/testing # 将testing所属的biotest组更改为sharing组</div><div class="line">[sudo] password for biotest: </div><div class="line">biotest@ubuntu:~$ ll testing/</div><div class="line">drwxrwxr-x  2 biotest sharing 4096 Apr 29 00:03 ./</div><div class="line">biotest@ubuntu:~$ cd test</div><div class="line">biotest@ubuntu:~/test$ bash group.sh </div><div class="line">The file is not owned by your gruop # testing就不属于了biotest组</div><div class="line">biotest@ubuntu:~/test$ cd ..</div></pre></td></tr></table></figure>
-<h4 id="检查文件日期">检查文件日期</h4>
-<p>有时候需要比较两个文件的创建日期，<code>-nt</code>比较会判断文件A是否比另外一个文件B新，如果文件A较新，那意味着它的文件创建日期更近。<code>-ot</code>比较会判断一个文件A是否比另外一个文件B旧，如果文件A较旧，则是意味着它的创建日期更早。</p>
-<p>先来查看地一下test12.sh文件与test13.sh文件，以及test11.sh和test12.sh文件，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ ll test11.sh test12.sh test13.sh</div><div class="line">-rwxrw-r-- 1 biotest biotest 196 Apr 28 20:42 test11.sh*</div><div class="line">-rw-rw-r-- 1 biotest biotest 116 Apr 27 23:14 test12.sh</div><div class="line">-rw-rw-r-- 1 biotest biotest 156 Apr 27 23:17 test13.sh</div></pre></td></tr></table></figure>
-<p>由上述结果可以发现，test11.sh文件创建于4.28，20:42；test12.sh文件创建于4.27，23:14，test13.sh文件创建于4.27 ，23:17，现在运行下面的脚本：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing file dates</div><div class="line"><span class="meta">#</span></div><div class="line">if [ test12.sh -nt test13.sh ]</div><div class="line">then</div><div class="line">    echo "The test12 file is newer than test13"</div><div class="line">else</div><div class="line">    echo "The test13 file is newer than test12"</div><div class="line">fi</div><div class="line"></div><div class="line">if [ test11.sh -ot test12.sh ]</div><div class="line">then </div><div class="line">    echo "The test11 file is older than the test12 file"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash contrast_file.sh </div><div class="line">The test13 file is newer than test12</div></pre></td></tr></table></figure>
-<p>代码及结果解释：<code>test12.sh -nt test13.sh</code>这一句用于判断test12是否比test13更新，结果是否，执行<code>then</code>后面的语句，即<code>echo &quot;The test13 file is newer than test12&quot;。</code>结果也显示，test13文件比test12文件更新，因为test13.sh文件创建的时间（2018-4-27-23:17)比test12.sh文件（2018-4-27-23:14)要晚。在第二个<code>if-then</code>语句中，<code>test11.sh -ot test12.sh</code>语句用于判断，test11文件是否比test12文件更老，由于test11.sh文件创建于2018-4-28-20:42；而test12.sh文件创建于2018-4-27-23:14，test11文件比test12文件创建的时候更晚，因此<code>test11.sh -ot test12.sh</code>这个语句不执行。</p>
-<p>再补充一个案例，如果要比较的两个文件不存在，如果仅用<code>-nt</code>来判断，那么还会返回结果，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing file dates</div><div class="line"><span class="meta">#</span></div><div class="line">if [ badfile1 -nt badfile2 ]</div><div class="line">then</div><div class="line">    echo "The badfile1 file is newer than badfile2"</div><div class="line">else</div><div class="line">    echo "The badfile2 file is newer than badfile1"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行后，结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test21.sh</div><div class="line">The badfile2 file is newer than badfile1</div></pre></td></tr></table></figure>
-<p>代码运行后，仍然有结果，这就是有问题了，因此在使用<code>-nt</code>时，首先需要判断文件是否存在。</p>
-<h2 id="复合条件测试">复合条件测试</h2>
-<p>在<code>if-then</code>语句中，还可以使用布尔逻辑来组合测试，有两种布尔运算符可以使用，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[ condition1 ] &amp;&amp; [ condition2 ] </div><div class="line"># 使用的是AND布尔运行算来组合两个条件，若要执行then后面的语句，两个条件必须都满足</div><div class="line"></div><div class="line">[ condition1 ] || [ condition2 ]</div><div class="line"># 使用OR布尔运算符来组合两个条件，如果任意条件为TRUE，then后面的语句执行</div></pre></td></tr></table></figure>
-<h3 id="and运算符">AND运算符</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing compound comparisons</div><div class="line"><span class="meta">#</span></div><div class="line">if [ -d $HOME ] &amp;&amp; [ -w $HOME/testing ]</div><div class="line">then</div><div class="line">    echo "The file exists and you can write to it"</div><div class="line">else</div><div class="line">    echo "I cannot write to the file"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test22.sh</div><div class="line">The file exists and you can write to it</div></pre></td></tr></table></figure>
-<h2 id="if-then的高级特性">if-then的高级特性</h2>
-<p>bash sehll提供了2项可在if-then语句中使用的高级特性，第一：用于数学表达式的双括号；第二：用于高级字符串处理的双方括号。</p>
-<h3 id="使用双括号">使用双括号</h3>
-<p>双括号命令可以使用户在比较过程中使用高级数学表达式。test命令只能在比较中使用简单的自述操作，而双括号命令提供了更多的数学符号，双括号的命令格式为<code>(( expressiton ))</code>。其中<code>expresstion</code>可以是任意的数学赋值或比较表达式，除了test命令使用的标准数学运算答外，下表列出了双括号命令中会用到的其他运算符，如下所示：</p>
-<table>
-<thead>
-<tr class="header">
-<th>符号</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>val++</td>
-<td>后增</td>
-</tr>
-<tr class="even">
-<td>val–</td>
-<td>后减</td>
-</tr>
-<tr class="odd">
-<td>++val</td>
-<td>先增</td>
-</tr>
-<tr class="even">
-<td>–val</td>
-<td>先减</td>
-</tr>
-<tr class="odd">
-<td>!</td>
-<td>逻辑求反</td>
-</tr>
-<tr class="even">
-<td>~</td>
-<td>位求反</td>
-</tr>
-<tr class="odd">
-<td>**</td>
-<td>幂运算</td>
-</tr>
-<tr class="even">
-<td>&lt;&lt;</td>
-<td>左位移</td>
-</tr>
-<tr class="odd">
-<td>&gt;&gt;</td>
-<td>右位移</td>
-</tr>
-<tr class="even">
-<td>&amp;</td>
-<td>位布尔和</td>
-</tr>
-<tr class="odd">
-<td>|</td>
-<td>位布尔或</td>
-</tr>
-<tr class="even">
-<td>&amp;&amp;</td>
-<td>逻辑和</td>
-</tr>
-<tr class="odd">
-<td>||</td>
-<td>逻辑或</td>
-</tr>
-</tbody>
-</table>
-<h4 id="案例在if语句中使用双括号">案例：在if语句中使用双括号</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using double parenthesis</div><div class="line"><span class="meta">#</span></div><div class="line">val1=10</div><div class="line"><span class="meta">#</span></div><div class="line">if (( $val1 **2 &gt; 90))</div><div class="line">then</div><div class="line">    (( val2=$val1**2 ))</div><div class="line">    echo "The square of $val1 is $val2"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test23.sh</div><div class="line">The square of 10 is 100</div></pre></td></tr></table></figure>
-<h3 id="使用双方括号">使用双方括号</h3>
-<p>双方括号命令提供了针对字符串比较的高级特性，双方括号命令的格式为<code>[[ expression ]]</code>，双方括号里的<code>expression</code>使用了test命令中采用的标准字符串比较，但它还有另外的一个特性，即模式匹配（pattern matching）。（注：bash shel对中双方括号的支持很好，但其他的shell未必如此）。</p>
-<p>在模式匹配中，用户可以定义一个正则表达式来匹配字符串，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using pattern matching</div><div class="line"><span class="meta">#</span></div><div class="line">if [[ $USER == r* ]]</div><div class="line">then</div><div class="line">    echo "Hello $USER"</div><div class="line">else</div><div class="line">    echo "Sorry, I do not know you"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果为： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test24.sh</div><div class="line">Sorry, I do not know you</div></pre></td></tr></table></figure></p>
-<p>如果将其中<code>$USER == r*</code>改为<code>$USER == b*</code>（当前Linux系统中biotest用户，<code>b*</code>这种格式可以查换所有以b开头的用户，运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test24.sh</div><div class="line">Hello biotest</div></pre></td></tr></table></figure>
-<h2 id="case命令">case命令</h2>
-<p>如果有一种情况：用户在尝试计算一个变量的值，可以在一组可能的值中寻找特定值。在这种情况下，可以写一段长的<code>if-then-else</code>代码，如下所示：</p>
-<h3 id="常规if-then-else代码">常规<code>if-then-else</code>代码</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> Looking for a possible value</div><div class="line"><span class="meta">#</span></div><div class="line">if [ $USER = "rich" ]</div><div class="line">then</div><div class="line">    echo "Welcome $USER"</div><div class="line">    echo "Please enjoy your visit"</div><div class="line">elif [ $USER = "barbara" ]</div><div class="line">then</div><div class="line">    echo "Welcome $USER"</div><div class="line">    echo "Please enjoy your visit"</div><div class="line">elif [ $USER = "testing" ]</div><div class="line">then</div><div class="line">    echo "Special testing account"</div><div class="line">elif [ $USER = "jessica" ]</div><div class="line">then</div><div class="line">    echo "Do not forget to logout when you're done"</div><div class="line">elif [ $USER = "biotest" ]</div><div class="line">then</div><div class="line">    echo "You are currnet user"</div><div class="line">else</div><div class="line">    echo "Sorry, your are not allowed here"</div><div class="line">fi</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test25.sh</div><div class="line">You are currnet user</div></pre></td></tr></table></figure>
-<p>如果有了<code>case</code>命令，则不需要写出所有的<code>elif</code>语句来不停地检查同一个变量的值，<code>case</code>命令会采用列表格式来检查单个变量的多个值。</p>
-<h3 id="case语句"><code>case</code>语句</h3>
-<p><code>case</code>语句的格式如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">case variable in </div><div class="line">pattern1 | pattern2)  command1;;</div><div class="line">pattern3) commands2;;</div><div class="line">*) default commands;;</div><div class="line">esac</div></pre></td></tr></table></figure>
-<p>case命令会将指定的变量与不同械进行比较。如果变量和模式是匹配的，那么shell会执行为该模式指定的命令，可以通过竖线操作符在一行中分隔出多个模式。星号会捕获所有与已知模式不匹配的值，现在将前面的<code>if-then-else</code>代码转换为<code>case</code>形式，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> using the case command</div><div class="line"><span class="meta">#</span></div><div class="line">case $USER in </div><div class="line">rich | barbara)</div><div class="line">    echo "Welcome, $USER"</div><div class="line">    echo "Please enjoy your visit";;</div><div class="line">testing)</div><div class="line">    echo "Special testing account";;</div><div class="line">jessica)</div><div class="line">    echo "Do not forget to log off when you're done";;</div><div class="line">biotest)</div><div class="line">    echo "You are current user";;</div><div class="line">*)</div><div class="line">    echo "Sorry, you are not allowed here";;</div><div class="line">esac</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test$ bash test26.sh</div><div class="line">You are current user</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/04/29/Linux/Linux-shell01-基础笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/29/Linux/Linux-shell01-基础笔记/" itemprop="url">Shell学习笔记（1）——shell脚本基础笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-29T12:10:54+08:00">
-                2018-04-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,088
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  13
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>本篇笔记的参考资料是（<a href="https://item.jd.com/12010266.html" target="_blank" rel="external">《Linux命令行与shell脚本编程大全》</a>（第3版），外加百度辅助，本篇笔记主要内容是Shell脚本的一些基本知识。</p>
-<p>使用命令行的一大特点就是能够写脚本，可以将一些命令写到一个脚本中，自动运行。而在Linux的命令行中，一次基本上只能运行一个或几个命令，就像下面的这样，它可以运行两个命令，只是要用分号隔开。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test/testfile$ date;who</div><div class="line">Fri Apr 27 15:56:32 CST 2018</div><div class="line">biotest  tty7         2018-04-27 11:24 (:0)</div></pre></td></tr></table></figure>
-<p>这两个命令其实也可以视为一个非常简单的脚本，虽然它只有两个命令，作用就是显示今天的日期以及当前登录到系统中的用户。</p>
-<h2 id="创建shell脚本文件">创建shell脚本文件</h2>
-<p>如果要将shell命令放到文本文件中，就需要一个文本编辑器，Linux中常用的是vim，写好的脚本文件如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line">date;who</div><div class="line"><span class="meta">#</span> this is comments</div></pre></td></tr></table></figure>
-<p>将脚本文件保存，命令为test.sh。</p>
-<p>现在解释一下这个脚本：</p>
-<p>第1行：写入的是<code>#!/bin/bash</code>，#号是用于注释的，shell并不会处理注释，注释只是起到说明的作用，但第1行是个例外，#!的意思是要告诉shell要到哪个shell来运行，这里指定的是bash。</p>
-<p>第2行：在第1行中指定了运行脚本的shell后，就可以输入命令了，输入一个命令后，回车，再输入另外一个命令，或者是用分号隔开两个命令。</p>
-<p>命令结束后，输入脚本，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test/testfile$ test.sh</div><div class="line">test.sh: command not found</div></pre></td></tr></table></figure>
-<p>这是因为，shell是通过PATH环境变量来查找命令的，现在test.sh这个脚本文件并不在环境变量PATH中，因此如果要运行这个脚本，只有2种方法：</p>
-<p>第一，将shell脚本文件所在的目录添加到PATH环境中；</p>
-<p>第二，使用绝对或相对路径引用shell脚本文件。</p>
-<p>现在使用第二种方法，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ test</div><div class="line">biotest@ubuntu:~$</div></pre></td></tr></table></figure>
-<p>发现没有反应，此时输入<code>bash test</code>，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~/test/testfile$ bash test</div><div class="line">Fri Apr 27 16:19:14 CST 2018</div><div class="line">biotest  tty7         2018-04-27 11:24 (:0)</div></pre></td></tr></table></figure>
-<p>test是一个脚本文件，通过<code>ls -lF</code>命令查看发现，test不是一个可执行程序，因此运行这个脚本，需要使用bash test，如果要将它设为可执行文件，则如下操作：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ls -lF test</div><div class="line">-rw-rw-r-- 1 biotest biotest 42 Apr 27 01:28 test</div><div class="line">biotest@ubuntu:~$ chmod u+x test</div><div class="line">biotest@ubuntu:~$ test</div><div class="line">biotest@ubuntu:~$ ./test</div><div class="line">Fri Apr 27 01:29:38 PDT 2018</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div></pre></td></tr></table></figure>
-<p>此时输入的是相对路径<code>./test</code>，如果要直接运行，则需要将test添加到环境变量中去，如下操作：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ./test</div><div class="line">Fri Apr 27 01:36:50 PDT 2018</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">biotest@ubuntu:~$ pwd</div><div class="line">/home/biotest</div><div class="line">biotest@ubuntu:~$ echo 'export PATH=$PATH:/home/biotest/'&gt;&gt;~/.bashrc</div><div class="line">biotest@ubuntu:~$ source ~/.bashrc</div><div class="line">biotest@ubuntu:~$ test</div><div class="line">biotest@ubuntu:~$ mv test test.sh</div><div class="line">biotest@ubuntu:~$ test.sh</div><div class="line">Fri Apr 27 01:37:57 PDT 2018</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div></pre></td></tr></table></figure>
-<p>添加到环境变量用到了<code>echo 'export PATH=$PATH:/home/biotest/'&gt;&gt;~/.bashrc</code>命令，此外，还有一点，test是用shell写的，原来没有后缀名，输入后无法运行，当添加上上了<code>.sh</code>后，可以正常运行，原理现在还不清楚，懂了再写。</p>
-<h2 id="显示消息">显示消息</h2>
-<p>多数shell都会产生自己的输出，这些输出会显示脚本所运行的控制台显示器上。很多时候，在自己写脚本时，要添加自己的文本消息来告诉脚本用户正在做什么，需要echo命令，如果在echo命令后面加上一个字符串，就会显示出这个文本字符串，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo This is a test</div><div class="line">This is a test</div><div class="line">biotest@ubuntu:~$ echo "This is a test to see if you're paying attention"</div><div class="line">This is a test to see if you're paying attention</div><div class="line">biotest@ubuntu:~$ ^C</div><div class="line">biotest@ubuntu:~$ echo 'Rich says "scripting is easy".'</div><div class="line">Rich says "scripting is easy".</div></pre></td></tr></table></figure>
-<p>从中可以发现：第一，常规情况下字符串并不需要使用引号；第二，如果要使用引号，字符串中间的引号不能与字符串两端的引号重复（即字符串中使用单引号，整个字符串就使用双引号，反之亦然）。</p>
-<p>再看一案例，新建一个文件，命名为test1，输入以下代码：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> This script displays the date and who's logged on </div><div class="line">echo The time and date are:</div><div class="line">date</div><div class="line">echo "Let's see who's logged into the system:"</div><div class="line">who</div></pre></td></tr></table></figure>
-<p>结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test1</div><div class="line">The time and date are:</div><div class="line">Fri Apr 27 03:01:29 PDT 2018</div><div class="line">Let&apos;s see who&apos;s logged into the system:</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div></pre></td></tr></table></figure></p>
-<h2 id="使用变量">使用变量</h2>
-<p>环境变量是常见的变量之一，在shell脚本中，也能使用环境变量，只需要在环境㸄前加上美元符号（$）即可，下面的脚本中就使用了一些环境变量，如下所示： <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> display user information from the system.</div><div class="line">echo "User info for userid: $USER"</div><div class="line">echo UID:$UID</div><div class="line">echo HOME: $HOME</div></pre></td></tr></table></figure></p>
-<p>运行后结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test2</div><div class="line">User info for userid: biotest</div><div class="line">UID:1000</div><div class="line">HOME: /home/biotest</div></pre></td></tr></table></figure>
-<p>如果在字符串中使用美元符号，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo "The cost of the item is $15"</div><div class="line">The cost of the item is 5</div></pre></td></tr></table></figure>
-<p>这里面的美元符号就不会显示，如果要显示的话，需要添加转义字符，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ echo "The cost of the item is \$15"</div><div class="line">The cost of the item is $15</div></pre></td></tr></table></figure>
-<h2 id="用户变量">用户变量</h2>
-<p>用户变量是用户自己定义的一些变量，这些常见的编程语言中的变量大同小异，看下面的案例：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> testing vairbales</div><div class="line">days=10</div><div class="line">guest="Test"</div><div class="line">echo "$guest checked in $days days ago"</div><div class="line">days=5</div><div class="line">guest="Test01"</div><div class="line">echo "$guest checked in $days days ago"</div></pre></td></tr></table></figure>
-<p>运行后结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test3</div><div class="line">Test checked in 10 days ago</div><div class="line">Test01 checked in 5 days ago</div></pre></td></tr></table></figure>
-<h3 id="有关美元符号与赋值的另一案例">有关美元符号与赋值的另一案例</h3>
-<p>如果引用变量不使用美元符号，会将引用的某个变量名称识别为字符串，看下面的案例：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span>!/bin/bash</div><div class="line"><span class="meta">#</span> assigning a variable value to another variable</div><div class="line"></div><div class="line">value1=10</div><div class="line">value2=$value1</div><div class="line">echo The resulting value is $value2</div><div class="line">value3=value1</div><div class="line">echo The resulting value is $value3</div></pre></td></tr></table></figure>
-<p>结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test4</div><div class="line">The resulting value is 10</div><div class="line">The resulting value is value1</div></pre></td></tr></table></figure></p>
-<p>从结果可以看出来，当value2=$value1时，就把变量value1的值10赋值给了value2，当使用value3=value1时，由于没加美元符号，就把value1这个字符串赋值给了value3。</p>
-<h2 id="命令替换">命令替换</h2>
-<p>shell脚本有一个重要的功能就是从命令输出中提取信息，并将值赋给某个变量。有2种方法可以将命令输出赋值给某个变量：</p>
-<p>第一：使用反引号（`）； 第二：使用<code>$()</code>格式。 使用这两种方法可以使shell命令的输出赋值给变量，具体用法如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">testing=`date`</div><div class="line"># 或者是</div><div class="line">testing=$(date)</div></pre></td></tr></table></figure>
-<p>具体的案例如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line">testing=$(date)</div><div class="line">echo &quot;The date and time are: &quot; $testing</div></pre></td></tr></table></figure></p>
-<p>运行结果如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test5</div><div class="line">The date and time are:  Fri Apr 27 07:10:16 PDT 2018</div></pre></td></tr></table></figure>
-<p>第二案例： 以下的案例就是就是通过命令替换获得当前日期，并用它来生成唯一文件名。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line"># copy the /usr/bin directory listing to a log file</div><div class="line">today=$(date +%y%m%d) </div><div class="line"># there is a blank between +%y%m%d</div><div class="line">ls /usr/bin -al &gt; log.$today</div></pre></td></tr></table></figure>
-<p>运行后没有输出信息，但是它会在当前目录下生成一个log文件，名称就是log加上今天的日期（今天是2018年4月27日），则这个文件名称就是log.180427。代码的运行原理是，date命令得到当前日期，经格式化后，赋值给today。关于日期的格式化，可以看下面的案例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ date</div><div class="line">Fri Apr 27 07:21:17 PDT 2018</div><div class="line">biotest@ubuntu:~$ date +%y%m%d</div><div class="line">180427</div></pre></td></tr></table></figure>
-<h2 id="重定向输入和输出">重定向输入和输出</h2>
-<p>有时候我们会遇到这样的场景，我想把某个命令的输出结果保存到某个文件中，这个文件我可以用于查看，或者是经后来的命令处理。这就用到了重定向，重定向可以用于输入，也可以用于输出。</p>
-<h3 id="输出重定向">输出重定向</h3>
-<p>最基本的重定向就是将命令的输出发送到一个文件中，bash shell中使用大于号（&gt;）来完成，格式为<code>command &gt; outputfile</code>，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ date &gt; test7</div><div class="line">biotest@ubuntu:~$ ls -l test7</div><div class="line">-rw-rw-r-- 1 biotest biotest 29 Apr 27 07:25 test7</div><div class="line">biotest@ubuntu:~$ less test7</div><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">Fri Apr 27 07:25:44 PDT 2018</div><div class="line">biotest@ubuntu:~$ who &gt; test7</div><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">biotest@ubuntu:~$ date &gt;&gt; test7</div><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">Fri Apr 27 07:28:58 PDT 2018</div></pre></td></tr></table></figure>
-<p>使用重定向文件创建了一个文件test7，将date命令的输出结果重定向了到了test7中，如果这个文件存在，则重定向的数据会覆盖原来的数据，如果不想覆盖，只是追加，可以使用双大于号。</p>
-<h3 id="输入重定向">输入重定向</h3>
-<h4 id="常规的输入重定向">常规的输入重定向</h4>
-<p>输入重定向和输出重定向正好相反。输入重定向将文件的内容重定向到命令。 输入重定向符号是小于号（&lt;），格式为<code>command &lt; inputfile</code>。 如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ cat test7</div><div class="line">biotest  tty7         2018-03-24 03:28 (:0)</div><div class="line">Fri Apr 27 07:28:58 PDT 2018</div><div class="line">biotest@ubuntu:~$ wc &lt; test7</div><div class="line"> 2 11 73</div></pre></td></tr></table></figure></p>
-<p>在这个案例中，将test7的内容输入到wc命令中，wc命令可以对数据中的文本进行计数（wc的全称为words count），wc的默认输出有3个值，从左到右分别为： ①文本的行数；②文本的词数；③文本的字节数，在前面的案例中，结果就是2行，11个单词，73个字节。</p>
-<h4 id="内联输入重定向">内联输入重定向</h4>
-<p>内联输入重定向的英文是inline input redirection，这种方法无需使用文件进行重定向，只需要在命令行中指定用于输入重定向的数据就可以了。内联输入重定向符号是远小于号（&lt;&lt;）。除了这个符号，必须指定一个文本标记来划分输入数据的开始和结尾。任何字符串都可作为文本标记，但在数据的开始和结尾文本标记必须一致，格式为： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">command &lt;&lt; marker </div><div class="line">data </div><div class="line">marker</div></pre></td></tr></table></figure></p>
-<p>maker是数据的开始，也是结果，data是位于maker之间的文本文件，看一个案例： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ wc &lt;&lt; EOF</div><div class="line">&gt; test string 1</div><div class="line">&gt; test string 2</div><div class="line">&gt; test string 3</div><div class="line">&gt; EOF</div><div class="line"> 3  9 42</div></pre></td></tr></table></figure></p>
-<p>当输入wc &lt;&lt; EOF时，命令行会自动变成大于号，接着输入内容，输入完毕后，再输入EOF表示结束，此时命令开始运行，结果为3，9， 42.</p>
-<h2 id="管道">管道</h2>
-<p>管道的使用场景为，将命令A的输出结果导入到命令B，使A的结果成为B的输入。其实这样可以通过重定向实现，但是太麻烦，管道就是出于此目的而设计的。</p>
-<p>举个例子：统计当前的文件数有多少个。</p>
-<p>先看一下重定向是如何实现的： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ls &gt; filename</div><div class="line">biotest@ubuntu:~$ cat filename</div><div class="line">Desktop</div><div class="line">Documents</div><div class="line">Downloads</div><div class="line">examples.desktop</div><div class="line">filename</div><div class="line">log.</div><div class="line">log.180427</div><div class="line">miniconda2</div><div class="line">Miniconda2-latest-Linux-x86_64.sh</div><div class="line">Music</div><div class="line">Pictures</div><div class="line">Public</div><div class="line">Templates</div><div class="line">test1</div><div class="line">test2</div><div class="line">test3</div><div class="line">test4</div><div class="line">test5</div><div class="line">test6</div><div class="line">test7</div><div class="line">test8</div><div class="line">test.sh</div><div class="line">Videos</div><div class="line">biotest@ubuntu:~$ wc filename</div><div class="line"> 23  23 210 filename</div></pre></td></tr></table></figure></p>
-<p>使用重定向就是，先用ls列出当前的文件名，重定向到filename文件，然后使用wc命令来统计。</p>
-<p>再看一下管道命令： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ ls|wc</div><div class="line">     23      23     210</div><div class="line">biotest@ubuntu:~$</div></pre></td></tr></table></figure></p>
-<p>管道命令通过一条竖线，将ls的结果导入到wc中。</p>
-<h2 id="退出脚本">退出脚本</h2>
-<p>shell中运行的每个命令都是使用退出状态码（exit status）告诉shell它已经运行完毕，退出状态码是一个0~255的号数值，在命令结束运行时，由命令传给shell。</p>
-<h3 id="查看退出状态码">查看退出状态码</h3>
-<p>Linux提供了一个专门的变量<code>$?</code> 来保存上个已执行命令的退出状态码。对于需要进行检查的 命令，必须在其运行完毕后立刻查看或使用 $? 变量。它的值会变成由shell所执行的最后一条命令的退出状态码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ date</div><div class="line">Fri Apr 27 07:52:45 PDT 2018</div><div class="line">biotest@ubuntu:~$ echo $?</div><div class="line">0</div></pre></td></tr></table></figure>
-<p>通常一个成功结束的命令的退出状态码是0，如果命令结束时有错误，这个代码就是一个正整数，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ asd</div><div class="line">No command &apos;asd&apos; found, but there are 22 similar ones</div><div class="line">asd: command not found</div><div class="line">biotest@ubuntu:~$ echo $?</div><div class="line">127</div></pre></td></tr></table></figure>
-<h3 id="exit命令">exit命令</h3>
-<p>exit 命令允许你在脚本结束时指定一个退出状态码，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line"># testing the exit status</div><div class="line">var1=10</div><div class="line">var2=30</div><div class="line">var3=$[$var1 + $var2]</div><div class="line">echo The answer is $var3</div><div class="line">exit 5</div></pre></td></tr></table></figure>
-<p>运行后，结果如下所示： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">biotest@ubuntu:~$ bash test9</div><div class="line">The answer is 40</div><div class="line">biotest@ubuntu:~$ echo $?</div><div class="line">5</div></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -4085,7 +3879,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">229</span>
+                  <span class="site-state-item-count">231</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4184,7 +3978,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共920.5k字</span>
+  <span class="post-count">博客全站共930.0k字</span>
 </div>
 
         
