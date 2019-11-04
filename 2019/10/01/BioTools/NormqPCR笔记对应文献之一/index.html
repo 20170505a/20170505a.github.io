@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="前言 最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下： 1Vandesompele, J., et al. (2002). &amp;quot;Accurate normalization of real-time quantitative RT-PCR data by geometric">
+<meta name="description" content="前言最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下： 1Vandesompele, J., et al. (2002). &amp;quot;Accurate normalization of real-time quantitative RT-PCR data by geometric ave">
 <meta name="keywords" content="miRNA,qPCR,内参">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NormqPCR笔记对应文献之一">
 <meta property="og:url" content="http://rvdsd.top/2019/10/01/BioTools/NormqPCR笔记对应文献之一/index.html">
 <meta property="og:site_name" content="RVDSD的个人笔记本">
-<meta property="og:description" content="前言 最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下： 1Vandesompele, J., et al. (2002). &amp;quot;Accurate normalization of real-time quantitative RT-PCR data by geometric">
+<meta property="og:description" content="前言最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下： 1Vandesompele, J., et al. (2002). &amp;quot;Accurate normalization of real-time quantitative RT-PCR data by geometric ave">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012111600.png">
 <meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924164713.png">
@@ -101,7 +101,7 @@
 <meta property="og:updated_time" content="2019-10-12T04:26:20.668Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NormqPCR笔记对应文献之一">
-<meta name="twitter:description" content="前言 最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下： 1Vandesompele, J., et al. (2002). &amp;quot;Accurate normalization of real-time quantitative RT-PCR data by geometric">
+<meta name="twitter:description" content="前言最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下： 1Vandesompele, J., et al. (2002). &amp;quot;Accurate normalization of real-time quantitative RT-PCR data by geometric ave">
 <meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012111600.png">
 
 
@@ -360,7 +360,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5,653
+                  5,618
                 </span>
               
 
@@ -397,129 +397,81 @@
       
 
       
-        <h2 id="前言">前言</h2>
-<p>最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下：</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在处理qPCR数据过程中，设计的qPCR阵列中采用了多个内参，我对于多内参的处理不太理解。后来找到了一篇文献，就是讲qPCR中的多内参问题的。文献信息如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Vandesompele, J., et al. (2002). &quot;Accurate normalization of real-time quantitative RT-PCR data by geometric averaging of multiple internal control genes.&quot; Genome Biology 3(7): research0034.0031.</div></pre></td></tr></table></figure>
 <p>此篇文献引用量很高（到2019年10月为止，引用量约为16000），虽然文献比较古老，但是了解一下文献中的思想还是比较有用的，以下是文献的阅读笔记（基本上就是翻译原文外加自己检索）。</p>
 <p>文献中涉及一定的线性代数知识，我不太懂，只能先暂时先记录下来，等看懂的时候再补充一篇笔记。</p>
-<h2 id="研究背景">研究背景</h2>
-<p>​ 在生物学研究中，基因表达的分析有着重要的作用。对于基因表达模式的理解可以为复杂的调控网络研究提供思路。最近开发的两种检测转录本丰度的方法得到了非常广泛的应用（该文章是2002年写的，这里的最近已经是非常久远了）。微阵列的方法（微阵列其实就是芯片法）可以同时检测数以千计的基因表达情况，而RT-PCR的方法则是用于检测许多不同的样本中数量有限基因的表达情况（在细胞数量比较少的情况下用这种方法更好，说服力更强）。与传统的方法例如northern-blot，核糖核酸酶保护，或者是竞争RT-PCR（competitive rt-PCR）相比，这两种方法（微阵列与RT-qPCR）都有快速，高通量的优点。但是这两种方法都需要与传统方法一样，需要对目的mRNA进行均一化（normalization）。</p>
+<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>​        在生物学研究中，基因表达的分析有着重要的作用。对于基因表达模式的理解可以为复杂的调控网络研究提供思路。最近开发的两种检测转录本丰度的方法得到了非常广泛的应用（该文章是2002年写的，这里的最近已经是非常久远了）。微阵列的方法（微阵列其实就是芯片法）可以同时检测数以千计的基因表达情况，而RT-PCR的方法则是用于检测许多不同的样本中数量有限基因的表达情况（在细胞数量比较少的情况下用这种方法更好，说服力更强）。与传统的方法例如northern-blot，核糖核酸酶保护，或者是竞争RT-PCR（competitive rt-PCR）相比，这两种方法（微阵列与RT-qPCR）都有快速，高通量的优点。但是这两种方法都需要与传统方法一样，需要对目的mRNA进行均一化（normalization）。</p>
 <p>以下是补充一些与核酸保护实验相关的背景知识。</p>
-<h3 id="核酸酶保护实验">核酸酶保护实验</h3>
-<p>​ 糖核酸酶保护实验（Ribonuclease protection assay，RPA）是一种mRNA定量分析方法。其基本原理是将标记的特异RNA探针（32P或生物素）与待测的RNA样品液相杂交，标记的特异RNA探针按碱基互补的原则与目的基因特异性结合，形成双链RNA；未结合的单链RNA经RNA酶A或RNA酶T1消化形成寡核糖核酸，而待测目的基因与特异RNA探针结合后形成双链RNA，免受RNA酶的消化，故该方法命名为RNA酶保护实验。</p>
-<p>​ 对于32P标记的探针，杂交双链进行变性聚丙酰胺凝胶电泳，用放射自显影或磷屏成像系统检测被保护的探针的信号; 对于生物素标记的探针，杂交双链经过变性聚丙酰胺凝胶电泳后电转移至尼龙膜，采用链霉亲和素－辣根过氧化物酶（Streptavidin-HRP）和化学发光底物与膜上biotin标记的探针结合，X射线胶片或化学发光图像分析仪检测杂交信号。</p>
-<p>​ 在利用RT-PCR对基因进行定量时，为了缩小误差，我们需要对一些因素进行控制，例如原始样品的数量（细胞或者是组织），酶的效率，组织或细胞的整个转录活动差异等因素。在控制条件的理想情况下，提取的高质量RNA的转录本数量的可重复结果与细胞数量是呈正比的，但是精确的细胞数目很难进行定量（尤其是当原始材料是组织时更是如此）。</p>
-<p>​ 另外一种常用的定量手段就是RNA的量（这里指的是数量，原文写的是mass quantity），尤其是northern blot分析方法。但是这种方法也存在着一些争议。因为这种方法没有考虑到RNA的质量（这里侧重的是RNA的完整性，原文写的是quality）与相关酶的反应效率。此外，在某些情况下，这些因素也无法定量，例如从提取的微切割的组织（microdissected tissue）中得到的RNA数量极少，这个时候就无法对RNA进行定量。</p>
-<p>​ 其中最大的争议还在于，用于均一化时所考虑的总RNA量，因为总的RNA主要是由rRNA组成的，它并不代表mRNA。这里大概介绍一下使用总RNA量来作为RNA质控的方法。</p>
-<p>​ 当我们提取了RNA后，在进行质控时，通常是使用1%的琼脂糖凝胶电泳来跑200ng到400ng的总RNA，然后观察RNA的条带。良好的RNA（这里指的是动物组织或细胞的样本）中可以看到3个条带，从上到下依次是28S、18S、5S（这是核糖体RNA的主要成分），其中28S条带与18S条带非常清楚，5S条件非常弱，28S和18S比值可以判断RNA样本的完整性，通常这个比值是1.5（肉眼不太好判断，通常来说就是28S比18S亮就行了），如果这两个条带变弱，5S条件变亮，则说明RNA降解，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012111600.png">
-
-</div>
-<p>​ 不过电泳法是比较粗糙的方法，毕竟这篇文献是2002年的，现在如果要进行测序建库，要求就比较高，会采用Qubit检测RNA的浓度，用安捷伦2100来检测RNA的完整性，具体的检测指标可以检索相关资料。</p>
+<h3 id="核酸酶保护实验"><a href="#核酸酶保护实验" class="headerlink" title="核酸酶保护实验"></a>核酸酶保护实验</h3><p>​        糖核酸酶保护实验（Ribonuclease protection assay，RPA）是一种mRNA定量分析方法。其基本原理是将标记的特异RNA探针（32P或生物素）与待测的RNA样品液相杂交，标记的特异RNA探针按碱基互补的原则与目的基因特异性结合，形成双链RNA；未结合的单链RNA经RNA酶A或RNA酶T1消化形成寡核糖核酸，而待测目的基因与特异RNA探针结合后形成双链RNA，免受RNA酶的消化，故该方法命名为RNA酶保护实验。</p>
+<p>​        对于32P标记的探针，杂交双链进行变性聚丙酰胺凝胶电泳，用放射自显影或磷屏成像系统检测被保护的探针的信号; 对于生物素标记的探针，杂交双链经过变性聚丙酰胺凝胶电泳后电转移至尼龙膜，采用链霉亲和素－辣根过氧化物酶（Streptavidin-HRP）和化学发光底物与膜上biotin标记的探针结合，X射线胶片或化学发光图像分析仪检测杂交信号。</p>
+<p>​        在利用RT-PCR对基因进行定量时，为了缩小误差，我们需要对一些因素进行控制，例如原始样品的数量（细胞或者是组织），酶的效率，组织或细胞的整个转录活动差异等因素。在控制条件的理想情况下，提取的高质量RNA的转录本数量的可重复结果与细胞数量是呈正比的，但是精确的细胞数目很难进行定量（尤其是当原始材料是组织时更是如此）。</p>
+<p>​        另外一种常用的定量手段就是RNA的量（这里指的是数量，原文写的是mass quantity），尤其是northern blot分析方法。但是这种方法也存在着一些争议。因为这种方法没有考虑到RNA的质量（这里侧重的是RNA的完整性，原文写的是quality）与相关酶的反应效率。此外，在某些情况下，这些因素也无法定量，例如从提取的微切割的组织（microdissected tissue）中得到的RNA数量极少，这个时候就无法对RNA进行定量。</p>
+<p>​        其中最大的争议还在于，用于均一化时所考虑的总RNA量，因为总的RNA主要是由rRNA组成的，它并不代表mRNA。这里大概介绍一下使用总RNA量来作为RNA质控的方法。</p>
+<p>​        当我们提取了RNA后，在进行质控时，通常是使用1%的琼脂糖凝胶电泳来跑200ng到400ng的总RNA，然后观察RNA的条带。良好的RNA（这里指的是动物组织或细胞的样本）中可以看到3个条带，从上到下依次是28S、18S、5S（这是核糖体RNA的主要成分），其中28S条带与18S条带非常清楚，5S条件非常弱，28S和18S比值可以判断RNA样本的完整性，通常这个比值是1.5（肉眼不太好判断，通常来说就是28S比18S亮就行了），如果这两个条带变弱，5S条件变亮，则说明RNA降解，如下所示：</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012111600.png" alt=""></p>
+<p>​        不过电泳法是比较粗糙的方法，毕竟这篇文献是2002年的，现在如果要进行测序建库，要求就比较高，会采用Qubit检测RNA的浓度，用安捷伦2100来检测RNA的完整性，具体的检测指标可以检索相关资料。</p>
 <p>但是在总的RNA中，mRNA的含量仅占7.5%。此外，还有报告指出，rRNA的转录还受到生物因素与药物的影响。利用18S或28S作为RNA定量的标准缺陷还在于，在纯的mRNA分子中，并不含有18S或28S，与靶mRNA转录本相比，18S或28S的含量太高。在利用RT-PCR进行分析时，很难排除基线(baseline)。</p>
 <p>现在补充一些竞争性PCR的背景知识。</p>
-<h3 id="竞争性pcr">竞争性PCR</h3>
-<p>​ 在竞争性PCR中，逆转录之前加入一个外源的RNA转录本（内部标准RNA）作为样品间差异的对照。内部标准RNA被逆转录并同目的模板一起扩增，作为cDNA转化和扩增效率差异的对照。通过将特异性的目的序列同已知浓度的内部标准RNA一起扩增进行定量。通过比较由内部标准获得的信号和目的模板所获得的信号可以确定目的模板的丰度。</p>
-<p>​ 到目前为止（也是2018年为止），内参基因是最常用的对mRNA进行均一化的方法。内参基因（internal control）通常指的是管家基因（housekeeping gene），这类基因并不会随着组织或细胞的不同而变化， 或者是不会随着实验条件而变化。但是在许多的研究里，研究者使用的这些持续表达的内参基因中，并没有对这些基因的稳定表达进行验证。文献中使用的这些管家基因偶尔会出现变化极大的现象。随着RT-PCR灵敏度，可靠性以及使用范围的增加，对于合适内参基因的需求也日益迫切。些外，通过利用利用公共微阵列数量，这种均一化因素（normalization factor）也在广泛的应用的微阵列定标系数（scaling factor）中得到了验证。</p>
-<h2 id="需要了解的几个公式">需要了解的几个公式</h2>
-<p>文献末尾处提到了几个公式，现在汇总如下所示：</p>
-<h3 id="公式1单一内参均一化错误值single-control-normalization-error">公式1:单一内参均一化错误值（Single control normalization error）</h3>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924164713.png">
-
-</div>
+<h3 id="竞争性PCR"><a href="#竞争性PCR" class="headerlink" title="竞争性PCR"></a>竞争性PCR</h3><p>​        在竞争性PCR中，逆转录之前加入一个外源的RNA转录本（内部标准RNA）作为样品间差异的对照。内部标准RNA被逆转录并同目的模板一起扩增，作为cDNA转化和扩增效率差异的对照。通过将特异性的目的序列同已知浓度的内部标准RNA一起扩增进行定量。通过比较由内部标准获得的信号和目的模板所获得的信号可以确定目的模板的丰度。</p>
+<p>​        到目前为止（也是2018年为止），内参基因是最常用的对mRNA进行均一化的方法。内参基因（internal control）通常指的是管家基因（housekeeping gene），这类基因并不会随着组织或细胞的不同而变化， 或者是不会随着实验条件而变化。但是在许多的研究里，研究者使用的这些持续表达的内参基因中，并没有对这些基因的稳定表达进行验证。文献中使用的这些管家基因偶尔会出现变化极大的现象。随着RT-PCR灵敏度，可靠性以及使用范围的增加，对于合适内参基因的需求也日益迫切。些外，通过利用利用公共微阵列数量，这种均一化因素（normalization factor）也在广泛的应用的微阵列定标系数（scaling factor）中得到了验证。</p>
+<h2 id="需要了解的几个公式"><a href="#需要了解的几个公式" class="headerlink" title="需要了解的几个公式"></a>需要了解的几个公式</h2><p>文献末尾处提到了几个公式，现在汇总如下所示：</p>
+<h3 id="公式1-单一内参均一化错误值（Single-control-normalization-error）"><a href="#公式1-单一内参均一化错误值（Single-control-normalization-error）" class="headerlink" title="公式1:单一内参均一化错误值（Single control normalization error）"></a>公式1:单一内参均一化错误值（Single control normalization error）</h3><p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924164713.png" alt=""></p>
 <p>公式上面的英文注释如下所示：</p>
 <p>E值： 对于任何m个样本，用real-time RT-PCR技术可以测量其n个内参基因的表达水平，其表达水平为aij。对于每2个样本（分别记为p和q）的组合来说，它们的两个内参基因j和k的每一种组合来说，可以计算出它们的单一内参均一化错误值E（single control normalization error，公式1）。</p>
 <p>当样本p和q分别针对其内参基因j或k进行均一化的时候，其样本p和样本q的表达总倍数差异就是错误值E。 n表示内参的数目（注：既然是多内参，这个n必然是大于等于2）。</p>
 <p>aij表示的是内参的表达水平（这是一组数据）。</p>
-<p>j与k的范围为1到n，p与q的值为1到m（都是闭区间），并且j不等于k，p不等于q。<strong>Rjkpq的倒数就是E值</strong>，公式1中，aqj是说在样本q中，以内参基因j为标准进行均一化后的数据，aqk则是说，以内参基因k为标准进行均一化后的数据，aqj/aqk则是这二者之比，apk/apj为例，aqj/aqk与apk/apj的比值则是指p与q样本中，a基因表达水平的误差。</p>
+<p>j与k的范围为1到n，p与q的值为1到m（都是闭区间），并且j不等于k，p不等于q。<strong>Rjkpq的倒数就是E值</strong>，公式1中，aqj是说在样本q中，以内参基因j为标准进行均一化后的数据，aqk则是说，以内参基因k为标准进行均一化后的数据，aqj/aqk则是这二者之比，apk/apj为例，aqj/aqk与apk/apj的比值则是指p与q样本中，a基因表达水平的误差。 </p>
 <p>个人理解：这个E值其实就是每个样本，每个内参均一化后误差的乘积。</p>
-<h3 id="公式2内参基因稳定检测值m">公式2:内参基因稳定检测值M</h3>
-<p>原文如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924172122.png">
-
-</div>
+<h3 id="公式2-内参基因稳定检测值M"><a href="#公式2-内参基因稳定检测值M" class="headerlink" title="公式2:内参基因稳定检测值M"></a>公式2:内参基因稳定检测值M</h3><p>原文如下所示：</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924172122.png" alt=""></p>
 <p>公式解释：</p>
 <p>M值：对于任意两个内参基因j与k，可以计算出由它们构成的一个Ajk数列（array），这个数列包含一组经log2转化来的比值（aij/aik），如果是m个样本，那么Ajk中一共是m个值（公式2）。作者定义Vjk是内参基因j和k的<strong>成对变异（pairwise variation）</strong>它是Ajk的标准差（公式3）。其中内参基因j的稳定表达值Mj就是所有成对基因变异Vjk的算术平均数（公式4）。</p>
 <p>画个图，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924174227.png">
-
-</div>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924174227.png" alt=""></p>
 <p>以上计算的<strong>只是内参基因j的稳定值</strong>。</p>
-<h2 id="研究思路">研究思路</h2>
-<p>提取了不同组织或细胞的RNA进行检测，然后检测这些RNA中的几个选定的内参，再通过一定的算法进行比较。</p>
-<h2 id="实验过程">实验过程</h2>
-<h3 id="一管家基因表达谱">（一）管家基因表达谱</h3>
-<p>​ 本文研究了10个常用管家基因在人类13个不同组织中的表达，这10个管家基因如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162706.png">
-
-</div>
+<h2 id="研究思路"><a href="#研究思路" class="headerlink" title="研究思路"></a>研究思路</h2><p>提取了不同组织或细胞的RNA进行检测，然后检测这些RNA中的几个选定的内参，再通过一定的算法进行比较。</p>
+<h2 id="实验过程"><a href="#实验过程" class="headerlink" title="实验过程"></a>实验过程</h2><h3 id="（一）管家基因表达谱"><a href="#（一）管家基因表达谱" class="headerlink" title="（一）管家基因表达谱"></a>（一）管家基因表达谱</h3><p>​     本文研究了10个常用管家基因在人类13个不同组织中的表达，这10个管家基因如下所示：</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162706.png" alt=""></p>
 <p>管家基因列表。</p>
 <p>注：选这个10个管家基因的思路是要尽量使这10个基因属于不同的功能分类，这样就能极大地了降低它们之间存在的共调控现象。</p>
 <p>作者检测了80个组织中的这10个管家基因的表达情况，这80个组织分别为：在34个神经母细胞瘤（来源不同的实验室以及不同的病人，NB1-34）；20个短期培养的常规成纤维细胞（FIB1-20）；13个常规的淋巴细胞样本（LEU1-13）；9个骨髓样本（BM1-9）；9个其他的人类正常组织（分别为heart，brain，fetal brain，lung，trachea，kidney，mammary gland，small intestine和uterus）。</p>
-<h3 id="二单一内参均一化错误值single-control-normalization-error">（二）单一内参均一化错误值（Single control normalization error）</h3>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162802.png">
-
-</div>
-<p>Figure 1 -对于两个理想的内参基因来说，E值等于1，这个很好理解，我们还看一下前面的E公式，如下所示： <span class="math display">\[
-{R_{j k p q}=\frac{a_{q j}}{a_{q k}} / \frac{a_{p j}}{a_{p k}} \quad\left(\text { if } R&lt;1, \text { then } E=R^{-1}, \text { else } E=R\right)}
-\]</span> 也就是说，理想的两个内参基因表达水平必然是相同的，因此E等于1。</p>
+<h3 id="（二）单一内参均一化错误值（Single-control-normalization-error）"><a href="#（二）单一内参均一化错误值（Single-control-normalization-error）" class="headerlink" title="（二）单一内参均一化错误值（Single control normalization error）"></a>（二）单一内参均一化错误值（Single control normalization error）</h3><p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162802.png" alt=""></p>
+<p>Figure 1 -对于两个理想的内参基因来说，E值等于1，这个很好理解，我们还看一下前面的E公式，如下所示：</p>
+<script type="math/tex; mode=display">
+{R_{j k p q}=\frac{a_{q j}}{a_{q k}} / \frac{a_{p j}}{a_{p k}} \quad\left(\text { if } R<1, \text { then } E=R^{-1}, \text { else } E=R\right)}</script><p>也就是说，理想的两个内参基因表达水平必然是相同的，因此E等于1。</p>
 <p>事实上观察到的E值通常大于1，这就构成了两个样本之间的E倍差异，具体的差异值取决用于均一化的特定管家基因。对所有的10个内参基因两两配对（一共45种组合），以及所有样本的两两配对（一共是865个组合）绘制E值，如figure 1所示。此外，通过分析重复运行的相同内参基因绘制出了系统错误的分位数。E值的75百分位数和90百分位分别是3.0（范围是2.1-3.9）和6.4（范围是3.0-10.9）。</p>
 <p>注：所有样本的两两配对是指，同一个组织内的两两配对，因此根据前面的内容：</p>
 <blockquote>
 <p>34个神经母细胞瘤（来源不同的实验室以及不同的病人，NB1-34）；20个短期培养的常规成纤维细胞（FIB1-20）；13个常规的淋巴细胞样本（LEU1-13）；9个骨髓样本（BM1-9）；9个其他的人类正常组织（分别为heart，brain，fetal brain，lung，trachea，kidney，mammary gland，small intestine和uterus）</p>
 </blockquote>
 <p>排列组合数目就是865。</p>
-<h3 id="三基因表达稳定性检测以及所选基因的秩">（三）基因表达稳定性检测以及所选基因的秩</h3>
-<p>​ 在研究中，通常会认为基因的表达水平应该精选一个稳定表达的基因进行均一化。但是为了验证选定的这个内参基因的稳定表达，我们需要一种可靠的检测手段手段来确定这个内参基因确实是稳定表达的，从而剔除掉非特异性的变异。为了解决这个循环问题（circular problem，这里的循环问题就是说，我要选择稳定的内参，就需要“内参”进行均一化，但是选择均一化的这个“内参”又得是稳定的，因此是一个不断循环的问题），作者以非均一化表达水平为基础，提出了一种基因稳定性检测算法。</p>
-<p>​ 这种算法的原理是，无论实验条件，无论细胞类型，两种理想的内参基因在所有样本中的表达必然是相同的。而在实际条件下，两种真实内参基因的表达比值（ratio）的变异就会反映出一种（或者是两种）内参基因的表达并非是恒定不变的，这种比值的差异与基因表达的稳定程度呈反比。对于每一个内参基因来说，作者都研究了它与其他所有内参基因两两的差异，这种差异用表达比值的对数转换的标准差来表示，并且定义了一个内参基因表达稳定检测值M作为一个特定基因与其他所有内参基因的平均两两变异。</p>
-<p>​ 其中，最小M值的基因是表达最稳定的内参基因。假如选定的这些内参基因不存在共调控，那么分步排除掉的最高M值的基因后，最终剩下的内参基因就会产生一对组合，构成这种组合的两个基因是稳定表达的管家基因，即它们是样品中最稳定的内参基因。</p>
-<p>​ 为了计算最佳的内参基因组合，作者利用VBA开发了一个Excel插件，命名为geNorm，它能自动计算所有内参基因的的M值（现在这个插件已经整合到了qbase+中，网址为：https://www.qbaseplus.com/）。这个程序可以剔除那些不好的内参基因（即最高M值的基因），并且重新计算剩余内参基因的M值。利用geNorm，作者计算了5类组织中的10个内参基因的M值，并按从大到小的顺序排列（参见figure2与table 3）。此外，作者还计算了系统变异，其方法对相同的基因进行重复的RT-PCR实验，这种变异反映了仪器自身，加样，酶的固有变异。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162839.png">
-
-</div>
+<h3 id="（三）基因表达稳定性检测以及所选基因的秩"><a href="#（三）基因表达稳定性检测以及所选基因的秩" class="headerlink" title="（三）基因表达稳定性检测以及所选基因的秩"></a>（三）基因表达稳定性检测以及所选基因的秩</h3><p>​        在研究中，通常会认为基因的表达水平应该精选一个稳定表达的基因进行均一化。但是为了验证选定的这个内参基因的稳定表达，我们需要一种可靠的检测手段手段来确定这个内参基因确实是稳定表达的，从而剔除掉非特异性的变异。为了解决这个循环问题（circular problem，这里的循环问题就是说，我要选择稳定的内参，就需要“内参”进行均一化，但是选择均一化的这个“内参”又得是稳定的，因此是一个不断循环的问题），作者以非均一化表达水平为基础，提出了一种基因稳定性检测算法。</p>
+<p>​        这种算法的原理是，无论实验条件，无论细胞类型，两种理想的内参基因在所有样本中的表达必然是相同的。而在实际条件下，两种真实内参基因的表达比值（ratio）的变异就会反映出一种（或者是两种）内参基因的表达并非是恒定不变的，这种比值的差异与基因表达的稳定程度呈反比。对于每一个内参基因来说，作者都研究了它与其他所有内参基因两两的差异，这种差异用表达比值的对数转换的标准差来表示，并且定义了一个内参基因表达稳定检测值M作为一个特定基因与其他所有内参基因的平均两两变异。</p>
+<p>​        其中，最小M值的基因是表达最稳定的内参基因。假如选定的这些内参基因不存在共调控，那么分步排除掉的最高M值的基因后，最终剩下的内参基因就会产生一对组合，构成这种组合的两个基因是稳定表达的管家基因，即它们是样品中最稳定的内参基因。</p>
+<p>​        为了计算最佳的内参基因组合，作者利用VBA开发了一个Excel插件，命名为geNorm，它能自动计算所有内参基因的的M值（现在这个插件已经整合到了qbase+中，网址为：<a href="https://www.qbaseplus.com/）。这个程序可以剔除那些不好的内参基因（即最高M值的基因），并且重新计算剩余内参基因的M值。利用geNorm，作者计算了5类组织中的10个内参基因的M值，并按从大到小的顺序排列（参见figure2与table" target="_blank" rel="external">https://www.qbaseplus.com/）。这个程序可以剔除那些不好的内参基因（即最高M值的基因），并且重新计算剩余内参基因的M值。利用geNorm，作者计算了5类组织中的10个内参基因的M值，并按从大到小的顺序排列（参见figure2与table</a> 3）。此外，作者还计算了系统变异，其方法对相同的基因进行重复的RT-PCR实验，这种变异反映了仪器自身，加样，酶的固有变异。</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924162839.png" alt=""></p>
 <p>Figure 2 横坐标表示的是剩余的内参数目。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924181905.png">
-
-</div>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190924181905.png" alt=""></p>
 <p>注：qbase+这个软件我并不熟悉，这是没有重现数据的分析过程。但是在前一篇笔记中，我使用了NormqPCR这个R包来重现了数据分析过程。</p>
-<h3 id="四基于多内参基因的几何均数进行均一化因子计算">（四）基于多内参基因的几何均数进行均一化因子计算</h3>
-<p>这一部分就是说明要选择几个内参来进行均一化。</p>
-<p>​ 为了精确地评估基因的表达水平，作者推荐使用多个内参基因进行均一化。将多个内参取几何均数。至于使用的内参基因数目，需要在实际情况与精确性方面进行取舍。但是就实际情况来看，选择太多的内参基因浪费（例如10个太浪费了），如果太少，不为精确，作者推荐最少使用3个表达稳定的内参基因作为均一化因子（normalizaiton factor, NFn, n=3）。</p>
-<p>​ 作者还研究了一些情况，即那些利用了超过3种内参基因用于均一化的情况，作者计算了相同组织类型内的所有样本，按照两次均一化因子（NFn和NFn+1）的两两变异Vn/n+1（即aij=NFn,i和aik=NFn+1,n代表用于均一化的基因数目，范围是3到9，i表示样本，具体参照公式2和3）。我的理解是，在选定了几个内参，例如5个，对所有的样本进行均一化，计算其变异，即V5，然后再排除一个内参，剩了4个内参，再对所有的样本均一化，计算其变异，即V4，最后计算V4/V5）。这种算法研究的是，如果存在着一个很大的变异，就意味着，这个加入的内参基因（我的理解是，排除的那个内参）有着很强的效应，它应该优先选择用于均一化因子的计算（不太理解这种算法）。</p>
-<p>​ 对于所有的组织类型，用于计算的均一化因子是3个最稳定的内参基因，通过逐步添加剩余的7个内参基因。逐步计算两两配对变异，对于连续的NFn和NFn+1均一化因子，这就反应了加入的第n+1基因的效应。 （如figure 3a所示）。从图中可以明显看出来，对于leukicytes, fibroblast和bone marrow来说，添加的第4个基因没有特别明显的影响（就是说低V3/4值），这也说明，在NF3和NF4值之间存在着很强的关联，如figure 3b所示。以这些数据为基础，作者采用了0.15作为阈值，低于0.15的内参基因不需要添加进来。对于neuroblastoma和正常组织来说，分别需要加入1个和2个内参基因（参见figure 3b）。最高的V8/9和V9/10值对于normal pool，neuroblastoma和leukocyte来说就确认了figure 2中逐步排除的最差内参基因。这种分析表明了平均M值的在开始时的强烈下降，这就指出了，leukocyte的两个内参基因的表达异常，neuroblastoma和normal tissues一个内参基因的不稳定。此外，对于后两种组织来说，需要包含另外的内参基因，从而与内参基因的高度变异保持一致。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105801.jpg">
-
-</div>
-<h3 id="验证可能的rt-pcr均一化因子">验证可能的RT-PCR均一化因子</h3>
-<p>​ 为了验证这种基因检测算法的可靠性，即最低M值是最稳定的表达的内参基因，作者检测了每个内参基因的特异性变化，作为均一化之后表达的变异系数（variation coefficient）。对于合适的内参基因来说，这个系数应该是最小的。作者以三个基因的几何平均数为基础，分别计算了三个不同的均一化因子，最低的M值（NF3（1-3）），最高的M值（NF3（8-10）和中等的M值（NF3（6-8））。接着，作者计算用最低变异系数，在每种组织类型内，计算了这三个基因的平均基因特异性变异（figure 4a）。从计算结果可以看出，当数据用NF3（1-3）进行均一化时，这些基因特异性变异最小。</p>
-<p>​ 这就表明，基因稳定性检测能够确定地确定表达最稳定的内参基因。为了确认高M值是一类表达不稳定，或者是表达有差异的基因，作者分析了MYCN的表达水平，MYCN这个基因是一种在neuroblastoma中表达有差异的基因。在neuroblastoma中，MYN的M值是6.02，而B2M（表达最稳定的内参基因）的M值是2.17。进一步的观察发现，用单一的内参基因进行均一化会导致其它内参基因更高的的基因特异性变异，这就进一步说明了利用多个管家基因进行均一化的优势。</p>
-<p>​ 为了说明最佳的个内参基因不受细胞增殖的影响，作者分析了PCNA的表达水平（PCNA是增殖的标志），研究了四个最佳管家基因和标志基因PCNA之间的Spearman秩相关系数。从分析结果来看，管家基因之间存在着关联（p值小于0.001，相关系数在0.6到0.76之间）。相比之下，PCNA和三个管家基因之间不存在联系，而与HPRT1则存在着弱相关（p值为0.024，相关系数为0.43）。这些数据清楚地说明了，最稳定的管家基因与细胞的增殖状态无关。</p>
-<p>​ 为了进一步研究选定的内参基因几何均数的精确性，作者研究了公共数据库中的微阵列数据，利用这些数据中的内参基因的几何均数进行了均一化，具体的选择过程参见文献，作者选定了5个内参基因，其标准是M值小于0.7，其计算结果与微阵列的计算结果类似。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105826.png">
-
-</div>
-<h3 id="组织特异性管家基因的表达">组织特异性管家基因的表达</h3>
-<p>​ 为了比较13所测组织中的管家基因表达水平的异质性。作者剔除了差异最大的4个管家基因（这4个管家基因分别为B2M，RPL13A，ACTB与HMBS，参见Table 2）后，计算了6个内参基因的几何均数作为“伪内参”，然后将这10个内参基因再根据这个“伪内参”进行均一化。Figure 5显示了所有的10个基因的不同丰度类型，表达最高的ACTB基因是最低的HMBS的400倍。虽然内参基因的丰度在不同的组织中类似，但还是观察到了组织特异性表达的差异，例如，B2M的表达水平在leukocytes中比Fetal Brain中高出112倍，而Fibroiblast和Heart tisssue中，ACTB的差异有22倍。与这两个基因相比，有2个基因的表达比较稳定，例如UBC和HPRT1。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105923.jpg">
-
-</div>
+<h3 id="（四）基于多内参基因的几何均数进行均一化因子计算"><a href="#（四）基于多内参基因的几何均数进行均一化因子计算" class="headerlink" title="（四）基于多内参基因的几何均数进行均一化因子计算"></a>（四）基于多内参基因的几何均数进行均一化因子计算</h3><p>这一部分就是说明要选择几个内参来进行均一化。</p>
+<p>​        为了精确地评估基因的表达水平，作者推荐使用多个内参基因进行均一化。将多个内参取几何均数。至于使用的内参基因数目，需要在实际情况与精确性方面进行取舍。但是就实际情况来看，选择太多的内参基因浪费（例如10个太浪费了），如果太少，不为精确，作者推荐最少使用3个表达稳定的内参基因作为均一化因子（normalizaiton factor, NFn, n=3）。</p>
+<p>​        作者还研究了一些情况，即那些利用了超过3种内参基因用于均一化的情况，作者计算了相同组织类型内的所有样本，按照两次均一化因子（NFn和NFn+1）的两两变异Vn/n+1（即aij=NFn,i和aik=NFn+1,n代表用于均一化的基因数目，范围是3到9，i表示样本，具体参照公式2和3）。我的理解是，在选定了几个内参，例如5个，对所有的样本进行均一化，计算其变异，即V5，然后再排除一个内参，剩了4个内参，再对所有的样本均一化，计算其变异，即V4，最后计算V4/V5）。这种算法研究的是，如果存在着一个很大的变异，就意味着，这个加入的内参基因（我的理解是，排除的那个内参）有着很强的效应，它应该优先选择用于均一化因子的计算（不太理解这种算法）。</p>
+<p>​       对于所有的组织类型，用于计算的均一化因子是3个最稳定的内参基因，通过逐步添加剩余的7个内参基因。逐步计算两两配对变异，对于连续的NFn和NFn+1均一化因子，这就反应了加入的第n+1基因的效应。<br>（如figure 3a所示）。从图中可以明显看出来，对于leukicytes, fibroblast和bone marrow来说，添加的第4个基因没有特别明显的影响（就是说低V3/4值），这也说明，在NF3和NF4值之间存在着很强的关联，如figure 3b所示。以这些数据为基础，作者采用了0.15作为阈值，低于0.15的内参基因不需要添加进来。对于neuroblastoma和正常组织来说，分别需要加入1个和2个内参基因（参见figure 3b）。最高的V8/9和V9/10值对于normal pool，neuroblastoma和leukocyte来说就确认了figure 2中逐步排除的最差内参基因。这种分析表明了平均M值的在开始时的强烈下降，这就指出了，leukocyte的两个内参基因的表达异常，neuroblastoma和normal tissues一个内参基因的不稳定。此外，对于后两种组织来说，需要包含另外的内参基因，从而与内参基因的高度变异保持一致。</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105801.jpg" alt=""></p>
+<h3 id="验证可能的RT-PCR均一化因子"><a href="#验证可能的RT-PCR均一化因子" class="headerlink" title="验证可能的RT-PCR均一化因子"></a>验证可能的RT-PCR均一化因子</h3><p>​        为了验证这种基因检测算法的可靠性，即最低M值是最稳定的表达的内参基因，作者检测了每个内参基因的特异性变化，作为均一化之后表达的变异系数（variation coefficient）。对于合适的内参基因来说，这个系数应该是最小的。作者以三个基因的几何平均数为基础，分别计算了三个不同的均一化因子，最低的M值（NF3（1-3）），最高的M值（NF3（8-10）和中等的M值（NF3（6-8））。接着，作者计算用最低变异系数，在每种组织类型内，计算了这三个基因的平均基因特异性变异（figure 4a）。从计算结果可以看出，当数据用NF3（1-3）进行均一化时，这些基因特异性变异最小。</p>
+<p>​        这就表明，基因稳定性检测能够确定地确定表达最稳定的内参基因。为了确认高M值是一类表达不稳定，或者是表达有差异的基因，作者分析了MYCN的表达水平，MYCN这个基因是一种在neuroblastoma中表达有差异的基因。在neuroblastoma中，MYN的M值是6.02，而B2M（表达最稳定的内参基因）的M值是2.17。进一步的观察发现，用单一的内参基因进行均一化会导致其它内参基因更高的的基因特异性变异，这就进一步说明了利用多个管家基因进行均一化的优势。</p>
+<p>​        为了说明最佳的个内参基因不受细胞增殖的影响，作者分析了PCNA的表达水平（PCNA是增殖的标志），研究了四个最佳管家基因和标志基因PCNA之间的Spearman秩相关系数。从分析结果来看，管家基因之间存在着关联（p值小于0.001，相关系数在0.6到0.76之间）。相比之下，PCNA和三个管家基因之间不存在联系，而与HPRT1则存在着弱相关（p值为0.024，相关系数为0.43）。这些数据清楚地说明了，最稳定的管家基因与细胞的增殖状态无关。</p>
+<p>​        为了进一步研究选定的内参基因几何均数的精确性，作者研究了公共数据库中的微阵列数据，利用这些数据中的内参基因的几何均数进行了均一化，具体的选择过程参见文献，作者选定了5个内参基因，其标准是M值小于0.7，其计算结果与微阵列的计算结果类似。</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105826.png" alt=""></p>
+<h3 id="组织特异性管家基因的表达"><a href="#组织特异性管家基因的表达" class="headerlink" title="组织特异性管家基因的表达"></a>组织特异性管家基因的表达</h3><p>​        为了比较13所测组织中的管家基因表达水平的异质性。作者剔除了差异最大的4个管家基因（这4个管家基因分别为B2M，RPL13A，ACTB与HMBS，参见Table 2）后，计算了6个内参基因的几何均数作为“伪内参”，然后将这10个内参基因再根据这个“伪内参”进行均一化。Figure 5显示了所有的10个基因的不同丰度类型，表达最高的ACTB基因是最低的HMBS的400倍。虽然内参基因的丰度在不同的组织中类似，但还是观察到了组织特异性表达的差异，例如，B2M的表达水平在leukocytes中比Fetal Brain中高出112倍，而Fibroiblast和Heart tisssue中，ACTB的差异有22倍。与这两个基因相比，有2个基因的表达比较稳定，例如UBC和HPRT1。</p>
+<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191012105923.jpg" alt=""></p>
 <p>讨论部分略。</p>
 <p>参考资料：</p>
-<ol style="list-style-type: decimal">
+<ol>
 <li><a href="https://www.biomart.cn/experiment/430/457/458/2284875.htm" target="_blank" rel="external">PCR和RT-PCR基础（强烈推荐）</a></li>
 <li><a href="http://www.bioon.com/experiment/mob/275439.shtml" target="_blank" rel="external">核糖核酸酶保护实验的基本原理</a></li>
-<li><a href="http://www.sohu.com/a/197299181_307557" target="_blank" rel="external">大家好，给大家介绍一下，这是RNA质检结果解读指南</a></li>
+<li><a href="http://www.sohu.com/a/197299181_307557" target="_blank" rel="external">大家好，给大家介绍一下，这是RNA质检结果解读指南</a> </li>
 </ol>
 
       
@@ -648,7 +600,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">231</span>
+                  <span class="site-state-item-count">232</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -705,7 +657,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#研究背景"><span class="nav-number">2.</span> <span class="nav-text">研究背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#核酸酶保护实验"><span class="nav-number">2.1.</span> <span class="nav-text">核酸酶保护实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞争性pcr"><span class="nav-number">2.2.</span> <span class="nav-text">竞争性PCR</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需要了解的几个公式"><span class="nav-number">3.</span> <span class="nav-text">需要了解的几个公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#公式1单一内参均一化错误值single-control-normalization-error"><span class="nav-number">3.1.</span> <span class="nav-text">公式1:单一内参均一化错误值（Single control normalization error）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#公式2内参基因稳定检测值m"><span class="nav-number">3.2.</span> <span class="nav-text">公式2:内参基因稳定检测值M</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#研究思路"><span class="nav-number">4.</span> <span class="nav-text">研究思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验过程"><span class="nav-number">5.</span> <span class="nav-text">实验过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一管家基因表达谱"><span class="nav-number">5.1.</span> <span class="nav-text">（一）管家基因表达谱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二单一内参均一化错误值single-control-normalization-error"><span class="nav-number">5.2.</span> <span class="nav-text">（二）单一内参均一化错误值（Single control normalization error）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三基因表达稳定性检测以及所选基因的秩"><span class="nav-number">5.3.</span> <span class="nav-text">（三）基因表达稳定性检测以及所选基因的秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四基于多内参基因的几何均数进行均一化因子计算"><span class="nav-number">5.4.</span> <span class="nav-text">（四）基于多内参基因的几何均数进行均一化因子计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证可能的rt-pcr均一化因子"><span class="nav-number">5.5.</span> <span class="nav-text">验证可能的RT-PCR均一化因子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组织特异性管家基因的表达"><span class="nav-number">5.6.</span> <span class="nav-text">组织特异性管家基因的表达</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#研究背景"><span class="nav-number">2.</span> <span class="nav-text">研究背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#核酸酶保护实验"><span class="nav-number">2.1.</span> <span class="nav-text">核酸酶保护实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞争性PCR"><span class="nav-number">2.2.</span> <span class="nav-text">竞争性PCR</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需要了解的几个公式"><span class="nav-number">3.</span> <span class="nav-text">需要了解的几个公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#公式1-单一内参均一化错误值（Single-control-normalization-error）"><span class="nav-number">3.1.</span> <span class="nav-text">公式1:单一内参均一化错误值（Single control normalization error）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#公式2-内参基因稳定检测值M"><span class="nav-number">3.2.</span> <span class="nav-text">公式2:内参基因稳定检测值M</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#研究思路"><span class="nav-number">4.</span> <span class="nav-text">研究思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验过程"><span class="nav-number">5.</span> <span class="nav-text">实验过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#（一）管家基因表达谱"><span class="nav-number">5.1.</span> <span class="nav-text">（一）管家基因表达谱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（二）单一内参均一化错误值（Single-control-normalization-error）"><span class="nav-number">5.2.</span> <span class="nav-text">（二）单一内参均一化错误值（Single control normalization error）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（三）基因表达稳定性检测以及所选基因的秩"><span class="nav-number">5.3.</span> <span class="nav-text">（三）基因表达稳定性检测以及所选基因的秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（四）基于多内参基因的几何均数进行均一化因子计算"><span class="nav-number">5.4.</span> <span class="nav-text">（四）基于多内参基因的几何均数进行均一化因子计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证可能的RT-PCR均一化因子"><span class="nav-number">5.5.</span> <span class="nav-text">验证可能的RT-PCR均一化因子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组织特异性管家基因的表达"><span class="nav-number">5.6.</span> <span class="nav-text">组织特异性管家基因的表达</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -763,7 +715,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共930.0k字</span>
+  <span class="post-count">博客全站共928.1k字</span>
 </div>
 
         
