@@ -259,6 +259,789 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/18/BioStatistics/生物统计-15判别分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/18/BioStatistics/生物统计-15判别分析/" itemprop="url">判别分析笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-18T12:02:00+08:00">
+                2018-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,315
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一般的回归是指因变量为定量变量的情况，而logistic回归主要处理因变量为只取两个值的定性变量情况。如果作为因变量的定性变量取多于两个值的时候，就需要使用线性判别分析(linear discriminant analysis)来处理。判别分析根据自变量来预测因变量的类型。</p>
+<h2 id="判别分析原理"><a href="#判别分析原理" class="headerlink" title="判别分析原理"></a>判别分析原理</h2><p>差别分析是利用部分已知类别的观测数据来建立模型，这样的数据称为训练集(training set)。我们这里介绍的线性判别分析所得到的模型是一组线性差别公式；每个公式是自变量的一个线性组合；公式的个数和类别数目一样。有了公式之后，就可以把每个未知类别的自变量观测值代入那些差别公式，算出和类别一样多的值；相应于哪一类的值最大，则把该观测值判为属于该类。</p>
+<p>判别分析的原理并不复杂，可以简单地描述如下。</p>
+<p>如果作为属性变量的因变量有k个预付（即观测值应该分成k个类），而自变量包含p个变量，那么每一个观测值就是p维空间的一个点。整个训练集的各个点（假定有n个点）就按照已知的类别在p维空间中形成共有n个点的k个点群。那么，对于一个未知类别的点，如果离哪一群近，就可以分到哪一集。关键的细节问题是如何定义“远近”或距离。关键是确定一些准则，使得每一个点群内部的点接近，而使各群之间尽量分开。不同的准则造就了不同的差别或分类方法。这里不讨论这些方法的数学细节，这里仅仅就是线性差别分析一种方法，介绍如何通过R得到结果及结果的解释。这里先把p维空间的点按照最能够分开各类的原则投影到二维空间，再根据二维空间这些点的分布得到判别函数。</p>
+<p>如何来确定判别分析模型的效果呢？最基本的就是用一个没有参加建模的已知观测值类别的数据来验证。这样的数据集称为测试集或检验集(test set)。把通过模型预测的这些观测值的类别和它们已知的类别比较，就知道有多少划分错了，由此可以计算出误差来。</p>
+<h2 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h2><p>R自带了一个数据集，即<code>iris</code>。这是一个鸢尾花(iris)的数据，该数据给出了150个鸢尾花的萼片长(sepal length)、萼片宽(sepal width)、花瓣长(petal length)、花瓣宽(petal width)以及这些花的种类(Species)这五个变量。萼片和花瓣的长宽是四个定量变量，而各类为分类变量（有3个值，为setosa、versicolour、virginica）。现在，我们建立一个模型，根据萼片和花瓣这四个度量来把鸢尾花进行分类，这里的鸢尾花一共有3种，每种都有50个观测值。</p>
+<p>现在我们在每种鸢尾花中也能耐选择一半，也就是25个作为测试集，另外25个用来建模。三种鸢尾花一起，训练集和测试集各有75个观测。由于选择测试集和训练集的过程是随机的，每次计算的结果也不相同，在R软件中，对于不同的成随机数种子，我们得到的结果也不尽相同。下面是对两个随机数种子得到的两个测试集判别结果，每个格子中的数目是相应的真实类的观测被划分到预测类的频数，如下所示：</p>
+<p>随机种子数：set.seed(5)</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">set.seed(<span class="number">5</span>)</div><div class="line">samp &lt;- c(sample(<span class="number">1</span>:<span class="number">50</span>,<span class="number">25</span>),sample(<span class="number">51</span>:<span class="number">100</span>,<span class="number">25</span>),sample(<span class="number">101</span>:<span class="number">150</span>,<span class="number">25</span>))</div><div class="line">a &lt;- lda(Species~.,data=iris,shuset=samp)</div><div class="line">summary(predict(a,iris[-samp,])$class)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; summary(predict(a,iris[-samp,])$class)</div><div class="line">    setosa versicolor  virginica </div><div class="line">        25         25         25</div></pre></td></tr></table></figure>
+<p>随机种子数：set.seed(4)</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">set.seed(<span class="number">4</span>)</div><div class="line">samp &lt;- c(sample(<span class="number">1</span>:<span class="number">50</span>,<span class="number">25</span>),sample(<span class="number">51</span>:<span class="number">100</span>,<span class="number">25</span>),sample(<span class="number">101</span>:<span class="number">150</span>,<span class="number">25</span>))</div><div class="line">a &lt;- lda(Species~.,data=iris,shuset=samp)</div><div class="line">summary(predict(a,iris[-samp,])$class)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; summary(predict(a,iris[-samp,])$class)</div><div class="line">    setosa versicolor  virginica </div><div class="line">        25         23         27</div></pre></td></tr></table></figure>
+<p>由这两个结果可知，在第一个随机种子下（set.seed(5)）下，测试集中的每个类别完全划分正确，在第二个随机种子下（set.seed(4)），错误地划分了4个类别，出错率为4/75。</p>
+<p>下图是在建立线性差别函数过程中，把75个训练集的四维空间点投影到二维空间的结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(mda)</div><div class="line">z&lt;-fda(Species~.,data=iris[samp,])$fit$fitted</div><div class="line">plot(z,pch=c(rep(<span class="number">19</span>,<span class="number">25</span>),rep(<span class="number">2</span>,<span class="number">25</span>),rep(<span class="number">8</span>,<span class="number">25</span>)),xlab=<span class="string">""</span>,ylab=<span class="string">""</span>)</div></pre></td></tr></table></figure>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/professional/180819/HJDbc61Eim.png?imageslim" alt="mark"></p>
+<p>可以看也，setosa（用实心圆点标记）离另外两种很远，而versicolor（用空心三角形标记）和virginica（用星号标记）这两类则离得比较近，容易划分错，我们从第二个随机种子（set.seed(4)）中也能看出来，出错的应时这两类。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/18/Linux/Linux命令收集/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/18/Linux/Linux命令收集/" itemprop="url">Linux命令收集</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-18T12:00:00+08:00">
+                2018-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  136
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><p><code>curl</code>，用法如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff -o sc.gff</div></pre></td></tr></table></figure>
+<p>这个命令是将某个URL的信息下载下来，并通过<code>-o</code>参数，将其输出到<code>sc.gff</code>文件中，其中,<code>-progress</code>是显示进度条，这个是选用的。</p>
+<p><code>prefetch</code></p>
+<h3 id="查看文件"><a href="#查看文件" class="headerlink" title="查看文件"></a>查看文件</h3><p><code>ls</code></p>
+<h2 id="文本相关"><a href="#文本相关" class="headerlink" title="文本相关"></a>文本相关</h2><h3 id="文本统计"><a href="#文本统计" class="headerlink" title="文本统计"></a>文本统计</h3><p><code>wc</code></p>
+<h3 id="文本排序"><a href="#文本排序" class="headerlink" title="文本排序"></a>文本排序</h3><p><code>sort</code></p>
+<h3 id="去重"><a href="#去重" class="headerlink" title="去重"></a>去重</h3><p><code>unique</code></p>
+<h3 id="查看文本"><a href="#查看文本" class="headerlink" title="查看文本"></a>查看文本</h3><p><code>head</code></p>
+<p><code>tail</code></p>
+<p><code>less</code></p>
+<p><code>more</code></p>
+<p><code>cat</code></p>
+<h3 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h3><p><code>grep</code></p>
+<p><code>awk</code></p>
+<p><code>sed</code></p>
+<hr>
+<h2 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h2><h3 id="查找文件"><a href="#查找文件" class="headerlink" title="查找文件"></a>查找文件</h3><p><code>find</code></p>
+<p><code>locate</code></p>
+<h3 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h3><p><code>unzip</code></p>
+<hr>
+<h3 id="目录操作"><a href="#目录操作" class="headerlink" title="目录操作"></a>目录操作</h3><p>切换目录：<code>cd</code></p>
+<p>新建目录：<code>mkdir</code></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/08/17/Linux/Linux文档的查阅/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/17/Linux/Linux文档的查阅/" itemprop="url">Linux文档的查阅</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-17T12:00:00+08:00">
+                2018-08-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  0
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/14/BioStatistics/0统计学与数学书籍汇总/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/14/BioStatistics/0统计学与数学书籍汇总/" itemprop="url">统计学与数学书籍汇总</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-14T12:10:54+08:00">
+                2018-07-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,672
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我觉得统计学的知识点很碎，仅看一本书是不太容易学好统计学的，这篇笔记就介绍几本有关统计学的书，这些书是我看过的，也有正在看的，也有看了一部分太难理解放弃的，我大致按照由易到难的顺序列出了几本（当然还有很多优秀的书没看过，就没列出来），这些书可以在京东或淘宝上买到，大部分书也可以通过搜索引擎找到相应下载的地方，考虑到知识产权的问题，这里不提供PDF版的书籍下载地址。</p>
+<h2 id="零基础"><a href="#零基础" class="headerlink" title="零基础"></a>零基础</h2><h4 id="《漫画统计学入门》"><a href="#《漫画统计学入门》" class="headerlink" title="《漫画统计学入门》"></a>《漫画统计学入门》</h4><p>作者: 拉里-戈尼克 / 沃尔科特-史密斯 出版社: 辽宁教育出版社 ，译者: 梁杰，出版年: 2002-1</p>
+<p>这本书就是以漫画的形式把统计学原理给讲了一下，非常适合零基础的人入门，没有复杂的公式，可以从直观上克服对统计学的那种畏惧心理，但是如果要深入理解统计学，这本书远远不够。</p>
+<h4 id="《漫画统计学》"><a href="#《漫画统计学》" class="headerlink" title="《漫画统计学》"></a>《漫画统计学》</h4><p>作者: [日] 高桥信 ，出版社: 科学出版社，原作名: マンガでわかる統計学，译者:  陈刚 ，出版年: 2009-8</p>
+<p>这本书跟《漫画统计学入门》类似，这本书只讲了统计学的一些基本原理，这本书是一个叫欧姆社系列漫画书中的一本，其余有关统计的书还有《漫画统计学之因子分析》，《漫画统计学之回归分析》，与数学有关的书有《漫画微分方程》《漫画线性代数》。</p>
+<h4 id="《女士品茶》"><a href="#《女士品茶》" class="headerlink" title="《女士品茶》"></a>《女士品茶》</h4><p>作者:  萨尔斯伯格 出版社: 中国统计出版社 副标题: 20世纪统计怎样变革了科学 原作名: The Lady Tasting Tea: How Statistics Revolutionized Science in the Twentieth Century 译者: 邱东等 出版年: 2004-11-01</p>
+<p>这本书以某位喝茶的英国女士的假设学说为起点，写了数理统计学历史中的一些大牛，例如戈塞物，费歇尔，皮尔逊等一大批牛人的统计学故事，这本书其实不算作是统计学书，更像是统计学的科普书。对于提高统计学方面的兴趣的思维还是比较有好处的。</p>
+<h4 id="《统计学的世界》"><a href="#《统计学的世界》" class="headerlink" title="《统计学的世界》"></a>《统计学的世界》</h4><p>统计学的世界（第8版） [Statistics: Concepts and Controversies 8th Edition][美] 戴维·穆尔，[美] 威廉·诺茨 著，郑磊 译。主要是讲了一些统计学的思维方法。</p>
+<h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><h4 id="《白话统计》"><a href="#《白话统计》" class="headerlink" title="《白话统计》"></a>《白话统计》</h4><p>《白话统计》，冯国双，2018，电子工业出版社。</p>
+<p>2018年的新书，没有复杂的公式，非常简单，能把统计学原理以最浅显的语言给讲出来，比较适合那些没有太多数学基础的同学，不过要深入理解统计学，这本书还是不够。我觉得这本书更适合作为统计学教材（例如孙振球的《医学统计学》）的辅助用书。</p>
+<h4 id="《深入浅出统计学》"><a href="#《深入浅出统计学》" class="headerlink" title="《深入浅出统计学》"></a>《深入浅出统计学》</h4><p>《深入浅出统计学》，DawnGriffiths. 深入浅出统计学[M]. 电子工业出版社, 2012. </p>
+<p>本书涵盖的知识点包括：信息可视化、概率计算、几何分布、二项分布及泊松分布、正态分布、统计抽样、置信区间的构建、假设检验、卡方分布、相关于回归等等， 没有太多数学公式，很好理解。</p>
+<h4 id="《深入浅出数据分析》"><a href="#《深入浅出数据分析》" class="headerlink" title="《深入浅出数据分析》"></a>《深入浅出数据分析》</h4><p>作者MichaelMilton. 深入浅出数据分析[M]. 电子工业出版社, 2010. </p>
+<p>这本书可以与《深入浅出统计学》配合使用，可以看作是前一本的升级版。</p>
+<h4 id="《行为科学统计》"><a href="#《行为科学统计》" class="headerlink" title="《行为科学统计》"></a>《行为科学统计》</h4><p>《行为科学统计》，作者是 [美] F·J·Gravetter / [美] L·B·Wallnau，中文貌似最新的只有第7版，第7版是2008年出版的，有点早了。可以看英文的，英文已经出到第10版了，名字是《Statistics for the Behavioral Sciences》(10th)，第10版是2016年出的。</p>
+<p>这本书本来就是为社会学，心理学这些数学基础比较薄弱的学科的学生写的，这本书也同样适用于生物学背景的同学。书中对一些原理性的东西描述得很清楚，例如大数定理，中心极限定理等等。</p>
+<h2 id="统计学基础"><a href="#统计学基础" class="headerlink" title="统计学基础"></a>统计学基础</h2><p>这一部分的书可以与后面提到的有关R语言的书配合看。</p>
+<h4 id="《医学统计学》"><a href="#《医学统计学》" class="headerlink" title="《医学统计学》"></a>《医学统计学》</h4><p>国内的医学统计学书都差不多，去京东上挑一本销量比较大的就行，从头到尾看一下，把统计学的知识理一下，不懂的地方可以找其他的统计学书补充一下，再用R把书中的案例给计算一下就行，我平时看的是孙振球的《医学统计学》。</p>
+<h4 id="《统计思维——程序员数学之概率统计》"><a href="#《统计思维——程序员数学之概率统计》" class="headerlink" title="《统计思维——程序员数学之概率统计》"></a>《统计思维——程序员数学之概率统计》</h4><p>Allen B.Downey著，张建锋，陈钢 译，人民邮电出版社，书不长，很快就可以读完，对几个统计学基础的概念介绍了一下。</p>
+<h4 id="《从数据到结论》"><a href="#《从数据到结论》" class="headerlink" title="《从数据到结论》"></a>《从数据到结论》</h4><p>作者吴喜之，把一些统计学的概念与原理讲得很清楚，公式不多，比较简单。</p>
+<h4 id="《从概念到数据分析》"><a href="#《从概念到数据分析》" class="headerlink" title="《从概念到数据分析》"></a>《从概念到数据分析》</h4><p>2008年高等教育出版社出版的图书，作者是吴喜之 ，里面使用R语言把一些基本的统计学概念给计算了一下，对于理解统计学很有帮助，公式不多，书很薄，很快就能看完，可以与他的《从数据到结论》结合起来看。</p>
+<h4 id="《医学统计学基础与典型错误辨析》"><a href="#《医学统计学基础与典型错误辨析》" class="headerlink" title="《医学统计学基础与典型错误辨析》"></a>《医学统计学基础与典型错误辨析》</h4><p>作者胡良平，书比较老，但我觉得比较有价值，作者收集了医学上常见的一些统计学错误，由于医学生（或者说是生物背景的学生）的统计学基础很多并不是很好，因此经常出现一些统计学的错误，这本书就挑了不少这方面的论文，主要是中文论文里的错误，有精力了可以看看。</p>
+<h4 id="《数理统计学教程》"><a href="#《数理统计学教程》" class="headerlink" title="《数理统计学教程》"></a>《数理统计学教程》</h4><p>陈希孺的书，公式比较多，适合对统计学想深入了解的同学，需要一定的数学基础。</p>
+<h4 id="《统计学习基础——数据挖掘、推理与预测》"><a href="#《统计学习基础——数据挖掘、推理与预测》" class="headerlink" title="《统计学习基础——数据挖掘、推理与预测》"></a>《统计学习基础——数据挖掘、推理与预测》</h4><p>原书名是《The Elements of Statistical Learning》，副标题是《Data Mining, Inference, and Prediction, Second Edition》，据说是统计学领域的经典之作，不过貌似需要一定的数学基础，这本书并不太好理解。</p>
+<h4 id="《格致方法·定量研究系列》"><a href="#《格致方法·定量研究系列》" class="headerlink" title="《格致方法·定量研究系列》"></a>《格致方法·定量研究系列》</h4><p>这是一系列书，每本都很薄（大概一百多页），一本书只讲一种统计学方法。</p>
+<h2 id="统计学与R"><a href="#统计学与R" class="headerlink" title="统计学与R"></a>统计学与R</h2><p>这一部分的书可以与一些统计学的书配合看。</p>
+<h4 id="《R语言统计入门》"><a href="#《R语言统计入门》" class="headerlink" title="《R语言统计入门》"></a>《R语言统计入门》</h4><p>原名为Introductory Statistics with R second Edition，常用的统计方法与R实现，没多少公式，很好理解。书的前面部分是对R操作的一些简介，后面就是利用R在常规的统计学中的应用。</p>
+<h4 id="《R语言与统计分析》"><a href="#《R语言与统计分析》" class="headerlink" title="《R语言与统计分析》"></a>《R语言与统计分析》</h4><p>作者汤银才，书中有很多案例，使用R语言把统计学中常见的方法给演示了出来，适合有一些统计学基础的同学，书中的R代码都很短，很好理解，适合那些又想学R语言，又想学统计学的同学，不过书比较老，2008年出的，但统计学的方法基本上变化不大，比前面的那本略难。</p>
+<h4 id="《多元统计分析与R语言建模》"><a href="#《多元统计分析与R语言建模》" class="headerlink" title="《多元统计分析与R语言建模》"></a>《多元统计分析与R语言建模》</h4><p>作者王赋会，介绍了常见的一些统计学方法原理与R语言实现。这些统计学方法包括广义线性模型、判别分析、聚类分析、主成分分析、因子分析、对应分析、典型相关分析等，虽然有公式，但我觉得通过查资料，还是能理解的。</p>
+<h4 id="《复杂数据统计方法——基于R的应用》"><a href="#《复杂数据统计方法——基于R的应用》" class="headerlink" title="《复杂数据统计方法——基于R的应用》"></a>《复杂数据统计方法——基于R的应用》</h4><p>作者吴喜之，书中的数据都是从国外网站上下载的，这本书是2012年出版的，介绍了一些常见的经典统计学方法以及机器学习方法，公式不多。</p>
+<h3 id="生物统计学"><a href="#生物统计学" class="headerlink" title="生物统计学"></a>生物统计学</h3><h4 id="《Data-analysis-for-the-life-Sciences》"><a href="#《Data-analysis-for-the-life-Sciences》" class="headerlink" title="《Data analysis for the life Sciences》"></a>《Data analysis for the life Sciences》</h4><p>哈佛大学的老师写的生物统计学教程，里面涉及一些线性代数，并且后半部分主要涉及高通量数据处理。</p>
+<h2 id="其它的一些资料"><a href="#其它的一些资料" class="headerlink" title="其它的一些资料"></a>其它的一些资料</h2><p>这一部分的资料主要是网上的一些不错的资料，有两个。</p>
+<h4 id="《医学统计学及SAS应用之R语言实现》"><a href="#《医学统计学及SAS应用之R语言实现》" class="headerlink" title="《医学统计学及SAS应用之R语言实现》"></a>《医学统计学及SAS应用之R语言实现》</h4><p>这个资料最初是我从丁香园上看到的，作者不详，只知道是一名留日的医学博士，并非统计学出身，他学了R语言之后，就把《医学统计学及SAS应用》这本书中的案例重新计算了一下，这个资料网上有，能搜到，只有代码与计算结果，如下所示：<br>如果看这个资料，需要配合看《医学统计学及SAS应用》。<br><strong>《医学统计学及SAS应用》</strong>的作者是王炳顺，这本书主要讲的是医学统计学中的一些案例与SAS的计算过程，如果要看这本书，只需要看书中的统计学原理、案例与SAS的计算结果就行，SAS的使用可以不看，可以自己使用R语言把书中的案例计算一下，然后对比一下自己的计算结果与SAS的计算结果，以及计算结果如何解读。</p>
+<h4 id="《医学统计分析与R语言》"><a href="#《医学统计分析与R语言》" class="headerlink" title="《医学统计分析与R语言》"></a>《医学统计分析与R语言》</h4><p>作者梁雪枫，光明日报出版社。这本书里面对医学统计学介绍的极为详细，对数学与统计学基础也要求比较高，如果没有相应的基础读起来比较吃力。这本书很奇怪的是，在京东与淘宝上都搜不到，我还是在豆瓣的评论中找到了下载地址，如果想对统计学有进一步了解的同学，可以看看这本书。</p>
+<h2 id="数学相关资源与书籍整理"><a href="#数学相关资源与书籍整理" class="headerlink" title="数学相关资源与书籍整理"></a>数学相关资源与书籍整理</h2><p>结城浩的系列书籍，包括《数学女孩系列》，《程序员的数学》系列。</p>
+<h3 id="线性代数"><a href="#线性代数" class="headerlink" title="线性代数"></a>线性代数</h3><p>视频：3Blue1Brown《线性代数》</p>
+<p>视频：李永乐</p>
+<p>微信公众号：马同学高等数学</p>
+<h3 id="微积分"><a href="#微积分" class="headerlink" title="微积分"></a>微积分</h3><p>视频：B站3Blue1Brown《微积分》</p>
+<p>视频：B站樊厚顺</p>
+<p>微信公众号：马同学高等数学</p>
+<p>交互式学习网站：Mathigon：<a href="https://mathigon.org" target="_blank" rel="external">https://mathigon.org</a></p>
+<p>沉浸式学习线性代数《Immersive Linear Algebra》：<a href="http://immersivemath.com/ila/index.html" target="_blank" rel="external">http://immersivemath.com/ila/index.html</a></p>
+<p>可视化统计概率入门书《看见统计》：<a href="https://seeing-theory.brown.edu/cn.html#firstPage" target="_blank" rel="external">https://seeing-theory.brown.edu/cn.html#firstPage</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/09/StatQuest/生物统计-StatQuest学习笔记26-RNA-seq中的技术重复问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2150,1618 +2933,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/02/StatQuest/生物统计-StatQuest学习笔记20-随机森林/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/02/StatQuest/生物统计-StatQuest学习笔记20-随机森林/" itemprop="url">StatQuest学习笔记20——随机森林</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-02T12:10:54+08:00">
-                2018-07-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  9,869
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  38
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言——主要内容"><a href="#前言——主要内容" class="headerlink" title="前言——主要内容"></a>前言——主要内容</h2><p>这篇笔记是StatQuest系列视频的第53-55节，其中第53节讲的是随机森林，第54节讲的是缺失值的处理，第55节讲的是R与随机森林。</p>
-<h2 id="决策树的局限"><a href="#决策树的局限" class="headerlink" title="决策树的局限"></a>决策树的局限</h2><p>随机森林（Random Forests）来源于决策树，因此如果不了解决策树的话，可以看上一篇笔记，决策树如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174102.jpg" alt=""></p>
-<p>决策树很容易构建，也很好用，也很好题解。但事实上，决策树并非完美无缺，引用《The Elements of Statistical Learning》（又名《The Bible of Machine Learning》），中文译名为《统计学习基础：数据挖掘、推理与预测》的话讲，决策树的不精确准确（inaccuracy）决定了它无法作为一个理想的预测学习工具，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174109.jpg" alt=""></p>
-<p>换句话说，就是决策树的构建要利用大量的数据，但是当用这个构建好的决策树来对一批新的数据进行分类时，决策树并不能灵活地处理这些新数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174113.jpg" alt=""></p>
-<h2 id="随机森林的优势"><a href="#随机森林的优势" class="headerlink" title="随机森林的优势"></a>随机森林的优势</h2><p>随机森林综合了决策树简洁的特征，同时又具备灵活性，因此随机森林在精确性方面也得到了极大的提高，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174128.jpg" alt=""></p>
-<h2 id="构建随机森林"><a href="#构建随机森林" class="headerlink" title="构建随机森林"></a>构建随机森林</h2><p>接着，我们来看一下随机森林的构建过程。</p>
-<h3 id="第一步：构建自举数据集"><a href="#第一步：构建自举数据集" class="headerlink" title="第一步：构建自举数据集"></a>第一步：构建自举数据集</h3><p>构建随机森林的第一步就是从原始数据中随机挑选数据，构建“自举”数据集（自举：bootstrap），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174134.jpg" alt=""></p>
-<p>下面是原始的数据集，这个数据集还是我们上篇笔记中的那个数据集，里面有4个变量，分别为<code>胸痛（Chest Pain）</code>，<code>良好血液循环（Good Blood Circ.）</code>，<code>动脉阻塞（Blocked Arteries）</code>，<code>体重（Weight），</code>虽然这个数据集非常小，但是不影响使用，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174139.jpg" alt=""></p>
-<p>为了构建一个与原始数据集同样大小的自举数据集（bootstrapped dataset），我们仅需要随机地从原始数据中挑选样本即可，这个随机挑选的过程是有放回地挑选（这就是bootstrap），也就是我从原始数据集中随机挑一个样本，然后放回去，再随机挑一个样本，这样的话，相同有样本有可能被挑中好几次，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174147.jpg" alt=""></p>
-<p>我们先随机挑一个样本，这次挑中了第2个样本，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174151.jpg" alt=""></p>
-<p>把这个样本放到我们的自举数据集中，就成了自举数据集中的第1个样本，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174156.jpg" alt=""></p>
-<p>再随机挑一个样本，这次挑中了原始数据集中的第1个样本，把它放到我们的自举数据集中，就是自举数据集中的第2个样本，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174159.jpg" alt=""></p>
-<p>再从原始数据中随机挑一个，放到自举数据集中，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174205.jpg" alt=""></p>
-<p>再随机挑一个，放到自举数据集中，这里需要注意的是，我们挑了两次原始数据集中第4个样本，这样在自举数据集中就有了2个重复的样本，这个没关系，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174208.jpg" alt=""></p>
-<p>此时，我们就构建好了一个自举数据集，这个自举数据集的大小与原始数据集的大小相同，也就是说有同样数目的样本，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174213.jpg" alt=""></p>
-<h3 id="第二步：构建树"><a href="#第二步：构建树" class="headerlink" title="第二步：构建树"></a>第二步：构建树</h3><p>构建随机森林的第二步就是利用我们构建的自举数据集来构建一个决策树，并且一次只能使用一个变量（或列）的随机亚集（subset）进行构建，在这个案例中，我们每一步只会使用2个变量（列），至于为什么使用2个变量，后文会讲解，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174232.jpg" alt=""></p>
-<p>因此，我们不会使用所有的4个变量来区分根节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174236.jpg" alt=""></p>
-<p>而是随机选择2个变量来区分根节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174241.jpg" alt=""></p>
-<p>在这个案例中，我们随机使用<code>良好血液循环（Good Blood Circulation）</code>和<code>动脉阻塞（Blocked Arteries）</code>这两个变量来区分根节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174244.jpg" alt=""></p>
-<p>就像我们这个案例的目的一样，我们假设良好血液循环（Good Blood Circulation）能够很好地区分样本，我们就用它作为根节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174248.jpg" alt=""></p>
-<p>由于我们使用过了良好血液循环（Good Blood Circulation）这个变量，因此这里把它变灰，以便于我们研究剩余的变量，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174252.jpg" alt=""></p>
-<p>现在我们看一下中间节点如何区分，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174255.jpg" alt=""></p>
-<p>与根节点一样，我们并不使用剩余的所有3个变量，而是随机选择2个变量用于区分，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174259.jpg" alt=""></p>
-<p>接着，我们就像以前构建决策树那样，构建树，不过我们一次只使用一个变量的随机亚集，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174303.jpg" alt=""></p>
-<p>最终的结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174307.jpg" alt=""></p>
-<p>现在回顾一下我们构建这个树的过程：第一步，构建自举数据集；第二步，每一步随机选择一个变量亚集来构建节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174310.jpg" alt=""></p>
-<h3 id="第三步：循环第1到到第2步"><a href="#第三步：循环第1到到第2步" class="headerlink" title="第三步：循环第1到到第2步"></a>第三步：循环第1到到第2步</h3><p>此时，我们就构建好了一个树，现在我们再回到第一步，重复操作，再生成一个自举数据集，还是一次使用变量的一个随机亚集来构建一个树（就是下图中第2个树），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174347.jpg" alt=""></p>
-<p>不断地重复这个过程，重复100次，这样我们会构建一系列的树，下图只是显示了其中的6种树，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174353.jpg" alt=""></p>
-<p>通过利用一个自举样本，一次只利用变量的一个随机亚集，就会产生大量不同的树，这些树就构成了随机森林（一次生成一棵树，多次运算，就是多棵树，也就是森林了），它远比单一的决策树有效，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174357.jpg" alt=""></p>
-<h2 id="随机森林的使用"><a href="#随机森林的使用" class="headerlink" title="随机森林的使用"></a>随机森林的使用</h2><p>此时，我们已经学会了构建随机森林的基本思想，那么随机森林有什么用处呢，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174407.jpg" alt=""></p>
-<p>我们看一个案例，例如，我们遇到了一个新病人，他的各种参数如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174412.jpg" alt=""></p>
-<p>现在我们想知道，他是否得有心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174416.jpg" alt=""></p>
-<p>那么，我们把他的数据放到我们生成随机森林中，先放到第1棵树上，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174421.jpg" alt=""></p>
-<p>运算结果显示Yes，此时记录一下这个数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174425.jpg" alt=""></p>
-<p>现在把这个人的参数放到随机森林中的第2棵树上运行，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174429.jpg" alt=""></p>
-<p>计算结果是Yes，此时记录下这个数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174433.jpg" alt=""></p>
-<p>我们把这个人的数据再放到随机森林中的其他的树中运算，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174436.jpg" alt=""></p>
-<p>总之，就是不断地放到不同的树上运算，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174442.jpg" alt=""></p>
-<p>当运算结果后，我们记录下所有树的运算结果，我们会看到Yes或No哪个得票最多，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174445.jpg" alt=""></p>
-<p>在这个案例中，明显Yes得票最多，因此我们就能下结论，这个人得了心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174449.jpg" alt=""></p>
-<h2 id="随机森林相关术语"><a href="#随机森林相关术语" class="headerlink" title="随机森林相关术语"></a>随机森林相关术语</h2><p>自举数据并对它们进行汇总做出的决策称为袋装法（Bagging），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174503.jpg" alt=""></p>
-<h2 id="随机森林的评估"><a href="#随机森林的评估" class="headerlink" title="随机森林的评估"></a>随机森林的评估</h2><p>我们已经了解了随机森林构建的基本思想，也知道了如何使用它，此时可能还有一个问题，这个模型的好坏程度到底如何，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174508.jpg" alt=""></p>
-<p>我们回到前面构建自举数据集的内容，我们在前文中说过，在一个自举数据集中，我们允许两条相同的记录（entry，记录可以理解为一个样本，也就是一行数据）存在，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174511.jpg" alt=""></p>
-<p>最终在自举数据集中，没有包含原始数据集中的第3条目录，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174515.jpg" alt=""></p>
-<p>通常来说，大概会有三分之一的原始数据集中的记录不会包含在自举数据集中，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174518.jpg" alt=""></p>
-<p>下图的右侧就是那条未包含在自举数据集中的记录，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174522.jpg" alt=""></p>
-<p>如果原始数据集非常大的话，那么就有不止一条记录不包含在自举数据集中，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174526.jpg" alt=""></p>
-<p>这些不包含在自举数据集上的记录被称为“出袋数据集”（out-of-bag dataset，未找到相应的中文译名，此处暂译为“出袋数据集”），这样命名主要是因为，如果把自举数据集看成一个袋子，这些数据并不在这个袋子中，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174529.jpg" alt=""></p>
-<p>由于这些出袋数据集并没有用于构建这些树，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174533.jpg" alt=""></p>
-<p>因此，我们可以把这个数据集当作是一个新的样本，把它放到随机森林中计算，看能不能得到想要的结果（没得心脏病），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174537.jpg" alt=""></p>
-<p>在这个案例中，这个样本最终的计算结果是No，也就是没得心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174541.jpg" alt=""></p>
-<p>然后我们把这些出袋数据集放到其他树中计算，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174546.jpg" alt=""></p>
-<p>有一个树计算的结果是Yes，这个明显是错误的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174551.jpg" alt=""></p>
-<p>其他的树计算结果是No，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174555.jpg" alt=""></p>
-<p>对所有树的计算结果进行统计，我们发现，No的得票最多，那么我们就能下结论，这个样本的结果是没得心脏病，与样本本身的结果一致，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174558.jpg" alt=""></p>
-<p>我们对其他的出袋数据集继续进行计算（出袋数据据不止一个样本，有很多），这个样本的结果是Yes，与样本本身的结果一致，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174602.jpg" alt=""></p>
-<p>再计算另外的样本，样本本身的结果是No，但计算出来的结果却是Yes，并不一致，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174606.jpg" alt=""></p>
-<p>经过不断地计算，我们会得到很多计算结果，最终我们再计算一下，随机森林计算的样本结果与样本本身的结果一致的比例，我们就能得到随机森林的精确程度，其中随机森林计算的结果与样本本身的结果不一致的比例，我们称为出袋错误（Out-Of-Bag Error）（未找到相应的中文译名，此处暂译为“出袋错误”），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174611.jpg" alt=""></p>
-<p>至此，我们了解了这些内容：第一，构建随机森林；第二，使用随机森林；第三，评估随机森林的精确性。</p>
-<p>既然我们知道了如何评估随机森林的精确性，那么此时我们再回到第一部分，了解一下随机森林是的构建原理，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174617.jpg" alt=""></p>
-<p>在构建随机森林时，我们最初在每一步中，使用的是随机选择的2个变量，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174621.jpg" alt=""></p>
-<p>现在我们就要比较一下，使用随机选择的2个变量与3个变量导致的出袋错误的差异，我们测试一些不同的参数，来研究一下如何选择一个最为精确的随机森林，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174624.jpg" alt=""></p>
-<p>换句话讲，我们做上述事件的顺序是：</p>
-<p>第一，构建随机森林；</p>
-<p>第二，评估随机森林的精确性。</p>
-<p>接着，改变每一个步骤中的变量数目，不断地重复这个过程，得到一个最精确的随机森林，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174630.jpg" alt=""></p>
-<p>通常来说，我们最初使用的变量数目为总变量数目的平方根，例如在前面的案例中，总变量数目是4，它的平方根是2，那么我们一开始就先使用2个变量作为每次运算时变量的数目，然后在这个数目上下进行调整，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174634.jpg" alt=""></p>
-<p>在构建随机森林的过程中我们可能会遇到缺失值，缺失值有两种，我们先看第一种缺失值的处理。</p>
-<h2 id="第一种缺失值的处理"><a href="#第一种缺失值的处理" class="headerlink" title="第一种缺失值的处理"></a>第一种缺失值的处理</h2><p>我们看一下我们的原始数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174651.jpg" alt=""></p>
-<p>原始数据一共是4个患者，其中第4名患者有2个数据缺失，用问号表示，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174655.jpg" alt=""></p>
-<p>随机森林中有2类缺失值，分别为：第一，用于构建随机森林的原始数据集中的数据缺失，就是上面的情况；第二，用于归类的，一个新的样本中的数据缺失情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174659.jpg" alt="">我们先讲第一种数据的缺失情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174703.jpg" alt=""></p>
-<p>我们要从上面的原始数据集中构建随机森林，但是不清楚第4个患者的动脉阻塞与体重数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174707.jpg" alt=""></p>
-<p>处理这种缺失数据的常规方式是观察其他数据，先做出一个可能不太好的初始猜测，然后逐步改进这个猜测，直到这个猜测变得比较好为止（希望如此），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174711.jpg" alt=""></p>
-<p>现在我们就做这样的猜测，我们先看血管阻塞这个变量，然后找到这个变量出现最多的数据就可做出猜测，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174715.jpg" alt=""></p>
-<p>我们发现，在这个变量中，<code>No</code>出现的频率最高（2个No，1个Yes），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174720.jpg" alt=""></p>
-<p>因此，我们就可以猜测，在这个变量中，第4个患者的值可能是<code>No</code>，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174724.jpg" alt=""></p>
-<p>猜测完血管阻塞这个变量中的缺失值后，我们再猜测一下体重这个变量在第4个患者中的缺失值，体重是一种连续型变量（数值），因此我们可以看一下这个变量中其他数值的中位数即可（在决策树中，这种缺失值的处理，要么使用中位数，要么使用中位数），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174729.jpg" alt=""></p>
-<p>在其他的患者中，体重这个变量的中位数是180，因此我们就可以把第4个患者的体重缺失值写为180，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174732.jpg" alt=""></p>
-<p>经过这样的处理，原始数据中缺失的数据就填充好了，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174736.jpg" alt=""></p>
-<p>填充好缺失值后，我们还要评估这些数据猜测得到底合理不合理，现在就需要看一下哪些样本与含有缺失值的样本比较类似，接着我们就会讲一下这种相似性如何计算，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174739.jpg" alt=""></p>
-<p>第一步：构建随机森林，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174743.jpg" alt=""></p>
-<p>第二步：将所有的原始数据放到随机森林中运行，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174747.jpg" alt=""></p>
-<p>我们先在随机森林中的第1棵树上运行，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174750.jpg" alt=""></p>
-<p>把所有患者的数据依次放进去，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174754.jpg" alt=""></p>
-<p>这4个患者的数据经过计算后，我们会发现，患者3和患者4最终位于同一片叶子节点上，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174758.jpg" alt=""></p>
-<p>这就说明，第3个患者与第4个患者相似，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174801.jpg" alt=""></p>
-<h3 id="相似性矩阵"><a href="#相似性矩阵" class="headerlink" title="相似性矩阵"></a>相似性矩阵</h3><p>现在我们用一个相似性矩阵（Proximity Matrix）来研究相似的患者数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174816.jpg" alt=""></p>
-<p>相似性矩阵的每行代表一个样本，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174822.jpg" alt=""></p>
-<p>相似性矩阵的每列也代表一个样本，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174825.jpg" alt=""></p>
-<p>因为第3个样本与第4个样本最终位于同一个叶子节点上，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174828.jpg" alt=""></p>
-<p>我们把患者3和患者4交叉的地方填上1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174833.jpg" alt=""></p>
-<p>此外，还有一个交叉点，也填上1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174837.jpg" alt=""></p>
-<p>由于在随机森林中第1棵树上运行后，除了第3个患者和第4个患者的最终结果相同外，并没有其他的患者结果相同，因此我们在第1棵树上运行后，得到的相似性矩阵就如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174840.jpg" alt=""></p>
-<p>现在我们把所有的数据放到随机森林的第2棵树上运行，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174845.jpg" alt=""></p>
-<p>运行过程如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174848.jpg" alt=""></p>
-<p>最终我们发现，患者2，患者3和患者4位于同一个叶子节点上，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174852.jpg" alt=""></p>
-<p>我们再看一下，经过第1棵树运行后的相似性矩阵如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174857.jpg" alt=""></p>
-<p>经过第2棵树的运算，我们把有相同结果的患者交叉处填上1，如果原来的交叉位置有1，就加1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174901.jpg" alt=""></p>
-<p>从中我们可以看到，患者3和患者4还是位于同一个叶子节点上，因此就在原有的基础上再加1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174904.jpg" alt=""></p>
-<p>患者2和患者3位于同一个节点，患者2和患者4位于同一个节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174908.jpg" alt=""></p>
-<p>现在我们把所有的数据放到第3棵树上运行，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174911.jpg" alt=""></p>
-<p>得到结果后，我们再更新一下相似性矩阵，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174915.jpg" alt=""></p>
-<p>其中我们发现，患者3和患者4还是位于同一个节点上，再加1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174919.jpg" alt=""></p>
-<p>最终，我们运行完所有的树，得到一个最终的相似性矩阵，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174922.jpg" alt=""></p>
-<p>然后，我们把这个相似性矩阵中的所有值除以所有树的数目，在这个案例中，所有的树的数目是10，得到结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174926.jpg" alt=""></p>
-<p>现在我们使用这个近似矩阵来评估一下我们对缺失值猜测的效果如何，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174929.jpg" alt=""></p>
-<p>对于动脉阻塞这个变量来说，我们使用这个近似值来计算Yes与No的加权频率，对于体重缺失值的处理，也是如此，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174935.jpg" alt=""></p>
-<p>其中动脉阻塞这个变量中，除了缺失值外，在剩下的数据中，Yes的频率是1/3，No的频率是2/3，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174940.jpg" alt=""></p>
-<p>那么对Yes的加权频率计算如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174948.jpg" alt=""></p>
-<p>患者2中Yes对应的近似值为0.1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174953.jpg" alt=""></p>
-<p>然后除以患者4中所有近似值的和，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714174957.jpg" alt=""></p>
-<p>Yes的权重是0.1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175005.jpg" alt=""></p>
-<p>那么Yes的加权频率就是0.03，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175009.jpg" alt=""></p>
-<p>再来计算No的权加频率，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175012.jpg" alt=""></p>
-<p>它的公式为：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175017.jpg" alt=""></p>
-<p>No的权重是0.9，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175021.jpg" alt=""></p>
-<p>最终计算结果是0.6，我们发现，No的加权频率更高，也就是说，我们可以在这个缺失值处填上No，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175026.jpg" alt=""></p>
-<p>对于体重缺失值的处理，我们也是采用近似值来计算它的加权平均数，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175031.jpg" alt=""></p>
-<p>加权平均数的的公式如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175034.jpg" alt=""></p>
-<p>第一个样本的加权平均体重是0.1，用125乘以它即可，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175037.jpg" alt=""></p>
-<p>接着计算患者2的权加平均数，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175040.jpg" alt="">最终计算出加权平均数，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175044.jpg" alt=""></p>
-<p>此时，把这个结果（也就是198.5）填到缺失值处，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175048.jpg" alt=""></p>
-<p>现在我们再重新审视一下我们的猜测，重新再运行一次数据，然后构建一个随机森林，在所有的树中计算数据，重新计算近似值，再次计算缺失值，这个过程要重复6或7次，直接覆盖所有的缺失值（直到我们再次计算时，这个数据不再变化为止），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175055.jpg" alt=""></p>
-<h2 id="相似矩阵的拓展"><a href="#相似矩阵的拓展" class="headerlink" title="相似矩阵的拓展"></a>相似矩阵的拓展</h2><p>这里我们先看一下相似矩阵的一些很有意思的东西，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175112.jpg" alt="">我们再看一下在除以10（随机森林的所有树的数目）之间前的相似矩阵，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175122.jpg" alt=""></p>
-<p>如果样本3和样本4最终都落在了所有的10个树的同一个叶子节点上，那么上述的数字8就是10，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175126.jpg" alt=""></p>
-<p>我们再除以10（所有树的数目），我们就看到在这个相似矩阵中最大的数值就是1，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175129.jpg" alt=""></p>
-<p>在这个近似矩阵中，1意味着这两个样本是尽可能接近的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175134.jpg" alt="">此时，我们用1减去这些近似值，就得到了某个距离，那么样本3和样本4的近似值是1，1减去1，就是0，也就是说这两个样本之间没有距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175137.jpg" alt=""></p>
-<p>样本1和样本4之间的的估计值是0.1，用1减去这个数值，得到0.9，那么这就表示，这两个样本的距离很大，也就表示它们之间离得远，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175142.jpg" alt=""></p>
-<p>我们把1减去这个近似值矩阵得到的新矩阵称为距离矩阵（distance matrix），画出热图就是下面的这个样子：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175145.jpg" alt=""></p>
-<p>我们也可以绘制出MDS图，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175148.jpg" alt=""></p>
-<p>我们对相似矩阵的这些拓展计算很有意思，因为，无论你的数据是什么形式（有序数据，多个选择，连续型数据），如果我们使用这些数据构建一个树，我们就能画出热图或者是MDS图，用于研究不同样本的之间的相似性，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175152.jpg" alt=""></p>
-<h2 id="第二种缺失值的处理"><a href="#第二种缺失值的处理" class="headerlink" title="第二种缺失值的处理"></a>第二种缺失值的处理</h2><p>此时，再回到缺失值的处理上来，前面我们只是介绍了一种缺失值的处理，也就是用于构建随机森林的原始数据中的缺失值处理，现在我们介绍一下另外一种缺失值的处理，也就是我们想用于分类的新的样本中的缺失值处理，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175205.jpg" alt=""></p>
-<p>试想，我们已经通过现有的数据构建了一个随机森林，此时我们要将下面的的这个患者进行分类，不过他的一个动脉阻塞参数是缺失的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175210.jpg" alt=""></p>
-<p>但我们还是想要知道这个患者是否患有心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175214.jpg" alt=""></p>
-<p>但我们不知道动脉阻塞这个参数，因此我们需要对这个参数进行一个猜测，其过程就是把这个患者的其他参数放到随机森林中运行，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175217.jpg" alt=""></p>
-<p>第一步：我们先猜测这个患者得了心脏病与不得心脏病这两种情况，做出两份数据，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175222.jpg" alt=""></p>
-<p>然后我们使用先前提到的迭代方法来对这动脉阻塞这个参数进行猜测，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175226.jpg" alt=""></p>
-<p>猜测结果一个是Yes，一个是No，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175230.jpg" alt=""></p>
-<p>然后把这两个数据放到随机森林中运算，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175235.jpg" alt=""></p>
-<p>然后我们观察这两个数据在随机森林中的运行结果，看一下哪个结果数目最多，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175238.jpg" alt=""></p>
-<p>在第一个数据中，所有的3个树都标记了其为Yes，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175242.jpg" alt=""></p>
-<p>在第二个数据中，只有一个树正确地标记了No，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175247.jpg" alt=""></p>
-<p>因此第一个数据是正确的数据，因为所有的树中它被正确计算的次数最多，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175250.jpg" alt=""></p>
-<h2 id="R语言与随机森林"><a href="#R语言与随机森林" class="headerlink" title="R语言与随机森林"></a>R语言与随机森林</h2><h3 id="加载包"><a href="#加载包" class="headerlink" title="加载包"></a>加载包</h3><p>在使用R语言构建随机森林的时候，需要使用如下三个包：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line"><span class="keyword">library</span>(cowplot)</div><div class="line"><span class="keyword">library</span>(randomForest)</div></pre></td></tr></table></figure>
-<h3 id="数据集的处理"><a href="#数据集的处理" class="headerlink" title="数据集的处理"></a>数据集的处理</h3><p>原始数据使用UCI机器学习的数据，这里的数据很多，我们只用其中的心脏病方面的一个数据集，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175307.jpg" alt=""></p>
-<p>代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url &lt;- <span class="string">"http://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"</span></div><div class="line">data &lt;- read.csv(url, header=<span class="literal">FALSE</span>)</div><div class="line">head(data)</div></pre></td></tr></table></figure>
-<p>数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data)</div><div class="line">  V1 V2 V3  V4  V5 V6 V7  V8 V9 V10 V11 V12 V13 V14</div><div class="line"><span class="number">1</span> <span class="number">63</span>  <span class="number">1</span>  <span class="number">1</span> <span class="number">145</span> <span class="number">233</span>  <span class="number">1</span>  <span class="number">2</span> <span class="number">150</span>  <span class="number">0</span> <span class="number">2.3</span>   <span class="number">3</span> <span class="number">0.0</span> <span class="number">6.0</span>   <span class="number">0</span></div><div class="line"><span class="number">2</span> <span class="number">67</span>  <span class="number">1</span>  <span class="number">4</span> <span class="number">160</span> <span class="number">286</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">108</span>  <span class="number">1</span> <span class="number">1.5</span>   <span class="number">2</span> <span class="number">3.0</span> <span class="number">3.0</span>   <span class="number">2</span></div><div class="line"><span class="number">3</span> <span class="number">67</span>  <span class="number">1</span>  <span class="number">4</span> <span class="number">120</span> <span class="number">229</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">129</span>  <span class="number">1</span> <span class="number">2.6</span>   <span class="number">2</span> <span class="number">2.0</span> <span class="number">7.0</span>   <span class="number">1</span></div><div class="line"><span class="number">4</span> <span class="number">37</span>  <span class="number">1</span>  <span class="number">3</span> <span class="number">130</span> <span class="number">250</span>  <span class="number">0</span>  <span class="number">0</span> <span class="number">187</span>  <span class="number">0</span> <span class="number">3.5</span>   <span class="number">3</span> <span class="number">0.0</span> <span class="number">3.0</span>   <span class="number">0</span></div><div class="line"><span class="number">5</span> <span class="number">41</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">130</span> <span class="number">204</span>  <span class="number">0</span>  <span class="number">2</span> <span class="number">172</span>  <span class="number">0</span> <span class="number">1.4</span>   <span class="number">1</span> <span class="number">0.0</span> <span class="number">3.0</span>   <span class="number">0</span></div><div class="line"><span class="number">6</span> <span class="number">56</span>  <span class="number">1</span>  <span class="number">2</span> <span class="number">120</span> <span class="number">236</span>  <span class="number">0</span>  <span class="number">0</span> <span class="number">178</span>  <span class="number">0</span> <span class="number">0.8</span>   <span class="number">1</span> <span class="number">0.0</span> <span class="number">3.0</span>   <span class="number">0</span></div></pre></td></tr></table></figure>
-<p>从数据中我们可以发现，第一行对于每个变量的命名并不是特别的规范，因此，根据网站提供的信息，我们把这些变量名改一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">colnames(data) &lt;- c(</div><div class="line">  <span class="string">"age"</span>,</div><div class="line">  <span class="string">"sex"</span>,</div><div class="line">  <span class="string">"cp"</span>,</div><div class="line">  <span class="string">"trestbps"</span>,</div><div class="line">  <span class="string">"chol"</span>,</div><div class="line">  <span class="string">"fbs"</span>,</div><div class="line">  <span class="string">"restecg"</span>,</div><div class="line">  <span class="string">"thalach"</span>,</div><div class="line">  <span class="string">"exang"</span>,</div><div class="line">  <span class="string">"oldpeak"</span>,</div><div class="line">  <span class="string">"slope"</span>,</div><div class="line">  <span class="string">"ca"</span>,</div><div class="line">  <span class="string">"thal"</span>,</div><div class="line">  <span class="string">"hd"</span></div><div class="line">)</div><div class="line">head(data)</div></pre></td></tr></table></figure>
-<p>更改后的结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data)</div><div class="line">  age sex cp trestbps chol fbs restecg thalach exang oldpeak slope  ca thal hd</div><div class="line"><span class="number">1</span>  <span class="number">63</span>   <span class="number">1</span>  <span class="number">1</span>      <span class="number">145</span>  <span class="number">233</span>   <span class="number">1</span>       <span class="number">2</span>     <span class="number">150</span>     <span class="number">0</span>     <span class="number">2.3</span>     <span class="number">3</span> <span class="number">0.0</span>  <span class="number">6.0</span>  <span class="number">0</span></div><div class="line"><span class="number">2</span>  <span class="number">67</span>   <span class="number">1</span>  <span class="number">4</span>      <span class="number">160</span>  <span class="number">286</span>   <span class="number">0</span>       <span class="number">2</span>     <span class="number">108</span>     <span class="number">1</span>     <span class="number">1.5</span>     <span class="number">2</span> <span class="number">3.0</span>  <span class="number">3.0</span>  <span class="number">2</span></div><div class="line"><span class="number">3</span>  <span class="number">67</span>   <span class="number">1</span>  <span class="number">4</span>      <span class="number">120</span>  <span class="number">229</span>   <span class="number">0</span>       <span class="number">2</span>     <span class="number">129</span>     <span class="number">1</span>     <span class="number">2.6</span>     <span class="number">2</span> <span class="number">2.0</span>  <span class="number">7.0</span>  <span class="number">1</span></div><div class="line"><span class="number">4</span>  <span class="number">37</span>   <span class="number">1</span>  <span class="number">3</span>      <span class="number">130</span>  <span class="number">250</span>   <span class="number">0</span>       <span class="number">0</span>     <span class="number">187</span>     <span class="number">0</span>     <span class="number">3.5</span>     <span class="number">3</span> <span class="number">0.0</span>  <span class="number">3.0</span>  <span class="number">0</span></div><div class="line"><span class="number">5</span>  <span class="number">41</span>   <span class="number">0</span>  <span class="number">2</span>      <span class="number">130</span>  <span class="number">204</span>   <span class="number">0</span>       <span class="number">2</span>     <span class="number">172</span>     <span class="number">0</span>     <span class="number">1.4</span>     <span class="number">1</span> <span class="number">0.0</span>  <span class="number">3.0</span>  <span class="number">0</span></div><div class="line"><span class="number">6</span>  <span class="number">56</span>   <span class="number">1</span>  <span class="number">2</span>      <span class="number">120</span>  <span class="number">236</span>   <span class="number">0</span>       <span class="number">0</span>     <span class="number">178</span>     <span class="number">0</span>     <span class="number">0.8</span>     <span class="number">1</span> <span class="number">0.0</span>  <span class="number">3.0</span>  <span class="number">0</span></div></pre></td></tr></table></figure>
-<p>查看一下数据结构，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; str(data)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">303</span> obs. of  <span class="number">14</span> variables:</div><div class="line"> $ age     : num  <span class="number">63</span> <span class="number">67</span> <span class="number">67</span> <span class="number">37</span> <span class="number">41</span> <span class="number">56</span> <span class="number">62</span> <span class="number">57</span> <span class="number">63</span> <span class="number">53</span> <span class="keyword">...</span></div><div class="line"> $ sex     : num  <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ cp      : num  <span class="number">1</span> <span class="number">4</span> <span class="number">4</span> <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ trestbps: num  <span class="number">145</span> <span class="number">160</span> <span class="number">120</span> <span class="number">130</span> <span class="number">130</span> <span class="number">120</span> <span class="number">140</span> <span class="number">120</span> <span class="number">130</span> <span class="number">140</span> <span class="keyword">...</span></div><div class="line"> $ chol    : num  <span class="number">233</span> <span class="number">286</span> <span class="number">229</span> <span class="number">250</span> <span class="number">204</span> <span class="number">236</span> <span class="number">268</span> <span class="number">354</span> <span class="number">254</span> <span class="number">203</span> <span class="keyword">...</span></div><div class="line"> $ fbs     : num  <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ restecg : num  <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">0</span> <span class="number">2</span> <span class="number">0</span> <span class="number">2</span> <span class="number">0</span> <span class="number">2</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ thalach : num  <span class="number">150</span> <span class="number">108</span> <span class="number">129</span> <span class="number">187</span> <span class="number">172</span> <span class="number">178</span> <span class="number">160</span> <span class="number">163</span> <span class="number">147</span> <span class="number">155</span> <span class="keyword">...</span></div><div class="line"> $ exang   : num  <span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ oldpeak : num  <span class="number">2.3</span> <span class="number">1.5</span> <span class="number">2.6</span> <span class="number">3.5</span> <span class="number">1.4</span> <span class="number">0.8</span> <span class="number">3.6</span> <span class="number">0.6</span> <span class="number">1.4</span> <span class="number">3.1</span> <span class="keyword">...</span></div><div class="line"> $ slope   : num  <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">3</span> <span class="number">1</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="keyword">...</span></div><div class="line"> $ ca      : Factor w/ <span class="number">5</span> levels <span class="string">"?"</span>,<span class="string">"0.0"</span>,<span class="string">"1.0"</span>,..: <span class="number">2</span> <span class="number">5</span> <span class="number">4</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">2</span> <span class="number">3</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ thal    : Factor w/ <span class="number">4</span> levels <span class="string">"?"</span>,<span class="string">"3.0"</span>,<span class="string">"6.0"</span>,..: <span class="number">3</span> <span class="number">2</span> <span class="number">4</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ hd      : int  <span class="number">0</span> <span class="number">2</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">3</span> <span class="number">0</span> <span class="number">2</span> <span class="number">1</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<p>现在解释一下各个变量：</p>
-<p><code>sex</code>是性别，其中0表示女性，1表示男性，在分析时，需要把<code>sex</code>这个变量根据1或0更改为M或F。</p>
-<p><code>cp</code>是<code>chest pain</code>的缩写，其数值是1-3，这个范围表示不同类型的胸痛，4表示没有胸痛。</p>
-<p><code>ca</code>与<code>thal</code>是因子数据类型，我们看到，其中有的数值是<code>?</code>，这个是不符合规范的，因此后面我们会把它改为<code>NA。</code></p>
-<p>此外，还要把其它的变量更改为因子类型，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">data[data == <span class="string">"?"</span>] &lt;- <span class="literal">NA</span></div><div class="line">data[data$sex == <span class="number">0</span>,]$sex &lt;- <span class="string">"F"</span></div><div class="line">data[data$sex == <span class="number">1</span>,]$sex &lt;- <span class="string">"M"</span></div><div class="line">data$sex &lt;- as.factor(data$sex)</div><div class="line">data$cp &lt;- as.factor(data$cp)</div><div class="line">data$fbs &lt;- as.factor(data$fbs)</div><div class="line">data$restecg &lt;- as.factor(data$restecg)</div><div class="line">data$exang &lt;- as.factor(data$exang)</div><div class="line">data$slope &lt;- as.factor(data$slope)</div><div class="line">data$ca &lt;- as.integer(data$ca)</div><div class="line">data$ca &lt;- as.factor(data$ca)</div><div class="line">data$thal &lt;- as.factor(data$thal)</div><div class="line">data$hd &lt;- ifelse(test=data$hd == <span class="number">0</span>, yes = <span class="string">"Healthy"</span>, no=<span class="string">"Unhealthy"</span>)</div><div class="line">data$hd &lt;- as.factor(data$hd)</div></pre></td></tr></table></figure>
-<p>查看一下数据类型，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; str(data)</div><div class="line"><span class="string">'data.frame'</span>:	<span class="number">303</span> obs. of  <span class="number">14</span> variables:</div><div class="line"> $ age     : num  <span class="number">63</span> <span class="number">67</span> <span class="number">67</span> <span class="number">37</span> <span class="number">41</span> <span class="number">56</span> <span class="number">62</span> <span class="number">57</span> <span class="number">63</span> <span class="number">53</span> <span class="keyword">...</span></div><div class="line"> $ sex     : Factor w/ <span class="number">2</span> levels <span class="string">"F"</span>,<span class="string">"M"</span>: <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ cp      : Factor w/ <span class="number">4</span> levels <span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>: <span class="number">1</span> <span class="number">4</span> <span class="number">4</span> <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ trestbps: num  <span class="number">145</span> <span class="number">160</span> <span class="number">120</span> <span class="number">130</span> <span class="number">130</span> <span class="number">120</span> <span class="number">140</span> <span class="number">120</span> <span class="number">130</span> <span class="number">140</span> <span class="keyword">...</span></div><div class="line"> $ chol    : num  <span class="number">233</span> <span class="number">286</span> <span class="number">229</span> <span class="number">250</span> <span class="number">204</span> <span class="number">236</span> <span class="number">268</span> <span class="number">354</span> <span class="number">254</span> <span class="number">203</span> <span class="keyword">...</span></div><div class="line"> $ fbs     : Factor w/ <span class="number">2</span> levels <span class="string">"0"</span>,<span class="string">"1"</span>: <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ restecg : Factor w/ <span class="number">3</span> levels <span class="string">"0"</span>,<span class="string">"1"</span>,<span class="string">"2"</span>: <span class="number">3</span> <span class="number">3</span> <span class="number">3</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">3</span> <span class="number">3</span> <span class="keyword">...</span></div><div class="line"> $ thalach : num  <span class="number">150</span> <span class="number">108</span> <span class="number">129</span> <span class="number">187</span> <span class="number">172</span> <span class="number">178</span> <span class="number">160</span> <span class="number">163</span> <span class="number">147</span> <span class="number">155</span> <span class="keyword">...</span></div><div class="line"> $ exang   : Factor w/ <span class="number">2</span> levels <span class="string">"0"</span>,<span class="string">"1"</span>: <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="keyword">...</span></div><div class="line"> $ oldpeak : num  <span class="number">2.3</span> <span class="number">1.5</span> <span class="number">2.6</span> <span class="number">3.5</span> <span class="number">1.4</span> <span class="number">0.8</span> <span class="number">3.6</span> <span class="number">0.6</span> <span class="number">1.4</span> <span class="number">3.1</span> <span class="keyword">...</span></div><div class="line"> $ slope   : Factor w/ <span class="number">3</span> levels <span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>: <span class="number">3</span> <span class="number">2</span> <span class="number">2</span> <span class="number">3</span> <span class="number">1</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="keyword">...</span></div><div class="line"> $ ca      : Factor w/ <span class="number">4</span> levels <span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>,<span class="string">"5"</span>: <span class="number">1</span> <span class="number">4</span> <span class="number">3</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">3</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="keyword">...</span></div><div class="line"> $ thal    : Factor w/ <span class="number">4</span> levels <span class="string">"?"</span>,<span class="string">"3.0"</span>,<span class="string">"6.0"</span>,..: <span class="number">3</span> <span class="number">2</span> <span class="number">4</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">4</span> <span class="number">4</span> <span class="keyword">...</span></div><div class="line"> $ hd      : Factor w/ <span class="number">2</span> levels <span class="string">"Healthy"</span>,<span class="string">"Unhealthy"</span>: <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="keyword">...</span></div></pre></td></tr></table></figure>
-<h3 id="补充缺失值"><a href="#补充缺失值" class="headerlink" title="补充缺失值"></a>补充缺失值</h3><p>由于我们要生成随机森林，此时我们设一个种子，用于生成随机数，这样我们可以重复我们的计算结果，在构建随机森林之间，由于我们的数据集中的缺失值，此时要对缺失值进行补充，补充缺失值使用的是<code>rfImpute()</code>函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">42</span>)</div><div class="line">data.imputed &lt;- rfImpute(hd ~.,data=data,iter=<span class="number">6</span>)</div></pre></td></tr></table></figure>
-<p><code>hd~.</code>是第1个参数，它表示，我们使用hd（heart disease）这一列作为最终的预测，也就是说拿一个患者的数据，预测患者是否得有心脏病。</p>
-<p><code>data = data</code>这个表示，我们使用<code>data</code>这个数据集来构建随机森林。</p>
-<p><code>iter=6</code>用来指定迭代多少次来评估缺失值，从理论上讲，这个值是4到6就足够了，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175318.jpg" alt=""></p>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; data.imputed &lt;- rfImpute(hd ~.,data=data,iter=<span class="number">6</span>)</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.49</span>% <span class="number">12.80</span>% <span class="number">23.02</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">16.83</span>% <span class="number">14.02</span>% <span class="number">20.14</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.82</span>% <span class="number">13.41</span>% <span class="number">23.02</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.49</span>% <span class="number">14.02</span>% <span class="number">21.58</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">17.16</span>% <span class="number">12.80</span>% <span class="number">22.30</span>%</div><div class="line">ntree      OOB      <span class="number">1</span>      <span class="number">2</span></div><div class="line">  <span class="number">300</span>:  <span class="number">18.15</span>% <span class="number">14.63</span>% <span class="number">22.30</span>%</div></pre></td></tr></table></figure>
-<p>经过每次迭代，<code>rflmpute()</code>就会在第2列输出出袋错误率（OOB，即Out-of-Bag），如果估计值在不断地改善，那么这个值就会不断地变小，但在这个结果中，我们发现这个值并没有不断地变小，那么我们就可以认为，我们利用此函数得到的估计值可以满足计算，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175327.jpg" alt=""></p>
-<h3 id="构建随机森林-1"><a href="#构建随机森林-1" class="headerlink" title="构建随机森林"></a>构建随机森林</h3><p>接着，我们使用<code>randomForest()</code>函数来构建随机森林，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">model &lt;- randomForest(hd ~., data=data.imputed, proximity= <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>在这些参数中，第1个参数不用解释，跟前面的一样，第2个参数<code>data.imputed</code>是填充了估计值后的数据集，第3个参数是<code>proximity = TRUE</code>，它表示要返回相似矩阵，最终我们可以使用这个数据来进行聚类。</p>
-<p>现在我们看一下结果，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; model</div><div class="line"></div><div class="line">Call:</div><div class="line"> randomForest(formula = hd ~ ., data = data.imputed, proximity = <span class="literal">TRUE</span>) </div><div class="line">               Type of random forest: classification</div><div class="line">                     Number of trees: <span class="number">500</span></div><div class="line">No. of variables tried at each split: <span class="number">3</span></div><div class="line"></div><div class="line">        OOB estimate of  error rate: <span class="number">16.83</span>%</div><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">29</span>       <span class="number">110</span>   <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
-<p>现在说明一下这个结果，先看第一部分，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Call:</div><div class="line"> randomForest(formula = hd ~ ., data = data.imputed, proximity = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>这一部分是构建随机森林的一些参数。</p>
-<p>再看第二部分，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Type of random forest: classification</div></pre></td></tr></table></figure>
-<p>这一部分的意思是讲，我们构建随机森林的类型是分类（classification），如果我们使用随机森林来预测体重或身高这种连续型变量，那么这个就是回归（regression），如果我们忽略随机森林要预测的某个变量（我的理解就是，即不预测分类，也就是说不预测心脏病，也不预测回归，也就是说不预测体重或身高），那么这里就是无监督（unsupervised），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175334.jpg" alt=""></p>
-<p>再看下一部分，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Number of trees: <span class="number">500</span></div></pre></td></tr></table></figure>
-<p>这里是说，随机森林中有多少棵树，默认的数字是500，随后我们会看一下500棵树能否做出一个很好的分类。</p>
-<p>再看下一部分，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">No. of variables tried at each split: <span class="number">3</span></div></pre></td></tr></table></figure>
-<p>这一段文字是说，在每个内部节点上，使用的变量（也就是列）的数目，用于分类的随机森林默认使用变量数目的平方根进行计算，例如在这个案例中，变量的数目是13（不包括hd这个变量），那么13的平方根就是3.6，取整数（这里不是四舍五入），就是3，至于这个3是不是最好的数值，我们随后会进行调整，如果是用于回归的随机森林，那么这个数字就是变量的数目除以3，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175339.jpg" alt=""></p>
-<p>再看下一部分，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">OOB estimate of  error rate: <span class="number">16.83</span>%</div></pre></td></tr></table></figure>
-<p>这一部分是出袋错误率（OOB，即Out-of-Bag），这表明，这个随机森林能够将83.5%的OOB样本正确地归类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175343.jpg" alt=""></p>
-<p>最后一部分是混淆矩阵（confusion matrix），如下所示（可能与教程中的有些出入，但整体相差不大）：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">29</span>       <span class="number">110</span>   <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
-<p>混淆矩阵是总结分类模型预测结果的情形分析表，它以矩阵形式将数据集中的记录按照真实的类别与分类模型作出的分类判断两个标准进行汇总，那么，在上面的这个矩阵中，我们可以看到：</p>
-<ol>
-<li>有142名健康的病人被正确地标记为“健康”；</li>
-<li>有29名健康的病人被错误地标记为“健康”；</li>
-<li>有22名健康的病人被错误地标记为“不健康”；</li>
-<li>有110名不健康的病人被正确地标记为“不健康”。</li>
-</ol>
-<h3 id="绘制错误率图"><a href="#绘制错误率图" class="headerlink" title="绘制错误率图"></a>绘制错误率图</h3><p>此时，我们看一下，500棵树能否做出一个良好的分类，我们先画出错误率，绘图使用的是ggplot2包，因此要构建一个数据框用于ggplot2的识别，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">oob.error.data &lt;- data.frame(</div><div class="line">  Trees=rep(<span class="number">1</span>:nrow(model$err.rate),times=<span class="number">3</span>),</div><div class="line">  Type=rep(c(<span class="string">"OOB"</span>,<span class="string">"Healthy"</span>,<span class="string">"Unhealthy"</span>),each=nrow(model$err.rate)),</div><div class="line">  Error=c(model$err.rate[,<span class="string">"OOB"</span>],</div><div class="line">          model$err.rate[,<span class="string">"Healthy"</span>],</div><div class="line">          model$err.rate[,<span class="string">"Unhealthy"</span>]))</div></pre></td></tr></table></figure>
-<p>这段代码有点复杂，现在解释一下：</p>
-<ol>
-<li>这段代码的大部分都是基于<code>model</code>这个数据中的<code>err.rate</code>来构建的，我们查看下这个数据，如下所示：</li>
-</ol>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; head(model$err.rate)</div><div class="line">           OOB   Healthy Unhealthy</div><div class="line">[<span class="number">1</span>,] <span class="number">0.2571429</span> <span class="number">0.2765957</span> <span class="number">0.2413793</span></div><div class="line">[<span class="number">2</span>,] <span class="number">0.2470588</span> <span class="number">0.2068966</span> <span class="number">0.2891566</span></div><div class="line">[<span class="number">3</span>,] <span class="number">0.2783019</span> <span class="number">0.2758621</span> <span class="number">0.2812500</span></div><div class="line">[<span class="number">4</span>,] <span class="number">0.2704918</span> <span class="number">0.2647059</span> <span class="number">0.2777778</span></div><div class="line">[<span class="number">5</span>,] <span class="number">0.2592593</span> <span class="number">0.2600000</span> <span class="number">0.2583333</span></div><div class="line">[<span class="number">6</span>,] <span class="number">0.2597865</span> <span class="number">0.2467532</span> <span class="number">0.2755906</span></div><div class="line">&gt; tail(model$err.rate)</div><div class="line">             OOB   Healthy Unhealthy</div><div class="line">[<span class="number">495</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">496</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">497</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">498</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">499</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div><div class="line">[<span class="number">500</span>,] <span class="number">0.1683168</span> <span class="number">0.1341463</span> <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
-<p>其中第1列是OOB错误率，第2列是健康患者错误率（就是说有多大的可能性会把健康患者错误分类），第3列是不健康患者错误率（就是说有多大的可能性会把不健康患者错误分类）。</p>
-<p>每1行表示的是，在构建随机森林的不同阶段的的错误率，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175350.jpg" alt=""></p>
-<p>其中，第1行表示构建了第1棵树后的错误率，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175350.jpg" alt=""></p>
-<p>第2行表示，构建了前2棵树后的错误率，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175354.jpg" alt=""></p>
-<p>那么最后1行则表示，已经构建了随机森林中500棵树后的错误率，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175359.jpg" alt=""></p>
-<p>因此，使用上述代码，我们最终生成的数据框则是下面的这个样本，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(oob.error.data)</div><div class="line">  Trees Type     Error</div><div class="line"><span class="number">1</span>     <span class="number">1</span>  OOB <span class="number">0.2571429</span></div><div class="line"><span class="number">2</span>     <span class="number">2</span>  OOB <span class="number">0.2470588</span></div><div class="line"><span class="number">3</span>     <span class="number">3</span>  OOB <span class="number">0.2783019</span></div><div class="line"><span class="number">4</span>     <span class="number">4</span>  OOB <span class="number">0.2704918</span></div><div class="line"><span class="number">5</span>     <span class="number">5</span>  OOB <span class="number">0.2592593</span></div><div class="line"><span class="number">6</span>     <span class="number">6</span>  OOB <span class="number">0.2597865</span></div></pre></td></tr></table></figure>
-<p>第1列数字则表示的是随机森林中树的数目，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175402.jpg" alt=""></p>
-<p>第2列则是错误类型，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175407.png" alt=""></p>
-<p>再看一下其他的：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175538.png" alt=""></p>
-<p>最后1列是错误的实际数值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175529.png" alt=""></p>
-<p>调用ggplot函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(data=oob.error.data,aes(x=Trees,y=Error)) +</div><div class="line">  geom_line(aes(color=Type))</div></pre></td></tr></table></figure>
-<p>绘图结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175523.png" alt=""></p>
-<p>其中蓝线是对不健康患者进行归类时的错误率，绿线是总的OOB错误率，红线是对健康患者进行归类时的错误率。通常我们发现，随着随机森林中的树越来越多，错误率是逐步下降的，如下所示</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175519.jpg" alt=""></p>
-<h3 id="各项参数调整"><a href="#各项参数调整" class="headerlink" title="各项参数调整"></a>各项参数调整</h3><h4 id="添加树的数目"><a href="#添加树的数目" class="headerlink" title="添加树的数目"></a>添加树的数目</h4><p>我们试想一下，如果我们增加更多的树，错误率会不会更低，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175514.jpg" alt=""></p>
-<p>此时，我们将树的数目设为1000，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">model &lt;- randomForest(hd ~., data=data.imputed, ntree = <span class="number">1000</span>, proximity= <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>这里我们需要注意一下，前面我们并没有使用<code>ntree=1000</code>这个参数，这是因为<code>randomForest</code>默认的<code>ntree=500</code>，因此这个参数如果使用默认值，就可以不添加，如果要改变这个数字，就需要更改，现在看一下结果：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Call:</div><div class="line"> randomForest(formula = hd ~ ., data = data.imputed, ntree = <span class="number">1000</span>,      proximity = <span class="literal">TRUE</span>) </div><div class="line">               Type of random forest: classification</div><div class="line">                     Number of trees: <span class="number">1000</span></div><div class="line">No. of variables tried at each split: <span class="number">3</span></div><div class="line"></div><div class="line">        OOB estimate of  error rate: <span class="number">16.5</span>%</div><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">28</span>       <span class="number">111</span>   <span class="number">0.2014388</span></div></pre></td></tr></table></figure>
-<p>看一下<code>OOB estimate of  error rate: 16.5%</code>这一行，它的OOB值是16.5%，而当<code>ntree=500</code>时，这个数值是16.83%，基本上两者是相同的，我们再看一下<code>ntree=500</code>时的混淆矩阵，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Confusion matrix:</div><div class="line">          Healthy Unhealthy class.error</div><div class="line">Healthy       <span class="number">142</span>        <span class="number">22</span>   <span class="number">0.1341463</span></div><div class="line">Unhealthy      <span class="number">29</span>       <span class="number">110</span>   <span class="number">0.2086331</span></div></pre></td></tr></table></figure>
-<p>这两者的数值也差不多，再看一下绘图结果，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175507.png" alt=""></p>
-<p>从这个绘图结果来看，当树的数目超过500后，错误率基本上就稳定了，因此我们添加再多的树，意义不大，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175504.jpg" alt=""></p>
-<h4 id="更改节点变量数目"><a href="#更改节点变量数目" class="headerlink" title="更改节点变量数目"></a>更改节点变量数目</h4><p>现在我们再来看一下构建原来内部节点时使用的变量数目，原来使用的是3，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175459.jpg" alt=""></p>
-<p>现在我们改一下这个数字，此时我们需要一个空向量，它所含元素的数目是10，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">oob.values &lt;- vector(length = <span class="number">10</span>)</div></pre></td></tr></table></figure>
-<p>然后再使用一个循环，用于测试构建每个内部节点的不同变量数目，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175450.jpg" alt=""></p>
-<p>代码为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>)&#123;</div><div class="line">  temp.model &lt;- randomForest(hd ~ .,data=data.imputed, mtry=i,ntree=<span class="number">1000</span>)</div><div class="line">  oob.values[i] &lt;- temp.model$err.rate[nrow(temp.model$err.rate),<span class="number">1</span>]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>查看一下输出结果：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">oob.values</div><div class="line">[<span class="number">1</span>] <span class="number">0.1650165</span> <span class="number">0.1716172</span> <span class="number">0.1650165</span> <span class="number">0.1815182</span> <span class="number">0.1848185</span> <span class="number">0.1815182</span> <span class="number">0.1848185</span> <span class="number">0.1914191</span></div><div class="line">[<span class="number">9</span>] <span class="number">0.1881188</span> <span class="number">0.1881188</span></div></pre></td></tr></table></figure>
-<p>其中第3个数值对应的就是<code>mtry=3</code>，它是构建随机森林的默认数字，从中我们可以发现，这个数字基本上是最小的（0.1716172），也就是说它有最低的OOB错误率，因此，默认数值已经是最好的数值了，不过，如果我们不知道最优的数值，那么就要尝试一下其他的数值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175444.jpg" alt=""></p>
-<h3 id="绘制随机森林的MDS图"><a href="#绘制随机森林的MDS图" class="headerlink" title="绘制随机森林的MDS图"></a>绘制随机森林的MDS图</h3><p>最后，我们绘制一下随机森林的MDS图，首先利用<code>dist()</code>函数从<code>1- 相似矩</code>中构建一个距离矩阵，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">distance.matrix &lt;- dist(<span class="number">1</span>-model$proximity)</div></pre></td></tr></table></figure>
-<p>然后使用缩放函数<code>cmdscale</code>，再计算距离矩阵的x轴与y轴的占总变异的百分比，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mds.stuff &lt;- cmdscale(distance.matrix,eig=<span class="literal">TRUE</span>,x.ret=<span class="literal">TRUE</span>)</div><div class="line">mds.var.per &lt;- round(mds.stuff$eig/sum(mds.stuff$eig)*<span class="number">100</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<p>构建ggplot绘图的数据集并绘图，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">mds.values &lt;- mds.stuff$points</div><div class="line">mds.data &lt;- data.frame(Sample = rownames(mds.values),</div><div class="line">                       X=mds.values[,<span class="number">1</span>],</div><div class="line">                       Y=mds.values[,<span class="number">2</span>],</div><div class="line">                       Status=data.imputed$hd)</div><div class="line"></div><div class="line">ggplot(data=mds.data, aes(x=X, y=Y, label=Sample)) +</div><div class="line">  geom_text(aes(color=Status)) +</div><div class="line">  theme_bw()+</div><div class="line">  xlab(paste(<span class="string">"MDS1 - "</span>, mds.var.per[<span class="number">1</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>)) +</div><div class="line">  ylab(paste(<span class="string">"MDS2 - "</span>, mds.var.per[<span class="number">2</span>], <span class="string">"%"</span>, sep=<span class="string">""</span>)) +</div><div class="line">  ggtitle(<span class="string">"MDS plot using(1 - Random Forest Proximities)"</span>)</div></pre></td></tr></table></figure>
-<p>最终绘图结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175438.png" alt=""></p>
-<p>从图上我们可以得到如下信息：</p>
-<ol>
-<li>不健康的患者位于左侧，健康的患者位于右侧；</li>
-<li>但在左侧，有几个患者被错误归类了（绿色中的红色文字）；</li>
-<li>我们再看一下x轴，可以发现，MDS1占了总变异的47.7%，y轴上是MDS2，它占据了总异的14.2%；</li>
-<li>整个图形呈一个V型（教程中是倒V型，我不太理解为什么我绘图出来是反的），它的开口是朝上x轴的相反方向的，这表明，在V型的两臂上，两个样本相离得越远，他们之间的差异就越大；</li>
-<li>如果我们拿到一个新的患者的数据，在不知道他是否得了心脏病的情况下，如果经计算，他被归类到V型的左臂，那么我们就可以得到一个肯定的结论，他得了心脏病，如下所示：</li>
-</ol>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714175434.jpg" alt=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/07/01/StatQuest/生物统计-StatQuest学习笔记19-决策树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/01/StatQuest/生物统计-StatQuest学习笔记19-决策树/" itemprop="url">StatQuest学习笔记19——决策树</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-01T12:10:54+08:00">
-                2018-07-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,307
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  18
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇笔记是StatQuet系列视频教程的第50节和第51节，主要内容是决策树（decision tree）。其中第50节的内容是决策木树的基本思想，第51节的内容是在构建决策树中，缺失值的处理。</p>
-<h2 id="决策树简单案例1"><a href="#决策树简单案例1" class="headerlink" title="决策树简单案例1"></a>决策树简单案例1</h2><p>先看一下简单的决策树案例，在这个案例中，我们提出一个问题，也就是问某人，“请问，你喜欢StatQuest的主题曲吗”。回答者会回答“Yes”或“No”，根据回答者的这个回答，我们可以把回答者分为两类，如果回答Yes，则就是下面的情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172610.jpg" alt=""></p>
-<p>如果回答No，那么就是下面的这种情况：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172615.jpg" alt=""></p>
-<p>在一个常规的决策树中，通常会问一个问题，然后根据回答者的回答（就是Yes或No），就把他们进行分类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172619.jpg" alt=""></p>
-<p>同样的，我们还可以根据一些数据来构建决策树，例如根据人的静息心率（resting heart rate）是否大于100bpm，那么就可以对他们进行分类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172624.jpg" alt=""></p>
-<p>如果一个人的静息心率大于100bpm，那么就是说他的静息心率比较高，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172628.jpg" alt=""></p>
-<p>那么他就需要去看医生，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172632.jpg" alt=""></p>
-<p>如果一个人的静息心率并不高，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172636.jpg" alt=""></p>
-<p>那么这个人就属于比较健康的状态了，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172641.jpg" alt=""></p>
-<h2 id="决策树简单案例2"><a href="#决策树简单案例2" class="headerlink" title="决策树简单案例2"></a>决策树简单案例2</h2><p>再来看一个决策树的简单案例。在这个案例中，决策树的构建的依据是一个分级数据（ranked data），其中数据<code>Appetite rank =1</code>表示<code>非常饿</code>，<code>Appetite rank = 2</code>表示<code>一般饿</code>，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172701.jpg" alt=""></p>
-<p>如果一个人非常饿（<code>Appetite rank = 1</code>）时，那么他就需要吃东西，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172705.jpg" alt=""></p>
-<p>如果这个人只是处于一般饿的状态（<code>Appetite rank = 2</code>），那么他只需要只一点东西即可，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172710.jpg" alt=""></p>
-<p>如果这个人不是特别的饿，那么他也可以不吃东西，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172715.jpg" alt=""></p>
-<p>需要注意的是，决策树中的分类可以是一些二分类变量，如下图左侧所示，也可以是一些连续型变量（数值型变量），如下图右侧所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172718.jpg" alt=""></p>
-<p>例如，上图的右侧，我们使用小鼠的体重来预测小鼠的大小（size），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172722.jpg" alt=""></p>
-<h2 id="复杂案例"><a href="#复杂案例" class="headerlink" title="复杂案例"></a>复杂案例</h2><p>我们再看一个比较复杂的决策树案例，在这个决策树中，它混合了连续型变量和二分类变量，下图是决策树中的连续型变量，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172736.jpg" alt=""></p>
-<p>接着是二分类变量，它使用的yes/no来进行区分，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172740.jpg" alt=""></p>
-<p>在这个决策树中，我们需要注意的是，静息心率的阈值并非都是相同的，例如在左侧，它的阈值是100bpm，而在右侧，它的阈值是120bpm，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172744.jpg" alt=""></p>
-<p>在决策树中，问题的顺序也可以不一样，例如在左侧，第一个问题是静息心率，然后为是否吃甜甜圈（doughnut），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172748.jpg" alt=""></p>
-<p>而在右侧，第一个问题则为是否吃甜甜圈，然后是静息心率，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172754.jpg" alt=""></p>
-<p>最后的归类可以是一样的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172758.jpg" alt=""></p>
-<p>还有两个相同的分支，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172805.jpg" alt=""></p>
-<p>对于大多数的决策树来说，它们都很直观，从顶层开始，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172808.jpg" alt=""></p>
-<p>接着进入下一层，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172812.jpg" alt="">再下一层，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172816.jpg" alt=""></p>
-<p>一直到最底层为止，此时就对一个样本进行了分类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172822.jpg" alt=""></p>
-<h2 id="决策树术语"><a href="#决策树术语" class="headerlink" title="决策树术语"></a>决策树术语</h2><p>我们来看一下决策树的相关术语，我们把树最顶层的部分称为<code>根结点（Root Node</code>）或直接称为<code>根（The root）</code>。如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172838.jpg" alt=""></p>
-<p>把根节点以下最底层之间的部分称为<code>内部节点（Internal Nodes）</code>或<code>节点（Nodes）</code>，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172843.jpg" alt=""></p>
-<p>内部节点通过箭头指向下一级的内部节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172846.jpg" alt=""></p>
-<p>或者是指离（point away）下一层的内部节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172850.jpg" alt=""></p>
-<p>那些终点（也就是没有下一层的节点）被称为<code>叶子节点（Leaf Nodes）</code>或<code>叶子（Leaves）</code>，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172854.jpg" alt=""></p>
-<p>内部节点的箭头指向叶子，但叶子自身已经没有箭头指向其他地方，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172859.jpg" alt=""></p>
-<h2 id="构建决策树"><a href="#构建决策树" class="headerlink" title="构建决策树"></a>构建决策树</h2><p>现在我们讲一下，如何利用一批数据构建决策树，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172914.jpg" alt=""></p>
-<p>我们会利用这个表中的<code>胸痛（chest pain）</code>、 <code>良好血液循环（good blood circulation）</code>和 <code>动脉阻塞状态（blocked artery status）</code>构建一个决策树来预测一个患者是否患有心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172918.jpg" alt=""></p>
-<p>第一步我们需要知道的是，我们使用哪些变量作为根结点，是<code>胸痛（chest pain）</code>、<code>良好血液循环（good blood circulation）</code>，还是<code>动脉阻塞状态（blocked artery status）</code>，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172922.jpg" alt=""></p>
-<h3 id="单一变量1构建决策树"><a href="#单一变量1构建决策树" class="headerlink" title="单一变量1构建决策树"></a>单一变量1构建决策树</h3><p>此时，我们先看一下，<code>胸痛（chest pain）</code>这一个变量预测心脏病的效果如何，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172926.jpg" alt=""></p>
-<p>先用这一个变量（胸痛（chest pain））来构建一个小的决策树，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172929.jpg" alt=""></p>
-<p>先看第一行的数据，这个患者没有出现胸痛，也没有心脏病，对应到决策树上就是右侧的<code>False</code>中的<code>No</code>，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172934.jpg" alt=""></p>
-<p>再看第2行，也就是第2个患者，他出现了胸痛，也出现了心脏病，就归于左侧的<code>True</code>的<code>Yes</code>这一类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172938.jpg" alt=""></p>
-<p>再看第3行，也就是第3个患者，他出现了胸痛，但没有出现心脏病，就归到了左侧<code>True</code>的<code>No</code>这个分类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172941.jpg" alt=""></p>
-<p>把所有的患者（303个）都统计后，会得到最终是否得心脏病的统计信息，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172946.jpg" alt=""></p>
-<h3 id="单一变量2构建决策树"><a href="#单一变量2构建决策树" class="headerlink" title="单一变量2构建决策树"></a>单一变量2构建决策树</h3><p>现在我们使用<code>良好血液循环（good blood circulation）</code>这个变量来构建小的决策树，整个过程与前面的一样，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173001.jpg" alt=""></p>
-<p>最终得到的结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173006.jpg" alt=""></p>
-<h3 id="单一变量3构建决策树"><a href="#单一变量3构建决策树" class="headerlink" title="单一变量3构建决策树"></a>单一变量3构建决策树</h3><p>现在我们使用<code>动脉阻塞状态（blocked artery status）</code>这个变量来构建小的决策树，整个过程与前面的一样，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173011.jpg" alt=""></p>
-<p>不过这个变量中有一个不明（也就是说除了Yes或No外，还有一个其他的结果，就是三个问号<code>???</code>，这个我们后面会继讲到如何处理），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173027.jpg" alt=""></p>
-<p>最终的结果如下所示：：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173032.jpg" alt=""></p>
-<h2 id="根节点设置"><a href="#根节点设置" class="headerlink" title="根节点设置"></a>根节点设置</h2><p>前面我们使用了三个不同的变量，即胸痛（chest pain）、 良好血液循环（good blood circulation）和 动脉阻塞状态（blocked artery status）构来构建小的决策树，我们最终的目标就是要找到使用哪个变量做为根节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173046.jpg" alt=""></p>
-<p>此时我们看一下胸痛（chest pain）这个变量对是否患有心脏病的区分效果，虽然能够区分，但是效果并非完美，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173050.jpg" alt=""></p>
-<p>因为那多数患有心脏病的患者最终会落到<code>Yes</code>这个叶子节点上来，大多数没有心脏病的患者会落后右侧<code>No</code>这个节点上来，我们看一下患有心脏病患者的节点情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173054.jpg" alt=""></p>
-<p>再看一下没有患心脏病的患者情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173058.jpg" alt=""></p>
-<p>我们再看一下良好血液循环（good blood circulation）这个变量对心脏病患者的区分情况，它也不是特别的完美，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173101.jpg" alt=""></p>
-<p>最终，我们看一下动脉阻塞状态（blocked artery status）这个变量对患者的区分情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173104.jpg" alt=""></p>
-<p>我们发现，这三个不同的变量用于区分患者是否患有心脏病的数目是不同的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173109.jpg" alt=""></p>
-<h3 id="基尼不纯度（Gini-impurity）"><a href="#基尼不纯度（Gini-impurity）" class="headerlink" title="基尼不纯度（Gini impurity）"></a>基尼不纯度（Gini impurity）</h3><p>从中我们可以发现，没有一个叶子节点能够显示100%的患有心脏病，或者是100%没有患心脏病，因此我们称这些叶子节点不纯（<code>impure</code>），为了找到哪个区分的程度更好，我们计算并比较不纯度（impurity），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173124.jpg" alt=""></p>
-<p>计算不纯度（impurity）的方法很多，其中最常用的方法称为基尼（Gini）不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173129.jpg" alt=""></p>
-<p>此时，我们计算一下胸痛（Chest pain）这个变量构建的决策树的基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173133.jpg" alt=""></p>
-<p>对于某个叶子结点来说，它的基尼不纯度公式如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173141.jpg" alt=""></p>
-<p>此时，再计算另外一个叶子结点的基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173146.jpg" alt=""></p>
-<p>由于我们已经计算了这两个叶子节点为的基尼不纯度，那么我们就能计算使用了胸痛（chest pain）这个变量区分患者的总基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173149.jpg" alt=""></p>
-<p>左侧的叶子节点一共有144个患者，右侧的叶子节点一共有159个患者，计算胸痛这个变量来区分患者的总的基尼不纯度的就是叶子节点不纯度加权平均数（weighted average of the leaf node impurities），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173154.jpg" alt=""></p>
-<p>它的公式是，常规的基尼不纯度乘以某个叶子节点的基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173159.jpg" alt=""></p>
-<p>另外一部分则是如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173203.jpg" alt=""></p>
-<p>总的结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173206.jpg" alt=""></p>
-<p>此时，计算出剩余两个变量的总基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173210.jpg" alt=""></p>
-<p>从中我们可以发现，良好血液循环（good blood circulation）这个变量的总基尼不纯度的值最低，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173213.jpg" alt=""></p>
-<p>那么我们就使用它作为根节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173219.jpg" alt=""></p>
-<p>虽然我们采用了良好血液循环（good blood circulation）这个变量作为根节点，但它的叶子节点是“不纯”（impure）的，每个叶子中都含有患心脏病与不患心脏病的患者，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173222.jpg" alt=""></p>
-<p>例如，在良好血液循环（good blood circulation）的决策树的叶子节点中，有164个患者，其中37个患有心脏病，127个没有心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173226.jpg" alt=""></p>
-<p>在右侧的叶子结点中，有133个患者，其中100个患有心脏病，33个不患心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173231.jpg" alt=""></p>
-<p>此时，我们需要计算出胸痛（chest pain）和动脉阻塞状态（blocked artery status）这两个变量用于区分左侧164个患者的情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173234.jpg" alt=""></p>
-<p>此时，我们分别计算一下胸痛（chest pain）和动脉阻塞状态（blocked artery status）在良好血液循环（good blood circulation）的决策树的左侧叶子节点下的基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173238.jpg" alt=""></p>
-<p>由于动脉阻塞状态（blocked artery status）在这个叶子节点的基尼不纯度数值最低，因此，我们使用这个变量来区分这些患者，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173244.jpg" alt=""></p>
-<p>此时，我们知道了，我们构建的这个决策树，先是使用了良好血液循环（good blood circulation）作为根节点，然后使用了动脉阻塞状态（blocked artery status）作为内部节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173247.jpg" alt=""></p>
-<p>最后，我们使用剩下的变量，即胸痛（chest pain）来区分上一级的内部节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173251.jpg" alt=""></p>
-<p>最终我们会发现，胸痛（chest pain）这个变量能够很好地区分最后一个叶子节点中的患者，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173257.jpg" alt=""></p>
-<p>我们再看一下胸痛（chest pain）这个变量区分右侧叶子节点的情况，在这个节点中有115名患者，其中不患心脏病的患者是102人，比例为89%，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173302.jpg" alt=""></p>
-<p>此时把上面红圈的那个内部节点用胸痛（chest pain）这个变量进行区分，并计算它的基尼不纯度，结果为0.29，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173305.jpg" alt=""></p>
-<p>如果我们不使用胸痛（chest pain）这个变量来区分这个叶子结点，我们计算一下它的基尼不纯度，就是0.2，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173309.jpg" alt=""></p>
-<p>从中我们可以发现，如果我们使用了胸痛（chest pain）这个变量来区分这个叶子节点，那么它的基尼不纯度就相比没有使用变量之前上升了，因此我们并不需要胸痛这个变量来区分这个叶子节点，只把它当成叶子节点，而不是进一步地区分，当其当成内部节点，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173313.jpg" alt=""></p>
-<p>因此在决策树的左侧这些节点中，我们已经计算出了最终的结果，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173318.jpg" alt=""></p>
-<p>我们现在转向右侧的决策树，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173321.jpg" alt=""></p>
-<p>计算右侧的所有节点跟左侧的一样，流程如下所示：</p>
-<p>第一，计算出所有的基尼不纯度；</p>
-<p>第二，如果节点自身的基尼不纯度比那些加了变量后进一步区分后的基尼不纯度还要低，那么这个节点就被设置为叶子节点；</p>
-<p>第三，如果区分的数据会改善最终的分类结果，那么就选择最低不纯度来进行区分，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173326.jpg" alt=""></p>
-<p>最终，我们会生成一个完整的决策树，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173330.jpg" alt=""></p>
-<h2 id="连续型变量构建决策树"><a href="#连续型变量构建决策树" class="headerlink" title="连续型变量构建决策树"></a>连续型变量构建决策树</h2><p>前面我们讲的都是二分类变量（yes或no）构建决策树的过程，如果我们的变量是连续型的，例如患者的体重，如何构建决策树呢，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173343.jpg" alt=""></p>
-<p>下面就讲这种变量构建决策树的流程：</p>
-<p>第一步：对体重进行排序，顺序从小到大，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173353.jpg" alt=""></p>
-<p>第二步：计算所有相邻患者的加权平均数，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173357.jpg" alt=""></p>
-<p>第三步：计算每个加权平均数的不纯度值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173402.jpg" alt=""></p>
-<p>现在看一下计算流程，先看第一个167.5这个平均数的基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173406.jpg" alt=""></p>
-<p>计算出的结果为0，再计算一下右侧的基尼不纯度，为0.375，那么计算一下总的基尼不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173410.jpg" alt=""></p>
-<p>现在计算出所有的变量的基尼不纯度，我们发现205这个体重的基尼不纯度为0.27，它的值最低，因此我们会选择205作为阈值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173414.jpg" alt=""></p>
-<h2 id="含有排序数据的决策树构建"><a href="#含有排序数据的决策树构建" class="headerlink" title="含有排序数据的决策树构建"></a>含有排序数据的决策树构建</h2><p>我们前面讲了含有二分类变量（yes或no）与连续型变量（体重）数据的决策树构建，现在我们再谈一种含有“排序数据”（ranked data）的决策树构建，排序数据就是像这样的数据，例如“把我的笑话按照搞笑程度从1到4排列”。</p>
-<p>此外，我们还会涉及一种多个选择数据（multiple choice data）的决策树的构建，多个选择数据就像这样的数据，“你喜欢什么颜色，红色，绿色，还是蓝色？”如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173426.jpg" alt=""></p>
-<p>排序数据类似于连续型变量的数据（例如体重），只不过我们计算的是这些可能排序的不纯度，例如，把我的笑话按照搞笑程度进行排序，其中4是最搞笑，1不太搞笑，现在我们计算这些笑话的不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173432.jpg" alt=""></p>
-<p>在计算这几个数据的不纯度时，我们并不计算<code>Joke Rank &lt;=4</code>这种情况，因此它基本上包括了所有的情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173436.jpg" alt=""></p>
-<p>现在我们看一下含有多个选择的数据，例如你喜欢什么颜色，颜色可以选择蓝色，绿色或红色，此时我们会计算每个组合的不纯度，在这个案例中，我们只有这三个种颜色，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173440.jpg" alt=""></p>
-<p>它的计算过程如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173444.jpg" alt=""></p>
-<p>在这个案例中，我们并不过计算“蓝色或绿色或红色”这种情况，因此这种情况包含了所有的情况，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173448.jpg" alt=""></p>
-<h2 id="决策树的过拟合"><a href="#决策树的过拟合" class="headerlink" title="决策树的过拟合"></a>决策树的过拟合</h2><p>在前面的案例中，我们使用了一组数据来构建决策树，这组数据中有三个变量，分别为胸痛（chest pain）<code>、</code>良好血液循环（good blood circulation）和动脉阻塞状态（blocked artery status），如下图左图所示，下图右图是构建好的决策树，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173459.jpg" alt=""></p>
-<p>当我们构建了决策树后，我们就可以寻问患者第一个问题了，你的血液循环是否良好，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173504.jpg" alt=""></p>
-<p>接着，询问是否出现了动脉阻塞，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173508.jpg" alt=""></p>
-<p>然后再询问，是否胸痛，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173512.jpg" alt=""></p>
-<p>如果都回答是，那么这个患者就有很大的可能性患了心脏病，因为17个类似的回答的患者都患有心脏病，仅有3个类似回答的患者没有患心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173515.jpg" alt=""></p>
-<p>如果在是否出现胸痛这个问题时，回答是否，那么这个患者就不太可能患有心脏病，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173522.jpg" alt=""></p>
-<p>我们再往后退一层，如果一个患者回答说他的血液循环良好，并且没有出现动脉阻塞，此时我们就不需要再问他是否出现胸痛了，因为在这一层中计算所得的不纯度更低，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173524.jpg" alt=""></p>
-<p>换句话讲，当我们在这个节点中使用了胸痛这个变量进行区分后，它的不纯度得分为0.29，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173529.jpg" alt="">如果不用胸痛这个变量进行区分，它的不纯度得分只有0.20，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173532.jpg" alt=""></p>
-<p>由于我们不用胸痛这个变量进行区分时，它的不纯度得分更低，因此它就是一个叶子节点（也就是说不要进行进一步的区分），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173536.jpg" alt=""></p>
-<p>此时，我们试想一下，如果胸痛这个变量从来就不能给出一个更低的不纯度，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173540.jpg" alt=""></p>
-<p>在这种情况下，我们就不要用胸痛这个变量来区分患者了，我们就要把这个变量从决策树中除去，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173543.jpg" alt=""></p>
-<p>即使我们有胸痛这个变量，也不要添加到决策树上，此时决策树上只剩了血液循环和动脉阻塞这两个变量，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173548.jpg" alt=""></p>
-<p>这就是一种自动特征选择，但是，我们还是需要设定一个阈值，从而使不纯度降低到足以能够产生很强区分的程度，最终我们会构建出一个更加简洁的决策树，并且这个决策树不出现“过拟合”，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173552.jpg" alt=""></p>
-<p>这个提到了一个术语，“过拟合”（over fit），过拟合指的是我们构建的决策树与原始数据（就是构建决策树的数据）匹配得很好，但是这个决策树却与其他的数据（我们拿到一个新的数据，放到这个决策树中）无法很好的匹配，决策树如果构建不好，很容易出现的毛病就是“过拟合”，如果要解决这个问题，就需要大幅度地降低决策树的不纯度，从而避免决策树过拟合，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173556.jpg" alt=""></p>
-<p>因此，简单来说，这就是特征选择要做的内容，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173600.jpg" alt=""></p>
-<h2 id="缺失值的处理"><a href="#缺失值的处理" class="headerlink" title="缺失值的处理"></a>缺失值的处理</h2><p>在前面的案例中，我们看到了动脉阻塞这个变量中有个缺失值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173626.jpg" alt=""></p>
-<p>这个缺失值是在第4行，也就是第4个患者中，当我们统计到第4个患者时，就会遇到，此时我们就会跳过这个患者，因为我们不知道这个缺失值原来是Yes，还是No，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173629.jpg" alt=""></p>
-<p>但是，并非只有一种跳过这种处理方式，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173633.jpg" alt=""></p>
-<p>我们可以在这个变量中，找到哪个变量（yes或no）出现的频率最高，就选它即可，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173636.jpg" alt=""></p>
-<p>如果在动脉阻塞这个变量中，yes出现的频率更高，那么我们就把这个缺失值当作yes，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173640.jpg" alt=""></p>
-<p>此外，我们还可以找到另外一列（例如第1列的胸痛）与这一列（动脉阻塞）关系，这种关系可以为我们提供指导，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173644.jpg" alt=""></p>
-<p>在这个案例中，我们发现，胸痛与动脉阻塞通常是相似的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173648.jpg" alt=""></p>
-<p>例如，第1行，两个变量都是No，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173652.jpg" alt=""></p>
-<p>第2行，两个变量都是Yes，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173655.jpg" alt=""></p>
-<p>第3行，两个变量都是No，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173659.png" alt=""></p>
-<p>因此，我们就可以在这个缺失值上填上Yes，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173703.jpg" alt=""></p>
-<p>我们再考虑一种情况，假如我们此时没有动脉阻塞这个变量，这一处的变量用体重进行了替换，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173707.jpg" alt=""></p>
-<p>我们此时，可以使用体重这个变量的均值或中位数来替换这个缺失值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173711.jpg" alt=""></p>
-<p>此外，我们还可以找到第1列（身高）与第3列（体重）之间的关系，用于确定体重的缺失值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173715.jpg" alt=""></p>
-<p>在这个案例中，我们发现身高与体重高度相关，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173718.jpg" alt=""></p>
-<p>由于它们都是连续型变量，因此我们可以做一下线性回归，求出这个值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173722.jpg" alt=""></p>
-<p>最终的结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714173725.jpg" alt=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/30/StatQuest/生物统计-StatQuest学习笔记18-K邻近算法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/30/StatQuest/生物统计-StatQuest学习笔记18-K邻近算法/" itemprop="url">StatQuest学习笔记18——K邻近算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-30T12:10:54+08:00">
-                2018-06-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,378
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这篇笔记是StatQuest系列视频教程的第50节，主要内容是讲K邻近算法（K-Nearest neighbors algorithm，缩写为KNN）。K邻近算法是一种对数据进行分类的，非常简单的算法。例如我们已经有了很多对细胞进行分类的数据，那么我们要研究某个细胞属于这些分类中的哪个类别，就需要使用这种算法，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172134.jpg" alt=""></p>
-<h2 id="K邻近算法基本思想"><a href="#K邻近算法基本思想" class="headerlink" title="K邻近算法基本思想"></a>K邻近算法基本思想</h2><p>先看一个简单的案例。</p>
-<p>第一步，我们拥有一批数据，这批数据已经进行了分类，在下图中，来源于小肠肿瘤中的这些细胞拥有不同的分类，我们使用PCA对这些细胞进行聚类，如下图所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172138.jpg" alt=""></p>
-<p>第二步，当我们再往这批数据中添加一个新的细胞时，我们此时并不清楚这个新细胞的分类，因为这个细胞是从另外的一个肿瘤中取出来的，不好归类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172143.jpg" alt=""></p>
-<p>第三步：我们计算这个新的细胞离它最近的那个分类（也就是最近的领居“nearest neighbors”），这个细胞就属于这个分类。如果“K最近的邻居（K-nearest neighbors）”中的这个K等于1（这个K表示的是邻居的数目），那么我们就能把这个新的细胞归于这个离它最近的分类中，在这个案例中，这个最近的分类是绿色的。如果K等于11，那我们就需要使用11个最近的邻居，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172146.jpg" alt=""></p>
-<p>假如这个新的细胞在其它的地方，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172149.jpg" alt=""></p>
-<p>如果K=11（这个意思表示，最这个点最近的邻居有11个），那么这个新的细胞就位于两类或更多的类中间，我们就把它归于得到“票数”最多的那个类别，那么在这个案例中，有7个最近的邻居是红色，3个最近的邻居是橘黄色，有1个最近的邻居是绿色，由于红色得到的票数最多，那么这个新的细胞就属于红色这一类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172154.jpg" alt=""></p>
-<h2 id="热图案例"><a href="#热图案例" class="headerlink" title="热图案例"></a>热图案例</h2><p>K邻近算法同样适用于热图，下面的这个热图是用采用层次聚类算法得到的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172159.jpg" alt=""></p>
-<p>此时如果我们有一个新的细胞，它的基因表达模式位于热图中浅蓝色区域的中央，如果K=1，那么我们仅仅需要看一下离它最近的细胞，我们就知道这个新的细胞是属于哪个类型的，这种情况下，它属于浅蓝色区域的分类，如果K=5，我们看一下离个细胞最近的邻居，它还是属于这个浅蓝色区域（仔细数一下，浅蓝色区域中有17列），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172202.jpg" alt=""></p>
-<p>假如这个新的细胞的基因表达模式位于浅蓝色区域的偏左侧的话，如果此时K=11，我们就需要进行一个投票，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172205.jpg" alt=""></p>
-<p>经过投票发现，在这11个最近的邻居中，有7个位于浅蓝色区域，有4个位于浅绿色区域，因此，我们把这个新细胞类型归于浅蓝色区域，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172209.jpg" alt=""></p>
-<p>如果这个新的细胞分类正好位于两个区域中央，这个细胞的归类就有两种解决方法：</p>
-<p>第一，如果K值是奇数，那么我们就很容易进行计算；</p>
-<p>第二，（如果K值是偶数），那么我们就会得到一个比较很麻烦的投票，此时就要靠投硬币来决定这个细胞属于哪个分类了，或者就是不归类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172213.jpg" alt=""></p>
-<h2 id="训练数据"><a href="#训练数据" class="headerlink" title="训练数据"></a>训练数据</h2><p>在这里我们讲一些简单的机器学习方面的内容，我们把那些用于最初始聚类的数据（这些数据我们已经知道它们是什么分类了）称为“训练数据”（training data），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172217.jpg" alt=""></p>
-<h2 id="如何选择K值"><a href="#如何选择K值" class="headerlink" title="如何选择K值"></a>如何选择K值</h2><p>K值只是算法意义上的数字，它无关生理学或生物学方面的意义，因此在设置K值之前，你或许会尝试设置多设几个K值。在多设几个K值时，此时假定你不清楚一部分训练数据（实际上是知道的）的分类，那么通过K邻近算法（KNN），你对这些未知的训练数据进行分类，进而查看你的数据（此处是非训练数据）的分类情况。</p>
-<p>上面的这一段是完全翻译视频中的文字，我是不太理解，但就我自己的理解而言，就先找一批训练数据，这些数据的分类已经很明确了，把这些数据分成2份，分别定义为A和B，其中A用于聚类（这部分数据通常比较大），另外一份B用KNN进行分类（也就是A中分好的类），此时能找出最佳的K值，然后再使用一批新的数据C进行KNN分类。</p>
-<p>如果K值比较低（例如K=1或K=2），那么噪音就会比较大，会受到异常值的影响。如果K值过大，虽然会解决K值过小的问题，但是，你也不会想让K值太大，因为如果你只有几个样本，那么运算时间会过长，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714172221.jpg" alt=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2018/06/29/StatQuest/生物统计-StatQuest学习笔记17-聚类/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/29/StatQuest/生物统计-StatQuest学习笔记17-聚类/" itemprop="url">StatQuest学习笔记17——聚类</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-29T12:10:54+08:00">
-                2018-06-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生统之StatQuest/" itemprop="url" rel="index">
-                    <span itemprop="name">生统之StatQuest</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,272
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  18
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这篇笔记是StatQuest系列教程的第47，48，49节。第47节与第48节有很在一部分内容是重复的，主要讲的是层次聚类，第49节讲提K-means聚类。</p>
-<h2 id="热图简单案例"><a href="#热图简单案例" class="headerlink" title="热图简单案例"></a>热图简单案例</h2><p>平时在读一个测序文章时，我们可能会经常看到热图，就像现在的这种图：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164818.jpg" alt=""></p>
-<p>现在我们来解释一下这张图：</p>
-<ol>
-<li>这是一张热图（heatmap），为什么要叫热图呢，因为它用不同的颜色来表示数值的大小，通常来说，用暖色（红色）表示数值大，冷色（蓝色）表示数值小。</li>
-<li>这个热图的行（row）是基因名（可能太小看不清楚），列是RNA-seq的样本名。</li>
-<li>当原始数据通过热图来展现时，数据经过了两种修饰来展示出来。第一种修饰就是相对丰度（relative abundances），以这种方式展示的数据，它研究的是一个基因在不同样本中的相对表达情况，这种展示方式，需要对同一行（也就是相同的基因在不同样本中的表达水平）的数据进行缩放（scaled），也就是Z转换。从下面的图中，我们就可以看到，样本1的某基因表达量明显高于其它样本（因为样本1的颜色最红，根据图例，它的表达值就最高），如下所示：</li>
-</ol>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164825.jpg" alt=""></p>
-<p>为了方便理解，我随手用Excel做了一下简陋的热图，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164828.png" alt=""></p>
-<p>可以看出，基因4在样本1中的表达量很高。不过按照第一种展示数据的方式，无法比较不同基因的表达水平差异，例如，在上图的黑色方框中，基因4显红色，这只能表达，样本1中基因4的表达水平比其它的样本高，不能说明样本1中的其它基因（例如基因3）的水平也比其它样本高，这种数据的展示方式只用于研究同一个基因在不同的样本中的表达水平差异。</p>
-<p>第二处修饰后的展示方式就是根据这些基因表达的相似性，把它们放到一块，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164833.png" alt=""></p>
-<p>再看下面的图形：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164837.jpg" alt=""></p>
-<p>从上到下，我们可以看到这些基因的表达的模式。</p>
-<p>在第一个紫红色的方框中，我们可以看到，这些基因在第2个样本中表达水平最高，而在第4个样本中表达水平最低。</p>
-<p>在第二个黑色的方框中，我们可以看到，这些基因在第1个样本中表达水平最高，而在第4个样本中表达水平最低。</p>
-<p>在第三个橙色方框中中，我们可以看到，这些基因在第2个样本中的表达水平最高，而在第3个栖中的表达水平最低。</p>
-<p>根据不同基因表达模式的相似性进行的“聚类”（clustering）并不是偶然的，而是通过一定的算法实现的，这些算法会将那些表达模式类似的基因放到一块，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164845.png" alt=""></p>
-<p>如果不进行聚类（clustering），那么用热图展示出来就是下图右边的那个样子，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164852.jpg" alt=""></p>
-<p>如果热图中既不进行聚类（clustering），也不进行缩放（scaling），那么热图就变成了如下的这个样子：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164858.jpg" alt=""></p>
-<p>从图上我们可以看到，红色部分的这个基因表达水平最高（比其他的基因表达高太多了），可以把它视为一个异常值。</p>
-<h2 id="热图复杂案例"><a href="#热图复杂案例" class="headerlink" title="热图复杂案例"></a>热图复杂案例</h2><p>现在我们再看一下比较复杂的热图案例，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164914.jpg" alt=""></p>
-<p>从这个图的标题上我们可以看出，这个貌似是一个结肠的单细胞测序数据的热图。这个热图的数据经过了缩放（scaled）与聚类（clustered），它的缩放是全局的，因此，这一组数据中并没有异常值，这里的缩放要与前面热图的缩放区分开来，前面的前面是按照某个基因进行缩放的，也就是把同一行的数据当成整体，进行了缩放（也就是z转换），而这个数据是把所有的数据当作整体，进行缩放。</p>
-<p>再看聚类。这个热图的聚类是按照列（column，也就是样本）和行（row，也就是基因）同时进行的聚类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714165212.png" alt=""></p>
-<p>在上图中，我们可以看到，纵矩形的部分表示基因表达模式相似的样本聚在了一起，横矩形表示的是，表达模式相似的基因聚集在了一起。它们的交集表示，这些样本的基因表达模式相似，以及有哪些基因相似。</p>
-<p>如果不进行聚类，也不进行数据缩放（scaling），那么下图的右上表示的就是不聚类的热图，右下表示的就是即不进行聚类，又不进行缩放的热图，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714165248.jpg" alt=""></p>
-<p>此时我们再回到前面的那个简单热图案例中来，我们试想一个问题，在那张热图中，如果我们对所有的基因进行整体的缩放（global scaling），而非单个基因的缩放，那么这个热图会怎么样，我们看下图：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714164924.jpg" alt=""></p>
-<p>经过全局缩放（global scaling）后，得到下面的图形，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171141.jpg" alt=""></p>
-<p>此时，我们会发现，这些聚类的结果就会发生了改变，并且新生成的图形中出面了异常高的热图，它是异常值，这个异常值会导致热图整体上出来严重的偏离，并且不容易观察基因的变化，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171147.jpg" alt=""></p>
-<p>因此，我们从上面的结果可以知道，缩放（scaling）会影响两个结果，第一，不同表达水平基因的颜色，这会影响你比较不同样本中的相同基因的表达水平，第二，影响聚类（clustering），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171156.jpg" alt=""></p>
-<h2 id="如何对数据进行缩放（scale）"><a href="#如何对数据进行缩放（scale）" class="headerlink" title="如何对数据进行缩放（scale）"></a>如何对数据进行缩放（scale）</h2><p>此时，我们再回到数据的缩放这个话题上，无论你对相同基因在不同样本中进行缩放，还是对全局的基因进行缩放，最常用的方法就是Z值缩放法（Z-Score Scaling），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171208.jpg" alt=""></p>
-<p>接着，我们具体看一下这种方法是如何实现数据的缩放的。在下图中，我们看到一个数轴上分布了几个样本的reads数，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171212.jpg" alt=""></p>
-<p>第一步：计算其均值（均值为16.5），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171216.jpg" alt=""></p>
-<p>第二步：每个样本的数值减去均值，此时，如果这个数值大，就表示此样本的某基因转录水平高；如果数值小，就表示此样本的某基因转录水平低，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171219.jpg" alt=""></p>
-<p>第三步：计算标准差（标准差为6.28）；</p>
-<p>第四步：将第2步中的数值除以标准差，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171225.jpg" alt=""></p>
-<p>经过上述的处理后，无论原始数据的变异程度如何，这些数据的范围最终会缩小，之所以这样处理，就是因为如果原始数据之间差异过大，那么不同基因表达水平就会变化程度（more subtle）更高的色度（shade）来表示，经过这样的处理，用较小程度的色度（shade）就能表示出基因水平的差异，方便观察，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171232.jpg" alt=""></p>
-<p>此时，我们可能会遇到这样的一种情况，例如，如果数据中出现异常值时，数据会怎么样，就像下面的这个样子：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171240.jpg" alt=""></p>
-<p>此时如果进行Z转换的话，标准差会很大，也就是Z值的分子会很大，最终得到的值会有一部分集中在0附近，只能用很少的色度来进行区分，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171245.jpg" alt=""></p>
-<p>例如，我们如果采用全局缩放来处理原始数据中，在第一个案例中，我们就会得到下面这样的图形，其中有一个基因明显表达水平非常高，使得其它的基因差异很难看出来，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171251.jpg" alt=""></p>
-<h2 id="如何聚类"><a href="#如何聚类" class="headerlink" title="如何聚类"></a>如何聚类</h2><p>原始数据经过缩放后（scaling），此时就可以进行聚类了，聚类有2种方法，分别是层次聚类（hierarchical clustering）和K-均值（K-means）聚类，我们先讲层次聚类（hierarchical clustering），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171300.jpg" alt=""></p>
-<h2 id="层次聚类（hierarchical-clustering）"><a href="#层次聚类（hierarchical-clustering）" class="headerlink" title="层次聚类（hierarchical clustering）"></a>层次聚类（hierarchical clustering）</h2><p>先看一个简单的案例，在这个案例中，有3个样本，每个样本4个基因，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171317.jpg" alt=""></p>
-<p>这种聚类方法的思路是这样的：</p>
-<p>第一步，计算出哪些基因与基因1最为接近，基因2明显与基因1表达模式不同，基因3与基因1的表达形式比较类似，基因4与基因1的表达模式也比较类似，但是，在这几个基因中，与基因1表达模式最接近的还是基因3，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171322.jpg" alt=""></p>
-<p>第二步，计算出哪些基因的表达模式与基因2最为接近（然后是基因3，基因4），经计算发现，基因4与基因2的表达模式最相似，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171328.jpg" alt=""></p>
-<p>第三步，我们在前面找到基因1和基因3的表达模式相似，基因2和基因4的表达模式相似，但是，基因1和基因3的相似程度要比基因2和基因4的相似程度高，我们把前面的组合（基因1和基因3）放到一个簇（cluster）中，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171334.jpg" alt=""></p>
-<p>第四步：此时再回到第一步，把基因1和基因3构成的簇（Cluster # 1）当作一个基因，然后再按照第二步，第三步来计算，经计算，此时，基因2和基因4最相似，把它们再放到一个簇中（Cluster #2），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171338.jpg" alt=""></p>
-<p>通常情况下，层次聚类（Hierarchical Clustering）通常会用一个树形图（dendrogram）连接起来，用于表明聚类成员之间的相似性和聚类次序，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171346.jpg" alt=""></p>
-<p>在右侧的树形中，我们可以发现，<code>Cluster #1</code>是最先形成的聚类，它们的相似性最高，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171353.jpg" alt=""></p>
-<p><code>Cluster #2</code>是第二个形成的聚类，它们的相似性次高，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171357.jpg" alt=""></p>
-<p>而第三个聚类<code>Cluster #3</code>则包含了所有的基因，它是最后形成的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171403.jpg" alt=""></p>
-<h2 id="层次聚类的原理"><a href="#层次聚类的原理" class="headerlink" title="层次聚类的原理"></a>层次聚类的原理</h2><p>前面我们提到过，层次聚类的第一步就是计算两组基因的相似性，此时我们详细介绍一下如何进行计算。</p>
-<p>在计算相似性方面并没有一个统计的标准，但有一些常用的手段。第一种计算相似性的方法就是欧氏距离（Euclidian distance），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171417.jpg" alt=""></p>
-<p>为了简单地说明欧氏距离（Euclidian distance），我们以最简单的例子来说明，在这个例子中，有2个样本，每个样本有2个基因，然后两个样本的相同基因的差值的平方相加，并开平方，得到的数值就是欧氏距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171423.jpg" alt=""></p>
-<p>除了欧氏距离可以计算相似性外，还可以使用曼哈顿距离（Manhattan distance）和坎贝拉距离（Canberra distance）来计算相似性，其中曼哈顿距离只是不同样本之间相同基因差值的绝对值之和，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171430.jpg" alt=""></p>
-<p>我们看一下用不同的方法计算相似性的区别，下图的左侧图使用的欧氏距离（Euclidian distance）来得到的热图，右图使用的是曼哈顿距离（Manhattan distance）得到的热图，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171434.jpg" alt=""></p>
-<p>从图上来看，使用这两种不同的相似性计算方法得到的热图略有差异，具体要使用哪种方法来计算相似性，并没有一个统计的标准，它们也没有什么生物学意义。</p>
-<p>此时，我们再回到原来的案例中来，在前面部分中我们提到，基因1和基因3的相似程度最高，把它们都放到一个簇（Cluster #1）中，此时，我们如何计算Cluster #1和基因2，基因4的相似性呢？有几种方法。</p>
-<p>其中最简单的一种方法就是求出Cluster #1中的两个基因的平均值，然后进行计算。但还有其它的方法，这些方法同样会影响聚类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171439.jpg" alt=""></p>
-<p>为了简单地说明簇（Cluster #1）与其它基因相似性计算的问题，我们假设有一批数据，分布在X-Y轴上，此时，我们已经生成了2个簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171443.jpg" alt=""></p>
-<p>此时，我们仅需要计算最后一个点属于哪个簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171448.jpg" alt=""></p>
-<p>此时我们可以采用以下这些方法进行计算：</p>
-<p>第一，计算这个点与两个簇平均值的距离（centroid），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171452.jpg" alt=""></p>
-<p>第二，计算这个点到两个簇最近的点的距离（single-linkage），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171501.jpg" alt=""></p>
-<p>第三，计算这个点到两个簇中最远的点的距离（complete-linkage），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171504.jpg" alt=""></p>
-<p>我们用前面的单细胞测序的热图来说明一下这三种方法，从左到右分别是：某点到某簇最远点的距离（在R中默认的就是这个选项），某点到某簇均值的距离，某点到某簇最近的点的距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171521.jpg" alt=""></p>
-<h2 id="K-means聚类"><a href="#K-means聚类" class="headerlink" title="K-means聚类"></a>K-means聚类</h2><h3 id="什么是K-means"><a href="#什么是K-means" class="headerlink" title="什么是K-means"></a>什么是K-means</h3><p>先看一个场景，例如我们手中有这样的一批数据，把它们绘制到一个数轴上，此时你的目的就是把它们分成3个簇（cluster），这三个数据或许是来源于三种不同的细胞或都是三种不同的肿瘤，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171528.jpg" alt=""></p>
-<p>我们仅从肉眼观察，就知道这一批数据明显可以分成3个簇，但是，如果我们不用肉眼来观察，用计算机来计算，如何得到这3个簇呢？此时就需要用到一种算法，即K-means聚类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171533.jpg" alt=""></p>
-<h3 id="K-means的基本思想"><a href="#K-means的基本思想" class="headerlink" title="K-means的基本思想"></a>K-means的基本思想</h3><p>此时，我们先了解一下K-means聚类的基本思想。</p>
-<p>第一步：选择你要聚类的个数，K-means聚类中的这个<code>K</code>就是你要聚类的数目的意思，此时，你们选择<code>K=3</code>，这也就是说，我们想把这些数据取成3个簇（cluster），对这个<code>K</code>值如何选择，我们后文会提到，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171538.jpg" alt=""></p>
-<p>第二步，随机选择3个不同的数据点当成3个簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171542.jpg" alt=""></p>
-<p>第三步：计算第1个点到这三个簇的距离，先计算第1个点到蓝簇的距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171542.jpg" alt=""></p>
-<p>接着，计算第1个点到绿簇的距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171549.jpg" alt=""></p>
-<p>最后，计算第1个点到橘黄簇的距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171554.jpg" alt=""></p>
-<p>第四步：将第1个点归于离它最近的簇，在这个案例中，第1个点就属于蓝簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171558.jpg" alt=""></p>
-<p>接着，重复前面的步骤，只是这次计算的第2个点，第2个点最终的计算结果它属于绿簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171601.jpg" alt=""></p>
-<p>再计算第3个点，它属于橘黄簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171608.jpg" alt=""></p>
-<p>经过最终计算，第3个点到最后的点都属于橘黄簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171616.jpg" alt=""></p>
-<p>此时，所有的点都进行了聚类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171620.jpg" alt=""></p>
-<p>第五步：计算每个簇的均值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171625.jpg" alt=""></p>
-<p>此时，我们还按照前面的方法，计算每个点到这三个簇的均值的距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171629.jpg" alt=""></p>
-<p>最终计算结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171633.jpg" alt=""></p>
-<p>经过最终的计算，我们发现，这些聚类结果并没有发生改变，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171637.jpg" alt=""></p>
-<p>也就是说，K-means的聚类结果似乎比我们肉眼进行的聚类的结果还要差，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171643.jpg" alt=""></p>
-<p>此时，我们需要对聚类的结果进行评估，其方法就是计算每个簇的变异，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171647.jpg" alt=""></p>
-<p>由于K-means的聚类过程并不能“看”到最佳的聚类，只能追踪这些簇与这些簇的总变异，然后通过不断更改起始的数据点进行迭代。</p>
-<p>此时我们回到起点，再将随机选择3个初始数据点作为初始的簇，按照前面同样的自救，计算剩余的点到这三个簇的距离，计算每个簇的均值，然后基于新的均值进行聚类，直接这些簇不再改变为止，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171652.jpg" alt=""></p>
-<p>计算的结果如下所示，此时这些数据已经进行了聚类，再计算这三个簇的变异，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171659.jpg" alt=""></p>
-<p>这一轮迭代结束，然后再来一轮，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171703.jpg" alt=""></p>
-<p>我们把这三次的聚类结果放一块儿，我们可以发现，第二次的聚类结果最好，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171707.jpg" alt=""></p>
-<p>但是我们并不清楚这个结果是不是所有可能的聚类结果中最好的（总变异最小），因此我们需要进行更多次的聚类，然后才能下结论。</p>
-<p>此时我们提出一个问题，<code>K</code>值应该如何选？在这个案例中，明显可以知道K值为3，但是，有的时候，这个K值并不像本案例中这么明显，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171713.jpg" alt=""></p>
-<p>其中一种确定K值的方法就是不断地使用不同的K值，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171719.jpg" alt=""></p>
-<p>我们先使用K=1这个数值，通过计算总的变异程度，明显这个结果不行，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171726.jpg" alt=""></p>
-<p>再使用K=2，此时我们计算一下总变异，这个结果比K=1的时候要好一些，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171731.jpg" alt=""></p>
-<p>接着，我们使用K=3，通过计算它的总变异，我们发现K=3的结果要比K=2更好，因为它的总变异更低，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171746.jpg" alt=""></p>
-<p>再继续，使K=4，我们发现，K=4的总变异比K=3的总变异还要小，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171751.jpg" alt=""></p>
-<p>从前面的这些计算结果来看，我们能总结出一个规律，每当我们添加一个新的簇时，总变异就会降低，当簇的数目等于总的数据点的数目时，总变异就是0，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171756.jpg" alt=""></p>
-<p>如果我们把K值与变异降低的程度绘制成曲线，那么就能得到下面的这条曲线：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171800.jpg" alt=""></p>
-<p>从这个曲线上我们可以看到，当K=3时，它之后的K值每增加1，总变异的降低幅度就没有前面的快，我们把K=3这个点称为拐点（elbow plot）。</p>
-<h3 id="K-mean聚类与层次聚类的区别"><a href="#K-mean聚类与层次聚类的区别" class="headerlink" title="K-mean聚类与层次聚类的区别"></a>K-mean聚类与层次聚类的区别</h3><p>此时，我们再提出一个问题：K-mean聚类与层次聚类有什么区别？</p>
-<p>K-means聚类会把数据聚成你所期望的簇的数目，而层次聚类则中介告诉你，哪两个数据是最相似的，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171803.jpg" alt=""></p>
-<h2 id="二维坐标的K-means"><a href="#二维坐标的K-means" class="headerlink" title="二维坐标的K-means"></a>二维坐标的K-means</h2><p>如果我们的数据无法绘制到一条数轴上时，如何进行K-means聚类呢，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171808.jpg" alt=""></p>
-<p>这种情况下，它的聚类原理跟一维数轴的原理一样，第一步就是随机找到三个点（前提是你想聚成3个簇），如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171812.jpg" alt=""></p>
-<p>然后，计算不同的点到这三个簇的欧氏距离（Euclidean distance），在二维坐标中，计算这个欧氏距离就是采用勾股定理，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171816.jpg" alt=""></p>
-<p>接着，就像前面讲的那样，距离最近的就属于某个簇，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171821.jpg" alt=""></p>
-<p>第一次的聚类结果如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171825.jpg" alt=""></p>
-<p>再接着，我们会像前面是找到的那样，计算出每个族的中心点（也就是均值），然后再聚类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171832.jpg" alt=""></p>
-<p>最后，得到比较满意的聚类图，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171837.jpg" alt=""></p>
-<h2 id="热图的K-means"><a href="#热图的K-means" class="headerlink" title="热图的K-means"></a>热图的K-means</h2><p>如果我们的数据是热图，那么如何进行K-means聚类呢？</p>
-<p>为了方便描述，我们就以下面的案例说明一下，两个样本（sample 1和sample 2），分别有4个基因，现在把这两个样本分别命令为X，Y，把它们的基因放到二维坐标轴上，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171855.jpg" alt=""></p>
-<p>然后像前面那样进行聚类，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171858.jpg" alt=""></p>
-<p>事实上，在实际的计算过程中，我们并不需要把数据投射到二维坐标上，只用计算不同样本之间的距离即可，例如欧氏距离，如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171902.jpg" alt=""></p>
-<h2 id="R的kmeans-函数备注"><a href="#R的kmeans-函数备注" class="headerlink" title="R的kmeans()函数备注"></a>R的kmeans()函数备注</h2><p>在R中，进行K-menas聚类的函数是<code>kmeans()</code>，它有一些注意事项。</p>
-<ol>
-<li>此函数会对每个距离加上权重，因此那些大簇（large clusters）的权重要略高于小簇（small clusters）的权重。</li>
-<li>默认情况下，此函数只有一组原始的簇，如果你要使用多个不同的起始数据点，那么你需要设定参数<code>nclust=25</code>或者是25左右的数字，例如（<code>kmans(data, k=3, nclust=25)</code>)。</li>
-</ol>
-<p>如下所示：</p>
-<p><img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190714171906.jpg" alt=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3812,7 +2983,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">232</span>
+                  <span class="site-state-item-count">236</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3911,7 +3082,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共928.1k字</span>
+  <span class="post-count">博客全站共938.3k字</span>
 </div>
 
         

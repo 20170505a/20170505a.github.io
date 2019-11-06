@@ -259,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/22/Tools/hexo公式渲染/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/03/BioItem/生信-转录组学习笔记03了解fastq测序数据/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -278,7 +278,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/22/Tools/hexo公式渲染/" itemprop="url">hexo公式渲染</a></h1>
+                <a class="post-title-link" href="/2017/10/03/BioItem/生信-转录组学习笔记03了解fastq测序数据/" itemprop="url">转录组学习笔记03-了解fastq测序数据</a></h1>
         
 
         <div class="post-meta">
@@ -290,8 +290,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-22T12:02:00+08:00">
-                2017-09-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-03T12:00:00+08:00">
+                2017-10-03
               </time>
             
 
@@ -313,8 +313,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生信工具/" itemprop="url" rel="index">
-                    <span itemprop="name">生信工具</span>
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
                   </a>
                 </span>
 
@@ -346,7 +346,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  56
+                  3,124
                 </span>
               
 
@@ -362,7 +362,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  12
                 </span>
               
             </div>
@@ -385,15 +385,717 @@
       
         
           
-            <ol>
-<li>安装hexo-math</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
-<p>2.<code>_config.yml</code>的配置<br>添加以下信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">math:</div><div class="line">  engine: &apos;mathjax&apos; # or &apos;katex&apos;</div><div class="line">  mathjax:</div><div class="line">    src: custom_mathjax_source</div><div class="line">    config:</div><div class="line">      # MathJax config</div><div class="line">  katex:</div><div class="line">    css: custom_css_source</div><div class="line">    js: custom_js_source # not used</div><div class="line">    config:</div><div class="line">      # KaTeX config</div></pre></td></tr></table></figure>
-<p>参考资料：</p>
+            <h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><blockquote>
+<p>需要用安装好的sratoolkit把sra文件转换为fastq格式的测序文件，并且用fastqc软件测试测序文件的质量！ 作业，理解测序reads，GC含量，质量值，接头，index，fastqc的全部报告，搜索中文教程，并发在论坛上面。 来源于生信技能树：<a href="http://www.biotrainee.com/forum.php?mod=viewthread&amp;tid=1750#lastpost" target="_blank" rel="external">http://www.biotrainee.com/forum.php?mod=viewthread&amp;tid=1750#lastpost</a></p>
+</blockquote>
+<h2 id="将sra转换为fastq格式"><a href="#将sra转换为fastq格式" class="headerlink" title="将sra转换为fastq格式"></a>将sra转换为fastq格式</h2><h4 id="sra格式"><a href="#sra格式" class="headerlink" title="sra格式"></a>sra格式</h4><p>下载的原始数据是sra格式，SRA（Sequence ReadArchive）数据库是用于存储二代测序的原始数据，包括 454，Illumina，SOLiD，IonTorrent，Helicos 和 CompleteGenomics。除了原始序列数据外，SRA现在也存在raw reads在参考基因的比对信息。</p>
+<h4 id="fastq格式："><a href="#fastq格式：" class="headerlink" title="fastq格式："></a>fastq格式：</h4><p>Fastq格式是一种基于文本的存储生物序列和对应碱基（或氨基酸）质量的文件格式。最初由桑格研究所（Wellcome Trust Sanger Institute）开发出来，现已成为存储高通量测序数据的事实标准。</p>
+<h4 id="fastq格式说明"><a href="#fastq格式说明" class="headerlink" title="fastq格式说明"></a>fastq格式说明</h4><p>FASTQ文件中每个序列通常有四行：</p>
 <ol>
-<li><a href="https://github.com/hexojs/hexo-math" target="_blank" rel="external">https://github.com/hexojs/hexo-math</a></li>
+<li>序列标识以及相关的描述信息，以‘@’开头；后面跟着序列的唯一ID以及相关说明内容。 </li>
+<li>第二行是核酸序列，是有ATCGN字符组成</li>
+<li>第三行以‘+’开头，后面是序列标示符、描述信息，或者什么也不加</li>
+<li>第四行，每个测序碱基质量，是用ASCII码来表示的，与第二行的字符数一致。 碱基质量得分与错误率的换算关系： Q = -10log10p（p表示测序的错误率，Q表示碱基质量分数） ASCII值与碱基质量得分之间的关系： Phred64 Q=ASCII转换后的数值-64 Phred33 Q=ASCII转换后的数值-33</li>
+</ol>
+<h5 id="一个典型的fastq文件如下所示："><a href="#一个典型的fastq文件如下所示：" class="headerlink" title="一个典型的fastq文件如下所示："></a>一个典型的fastq文件如下所示：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@SEQ_ID</div><div class="line">GATTTGGGGTTCAAAGCAGTATCGATCAAATAGTAAATCCATTTGTTCAACTCACAGTTT</div><div class="line">+</div><div class="line">!&apos;&apos;*((((***+))%%%++)(%%%%).1***-+*&apos;&apos;))**55CCF&gt;&gt;&gt;&gt;&gt;&gt;CCCCCCC65</div></pre></td></tr></table></figure>
+<blockquote>
+<p>如何判断是Phred64 还是 Phred33 ？ ASCII值小于等于58（相应的质量得分小于等于25）对应的字符只有在Phred+33的编码中被使用，所有Phred+64所使用的字符的ASCII值都大于等于59。在通常情况下，ASCII值大于等于74的字符只出现在Phred+64中。如果是最近两年的测序数据，一般都是Phred33形式的。参考文章：<a href="http://blog.csdn.net/huyongfeijoe/article/details/51613827" target="_blank" rel="external">http://blog.csdn.net/huyongfeijoe/article/details/51613827</a></p>
+</blockquote>
+<h4 id="转换工具：fastq-dump"><a href="#转换工具：fastq-dump" class="headerlink" title="转换工具：fastq-dump"></a>转换工具：fastq-dump</h4><p>将sra格式转换为fastq格式的工具是sratoolkit的fastq-dump，可以先用fastq-dump -h看一下帮助文件，分为如下几个部分：</p>
+<blockquote>
+<p>输入： -A|—accession 序列号<br>处理中: Read Splitting, Full Spot Filters, Common Filters, Filters based on alignments, Filters for individual reads。 基本都是些过滤参数。不太常用<br>输出： -O|—outdir 输出文件夹， -Z|—stdout 输出到标准输出， —gzip/—bzip2 输出为压缩格式<br>多文件选项： 常用的就是—split-3，split-3表示如果是单端测序则一个sra文件出来一个fastq文件，如果是双末端，则一个sra问件对应两个fastq问件SRRXXXXXX_1.fastq,SRRXXXXXX_2.fastq<br>格式化： 分为序列， 质量等，不常用<br>—gzip 使得输出的结果是.gz 的格式</p>
+</blockquote>
+<p>现在将disk2/sra下的sra文件转化为fastq格式，其中输入目录为disk2/sra，输出目录为/disk2/data/rna-seq，命令如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">for ((i=56;i&lt;=62;i++))</div><div class="line">do fastq-dump --gzip --split-3 -A ~/disk2/sra/SRR35899$i.sra -O ~/disk2/data/rna-seq</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>转换后的结果如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqfastq.png" alt=""></p>
+<h2 id="对fastqc格式进行质控"><a href="#对fastqc格式进行质控" class="headerlink" title="对fastqc格式进行质控"></a>对fastqc格式进行质控</h2><h3 id="工具：Fastqc"><a href="#工具：Fastqc" class="headerlink" title="工具：Fastqc"></a>工具：Fastqc</h3><p>用法如下所示：</p>
+<blockquote>
+<p>fastqc [-o output dir] [—(no)extract] [-f fastq|bam|sam] [-c contaminant file] seqfile1 .. seqfileN </p>
+<ol>
+<li>参数： -o 输出目录，需自己创建目录 </li>
+<li>—(no)extract 是否解压输出文件，默认是自动解压缩zip文件。加上—noextract不解压文件。 </li>
+<li>-f 指定输入文件的类型，支持fastq|bam|sam三种格式的文件，默认自动识别。 </li>
+<li>-t 同时处理的文件数目。 </li>
+<li>-c 是contaminant 文件，会从中搜索overpresent 序列。</li>
+</ol>
+</blockquote>
+<p>代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkdir -p ~/disk2/data/QC</div><div class="line">cd ~/disk2/data/rna-seq</div><div class="line"># 将所有的数据进行质控，得到zip的压缩文件和html文件</div><div class="line">fastqc -o ~/disk2/data/QC *.fastq.gz</div></pre></td></tr></table></figure>
+<h3 id="质控结果查看："><a href="#质控结果查看：" class="headerlink" title="质控结果查看："></a>质控结果查看：</h3><h4 id="1-质控后的文件如下所示："><a href="#1-质控后的文件如下所示：" class="headerlink" title="1. 质控后的文件如下所示："></a>1. 质控后的文件如下所示：</h4><p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqqc.png" alt=""></p>
+<p>质控结果有14个html文件，可以选择用浏览器打开查看最终的QC reports。随便打开一个质控结果文件，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseqqc1.png" alt=""></p>
+<h4 id="2-质控报告的内容"><a href="#2-质控报告的内容" class="headerlink" title="2. 质控报告的内容"></a>2. 质控报告的内容</h4><p>左边是目录概要，一共12项内容，如下所示：</p>
+<ol>
+<li>Basic Statistics</li>
+<li>Per base sequence quality</li>
+<li>Per tile sequence quality</li>
+<li>Per sequence quality scores</li>
+<li>Per base sequence content</li>
+<li>Per sequence GC content</li>
+<li>Per base N content</li>
+<li>Sequence Length Distribution</li>
+<li>Sequence Duplication Levels</li>
+<li>Overrepresented sequences</li>
+<li>Adapter Content</li>
+<li>Kmer Content</li>
+</ol>
+<p>可以点击想要看的结果，右边会跳转到特定详细的可视化结果。绿色代表“通过”，黄色代表“警告”，红色代表“不通过，失败”，如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult1.png" alt=""></p>
+<h6 id="2-1-Basic-Statistics"><a href="#2-1-Basic-Statistics" class="headerlink" title="2.1 Basic Statistics"></a>2.1 Basic Statistics</h6><p>基本的数据统计包括文件名，文件类型，编码形式，总的序列数，质量差的序列，序列平均长度，GC含量。<br><img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult2.png" alt=""></p>
+<h6 id="2-2-Per-base-sequence-quality"><a href="#2-2-Per-base-sequence-quality" class="headerlink" title="2.2 Per base sequence quality"></a>2.2 Per base sequence quality</h6><p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult3.png" alt=""></p>
+<p>图片太大，下部图片如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult4.png" alt=""><br>上图表示的是每个read各位置碱基的测序质量，具体的理解如下所示：</p>
+<ol>
+<li>横轴表示碱基的位置，数字就是表示碱基，即1到51个碱基。</li>
+<li>纵轴是质量分数，Quality score=-10log10p（p代表错误率），所以当质量分数为40的时候，p就是0.0001，质量算高了。</li>
+<li>图中每1个boxplot，都是该位置的所有序列的测序质量的一个统计，上面的bar是90%分位数，下面的bar是10%分位数，箱子的中间的横线是50%分位数，箱子的上边是75%分位数，下边是25%分位数。</li>
+<li>红色线代表中位数，蓝色代表平均数的连线，黄色是25%-75%区间，触须是10%-90%区间。若任一位置的下四分位数低于10或者中位数低于25，出现“警告”；若任一位置的下四分位数低于5或者中位数低于20，出现“失败，Fail”。</li>
+</ol>
+<p>一般要求此图中，所有位置的10%分位数大于20,也就是我们常说的Q20过滤（即质量数低于20的reads清除掉）W。</p>
+<h6 id="2-3-Per-tile-sequence-quality"><a href="#2-3-Per-tile-sequence-quality" class="headerlink" title="2.3 Per tile sequence quality"></a>2.3 Per tile sequence quality</h6><p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult5.png" alt=""></p>
+<p>检查reads中每一个碱基位置在不同的测序小孔之间的偏离度，蓝色代表偏离度小，质量好，越红代表偏离度越大，质量越差。纵轴是tail的Index编号。<br>这个图主要是为了防止，在测序过程中，某些tail受到不可控因素的影响而出现测序质量偏低。蓝色代表测序质量很高，暖色代表测序质量不高，如果某些tail出现暖色，可以在后续分析中把该tail测序的结果全部都去除</p>
+<h6 id="2-4-Per-sequence-quality-scores，reads"><a href="#2-4-Per-sequence-quality-scores，reads" class="headerlink" title="2.4 Per sequence quality scores，reads"></a>2.4 Per sequence quality scores，reads</h6><p>质量的分布，当峰值小于27时，警告；当峰值小于20时，fail。可以看出这个测序的报告峰值在38左右。<br>假如我测的1条序列长度为101bp，那么这101个位置每个位置Q之的平均值就是这条reads的质量值。该图横轴是0-40，表示Q值，纵轴是每个值对应的reads数目</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseqresult6.png" alt=""></p>
+<h6 id="2-5-Per-base-sequence-content"><a href="#2-5-Per-base-sequence-content" class="headerlink" title="2.5 Per base sequence content"></a>2.5 Per base sequence content</h6><p>对所有reads的每一个位置，统计ATCG四种碱基的分布，横轴为位置，这里是1-51bp，纵轴为碱基含量（百分数），正常情况下每个位置每种碱基出现的概率是相近的，四条线应该平行且相近。当部分位置碱基的比例出现bias时，即四条线在某些位置纷乱交织，往往提示我们有overrepresented sequence的污染。本结果前10个位置，每种碱基频率有明显的差别，说明有污染。当任一位置的A/T比例与G/C比例相差超过10%，报”WARN”；当任一位置的A/T比例与G/C比例相差超过20%，报”FAIL”。<br>理论上来说，A和T应该相等，G和C应该相等，但是一般测序的时候，刚开始测序仪状态不稳定，很可能出现上图的情况。像这种情况，即使测序的得分很高，也需要cut开始部分的序列信息，一般遇到到这种情况，会cut前面5bp。</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult7.png" alt=""></p>
+<h6 id="2-6-Per-Sequence-GC-Content"><a href="#2-6-Per-Sequence-GC-Content" class="headerlink" title="2.6 Per Sequence GC Content"></a>2.6 Per Sequence GC Content</h6><p>统计reads的平均GC含量的分布。横轴是0 - 100%； 纵轴是每条序列GC含量对应的数量。红线是实际情况，蓝线是理论分布（正态分布，均值不一定在50%，而是由平均GC含量推断的），两个应该比较接近才比较好。 曲线形状的偏差往往是由于文库的污染或是部分reads构成的子集有偏差（overrepresented reads）。形状接近正态但偏离理论分布的情况提示我们可能有系统偏差。偏离理论分布的reads超过15%时，报”WARN”；偏离理论分布的reads超过30%时，报”FAIL”。当红色的线出现双峰，基本肯定是混入了其他物种的DNA序列。这张图中的信息良好。</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult8.png" alt=""></p>
+<h6 id="2-7-Per-base-N-content"><a href="#2-7-Per-base-N-content" class="headerlink" title="2.7 Per base N content"></a>2.7 Per base N content</h6><p>当测序仪器不能辨别某条reads的某个位置到底是什么碱基时，就会产生“N”，统计N的比率。正常情况下，N值非常小。当任意位置的N的比例超过5%，报”WARN”；当任意位置的N的比例超过20%，报”FAIL”。<br><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult9.png" alt=""></p>
+<h6 id="2-8-Sequence-Length-Distribution"><a href="#2-8-Sequence-Length-Distribution" class="headerlink" title="2.8 Sequence Length Distribution"></a>2.8 Sequence Length Distribution</h6><p>reads长度分布，每次测序仪测出来的长度在理论上应该是完全相等的，但是总会有一些偏差。比如此图中，51bp是主要的，但是还是有少量的50和52的长度，不过数量比较少，不影响后续分析。当测序的长度不同时，如果很严重，则表明测序仪在此次测序过程中产生的数据不可信。当reads长度不一致时报”WARN”；当有长度为0的read时报“FAIL”。</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult10.png" alt=""></p>
+<h6 id="2-9-Sequence-Duplication-Levels"><a href="#2-9-Sequence-Duplication-Levels" class="headerlink" title="2.9 Sequence Duplication Levels"></a>2.9 Sequence Duplication Levels</h6><p>统计不同拷贝数的reads的频率。测序深度越高，越容易产生一定程度的duplication，这是正常的现象，但如果duplication的程度很高，就提示我们可能有bias的存在。横坐标是duplication的次数，纵坐标是duplicated reads的数目，以unique reads的总数作为100%。下图中，横坐标表示序列重复水平；纵坐标代表重复水平序列占所有序列的百分比。下图中大于10个重复的reads占总序列的20%以上，其他依次类推。当非unique的reads占总数的比例大于20%时，报”WARN”；当非unique的reads占总数的比例大于50%时，报”FAIL“。</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult11.png" alt=""></p>
+<h6 id="2-10-Overrepresented-sequences"><a href="#2-10-Overrepresented-sequences" class="headerlink" title="2.10 Overrepresented sequences"></a>2.10 Overrepresented sequences</h6><p>一条序列的重复数，因为一个转录组中有非常多的转录本，一条序列再怎么多也不太会占整个转录组的一小部分（比如1%），如果出现这种情况，不是这种转录本巨量表达，就是样品被污染。这个模块列出来大于全部转录组1%的reads序列，但是因为用的是前200,000条，所以其实参考意义不大，完全可以忽略。</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult12.png" alt=""></p>
+<h6 id="2-11-Adapter-content"><a href="#2-11-Adapter-content" class="headerlink" title="2.11 Adapter content"></a>2.11 Adapter content</h6><p>接头含量。①此图衡量的是序列中两端adapter的情况；②如果在当时fastqc分析的时候-a选项没有内容，则默认使用图例中的四种通用adapter序列进行统计；③本例中adapter都已经去除，如果有adapter序列没有去除干净的情况，在后续分析的时候需要先使用cutadapt软件进行去接头。</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult13.png" alt=""></p>
+<h6 id="2-12-Kmer-content"><a href="#2-12-Kmer-content" class="headerlink" title="2.12 Kmer content"></a>2.12 Kmer content</h6><p><img src="http://ortxpw68f.bkt.clouddn.com/rnqseqresult14.png" alt=""><br>①这个图统计的是，在序列中某些特征的短序列重复出现的次数；② 我们可以看到1-8bp的时候图例中的几种短序列都出现了非常多的次数，一般来说，出现这种情况，要么是adapter没有去除干净，而又没有使用-a参数；要么就是序列本身可能重复度比较高，如建库PCR的时候出现了bias；④ 对于这种情况，我的办法是可以cut掉前面的一些长度，可以试着cut 5~8bp</p>
+<h2 id="批量质控结果查看MultiQC"><a href="#批量质控结果查看MultiQC" class="headerlink" title="批量质控结果查看MultiQC"></a>批量质控结果查看MultiQC</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># 安装multiqc</div><div class="line">$ conda install -c bioconda multiqc</div><div class="line"># 测试</div><div class="line">$ multiqc --help</div><div class="line"># 进入存放QC结果的文件夹，空白处右键“在终端打开”</div><div class="line"></div><div class="line"># 扫描结果文件，忽略html文件</div><div class="line">$ multiqc ./*fastqc.zip --ignore *.html</div><div class="line"># 最后会默认生成一个名为multiqc_report.html文件，用浏览器查看</div></pre></td></tr></table></figure>
+<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><p><a href="https://zhuanlan.zhihu.com/p/20731723" target="_blank" rel="external">孟浩巍.20160410 测序分析——使用 FastQC 做质控</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/02/BioItem/生信-转录组学习笔记02-读文章获取测序数据/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/02/BioItem/生信-转录组学习笔记02-读文章获取测序数据/" itemprop="url">转录组学习笔记02-读文献下载测序数据</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-02T12:00:00+08:00">
+                2017-10-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,984
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="任务目标："><a href="#任务目标：" class="headerlink" title="任务目标："></a>任务目标：</h2><blockquote>
+<p>本系列课程学习的文章是：AKAP95 regulates splicing through scaffolding RNAs and RNA processing factors. Nat Commun 2016 Nov 8;7:13347. PMID: 27824034 很容易在文章里面找到数据地址GSE81916 这样就可以下载sra。</p>
+</blockquote>
+<h2 id="文章主要内容"><a href="#文章主要内容" class="headerlink" title="文章主要内容"></a>文章主要内容</h2><h3 id="测序物种"><a href="#测序物种" class="headerlink" title="测序物种"></a>测序物种</h3><p>人类，小鼠；</p>
+<h3 id="实验类型"><a href="#实验类型" class="headerlink" title="实验类型"></a>实验类型</h3><p>高通量测序</p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>pre-mRNA的可变剪切与高等生物基因表达的复杂性有关，但是可变剪切位点的选择却未研究清楚。作者在以前的研究中发现了一个染色质相关的蛋白AKAP95（AKAP8）在强化染色质转录方向有着明显的影响。在本文的研究中，APAKP95能与许多涉及转录和RNA加工的因子相互作用，调节pre-mRNA的剪接。AKAP95直接促进内源基因FAM126A的特异性外显子的体外剪接和包含。 AKAP95N-末端富含YG的结构域在与RNA加工因子（例如hnRNP蛋白）结合的过程中有着重要的作用，它的锌指结构域对于pre-mRNA的结合至关重要。基因组结合的分析显示，AKAP95优先结合人类转录组中大量pre-mRNA的近端内含子区域，AKAP95的敲除能导致多外显子增加的减少。AKAP95还可以选择性地协调hnRNP H/ F和U蛋白来调节可变剪接事件。进一步表明，AKAP95与自身直接相互作用。总之，实验的研究结果表明，AKAP95是pre-mRNA剪接的新型，并且是正向调节因子，它有可能是一个转录和剪接调节整合子，并且实验提出了一个模型，即AKAP95通过支架RNA和RNA加工因子调节pre-mRNA剪接，并促进剪接位点之间的信息交流。</p>
+<p>原英文摘要：</p>
+<blockquote>
+<p>Alternative splicing of pre-mRNAs significantly contributes to the complexity of gene expression in higher organisms, but the regulation of the splice site selection remains incompletely understood. We have previously demonstrated that a chromatin-associated protein, AKAP95 (AKAP8), has a remarkable activity in enhancing chromatin transcription. In this study, we have shown that AKAP95 physically interacts with many factors involved in transcription and RNA processing, and functionally regulates pre-mRNA splicing. AKAP95 directly promotes splicing in vitro and the inclusion of a specific exon of an endogenous gene FAM126A. The N-terminal YG-rich domain of AKAP95 is important for its binding to RNA processing factors including selective groups of hnRNP proteins, and its zinc finger domains are critical for pre-mRNA binding. Genome-wide binding assays revealed that AKAP95 bound preferentially to proximal intronic regions on a large number of pre-mRNAs in human transcriptome, and AKAP95 depletion predominantly resulted in reduced inclusion of many exons. AKAP95 also selectively coordinates with hnRNP H/F and U proteins in regulating alternative splicing events. We have further shown that AKAP95 directly interacts with itself. Taken together, our results establish AKAP95 as a novel and mostly positive regulator of pre-mRNA splicing and a possible integrator of transcription and splicing regulation, and support a model that AKAP95 regulates pre-mRNA splicing via through scaffolding RNAs and RNA processing factors and facilitating the splice site communication.</p>
+</blockquote>
+<h3 id="样本信息"><a href="#样本信息" class="headerlink" title="样本信息"></a>样本信息</h3><p>样本1-8是RIP-seq的数据，研究的是AKAP95与转录组的结合，样本9-15是mRNA-seq的数据，研究的是在293细胞或小鼠ES细胞中敲减了AKAP95的数据（其中9-11是293细胞的数据，有3个，12-15是小鼠ES细胞的数据，有4个）。</p>
+<h3 id="文章思路"><a href="#文章思路" class="headerlink" title="文章思路"></a>文章思路</h3><p>1.AKAP95的N末端区域参与该蛋白与RNA加工因子的结合，这些RNA加工因子包括hnRNPs。<br>2.APAK95与许多RNA加工因子的结合暗示了AKAP95在RNA加工方面发挥了作用，这些作用包括pre-RNA剪接。实验结果表明，AKAP95直接调控minigene pre-mRNA剪接，AKAP95的N末端与ZFs是其功能发挥的结构域。<br>3.为了寻找AKAP95剪接调控的内源靶点。经过一系列实验表明：AKAP95和hnRNP F参与调节FAM126A外显子11的剪接（实验中提到了敲减AKAP95后，FAM126A的外显子11会被跳过，而在野生型中则正常剪接）。<br>4.利用深度测序的方法寻的找内源AKAP95与人类转录组的结合。测序手段是RIP，其结果是发现AKAp95能与pre-mRNAs结合。<br><strong>5. （核心，也就是这个笔记学习的部分）问题：评估AKAP95对可变剪接的全局影响，实验手段是：①人类294细胞和小鼠ES细胞中敲减了AKAP95基因-&gt;②RNA-seq-&gt;③DEXseq分析。</strong>AKAP95的敲减会导致更多的外显子使用（exon）减少，这表明AKAP95会全局促进外显子增加（exon inclusion）。看文献我的理解是，有了AKAP95基因后，该基因的表达产物会导致FAM126A的外显子10，11，12连接起来，如果敲低了AKAP95这个基因，FAM126A的外显子10与12连接起来，会跳过外显子11。因此AKAP95的功能就在于调节FAM126A的可变剪接。exon inclusion我的理解是，外显子的利用，以此文献为例说明，exon inclusion指的就是FAM126A的外显子11的利用，AKAP95会促进AKAP95外显子11的利用，如果没有AKAP95，则FAM126A的外显子10就会跳过外显子11，与外显子12连接起来，exon inclusion就降低。<br>6.后续的实验作者又研究了AKA95的一些作用机理，略。</p>
+<h3 id="文章结果"><a href="#文章结果" class="headerlink" title="文章结果"></a>文章结果</h3><h4 id="a-b图"><a href="#a-b图" class="headerlink" title="a.b图"></a>a.b图</h4><p>a图是火山图。火山图常用于展示显著差异表达的基因，这里有两个关键词：显著是指P<0.05，差异表达一般我们按照fold change(倍数变化)="">=2.0作为标准。<br>当我们拿到基因表达的P值和倍数后，为了用火山图展示结果，一般需要把倍数进行Log2的转化（下图a的x轴），比如某基因在实验组表达水平是对照组的4倍，log2（4）=2，同样的如果是1/4，也就是0.25，转换后的结果就是-2。<br>P值进行-log10的转化，-log10（0.01）约等于2，由于P值越小表示越显著，所以我们进行-log10（P value）转化后，转化值越大表示差异约显著，比如-log10（0.001）=3  &gt;  -log10(0.01)=2 &gt;  -log10(0.05)=1.30（下图a的y轴）。<br><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq001a.png" alt=""><br>火山图有三种颜色，黄色与红色都是Padj小于0.01的基因（P值经过了FDR校正，即false discovery rate）。红色又表示基因变化超过2倍的基因。b图是饼图，它表示外显子使用(exon usage)的增加与降低数目。</0.05，差异表达一般我们按照fold></p>
+<h4 id="c-d图"><a href="#c-d图" class="headerlink" title="c.d图"></a>c.d图</h4><p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq002a.png" alt=""></p>
+<h4 id="e图"><a href="#e图" class="headerlink" title="e图"></a>e图</h4><p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq003a.png" alt=""></p>
+<h4 id="f图"><a href="#f图" class="headerlink" title="f图"></a>f图</h4><p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq004a.png" alt=""></p>
+<h3 id="文章所用的生信方法"><a href="#文章所用的生信方法" class="headerlink" title="文章所用的生信方法"></a>文章所用的生信方法</h3><p>在后文的Bioinformatic analyses部分</p>
+<h4 id="比对"><a href="#比对" class="headerlink" title="比对"></a>比对</h4><p>比对软件：TopHat (v2.0.13)<br>参考基因组：human reference genome (GRCh37/hg19)<br>GTF文件： GTF version GRCh37.70<br>只保留MQ &gt;30的map结果<br>Picard-tools (v1.126)： 计算平均插入大小(mean insert sizes)和标准差<br>read count: 软件：HTSeq v0.6.0</p>
+<h4 id="差异表达分析"><a href="#差异表达分析" class="headerlink" title="差异表达分析"></a>差异表达分析</h4><p>DESeq (v3.0)<br>DEXSeq (v3.1)</p>
+<h4 id="富集分析"><a href="#富集分析" class="headerlink" title="富集分析"></a>富集分析</h4><p>GO分析：DAVID (<a href="http://david.ncifcrf.gov/" target="_blank" rel="external">http://david.ncifcrf.gov/</a>)</p>
+<h1 id="数据下载"><a href="#数据下载" class="headerlink" title="数据下载"></a>数据下载</h1><p>进入NCBI的GEO数据库<a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank" rel="external">https://www.ncbi.nlm.nih.gov/geo/</a><br>搜索GSE81916，如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/RNAseq001.png" alt=""></p>
+<p>输入GSE81916，单击Search即可，见到数据说明及下载页面，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq002c.png" alt=""></p>
+<p>下面有一段话是对这些数据的描述，即：</p>
+<p>&gt;</p>
+<blockquote>
+<p>Overall design    Samples 1-8 are RNA-immunoprecipitation &gt; (RIP)-seq to determine AKAP95 binding to the<br>transcriptome. Samples 9-15 are mRNA-seq to determine<br>effect of AKAP95 knockdown in human 293 cells (9-11) or &gt; mouse ES cells (12-15).</p>
+</blockquote>
+<p>大意就是样本9-15是mRNA-seq的数据，而样本1-8是RNA免疫组化的数据。我们只需要9-15的数据，单击红框链接即可进入数据下载页面，如下所示：</p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq002d.png" alt=""></p>
+<p>单击第一行的SRP/SRP075/SRP075747右侧的ftp，即可进入数据下载界面：<br><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq003.png" alt=""></p>
+<p>现在下载SRR3589956-SRR3589962的7个数据（3个人类，4个小鼠），命令如下：</p>
+<p>此命令是将数据下载到disk2/sra的目录下，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd ~/disk2 &amp;&amp; mkdir sra</div><div class="line">for ((i=56;i&lt;=62;i=i++));do wget ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP075/SRP075747/SRR35899$i/SRR35899$i.sra ;done</div></pre></td></tr></table></figure>
+<p>当时觉得数据下载慢，我就直接用迅雷下载了，数据下载后如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/rnaseq004.png" alt=""></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1507359643&amp;ver=437&amp;signature=cWtmQqrEoi7fnwdGF63u2mcQ0P6cJpcV4aDJ6AHHSJBEDxuP2Wb65am9apJEQaPs1U6NBoVE5EJ0XK1MEatZyKjd9OlDcpEB0T3-abbjsFTl01OZznhVOV-eQh1gW8n1&amp;new=1" target="_blank" rel="external">浙大植物学小白的转录组笔记</a></li>
+<li><a href="http://www.jianshu.com/p/d717957828c8" target="_blank" rel="external">转录组入门（2）：读文章拿到测序数据</a></li>
+<li><a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1507611528&amp;ver=443&amp;signature=s4y*meB6oWf0zVZIxQ9EEpNJ5P0whexjL2DcoTcwbgYBOqzhv-2jZk2U86FRlrGFW*6XSnTwgcVLt7HXwvLGWSF9z4qErLcHhdtjy6V0Qz3fa*VQAmLJGou2QXklqI-a&amp;new=1" target="_blank" rel="external">如何看懂和绘制火山图？</a></li>
+<li><a href="https://mp.weixin.qq.com/s?src=3&amp;timestamp=1507708087&amp;ver=1&amp;signature=sDBGiyaFarX9G5wtSOQZmeNuqVjXrtAwT3TPqeKPH3B9tyOi4-U3kaq2-5g6xncNA1WKDJrGvJdfB995Br2sSem-IImvEgNWliDhuFDKxHojoVe5DioWWgBDBR7xLSWz-yUqZnnXKXLamRkn598rPLLCf5fRp-0KTirlcjpl1fw=" target="_blank" rel="external">人气推文p值、E值、FDR、q值…你晕菜了吗？续集来啦！</a></li>
+<li><a href="https://mp.weixin.qq.com/s?src=3&amp;timestamp=1507708087&amp;ver=1&amp;signature=YQpqTHl4WpYahQH2jvnkPWMm3-T9BnyoL5l9GZy2AhftTiyYF6Oq7lLBfskA8f6Po3rBZY4qSWogpaGi233BtEoRvexLfcbp-PcbWjrKu-XduuIMh136EjzWY*57k9brIInLLwcPx*QLsHkpvkiOHHMv-SrKCyVPf38TWe-Dl70=" target="_blank" rel="external">揭秘：FDR背后的真相</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/10/01/BioItem/生信-转录组学习笔记01-计算机及软件安装/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/01/BioItem/生信-转录组学习笔记01-计算机及软件安装/" itemprop="url">转录组学习笔记01-计算机及软件安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-01T12:00:00+08:00">
+                2017-10-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信实战项目/" itemprop="url" rel="index">
+                    <span itemprop="name">生信实战项目</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,978
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>转录组的这几篇入门笔记主要是参照了生信技能树论坛，公众号，生信媛公众号，徐更洲的博客，沈梦圆的博客及公众号，Jimmy等人的博客完成的。</p>
+<h2 id="软件安装（一）——miniconda"><a href="#软件安装（一）——miniconda" class="headerlink" title="软件安装（一）——miniconda"></a>软件安装（一）——miniconda</h2><h3 id="首先要安装：Miniconda"><a href="#首先要安装：Miniconda" class="headerlink" title="首先要安装：Miniconda"></a>首先要安装：Miniconda</h3><p>先了解一下conda，Anaconda,Miniconda。<br><strong>conda</strong>是一个工具，也是一个可执行命令，其核心功能是包管理与环境管理。包管理与pip的使用类似，环境管理则允许用户方便地安装不同版本的python并可以快速切换。<br><strong><a href="https://www.anaconda.com/download/#download" target="_blank" rel="external">Anaconda</a></strong>是一个用于科学计算的Python发行版，支持 Linux, Mac, Windows系统，提供了包管理与环境管理的功能，可以很方便地解决多版本python并存、切换以及各种第三方包安装问题。Anaconda则是一个打包的集合，里面预装好了conda、某个版本的python、众多packages、科学计算工具等等，所以也称为Python的一种发行版。<br><strong><a href="https://conda.io/miniconda.html" target="_blank" rel="external">Miniconda</a></strong>则是Anaconda的微缩版，它只包含最基本的内容，即python与conda，以及相关的必须依赖项，对于空间要求严格的用户，Miniconda是一种选择。<br><strong><a href="https://bioconda.github.io/index.html" target="_blank" rel="external">bioconda</a></strong>是conda上一个分发生物信息软件的频道。多数软件都可以通过conda来安装，可查看<a href="https://bioconda.github.io/recipes.html#recipes" target="_blank" rel="external">可用软件列表</a>。</p>
+<h4 id="第一步：下载miniconda2"><a href="#第一步：下载miniconda2" class="headerlink" title="第一步：下载miniconda2"></a>第一步：下载miniconda2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh</div></pre></td></tr></table></figure>
+<h4 id="第二步：安装miniconda2"><a href="#第二步：安装miniconda2" class="headerlink" title="第二步：安装miniconda2"></a>第二步：安装miniconda2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bash Miniconda2-latest-Linux-x86_64.sh</div></pre></td></tr></table></figure>
+<p>安装过程基本上就是按Enter或输入yes，仔细看说明就行。</p>
+<h4 id="第三步：将miniconda2保存到环境变量"><a href="#第三步：将miniconda2保存到环境变量" class="headerlink" title="第三步：将miniconda2保存到环境变量"></a>第三步：将miniconda2保存到环境变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">echo &quot;export PATH=/home/bio/miniconda2/bin:&quot;&apos;$PATH&apos; &gt;&gt; ~/.bashrc</div><div class="line">source ~/.bashrc</div></pre></td></tr></table></figure>
+<h4 id="第四步：添加通道"><a href="#第四步：添加通道" class="headerlink" title="第四步：添加通道"></a>第四步：添加通道</h4><p>Conda默认的源访问速度有些慢，可以增加国内的源（国内的源是清华源，其中参考文献中给出的；另外还可以增加几个源，以便于安装更多的软件，尤其是bioconda安装生信类工具。conda-forge通道是Conda社区维护的包含很多不在默认通道里面的通用型软件。r通道是向后兼容性通道，尤其是使用R3.3.1版本时会用到。后添加的通道优先级更高，因此一般用下面列出的顺序添加。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">conda config --set show_channel_urls yes</div><div class="line">conda config --add channels r # Optional, lowest priority</div><div class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free</div><div class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge</div><div class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda</div></pre></td></tr></table></figure>
+<p>如果命令行添加不了，可以用<code>vim ~/.condarc</code>来进行安装，如果安装错误了，可以删除.condarc文件，然后再用命令行来安装。用<code>conda config --get channels</code>可以查看已经添加的频道，而用<code>conda config --show</code>可查看已有的配置。如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/conda002a.png" alt=""></p>
+<p><img src="http://ortxpw68f.bkt.clouddn.com/conda001a.png" alt=""></p>
+<h3 id="Conda基本使用"><a href="#Conda基本使用" class="headerlink" title="Conda基本使用"></a>Conda基本使用</h3><h4 id="列出安装的软件包"><a href="#列出安装的软件包" class="headerlink" title="列出安装的软件包"></a>列出安装的软件包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda list</div></pre></td></tr></table></figure>
+<p>如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/conda003a.png" alt=""></p>
+<h4 id="搜索需要安装的软件包，获取其完成名字"><a href="#搜索需要安装的软件包，获取其完成名字" class="headerlink" title="搜索需要安装的软件包，获取其完成名字"></a>搜索需要安装的软件包，获取其完成名字</h4><p>命令是<code>conda search &lt;package ambigious name&gt;</code> ，以搜索fastqc为例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda search fastqc  # * 表示对于版本的包已安装</div></pre></td></tr></table></figure></p>
+<p>如下所示：<br><img src="http://ortxpw68f.bkt.clouddn.com/conda004a.png" alt=""></p>
+<h4 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h4><p>命令为<code>conda install &lt;package name&gt;</code><br>以安装 numpy=1.7.2为例说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">conda install numpy=1.7.2 </div><div class="line"># 安装特定版本的软件包</div><div class="line"># 也可以不加</div></pre></td></tr></table></figure>
+<h4 id="更新软件包"><a href="#更新软件包" class="headerlink" title="更新软件包"></a>更新软件包</h4><p><code>conda update &lt;package name&gt;</code></p>
+<h4 id="移除软件包"><a href="#移除软件包" class="headerlink" title="移除软件包"></a>移除软件包</h4><p><code>conda remove &lt;package name&gt;</code></p>
+<h4 id="获取帮助信息"><a href="#获取帮助信息" class="headerlink" title="获取帮助信息"></a>获取帮助信息</h4><p><code>conda -h # 查看conda可用的命令</code><br><code>conda install -h #查看install子命令的帮助</code></p>
+<h3 id="关于环境"><a href="#关于环境" class="headerlink" title="关于环境"></a>关于环境</h3><p>condas可以创建多个分析环境，这是它的优势之一，不过目前用不到，以后用到了再学。</p>
+<h4 id="查看已有环境"><a href="#查看已有环境" class="headerlink" title="查看已有环境"></a>查看已有环境</h4><p>虚拟<strong>环境管理</strong>：conda比较好用的就是它能够建立多个互不干扰的分析环境。通过<code>conda info --envs</code>可以查看环境，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">conda info --envs</div><div class="line"># 或 conda info -e</div></pre></td></tr></table></figure>
+<p>目前就只有一个默认环境，也就是root：<br><img src="http://ortxpw68f.bkt.clouddn.com/minicoda2.png" alt=""></p>
+<h3 id="卸载miniconda"><a href="#卸载miniconda" class="headerlink" title="卸载miniconda"></a>卸载miniconda</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rm -rf ~/miniconda2</div></pre></td></tr></table></figure>
+<p>从环境变量中去掉miniconda：打开~/.bash_profile文件，删掉其中miniconda的路径，关闭并保存<br>删除隐藏的.condarc 、.conda以及.continuum文件</p>
+<h2 id="软件安装（二）——其它生信工具"><a href="#软件安装（二）——其它生信工具" class="headerlink" title="软件安装（二）——其它生信工具"></a>软件安装（二）——其它生信工具</h2><p>目前所用的生信工具如下所示：</p>
+<h3 id="1-sratoolkit"><a href="#1-sratoolkit" class="headerlink" title="(1)sratoolkit"></a>(1)sratoolkit</h3><p><a href="https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software" title="sratoolkit" target="_blank" rel="external">sratoolkit</a>：把NCBI SRA（Sequence Read Archive）数据库中的NGS序列数据从 sra 格式转换到 fastq 格式。</p>
+<p>conda安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install -c jfear sratoolkit=2.8.1</div></pre></td></tr></table></figure>
+<p>如果安装不成功，可采用下列安装方式（<strong>我的笔记本上上基本上都是conda安装，对于下面的安装方式并没有试过</strong>）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">cd mynotes</div><div class="line">cd src</div><div class="line">wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-ubuntu64.tar.gz</div><div class="line">tar -zxvf sratoolkit.2.8.2-1-ubuntu64.tar.gz</div><div class="line">mv sratoolkit.2.8.2-1-ubuntu64 ~/biosoft</div><div class="line"></div><div class="line"># 加入环境变量</div><div class="line">echo &apos;PATH=$PATH:~/biosoft/sratoolkit.2.8.2-1-ubuntu64/bin&apos; &gt;&gt; ~/.bashrc</div><div class="line"></div><div class="line"># 测试</div><div class="line">prefetch -v</div><div class="line"># 尝试下载，默认存放在家目录下的ncbi文件夹中</div><div class="line">prefetch -c SRR390728</div></pre></td></tr></table></figure>
+<h3 id="fastqc"><a href="#fastqc" class="headerlink" title="fastqc"></a>fastqc</h3><p><a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/" title="fastqc" target="_blank" rel="external">fastqc</a>:二代测序数据质量分析软件。</p>
+<p>安装如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install fastqc</div></pre></td></tr></table></figure></p>
+<p>或者是采用常规的安装方式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"># 判断系统是否安装java</div><div class="line">java -version</div><div class="line"># 安装java， 请改成openjdk-9-jdk，下面的是错误演示</div><div class="line">sudo apt install  openjdk-9-jre-headless</div><div class="line"># 验证</div><div class="line">java -version</div><div class="line"># openjdk version &quot;9-internal&quot;</div><div class="line"># OpenJDK Runtime Environment (build 9-internal+0-2016-04-14-195246.buildd.src)</div><div class="line"># OpenJDK 64-Bit Server VM (build 9-internal+0-2016-04-14-195246.buildd.src, mixed mode)</div><div class="line"># 安装fastqc</div><div class="line">cd src</div><div class="line">wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip</div><div class="line">unzip fastqc_v0.11.5.zip</div><div class="line">mv FastQC/ ~/biosoft/</div><div class="line">cd ~/biosoft/FastQC/</div><div class="line">chmod 770 fastqc</div><div class="line"># 添加环境变量， 我用sed修改</div><div class="line">sed -i &apos;/^PATH/s/\(.*\)/\1:~\/biosoft\/FastQC\//&apos; ~/.bashrc</div><div class="line">source ~/.bashrc</div><div class="line">fastqc -v</div><div class="line"># FastQC v0.11.5</div></pre></td></tr></table></figure></p>
+<h3 id="hisats"><a href="#hisats" class="headerlink" title="hisats"></a>hisats</h3><p><a href="http://ccb.jhu.edu/software/hisat2/index.shtml" title="hisats" target="_blank" rel="external">hisats</a>：将测序结果比对到人类参考基因组上。HISAT2是TopHat2/Bowti2的继任者，使用改进的BWT算法，实现了更快的速度和更少的资源占用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install -c bioconda hisat2</div></pre></td></tr></table></figure>
+<h3 id="samtools"><a href="#samtools" class="headerlink" title="samtools"></a>samtools</h3><p><a href="http://www.htslib.org/" title="samtools" target="_blank" rel="external">samtools</a>:处理SAM、BAM文件的工具软件。BAM格式文件是存放高通量测序中比对结果的标准格式文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install -c bioiconda samtools</div></pre></td></tr></table></figure>
+<p>或者如下安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">cd src</div><div class="line">#  prerequsite</div><div class="line">## system requirement</div><div class="line">sudo apt install autoconf libz-dev libbz2-dev liblzma-dev libssl-dev</div><div class="line"></div><div class="line">### zlib2</div><div class="line">wget http://zlib.net/zlib-1.2.11.tar.gz</div><div class="line">tar -zxvf zlib-1.2.11.tar.gz &amp;&amp; cd zlib-1.2.11 &amp;&amp; make &amp;&amp; sudo make install &amp;&amp; cd .. &amp;&amp; rm -rf zlib-1.2.11</div><div class="line"></div><div class="line">### bzip2</div><div class="line">wget http://bzip.org/1.0.6/bzip2-1.0.6.tar.gz</div><div class="line">tar -zxvf bzip2-1.0.6.tar.gz &amp;&amp; cd bzip2-1.0.6 &amp;&amp; make &amp;&amp; sudo make install &amp;&amp; cd .. &amp;&amp; rm -rf  bzip2-1.0.6</div><div class="line"></div><div class="line">### curses</div><div class="line">sudo apt-get install libncurses5-dev </div><div class="line"></div><div class="line">### htslib</div><div class="line">git clone https://github.com/samtools/htslib.git</div><div class="line">cd htslib</div><div class="line">autoreconf</div><div class="line"></div><div class="line"># building samtools</div><div class="line">git clone https://github.com/samtools/samtools.git</div><div class="line">cd samtools</div><div class="line">autoconf -Wno-syntax</div><div class="line">./configure </div><div class="line">make &amp;&amp; make install prefix=$HOME/biosoft/samtools</div><div class="line"></div><div class="line">## add PATH</div><div class="line">sed  &apos;/^PATH/s/\(.*\)/\1:~\/biosoft\/samtools\/bin/&apos; .bashrc -i</div><div class="line">source ~/.bashrc</div><div class="line">samtools --help</div></pre></td></tr></table></figure></p>
+<h3 id="htseq-count"><a href="#htseq-count" class="headerlink" title="htseq-count"></a>htseq-count</h3><p><a href="http://htseq.readthedocs.io/en/release_0.9.1/" title="htseq-count" target="_blank" rel="external">htseq-count</a>：用于reads计数的软件，他能对位于基因组上的一些单位的reads数进行统计，这里所说的单位主要是指染色体上的一组位置区间（我们常见的就是gene exon） </p>
+<p>优先conda安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install -c bioconda htseq=0.7.2</div></pre></td></tr></table></figure>
+<p>如果conda无法安装，采用下列安装方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">## Download and install HISAT </div><div class="line"># https://ccb.jhu.edu/software/hisat2/index.shtml</div><div class="line">cd ~/biosoft</div><div class="line">mkdir HISAT  &amp;&amp;  cd HISAT </div><div class="line">#### readme: https://ccb.jhu.edu/software/hisat2/manual.shtml</div><div class="line">wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip</div><div class="line">unzip hisat2-2.0.4-Linux_x86_64.zip</div><div class="line">ln -s hisat2-2.0.4  current </div><div class="line">## ~/biosoft/HISAT/current/hisat2-build</div><div class="line">## ~/biosoft/HISAT/current/hisat2</div></pre></td></tr></table></figure>
+<p>或者如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"># prerequsites</div><div class="line">sudo apt-get install python-pip</div><div class="line">pip install --upgrade pip</div><div class="line">sudo apt-get install build-essential python2.7-dev python-numpy python-matplotlib</div><div class="line">## 验证， 保证无报错</div><div class="line">python -V</div><div class="line">## python</div><div class="line">python</div><div class="line">&gt;&gt;&gt; import numpy </div><div class="line">&gt;&gt;&gt; import matplotlib </div><div class="line"></div><div class="line">## install HTSeq</div><div class="line">pip install htseq</div><div class="line"></div><div class="line">## 验证</div><div class="line">python</div><div class="line">&gt;&gt;&gt; import HTSeq</div></pre></td></tr></table></figure></p>
+<h3 id="R"><a href="#R" class="headerlink" title="R"></a>R</h3><p><a href="https://www.r-project.org/" title="R" target="_blank" rel="external">R</a>：统计与数据可视化工具。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">conda install -c r r-base</div><div class="line">R #运行的时候要大写</div><div class="line"></div><div class="line">## conda install -c r r-essentials </div><div class="line">## -essentials表示安装R,及80多个常用的数据分析包, 包括idplyr, shiny, ggplot2, tidyr, caret 和 nnet</div></pre></td></tr></table></figure></p>
+<h4 id="Rstudio的安装"><a href="#Rstudio的安装" class="headerlink" title="Rstudio的安装"></a>Rstudio的安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">conda install rstudio</div><div class="line">rstudio</div></pre></td></tr></table></figure>
+<p>后面涉及有关R的分析是在Sindows平台下完成的，并没有用到Linux下的R工具。</p>
+<h4 id="fastx-toolkit安装"><a href="#fastx-toolkit安装" class="headerlink" title="fastx-toolkit安装"></a>fastx-toolkit安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install -c biobuilds fastx-toolkit</div></pre></td></tr></table></figure>
+<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/25085567" target="_blank" rel="external">使用Bioconda管理Linux系统中的生物信息软件</a></li>
+<li><a href="http://www.jianshu.com/p/2f3be7781451" target="_blank" rel="external">PeterYuan，Anaconda使用总结</a></li>
+<li><a href="http://www.jianshu.com/p/b16ae34f9012" target="_blank" rel="external">hoptop.转录组入门（1）：软件准备</a></li>
+<li><a href="https://mp.weixin.qq.com/s?src=3&amp;timestamp=1507534977&amp;ver=1&amp;signature=uauB8*AHbC91QJFzs7AVO9vdeU92DPB9L4J5qT67AiaQtvdg0nvRCGJo1yaciFx3pF3slW4Zh0w8GUAecvQJmBKc2I0xX2q7IBvD2ha0T-uFJ1xlINQNb-VM40mZZOkP3rVn78KVvAFtVqYCxeSdjGBoYw23piWH50rts95D6iU=" target="_blank" rel="external">生信软件的好帮手-bioconda</a></li>
+<li><a href="http://www.dxy.cn/bbs/topic/37352184" target="_blank" rel="external">中国科大开源镜像站的bioconda新镜像申请</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/23/BioStatistics/生物统计-14因子分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/23/BioStatistics/生物统计-14因子分析/" itemprop="url">因子分析笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-23T12:02:00+08:00">
+                2017-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生物统计/" itemprop="url" rel="index">
+                    <span itemprop="name">生物统计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  599
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="因子分析思想"><a href="#因子分析思想" class="headerlink" title="因子分析思想"></a>因子分析思想</h2><p>在医学研究中有一些现象是难以直接观测的，通常称为不可测现象，它们只能通过其他多个可观测的指标来间接地反映。例如，脑部疾病患者的意识清醒状态是一个不可测现象，但可以通过患者的语言能力、辨识能力、记忆能力、理解能力、思维的逻辑能力等一系列可观测的指标来反映。这里，由于各个可观测指标都不同程度地反映了意识清醒状态这一不可测现象，因此这些可观测指标之间呈现出一定的相关性。很自然地，人们可能认为这些可观测指标之间的相关性主要是由它们反共同反映的不可测现象支配的。<br>一般地，对于多指标数据中呈现出来的相关性，是否存在对这种相关性起支配作用的潜在因素？如果存在，如何找出这些潜在因素？这些潜在因素是怎样对原始指标起支配作用的？这些问题，都可以通过因子分析来解决。事实上，因子分析是一种从分析多个原始指标的相关关系入手，找到支配这种相关关系的有限个不可观测的潜在变量，并用这些潜在变量来解释原始指标之间的相关性或协方差关系的多元统计分析方法。</p>
+<h2 id="因子分析的数学模型"><a href="#因子分析的数学模型" class="headerlink" title="因子分析的数学模型"></a>因子分析的数学模型</h2><h2 id="因子模型的性质"><a href="#因子模型的性质" class="headerlink" title="因子模型的性质"></a>因子模型的性质</h2><h3 id="公共度"><a href="#公共度" class="headerlink" title="公共度"></a>公共度</h3><h3 id="因子贡献及因子贡献率"><a href="#因子贡献及因子贡献率" class="headerlink" title="因子贡献及因子贡献率"></a>因子贡献及因子贡献率</h3><h3 id="因子载荷及因子载荷阵"><a href="#因子载荷及因子载荷阵" class="headerlink" title="因子载荷及因子载荷阵"></a>因子载荷及因子载荷阵</h3><h2 id="因子载荷阵的求解及计算步骤"><a href="#因子载荷阵的求解及计算步骤" class="headerlink" title="因子载荷阵的求解及计算步骤"></a>因子载荷阵的求解及计算步骤</h2><p>案例如下：<br>例22-2  某医院为了合理地评价该院各月的医疗工作质量，搜集了三年有关门诊人次、出院人数、病床利用率、病床周转次数、平均住院天数、治愈好转率、病死率、诊断符合率、抢救成功率等9个指标数据，如表22-8。现采用因子分析方法，探讨其综合评价指标体系。<img src="http://ortxpw68f.bkt.clouddn.com/efa001.png" alt=""></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/26305845" target="_blank" rel="external">《R语言实战》第四部分第十四章-主成分分析和因子分析学习笔记</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/23981354" target="_blank" rel="external">Learn R | 数据降维之因子分析（上）</a></li>
 </ol>
 
           
@@ -670,6 +1372,190 @@ Z_{i}={\bf a'_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dots,m<
 <li><a href="https://mp.weixin.qq.com/s/-FuNX0LiKHNRysSdgenK_g" target="_blank" rel="external">如何理解矩阵特征值和特征向量？</a></li>
 <li><a href="https://ask.hellobi.com/blog/dataman/3073" target="_blank" rel="external">数据挖掘系列篇(15):R语言VS主成分分析的案例</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/23795029" target="_blank" rel="external">Learn R | 数据降维之主成分分析（下）</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/09/22/Tools/hexo公式渲染/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/22/Tools/hexo公式渲染/" itemprop="url">hexo公式渲染</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-22T12:02:00+08:00">
+                2017-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/生信工具/" itemprop="url" rel="index">
+                    <span itemprop="name">生信工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  56
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol>
+<li>安装hexo-math</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
+<p>2.<code>_config.yml</code>的配置<br>添加以下信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">math:</div><div class="line">  engine: &apos;mathjax&apos; # or &apos;katex&apos;</div><div class="line">  mathjax:</div><div class="line">    src: custom_mathjax_source</div><div class="line">    config:</div><div class="line">      # MathJax config</div><div class="line">  katex:</div><div class="line">    css: custom_css_source</div><div class="line">    js: custom_js_source # not used</div><div class="line">    config:</div><div class="line">      # KaTeX config</div></pre></td></tr></table></figure>
+<p>参考资料：</p>
+<ol>
+<li><a href="https://github.com/hexojs/hexo-math" target="_blank" rel="external">https://github.com/hexojs/hexo-math</a></li>
 </ol>
 
           
@@ -1773,830 +2659,6 @@ Z_{i}={\bf a'_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dots,m<
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/07/04/Experiment/病毒包装笔记(4)-质粒的提取与测序/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/04/Experiment/病毒包装笔记(4)-质粒的提取与测序/" itemprop="url">病毒包装笔记(4)-质粒的提取与测序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-04T12:00:00+08:00">
-                2017-07-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,724
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="实验原理"><a href="#实验原理" class="headerlink" title="实验原理"></a>实验原理</h2><p>细菌质粒是一类双链、闭环的DNA，大小范围从1kb至200kb以上不等。各种质粒都是存在于细胞质中、独立于细胞染色体之外的自主复制的遗传成份，通常情况下可持续稳定地处于染色体外的游离状态，但在一定条件下也会可逆地整合到寄主染色体上，随着染色体的复制而复制， 并通过细胞分裂传递到后代。质粒已成为目前最常用的基因克隆的载体分子，重要的条件是可获得大量纯化的质粒DNA分子。目前已有许多方法可用于质粒DNA的提取，下面主要介绍碱裂解法提取质粒DNA的方法。</p>
-<p>在 pH 12.0～12.6 碱性环境中，细菌的线性大分子量染色体 DNA 变性分开，而共价闭环的质粒 DNA 虽然变性但仍处于拓扑缠绕状态。将 pH 调至中性并有高盐存在及低温的条件下，大部分染色体 DNA 、大分子量的 RNA 和蛋白质在去污剂 SDS 的作用下形成沉淀，而质粒 DNA 仍然为可溶状态。通过离心，可除去大部分细胞碎片、染色体 DNA 、 RNA 及蛋白质，质粒 DNA 尚在上清中，然后用硅酸纤维膜吸附或者酚、氯仿抽提进一步纯化质粒 DNA 。</p>
-<h2 id="实验材料："><a href="#实验材料：" class="headerlink" title="实验材料："></a>实验材料：</h2><p>试剂盒E.Z.N.A.® Plasmid DNA Mini Kit I（OMEGA　Bio-tek）<br>Epoch微孔板分光光度计（BioTek）<br>1.5mL管<br>5mL 离心管</p>
-<h2 id="实验流程："><a href="#实验流程：" class="headerlink" title="实验流程："></a>实验流程：</h2><ol>
-<li>自新鲜划痕选择培养板中分离单菌落，接种含适当选择性抗生素的5ml的LB培养基进行培养。37℃强力摇动（~300rpm）孵育16h。括DH5α。</li>
-<li>将5.0ml细菌室温10,000 g离心1min，放到5 mL的EP管中，如果菌液多，则分两次加入。</li>
-<li>轻轻倒出或吸走培养基并丢弃。</li>
-<li>加入250μL 的溶液I/Rnase A重悬沉淀，涡旋或用移液器反复吹打。充分重悬沉淀对于获得高质量的DNA非常重要。（<strong>注：溶液Ⅰ的成分及作用为：①50mM 葡萄糖—-增稠，使悬浮后的大肠杆菌不会快速沉积到管子的底部；②10mM EDTA—-抑制DNase的活性。这一步溶液中还可以加入RNase，③25mM Tris-HCl，pH=8.0—-提取适当的缓冲液体系和PH；④RNase—-除去RNA，此成分不受EDTA影响，并且可以在后续步骤中被除去</strong>）</li>
-<li>加入250μL溶液II（在孵箱中预热），倒置、转动试管数次使之轻轻混匀，得到透明的裂解产物。可能需要孵育2min。不要用力混合，以免使染色体DNA断裂，减低质粒的纯度。该步反应不要超过5min。溶液II不用时要拧紧瓶盖，以免试剂被空气中的CO2酸化。（<strong>溶液II的成分及作用为为①0.2M NaOH—-裂解细菌，使双层膜变化为micelle微囊；②1%SDS——结合蛋白质（平均2个氨基酸结合上一个SDS），和钾离子形成十二烷基硫酸钾PDS,进而形成大量的沉淀。</strong>）</li>
-<li>加入350μL溶液III，立即倒置试管数次混匀，直至白色絮状沉淀物形成。为避免形成局部沉淀，加入溶液III后应立即、充分混匀溶液。（<strong>溶液III的成分及作用为：①3M醋酸钾—-钾离子和SDS形成PDS，大量的沉淀；②2M醋酸—-中和NaOH，防止基因组DNA断裂。</strong>）</li>
-<li>室温≥13,000g离心10分钟。白色沉淀物形成，立即进行下一步操作。</li>
-<li>将HiBindDNAMini Column 加入到2mL的收集管上。</li>
-<li>小心翼翼的吸取上清液（注意不要吸到沉淀，如果不放心，可以将上清吸到另一新的EP管，然后再离心一次，吸取上清），加入装配在2ml收集管中的小量纯化柱I中。确保离心沉淀未受扰动，确保没有细胞碎片加入到柱子中。</li>
-<li>室温下10,000g离心1分钟，使裂解液完全通过柱子。再将裂解液加回柱子，再离心一次。</li>
-<li>丢弃滤过液，重新使用2ml收集管。</li>
-<li>加入500μL HBC缓冲液清洗柱子。(<strong> HBC的成分没有查到，但根据相关的信息，HBC的成分应该是酚，氯仿，异戊醇的混合用；它们的作用分为：①酚—-使残余的蛋白质变性（远强于氯仿）；②氯仿—-和酚混合使用，增加比重。酞与氯仿是非极性分子，水是极性分子，当蛋白水溶液与酚或氯仿混合时，蛋白质分子之间的水分子就被酚或氯仿挤去，使蛋白失去水合状态而变性过离心，变性蛋白质的密度比水的密度为大，因而与水分离，沉淀在水相下面，从而与溶解在水相中的DNA分开；③异戊醇—-可以使用酚：氯仿：异戊醇=25:24:1的比例抽提质粒DNA，在抽提DNA时，为了混合均匀，必须剧烈振荡容器数次，这时在混合液内易产生气泡，气泡会阻止相互间的充分作用。加入异戊醇能降低分子表面张力，所以能减少抽提过程中的泡沫产生。</strong>)</li>
-<li>室温13,000 g离心1分钟，使溶液完成通过柱子。该步操作需确保残余的蛋白质污染被去除，以保证获得高品质的DNA以适合于下游的应用。</li>
-<li>丢弃滤过液，重新使用2ml收集管。</li>
-<li>加入700μL DNA Wash Buffer。DNA清洗液的浓缩液使用前必须用无水乙醇稀释（5倍稀释），如果DNA清洗液稀释液经过冷藏，则使用之前必须置于室温。(<strong>wash buffer的作用：加入无水乙醇后,终浓度差不多就是70%的乙醇溶液了,在沉淀的DNA中,由于过多的盐杂质存在,影响DNA的酶切等反应,wash buffer就是洗去这些盐杂质的。</strong>)</li>
-<li>室温10,000g离心1分钟。</li>
-<li>丢弃滤过液。</li>
-<li>将空柱子≥13,000 x g离心2min，使柱子的基质干燥。此步骤为关键操作，不可遗漏。</li>
-<li>将柱子放入干净的1.5ml微量离心管中，60℃孵育5min。</li>
-<li>将80μL无菌去离子水直接加入柱子基质上。</li>
-<li>60℃孵育5min。</li>
-<li>≥13,000 x g离心1min洗脱DNA。可以进行二次洗脱，以收集残存的DNA。</li>
-<li>检测质粒浓度，A260/A280的比率可以反映核酸的纯度。比值大于1.8表明核算的纯度在90%以上。将质粒稀释到400ng/uL。</li>
-</ol>
-<h2 id="测序"><a href="#测序" class="headerlink" title="测序"></a>测序</h2><p>取10uL的质粒样品，送到测序公司即可。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/07/03/Experiment/病毒包装笔记(3)-转化/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/03/Experiment/病毒包装笔记(3)-转化/" itemprop="url">病毒包装笔记(3)-转化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-03T12:00:00+08:00">
-                2017-07-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  675
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>转化（ transformation ）是指一段同源或异源的 DNA 转入受体细胞并得到表达的水平基因的转移过程，是现代分子生物学研究和基因工程不可缺少的重要技术。</p>
-<p>转化过程所用的受体细胞（通常是大肠杆菌），一般是限制修饰系统缺陷的变异株，即不含限制性内切酶和甲基化酶的突变体，它可以容忍外源DNA分子进入体内并稳定地遗传给后代，受体细胞经过一些特殊方法的处理后，细胞膜的通透性发生了暂时性的改变，成为能允许外源DNA分子进入的感受态细胞。进入受体细胞的DNA分子通过复制，表达实现遗传信息的转移，使受体细胞出现新的遗传性状。将经过转化后的细胞在筛选培养基中培养，即可筛选出转化子（即带有异源DNA分子的受体细胞）。</p>
-<h2 id="菌株"><a href="#菌株" class="headerlink" title="菌株"></a>菌株</h2><p>E.coli DH5a 菌株（感受态）</p>
-<h2 id="转化"><a href="#转化" class="headerlink" title="转化"></a>转化</h2><ol>
-<li>质粒1uL加入10ul的感受态细胞中，冰上放置40min。</li>
-<li>42℃水浴锅内热激90s（让质粒进入感受态细胞）。</li>
-<li>取出，冰上放置5min（让感受态细胞关闭）。</li>
-<li>加入200ul LB液体培养基（无抗性AMP），37℃摇床培养1h。</li>
-</ol>
-<h2 id="涂板"><a href="#涂板" class="headerlink" title="涂板"></a>涂板</h2><p>将上述培养液20uL涂布在含AMP的LB固体培养基上，过液培养。</p>
-<h2 id="挑菌"><a href="#挑菌" class="headerlink" title="挑菌"></a>挑菌</h2><p>次日如果发现板子已经长有菌落，则用5uL的枪头挑一个单菌落，打入5mL的LB液体培养基中（ 实验室的氨苄为1000X的，即100mg/mL，因此5mL的液态培养基里加入5uL，即100ug/mL  )，放于摇床培养，37℃过夜。（5mL LB培养基+5uL AMP + 用枪头挑菌，枪头可加入培养瓶中）</p>
-<p>第二天提取质粒或保藏（保藏菌株放于负80冰箱）。</p>
-<h2 id="LB培养基的配制"><a href="#LB培养基的配制" class="headerlink" title="LB培养基的配制"></a>LB培养基的配制</h2><p>下面以100mL（250mL）的LB培养基为例说明</p>
-<ol>
-<li>胰蛋白胨(Tryptone)-1g（250mL–2.5g)</li>
-<li>酵母提取物（Yeast Extract) 0.5g(250mL–1.25g)</li>
-<li>NaCl-1g)(250mL–2.5g)</li>
-<li>琼脂(Agar) 1.5g(250mL–3.75g)</li>
-<li>单蒸水：100mL(250mL–250mL)</li>
-</ol>
-<h2 id="抗性LB培养基"><a href="#抗性LB培养基" class="headerlink" title="抗性LB培养基"></a>抗性LB培养基</h2><ol>
-<li>高压灭菌后，将融化的LB固体培养基置与55℃的水浴中；</li>
-<li>待培养基温度降到55℃时(手可触摸)加入抗生素（实验室的氨苄为1000X的，即100mg/mL，因此5mL的液态培养基里加入5uL，即100ug/mL ），以免温度过高导致抗生素失效；</li>
-<li>充分摇匀。</li>
-<li>如果是固体培养基，则用封口胶封边，并倒置放于4℃保存，一个月内使用。</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/07/02/Experiment/病毒包装笔记(2)-质粒/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/02/Experiment/病毒包装笔记(2)-质粒/" itemprop="url">病毒包装笔记(2)-质粒</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-02T12:00:00+08:00">
-                2017-07-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,975
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  7
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>1952年Joshua Lederberg创造一个词“质粒(Plasmid)”，它指的是任何染色体外的遗传决定物质，共价、闭合、环状双链DNA（cccDNA），大小从1kb~1000kb。质粒是一种独立于染色体外独立复制的双链DNA片段，通常都含有基因。尽管质粒在细菌、古细菌和真核细胞中都有发现，但质粒对于细菌的生物学意义更加重要，因为细菌与细菌之间可以通过鞭毛等相互交换质粒信息，而这种遗传信息的交换是有利的，因为质粒上面含有耐药基因等信息。</p>
-<p>但天然存在的野生型质粒有着一些缺点，例如分子量大(＞15kb)、拷贝数低、单一酶切位点少、遗传标记不理想等缺陷，不能满足克隆载体的要求。因此需要进行改造：</p>
-<ol>
-<li>去除多余的和功能研究无关的片段删除掉，将质粒的长度从15kb缩短到1~5kb。</li>
-<li>给它添加上各种元件，例如安装各种酶切位点，遗传标记，例如抗性基因（氨苄霉素、卡那霉素、四环素…）、报告基因（luciferase、EGFP…）等。</li>
-</ol>
-<h2 id="质粒的分类（原核-真核-穿梭载体）"><a href="#质粒的分类（原核-真核-穿梭载体）" class="headerlink" title="质粒的分类（原核/真核/穿梭载体）"></a>质粒的分类（原核/真核/穿梭载体）</h2><ol>
-<li>克隆载体：能带动外源基因，在宿主细胞中复制扩增。它是用来克隆和扩增DNA片段（基因）的载体，这类载体没有启动子等启动转录、翻译的元件。 </li>
-<li>表达载体：具有克隆载体的基本元件（ori,Ampr,Mcs等）还具有转录/翻译所必需的DNA序列。 </li>
-<li>穿梭载体是指一类人工构建的具有两种不同复制起点和选择标记，因而可以在两种不同类群宿主中存活和复制的质粒载体。此概念不仅用于不同的微生物菌群之间，也可以推广到真核生物表达载体的构建，如用于枯草的pBE2、酵母的pPIC9K、哺乳动物表达载体pMT2 和用于植物细胞的Ti 质粒。这些穿梭载体不仅可以在大肠杆菌中复制扩增，也可以在相应的枯草、酵母、动物或植物细胞中扩增和表达。这样利于对质粒的分子生物学操作和大量制备。</li>
-<li>基因下调载体：用于减少某个内源基因的表达，该载体上含有针对目标基因mRNA的shRNA，起到基因沉默的作用，下调基因的蛋白表达。 </li>
-<li>病毒质粒：基于病毒的基因组改造而成的质粒，可以独立包装成为病毒颗粒，巧妙地去除了病毒的感染致病性却保留了病毒的其他功能，为功能基因的灵活进入细胞并整合到基因组中提供了非常方便的工具。</li>
-</ol>
-<h2 id="质粒的命名"><a href="#质粒的命名" class="headerlink" title="　质粒的命名"></a>　质粒的命名</h2><p>pUC19、pEGFP-N3。小写字母p代表质粒”plasmid”，2~4个大写字母代表发明者、实验室名称或者其他表型性状（EGFP是增强型绿色荧光蛋白）。</p>
-<h2 id="质粒图谱"><a href="#质粒图谱" class="headerlink" title="质粒图谱"></a>质粒图谱</h2><h3 id="质粒图谱如下所示：第一张图："><a href="#质粒图谱如下所示：第一张图：" class="headerlink" title="质粒图谱如下所示：第一张图："></a>质粒图谱如下所示：第一张图：</h3><p><img src="http://ortxpw68f.bkt.clouddn.com/pl.png" alt=""></p>
-<hr>
-<h3 id="质粒图谱：第二张图："><a href="#质粒图谱：第二张图：" class="headerlink" title="质粒图谱：第二张图："></a>质粒图谱：第二张图：</h3><p><img src="http://ortxpw68f.bkt.clouddn.com/pw.jpg" alt=""></p>
-<ol>
-<li><p>箭头。大多数质粒都会有箭头，箭头有两种解释。一种是代表转录方向，转录方向主要是由启动子开始的一个大箭头，是启动子启动序列的顺序。另一种是复制起始位点的方向，复制起始位点就是该质粒在大肠杆菌等细菌或真菌中DNA复制的一个方向。我们还需要提到的是F1启动子（图上的f1 ori）代表的是噬菌体的复制起始方向，只能复制出单链的DNA哦，但是可以用来测序。看懂转录的方向，这样就方便设计插入片段的位置和方向性。复制起始位点Ori，了解质粒的类型（原核/真核/穿梭质粒）：招募复制蛋白，进行质粒的自我复制，增加拷贝数，随着细胞的增殖而增殖；</p>
-</li>
-<li><p>抗性基因：加抗性基因的原因是因为质粒对于一般细胞来讲不是必需元件，在没有抗生素的培养基中不断增殖的过程中，质粒载体慢慢就丢失了，只有培养基里面加入抗生素，抗性基因赋予宿主菌分解抗生素的能力，细胞才会需要该质粒。常见抗性基因有：<strong>Ampr</strong> 水解β－内酰胺环，解除氨苄的毒性；<strong>tetr</strong> 可以阻止四环素进入细胞；<strong>camr</strong> 生成氯霉素羟乙酰基衍生物，使之失去毒性；<strong>neor（kanr）</strong> 氨基糖苷磷酸转移酶 使G418（长那霉素衍生物）失活。</p>
-</li>
-<li><p>多克隆位点（MCS）：它具有多个限制内切酶的单一切点，便于要研究的基因的插入。如果在这些位点外有外源基因的插入，会导致某种标志基因的失活，而便于筛选，最常见的是β-半乳糖苷酶的蓝白斑筛选系统。</p>
-</li>
-<li><p>是否含有表达系统元件，即启动子（promoter）－核糖体结合位点（RBS）－转录终止信号（AATAAA同时是poly A）。这是用来区别克隆载体与表达载体。克隆载体中加入一些与表达调控有关的元件即成为表达载体。选用那种载体，还是要以实验目的为准绳。<strong>启动子</strong>是促进DNA转录的DNA顺序，这个DNA区域常在基因或操纵子编码顺序的上游，是DNA分子上可以与RNApol特异性结合并使之开始转录的部位，但启动子本身不被转录。<strong>增强子/沉默子</strong>－是真核基因组（包括真核病毒基因组）中的一种具有增强邻近基因转录过程的调控顺序。其作用与增强子所在的位置或方向无关。即在所调控基因上游或下游均可发挥作用。/沉默子－负增强子，负调控序列。<strong>克核糖体结合位点/起始密码/SD序列（Rbs/AGU/SDs）</strong>：mRNA有核糖体。<strong>转录终止顺序（终止子）/翻译终止密码子</strong>结构基因的最后一个外显子中有一个AATAAA的保守序列，此位点down－stream有一段GT或T富丰区，这2部分共同构成poly（A）加尾信号。结构基因的最后一个外显子中有一个AATAAA的保守序列，此位点down－stream有一段GT或T富丰区，这2部分共同构成poly（A）加尾信号。</p>
-</li>
-<li>报告基因：例如β-半乳糖苷酶、EGFP、luciferase等，便于迅速检查功能基因是否表达的阳性判断，表达成功的蛋白在小鼠体内分布位置，直接看EGFP、luciferase的荧光就ok。</li>
-<li>引物结合区（primer）：一般位于多克隆位点区的上、下游，便于通用引物的PCR验证、测序验证之用。</li>
-</ol>
-<h2 id="质粒的查询"><a href="#质粒的查询" class="headerlink" title="质粒的查询"></a>质粒的查询</h2><p>Vectorpedia<br><a href="http://www.addgene.org/pgvec1?f=v&amp;cmd=listvecinfo" target="_blank" rel="external">http://www.addgene.org/pgvec1?f=v&amp;cmd=listvecinfo</a></p>
-<p>google<br>检索式子：质粒名 ＋ map<br>质粒名 ＋sequence ＋filetype:txt or filetype:pdf 或者：进入 google，点击图片搜索，直接查找图谱。</p>
-<p>google scholar<br>有些质粒是经过改造的，所以通过上述方法不能查询到相应信息。这时，可以在 google scholar 中输入质粒名称，可以直观地看哪些学者在何文章中使用了该质粒，从而可了解到质粒的来源; 或者籍此向作者咨询或索取。</p>
-<p>大量图谱：<a href="http://www.embl-hamburg.de" target="_blank" rel="external">http://www.embl-hamburg.de</a></p>
-<p>PET 系列载体信息：<a href="http://www.merckbiosciences.com/g.asp?f=NVG/pETtable.html" target="_blank" rel="external">http://www.merckbiosciences.com/g.asp?f=NVG/pETtable.html</a></p>
-<h2 id="转染"><a href="#转染" class="headerlink" title="转染"></a>转染</h2><p>以转染293T细胞为例，使用Lipofiter (汉恒)/DNA转染试剂（biotool），或lipo2000/3000，Fugen HD等转染试剂。</p>
-<p>参考资料</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/07/01/Experiment/病毒包装笔记(1)-慢病毒/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/01/Experiment/病毒包装笔记(1)-慢病毒/" itemprop="url">病毒包装笔记(1)-慢病毒</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-01T12:00:00+08:00">
-                2017-07-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,844
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  17
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="慢病毒背景"><a href="#慢病毒背景" class="headerlink" title="慢病毒背景"></a>慢病毒背景</h2><p>慢病毒包括<strong>灵长类慢病毒</strong>，如人类免疫缺陷病毒(HIV)和猴免疫缺陷病毒(SIV)，以及<strong>非灵长类慢病毒</strong>如猫免疫缺陷病毒(FIV)、马传染性贫血病毒(EIAV)、牛免疫缺陷病毒(BIV)和<strong>维斯纳-梅迪病毒(VMV)</strong>等。目前，HIV-1、HIV-2、SIV、FIV及EIAV被广泛研究用作基因治疗的载体，而其中又以HIV-1最为热门。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">注：慢病毒的英文是lentivirus，它是反转录病毒科下的一个属，此属病毒的特征是需要较长的时间才能培养出来，例如人类免疫缺陷病毒(HIV)、猴免疫缺陷病毒(SIV)、猫免疫缺陷病毒(FIV)都是慢病毒属，慢病毒属的原文是Lentivirus，其中Lenti-在拉丁文中有慢的意思，因此称为慢病毒。慢病毒属可以由宿主细胞直接感染周围的细胞，不必经由形成病毒颗粒此一步骤。它一般的逆转录病毒载体不同，慢病毒对分裂细胞和非分裂细胞均具有感染能力。由于这一特点目前慢病毒也被广泛地应用于表达RNA干预的研究中。慢病毒属是反转录病毒科下的一个属，此属病毒的特征是需要较长的时间才能培养出来，例如人类免疫缺陷病毒(HIV)、猴免疫缺陷病毒(SIV)、猫免疫缺陷病毒(FIV)都是慢病毒属，慢病毒属的原文是Lentivirus，其中Lenti-在拉丁文中有慢的意思。</div></pre></td></tr></table></figure>
-<h2 id="HIV-1病毒形态与结构"><a href="#HIV-1病毒形态与结构" class="headerlink" title="HIV-1病毒形态与结构"></a>HIV-1病毒形态与结构</h2><p>现在的慢病毒包装系统通常是由HIV-1病毒改造而来的，因此有必要了解一下HIV-1的结构与功能。HIV-1的基因组由两条相同的正股RNA链在5′端通过部分碱基互补配对而成二聚体。病毒基因组全长约9200bp，含有gag、pol、env 3个结构基因以及tat、rev、nef、vif、vpr、vpu6个调节基因。在病毒基因组的5′端和3′端各有相同的一段核苷酸序列，称为长末端重复序列(longterminalrepeat，LTR)。</p>
-<h3 id="HIV-1的病毒结构如下所示"><a href="#HIV-1的病毒结构如下所示" class="headerlink" title="HIV-1的病毒结构如下所示"></a>HIV-1的病毒结构如下所示<img src="http://ortxpw68f.bkt.clouddn.com/HIV-1.png" alt=""></h3><h4 id="各个元件的作用："><a href="#各个元件的作用：" class="headerlink" title="各个元件的作用："></a>各个元件的作用：</h4><h5 id="编码病毒的基本结构："><a href="#编码病毒的基本结构：" class="headerlink" title="编码病毒的基本结构："></a>编码病毒的基本结构：</h5><ol>
-<li>gag基因编码病毒的核心蛋白，即p55的蛋白前体，经蛋白酶裂解而形成病毒的核衣壳蛋白(p7)、内膜蛋白(p17)和衣壳蛋白(p24)。</li>
-<li>pol基因编码病毒复制所需的酶类，例如包含逆转录酶的基因(Pol, polymerase)</li>
-<li>env基因编码病毒的包膜糖蛋白，决定病毒感染宿主的靶向性。编码p55的蛋白前体，经蛋白酶裂解而形成病毒的核衣壳蛋白(p7)、内膜蛋白(p17)和衣壳蛋白(p24)。</li>
-</ol>
-<h5 id="调节基因"><a href="#调节基因" class="headerlink" title="调节基因"></a>调节基因</h5><ol>
-<li>tat基因编码的gp14是一种反式激活的转录因子，与LTR结合后能促进病毒所有基因的转录。</li>
-<li>rev基因编码的产物gp19能促进未经拼接的大mRNA分子从细胞核向胞浆转运，并相对减少拼接后小mRNA分子的数量。</li>
-<li>nef基因编码负调节蛋白，对病毒的结构蛋白和调节蛋白的表达均有下调作用。</li>
-<li>vif编码产物与病毒体的感染性有关，vpu产物与病毒的装配、成熟和释放有关，而vpr编码产物的功能尚不清楚。</li>
-</ol>
-<h2 id="HIV-1生活史"><a href="#HIV-1生活史" class="headerlink" title="HIV-1生活史"></a>HIV-1生活史</h2><p>　　HIV-1病毒通过gp120与宿主细胞的CD4分子和趋化因子受体结合，然后将病毒的基因(RNA)、蛋白及酶等释放到宿主细胞内;随后，逆转录酶将病毒RNA转录成DNA，病毒DNA在整合酶的作用下插入宿主细胞核的基因组中，此时的病毒DNA也称为原病毒;紧接着，原病毒转录成mRNA，mRNA从细胞核进入细胞质，并利用宿主细胞的原料合成病毒的各种成分(蛋白质)，新合成的各种蛋白、酶及RNA等聚集在宿主细胞的膜下，病毒的包膜蛋白(gp120，gp41)插入宿主细胞的细胞膜并形成一种未成熟的病毒(<strong>此时病毒无传染性，这也是包病毒中病毒包膜质粒的作用</strong>);最后蛋白酶将病毒核心中的许多过长的蛋白及酶切短，便形成成熟的病毒。病毒利用宿主细胞的细胞膜将自己包被起来，离开该细胞去寻找新的宿主。</p>
-<h2 id="慢病素是操作基因的工具"><a href="#慢病素是操作基因的工具" class="headerlink" title="慢病素是操作基因的工具"></a>慢病素是操作基因的工具</h2><h3 id="引入外源基因"><a href="#引入外源基因" class="headerlink" title="引入外源基因"></a>引入外源基因</h3><p>慢病毒和逆转录病毒基因递送系统利用了逆转录病毒复制方面的性质以获得目标核酸序列稳定的整合。核酸转染只能获得瞬时的转基因表达（这种转染能在宿主细胞中引入外源基因，但无法稳定遗传），而基于逆转录病毒和慢病毒的系统却可以获得外源基因稳定的整合，外源基因于是被遗传下去随重复的细胞分裂持续表达。慢病毒和逆转录病毒载体的一个重要特征是他们产生的是复制有缺陷的，即自身无活性的病毒颗粒。这使得目标序列得以转运，而在目标细胞中不存在连续的病毒复制。</p>
-<h3 id="用于RNAi的研究"><a href="#用于RNAi的研究" class="headerlink" title="用于RNAi的研究"></a>用于RNAi的研究</h3><p>慢病毒也被广泛地应用于表达RNAi的研究中。由于有些类型细胞脂质体转染效果差，转移到细胞内的siRNA半衰期短，体外合成siRNA对基因表达的抑制作用通常是短暂的，因而使其应用受到较大的限制。采用事先在体外构建能够表达siRNA的载体, 然后转移到细胞内转录siRNA的策略，不但使脂质体有效转染的细胞种类增加，而且对基因表达抑制效果也不逊色于体外合成siRNA，在长期稳定表达载体的细胞中，甚至可以发挥长期阻断基因表达的作用。在所构建的siRNA表达载体中，是由rna聚合酶Ⅲ启动子来指导RNA合成的，这是因为RNA聚合酶Ⅲ有明确的起始和终止序列，而且合成的RNA不会带poly A尾。当RNA聚合酶Ⅲ遇到连续4个或5个T时，它指导的转录就会停止，在转录产物3’端形成1~4个U。U6和H1 RNA启动子是两种RNA聚合酶Ⅲ依赖的启动子，其特点是启动子自身元素均位于转录区的上游，适合于表达～21ntRNA和～50ntRNA茎环结构(stem loop)。在siRNA表达载体中，构成siRNA的正义与反义链，可由各自的启动子分别转录,然后两条链互补结合形成siRNA;也可由载体直接表达小发卡状RNA(small hairpin RNA, shRNA), 载体包含位于RNA聚合酶Ⅲ启动子和4～5T转录终止位点之间的茎环结构序列，转录后即可折叠成具有1~4 个U 3 ’突出端的茎环结构，在细胞内进一步加工成siRNA。构建载体前通常要通过合成siRNA的方法，寻找高效的siRNA，然后从中挑选符合载体要求的序列，将其引入siRNA表达载体。</p>
-<h2 id="慢病毒载体的构建"><a href="#慢病毒载体的构建" class="headerlink" title="慢病毒载体的构建"></a>慢病毒载体的构建</h2><p>慢病毒载体（Lentiviral vector,LVs）是在HIV-1病毒基础上改造而成的病毒载体系统，它能高效的将目的基因（或RNAi）导入动物和人的原代细胞或细胞系。慢病毒载体基因组是正链RNA，其基因组进入细胞后，在细胞浆中被其自身携带的反转录酶反转为DNA，形成DNA整合前复合体，进入细胞核后，DNA整合到细胞基因组中。整合后的DNA转录mRNA，回到细胞浆中，表达目的蛋白；或产生RNAi干扰。</p>
-<h3 id="慢病毒包装系统的组成"><a href="#慢病毒包装系统的组成" class="headerlink" title="慢病毒包装系统的组成"></a>慢病毒包装系统的组成</h3><p>该系统由<strong>[1]包装质粒、[2]载体质粒、[3]包膜质粒及</strong>3种质粒组成。</p>
-<p><strong>包装质粒</strong>：这一部分能够表达出各种病毒酶蛋白。包装质粒由HIV基因组去除了包装、逆转录和整合所需的顺式作用序列而构建，能够反式提供产生病毒颗粒所必需的蛋白表达HIV复制所需的全部反式激活蛋白，但不产生病毒包膜蛋白及辅助蛋白vpu。它由HIV前病毒基因组作简单修改得到，其5′端LTR由（LTR本身也有启动子活性）异源病毒启动子/增强子元件取代。为了防止来自辅助质粒的RNA衣壳化，特意将5′端主要剪接供体位点(splice donor site)和gag编码序列起始端之间的包装信号区(E/Ψ region)删除，而下游的启动子由外源多聚腺苷酸信号(polyA)取代。另外利用点突变将env编码序列打断，但仍然保留rev反应元件。这样的辅助结构能表达所有的病毒蛋白，包括tat及rev(env除外)。</p>
-<p><strong>载体质粒</strong>：该质粒用于将目标基因递送至靶细胞。载体成分与包装成分互补，即含有包装、逆转录和整合所需的HIV顺式作用序列，同时具有异源启动子控制下的多克隆位点及在此位点插入的目的基因。为降低载体质粒与包装质粒这两种成分同源重组恢复成野生型病毒的可能，因此需尽量减少两者的同源性，例如将包装成分上5′LTR换成巨细胞病毒(CMV)早期启动子、3′LTR换成SV40 polyA等。它携带了5′端LTR和全部5′端非翻译区域(包括gag编码序列的350个核苷酸)，另外还带有rev应答元件(Revresponsiveelement，RRE)及3′端LTR，其瞬时表达盒采用巨细胞病毒(CMV)启动子及增强子元件，在某些研究领域，可以携带绿色荧光蛋白基因、荧光素酶基因或半乳糖苷酶基因作为生物标记。</p>
-<p><strong>包膜质粒</strong>:病毒载体可以借助其他病原体的外壳蛋白包装成假病毒，以改变其嗜性。最常用的是疱疹性口腔炎病毒膜融合包膜G糖蛋白（VSV-G）。,env由单独的包膜质粒携带并在病毒生产过程中共转染后表达。本系统包膜质粒的改进之处在于，引入了VSV-G基因表达包膜结构，这样做的结果至少具有3个方面的积极意义:</p>
-<p>①包膜的更换进一步降低了HIV-1载体恢复成野生型病毒的可能;<br>②使HIV载体感染宿主的范围不再仅限于CD4+细胞，而扩大到几乎能感染所有组织来源的细胞;<br>③VSV的包膜赋予HIV载体颗粒高度的稳定性，使其能够通过超速离心而浓缩，达到高滴度。使HIV-1载体滴度由105转录单位(TU)/ml达到108TU/ml。这样的改进无疑是HIV载体系统走向应用而迈出的一大步。</p>
-<h4 id="第二代HIV-1来源的慢病毒载体"><a href="#第二代HIV-1来源的慢病毒载体" class="headerlink" title="第二代HIV-1来源的慢病毒载体"></a>第二代HIV-1来源的慢病毒载体</h4><p>　　尽管第一代载体产生RCR的几率极小，仍然不能忽略产生的可能性。毕竟包装质粒可以表达除env外所有HIV-1病毒蛋白，其中部分蛋白与HIV-1的毒力密切相关，且已发现部分蛋白对细胞存在潜在的毒害作用，比如:vpr可引起细胞周期停滞，vif能抑制某些细胞的生长而Nef能引起凋亡。1997年，Zufferey等将包装质粒上的vif、vpr、vpu和nef基因敲除，从而得到第二代慢病毒载体，而其他方面与上述第一代载体系统一致。研究发现即使全部4个调节基因都被敲除。病毒颗粒的产量也不会受到影响。这种载体仍然具有体外感染非分裂期细胞、在体感染分化成熟大鼠神经元的能力，但是目前尚不能确定这种载体是否能转染全部种类细胞。由于敲除的调节基因与野生型HIV-1病毒的生活周期以及毒力密切相关，所以这些载体即使发生多位点重组形成RCR，亲代病毒仍不具有致病性。</p>
-<h4 id="第三代HIV-1来源的慢病毒载体"><a href="#第三代HIV-1来源的慢病毒载体" class="headerlink" title="第三代HIV-1来源的慢病毒载体"></a>第三代HIV-1来源的慢病毒载体</h4><p>　　利用慢病毒来源的包装系统的最大问题在于生产过程中可能产生复制型病毒。当质粒DNA转染进入包装细胞，以及辅助质粒及载体质粒的RNA包装入同一病毒颗粒时，将有可能发生重组。减少这种可能性的方法之一就是减少辅助质粒与载体质粒的同源性。另一个方法便是将gag/pol和rev编码序列隔离，分散在不同的质粒。这样的包装系统需要四质粒来代替原有的三质粒包装系统。质粒一携带了gag/pol编码序列及RRE;质粒二包含了编码rev的序列;质粒三是载体质粒;质粒四表达env。采用四质粒代替三质粒系统、除去tat均减少了产生复制型病毒的可能性，从而增加了载体系统的安全性。</p>
-<h4 id="自身失活型-SIN-慢病毒载体"><a href="#自身失活型-SIN-慢病毒载体" class="headerlink" title="自身失活型(SIN)慢病毒载体"></a>自身失活型(SIN)慢病毒载体</h4><p>　　由于具有逆转录方式的特点，在逆转录过程中存在于病毒基因组3′端U3区的启动子/增强子元件将被复制，并置于前病毒两端的LTR。因此，3′LTR的U3区启动子发生失活突变后，将在逆转录过程中转移至5′LTR。如果这样的载体整合入靶细胞，将不会产生完整长度的载体RNA，因此命名为“自身失活型载体”。这种技术最先应用于莫洛尼氏小鼠白血病病毒(MoMLV)载体和鸟类的脾坏死病毒(SNV)载体。进一步研究表明，U3区的频繁突变将导致病毒滴度下降，原因是该区域的某些序列是载体有效多聚腺苷酸化所必需的。在HIV-1基因组内，核心多聚腺苷酸化信号存在R区。现已证实，U3区序列能影响多聚腺苷的酸化效率。与MoMLV相比，将HIV-1的3′LTRU3区(除上述多聚腺苷酸化增强相关序列，以及病毒整合酶识别的U3区5′末端外)删除后并不会影响滴度。这种删除能确保病毒RNA逆转录并整合入靶细胞染色体后，从5′LTR端启动子起始的复制被有效抑制。这种设计的另一个优势是能增强瞬时表达效率，这可能与减少了病毒LTR和细胞启动子之间的启动子竞争有关。</p>
-<h3 id="慢病毒载体的包装"><a href="#慢病毒载体的包装" class="headerlink" title="慢病毒载体的包装"></a>慢病毒载体的包装</h3><p>　　大部分研发人员目前都使用瞬时转染293T细胞的方式生产病毒载体。这种方法的缺点在于生产获得的病毒载体可能会出现有缺陷的基因组。为了生产高质量的载体，必须筛选合适的包装细胞系，而建立包装细胞系的最大难点在于某些病毒蛋白具有细胞毒性。比如，vpr能诱导细胞停滞在G2期，不利于建立vpr蛋白高表达的细胞系，病毒蛋白水解酶同样能水解细胞内的蛋白，不利于建立稳定表达病毒gag-pol蛋白的细胞系;VSV-G蛋白的表达同样对细胞具有毒性。目前，为了建立合适的慢病毒载体包装细胞系，许多科学家都在尝试使用诱导型或可调节的启动子来克服病毒蛋白的细胞毒作用。</p>
-<h2 id="慢病毒的包装过程"><a href="#慢病毒的包装过程" class="headerlink" title="慢病毒的包装过程"></a>慢病毒的包装过程</h2><h3 id="所用质粒"><a href="#所用质粒" class="headerlink" title="所用质粒"></a>所用质粒</h3><p>本实验室现在使用的慢病毒包装系统为三质粒系统，三个质粒分别为①psPAX2（包装质粒），②pMD2G（包膜质粒），③目的质粒（载体质粒）。从网上的信息来看，这是第二代慢病毒包装系统。</p>
-<h3 id="慢病毒载体滴度的测定"><a href="#慢病毒载体滴度的测定" class="headerlink" title="慢病毒载体滴度的测定"></a>慢病毒载体滴度的测定</h3><p>　　慢病毒载体滴度可以参考腺病毒载体滴度的检测方法，将病毒与293细胞共培养后，通过流式细胞仪检测GFP蛋白表达水平来分析病毒滴度，病毒滴度为表达GFP的细胞数乘以相应稀释倍数。另外，还可以通过TaqManPCR检测细胞中病毒拷贝数的方法检测滴度。</p>
-<h3 id="病毒包装的简单流程"><a href="#病毒包装的简单流程" class="headerlink" title="病毒包装的简单流程"></a>病毒包装的简单流程</h3><p>本文只是背景资料搜集，因此不涉及具体的实验操作。大致操作如下：</p>
-<ol>
-<li><strong>转化</strong>：目的在于将质粒进行扩增，质粒的本质就是DNA，在一定条件下可以进行大量扩增，因此在拿到质粒的第一件事情就是先扩增出大量的质粒进行备份（前提是这个质粒的序列是对的）；常用的宿主细胞是DHalpha大肠杆菌。</li>
-<li>孵育293FT细胞。细胞株293T，慢病毒的包装细胞，为贴壁依赖型成上皮样细胞，生长培养基为DMEM(含10%FBS)。贴壁细胞经培养生长增殖形成单层细胞。菌株大肠杆菌菌株DH5α。用于扩增慢病毒载体和辅助包装载体质粒。这种细胞是已经被筛选出来专门用来合成病毒的。将1中的质粒转染到293FT细胞中，进入病毒包装，提取病毒，进入下一步的转染操作。</li>
-<li>目的细胞：就是自己最终实验所用到的细胞，例如DC2.4细胞。将包装好的病毒对目的细胞进行感染。</li>
-<li>分离目的细胞：质粒上通常带有报告基因，例如GFP，成功被病毒感染的细胞通常会表达这些绿色荧光蛋白，通过FACS就可以将细胞进行筛选出来，然后继续养细胞，长到一定密度后，再通常一定手段（例如WB或qPCR来鉴定目的基因是否导入或者是目的基因是否被敲除，这取决于具体的实验设计）。</li>
-</ol>
-<h2 id="附录：常见质粒元件"><a href="#附录：常见质粒元件" class="headerlink" title="附录：常见质粒元件"></a>附录：常见质粒元件</h2><h3 id="SV40"><a href="#SV40" class="headerlink" title="SV40"></a>SV40</h3><p>SV40的全称是<code>Simian vacuolating virus 40 or Simian virus 40</code>，即<code>猴空泡病毒40</code>，猿猴病毒40或猴病毒40的缩写，多瘤病毒科，这是在人类和猴子都发现的致瘤病毒。SV40病毒的基因组是一种环形双链的DNA，基因组5.2kb，病毒的直径45nm，病毒成熟部位细胞核，无被膜，62个核壳粒亚单位，这种大小很适于基因操作。同时它也是第一个完成基因组DNA全序列分析的动物病毒。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2647,7 +2709,7 @@ Z_{i}={\bf a'_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dots,m<
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">232</span>
+                  <span class="site-state-item-count">236</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2746,7 +2808,7 @@ Z_{i}={\bf a'_{i}X}={a_{i1}X_{1}+a_{i2}X_{2}+ \dots +a_{im}X_{m}} i=1,2,\dots,m<
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共928.1k字</span>
+  <span class="post-count">博客全站共938.3k字</span>
 </div>
 
         
