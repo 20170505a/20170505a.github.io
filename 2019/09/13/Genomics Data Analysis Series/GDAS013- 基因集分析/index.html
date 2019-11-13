@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="GSEA,Bioconductor," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 在这一节中我们将学习基因集分析(gene set analysis)背后的统计学原理。在这一部分里，我们要记住三个重要的步骤，这三个步骤都非常重要，但它们又相互独立，分别如下所示：  参与统计的基因集 汇总每个基因集的统计学指标 评估不确定性的方法  准备数据与基因集数据库 12source(&quot;http://www.bioconductor.org/biocLite.R&quot;)b">
+<meta name="keywords" content="GSEA,Bioconductor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDAS013-基因集分析">
+<meta property="og:url" content="http://rvdsd.top/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言 在这一节中我们将学习基因集分析(gene set analysis)背后的统计学原理。在这一部分里，我们要记住三个重要的步骤，这三个步骤都非常重要，但它们又相互独立，分别如下所示：  参与统计的基因集 汇总每个基因集的统计学指标 评估不确定性的方法  准备数据与基因集数据库 12source(&quot;http://www.bioconductor.org/biocLite.R&quot;)b">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-10-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-11-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-12-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-13-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-14-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-15-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-18-1.png">
+<meta property="og:updated_time" content="2019-11-13T05:27:43.964Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GDAS013-基因集分析">
+<meta name="twitter:description" content="前言 在这一节中我们将学习基因集分析(gene set analysis)背后的统计学原理。在这一部分里，我们要记住三个重要的步骤，这三个步骤都非常重要，但它们又相互独立，分别如下所示：  参与统计的基因集 汇总每个基因集的统计学指标 评估不确定性的方法  准备数据与基因集数据库 12source(&quot;http://www.bioconductor.org/biocLite.R&quot;)b">
+<meta name="twitter:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-10-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/"/>
+
+
+
+
+
+  <title>GDAS013-基因集分析 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GDAS013-基因集分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-13T12:00:00+08:00">
+                2019-09-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,393
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  19
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>在这一节中我们将学习基因集分析(gene set analysis)背后的统计学原理。在这一部分里，我们要记住三个重要的步骤，这三个步骤都非常重要，但它们又相互独立，分别如下所示：</p>
+<ul>
+<li>参与统计的基因集</li>
+<li>汇总每个基因集的统计学指标</li>
+<li>评估不确定性的方法</li>
+</ul>
+<h2 id="准备数据与基因集数据库">准备数据与基因集数据库</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">source</span>(<span class="string">"http://www.bioconductor.org/biocLite.R"</span>)</div><div class="line">biocLite(<span class="string">"GSEABase"</span>)</div></pre></td></tr></table></figure>
+<p>加载以下包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">library(GSEABase)</div><div class="line">library(GSE5859Subset)</div><div class="line">library(sva)</div><div class="line">library(limma)</div><div class="line">library(matrixStats)</div></pre></td></tr></table></figure>
+<p>我们使用下面包中的数据来说明一下，这个包可以从Github中下载，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(devtools)</div><div class="line">install_github(<span class="string">"genomicsclass/GSE5859Subset"</span>)</div></pre></td></tr></table></figure>
+<p>我们构建的这个数据含有批次效应，因此我们需要使用SVA对其进行校正，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GSE5859Subset)</div><div class="line">data(GSE5859Subset)</div><div class="line"><span class="keyword">library</span>(sva)</div><div class="line"><span class="keyword">library</span>(limma)</div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">X = sampleInfo$group</div><div class="line">mod&lt;-model.matrix(~X)</div><div class="line">svafit &lt;- sva(geneExpression,mod)</div><div class="line"><span class="comment">## Number of significant surrogate variables is:  5 </span></div><div class="line"><span class="comment">## Iteration (out of 5 ):1  2  3  4  5</span></div><div class="line">svaX&lt;-model.matrix(~X+svafit$sv)</div><div class="line">lmfit &lt;- lmFit(geneExpression,svaX)</div><div class="line">tt&lt;-lmfit$coef[,<span class="number">2</span>]*sqrt(lmfit$df.residual)/(<span class="number">2</span>*lmfit$sigma)</div><div class="line">pval&lt;-<span class="number">2</span>*(<span class="number">1</span>-pt(abs(tt),lmfit$df.residual[<span class="number">1</span>]))</div><div class="line">qval &lt;- p.adjust(pval,<span class="string">"BH"</span>)</div></pre></td></tr></table></figure>
+<p>我们需要注意一下，在这一节中，我们需要每个基因的评分和差异表达基因基因的候选列表。我们如何获取这个候选基因列表与所表示的基因丰度的单位无关。为了说明这一点，我们会假装我们事先不知道在不同组之间基因表达的关系。</p>
+<p>我们构建一个FDR为25%的候选基因列表。这个列表中有23个基因。我们从中能了解到什么生物学信息呢？既然我们知道基因存在着相互作用，那么研究一组基因，而不是单个基因有着重要意义。通常来说，这就是基因集分析的原始想法。</p>
+<p>网上有各种提供基因集的资源。这些资源中的基因都是经过缜密筛选的，它们都有着一些共同的特征。这些基因分组的方式是通过通路（例如KEGG）或GO来划分的。在下面的网站上就能找到许多这样的资源：</p>
+<p>http://www.broadinstitute.org/gsea/msigdb/index.jsp</p>
+<p>在以下的案例中，我闪将使用一个根据染色体进行分组的基因集来分析数据。第一步就是下载数据库，不过你需要在<a href="http://software.broadinstitute.org/gsea/login.jsp;jsessionid=C7D472C24D6D4FF96526F3868A8CCCC9" target="_blank" rel="external">网站注册</a>。</p>
+<p>当你下载好文件后，就可以通过以下的命令读入数据库（文件扩展名为gmt，其实就是GSEA分析中的基因集文件），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gsets &lt;- getGmt(<span class="string">"c1.all.v6.1.entrez.gmt"</span>) <span class="comment">##must provide correct path to file</span></div></pre></td></tr></table></figure>
+<p>这个对象中含有326个基因集。每个基因集使用ENTREZ ID标明了基因，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">length(gsets)</div><div class="line">## [1] 326</div><div class="line">head(names(gsets))</div><div class="line">## [1] &quot;chr5q23&quot;  &quot;chr16q24&quot; &quot;chr8q24&quot;  &quot;chr13q11&quot; &quot;chr7p21&quot;  &quot;chr10q23&quot;</div><div class="line">gsets[[&quot;chryq11&quot;]]</div><div class="line">## setName: chryq11 </div><div class="line">## geneIds: 728512, 392597, ..., 360027 (total: 204)</div><div class="line">## geneIdType: Null</div><div class="line">## collectionType: Null </div><div class="line">## details: use &apos;details(object)&apos;</div></pre></td></tr></table></figure>
+<p>我们可以使用以下方式获取ENTREZ ID，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">head(geneIds(gsets[[&quot;chryq11&quot;]]))</div><div class="line">## [1] &quot;728512&quot; &quot;392597&quot; &quot;9086&quot;   &quot;359796&quot; &quot;83864&quot;  &quot;425057&quot;</div></pre></td></tr></table></figure>
+<p>现在，为了将其应用于我们的数据，我们必须将这些ID映射到Affymetrix ID上。现在我们编写这样一个函数，这个函数会使用Expression Set类，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">mapGMT2Affy &lt;- <span class="keyword">function</span>(object,gsets)&#123;</div><div class="line">  ann&lt;-annotation(object)</div><div class="line">  dbname&lt;-paste(ann,<span class="string">"db"</span>,sep=<span class="string">"."</span>)</div><div class="line">  <span class="keyword">require</span>(dbname,character.only=<span class="literal">TRUE</span>)</div><div class="line">  gns&lt;-featureNames(object)</div><div class="line"></div><div class="line">  <span class="comment">##This call may generate warnings</span></div><div class="line">  map&lt;-select(get(dbname), keys=gns,columns=c(<span class="string">"ENTREZID"</span>, <span class="string">"PROBEID"</span>))</div><div class="line">  map&lt;-split(map[,<span class="number">1</span>],map[,<span class="number">2</span>])</div><div class="line">  indexes&lt;-sapply(gsets,<span class="keyword">function</span>(ids)&#123;</div><div class="line">    gns2&lt;-unlist(map[geneIds(ids)])</div><div class="line">    match(gns2,gns)</div><div class="line">    &#125;)</div><div class="line">  names(indexes)&lt;-names(gsets)</div><div class="line">  <span class="keyword">return</span>(indexes)</div><div class="line">&#125;</div><div class="line"><span class="comment">##create an Expression Set</span></div><div class="line">rownames(sampleInfo)&lt;- colnames(geneExpression)</div><div class="line">e=ExpressionSet(assay=geneExpression,</div><div class="line">                phenoData=AnnotatedDataFrame(sampleInfo),</div><div class="line">                annotation=<span class="string">"hgfocus"</span>)</div><div class="line"><span class="comment">##can safely ignore the warning</span></div><div class="line">gsids &lt;- mapGMT2Affy(e,gsets) </div><div class="line"><span class="comment">## 'select()' returned 1:many mapping between keys and columns</span></div></pre></td></tr></table></figure>
+<h2 id="基于相关检验的方法">基于相关检验的方法</h2>
+<p>现在我们就可以计算差异表达基因是否在某个基因集中富集。那么我们如何计算呢？最简单的方法就是独立卡方检验，这种统计方法我们以前学过。现在我们对这些差异基因是否在Y染色体上的基因集中富集进行计算，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">tab &lt;- table(ingenset=<span class="number">1</span>:nrow(e) %<span class="keyword">in</span>% gsids[[<span class="string">"chryq11"</span>]],signif=qval&lt;<span class="number">0.05</span>)</div><div class="line">tab</div><div class="line"><span class="comment">##         signif</span></div><div class="line"><span class="comment">## ingenset FALSE TRUE</span></div><div class="line"><span class="comment">##    FALSE  8769    9</span></div><div class="line"><span class="comment">##    TRUE     11    4</span></div><div class="line">chisq.test(tab)$p.val</div><div class="line"><span class="comment">## Warning in chisq.test(tab): Chi-squared approximation may be incorrect</span></div><div class="line"><span class="comment">## [1] 5.264033e-121</span></div></pre></td></tr></table></figure>
+<p>因为我们比较的是男性与女性，因此我们使用Y染色体上基因集来进行富集，这样比较便于富集差异基因，更能说明这种算法的原理。但是，由于只有13个基因有显著性（在Y染色体上的只有4个），这种方法对于寻找可能在某些方面具有生物学意义的基因集来说，实际意义不大。例如，X染色体上的基因集是我们感兴趣的基因集么？这里需要注意的是，一些基因在X染色体上并不活性，因此与男性相比，女性体内这样的基因数目更多。</p>
+<p>这里我们面临的问题是，FDR值为0.25，这是任意设置的一个截止值。为什么不设为0.05或0.01呢？我们如何设置这个截止值？</p>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">qs&lt;-seq(<span class="number">0</span>,<span class="number">1</span>,len=length(tt)+<span class="number">1</span>)-<span class="number">1</span>/(<span class="number">2</span>*length(tt));qs&lt;-qs[-<span class="number">1</span>]</div><div class="line">qqplot(qt(qs,lmfit$df.resid),tt,ylim=c(-<span class="number">10</span>,<span class="number">10</span>),xlab=<span class="string">"Theoretical quantiles"</span>,ylab=<span class="string">"Observed"</span>) <span class="comment">##note we leave some of the obvious ones out</span></div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10">
+<p class="caption">plot of chunk unnamed-chunk-10</p>
+</div>
+<h2 id="基因集相关的统计学">基因集相关的统计学</h2>
+<p>目前大多数进行基因集分析的方法都没有将基因分析为差异表达部分和非差异表达部分。相反，我们会使用一些类似于t检验的方法来进行计算。为了了解这种方法比基因列表的二分法更为强大，现在我们提出一个问题：一些基因是否在X染色体上并没有失活？我们不像前面提到的那样创建一个基因表，而是查看一下X染色体中第一组基因t检验中t值的分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ind &lt;- gsids[[<span class="string">"chrxp11"</span>]]</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">plot(density(tt[-ind]),xlim=c(-<span class="number">7</span>,<span class="number">7</span>),main=<span class="string">""</span>,xlab=<span class="string">"t-stat"</span>,sub=<span class="string">""</span>,lwd=<span class="number">4</span>)</div><div class="line">lines(density(tt[ind],bw=<span class="number">.7</span>),col=<span class="number">2</span>,lty=<span class="number">2</span>,lwd=<span class="number">4</span>)</div><div class="line">rug(tt[ind],col=<span class="number">2</span>)</div><div class="line">legend(-<span class="number">6.5</span>, <span class="number">.3</span>, legend=c(<span class="string">"present on xp11"</span>, <span class="string">"not on xp11"</span>),</div><div class="line">     col=c(<span class="number">2</span>,<span class="number">1</span>), lty=c(<span class="number">2</span>,<span class="number">1</span>), lwd=<span class="number">4</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11">
+<p class="caption">plot of chunk unnamed-chunk-11</p>
+</div>
+<p>从上图我们可以看到基因集的t统计量的分布，它的分布似乎不同于所有基因的分布。那么我们如何地这个结果进行定量呢？</p>
+<p>有关基因集分析的第一篇文献是于2001年由[Virtaneva]发表的，他在前面部分中讨论了Wilcoxon Mann-Whitney检验。那篇文献的基本思路就是统计实验组和对照组之间的差异基因在某个特定的基因集中的数目是否比在其它基因集中的数目更大。Wilcoxon比较的是基因集上基因的秩是否在中位数以上。</p>
+<p>在这里我们计算了每个基因集的Wilcoxon检验。然后我们对Wilcoxon统计量的结果进行标准(standardize)，也就是将它们转换为均值为0，标准差为1的数据。注意，中心极限理论告诉我们，如果基因集足够大，并且每个基因的效应大小彼此独立，那么这些统计量将遵循正态分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">es &lt;- lmfit$coef[,<span class="number">2</span>]</div><div class="line">wilcox &lt;- t(sapply(gsids,<span class="keyword">function</span>(i)&#123;</div><div class="line">  <span class="keyword">if</span>(length(i)&gt;<span class="number">2</span>)&#123;</div><div class="line">  tmp&lt;- wilcox.test(es[i],es[-i])  </div><div class="line">  n1&lt;-length(i);n2&lt;-length(es)-n1</div><div class="line">  z &lt;- (tmp$stat -n1*n2/<span class="number">2</span>) / sqrt(n1*n2*(n1+n2+<span class="number">1</span>)/<span class="number">12</span>)</div><div class="line">  <span class="keyword">return</span>(c(z,tmp$p.value))</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">return</span>(rep(<span class="literal">NA</span>,<span class="number">2</span>))  </div><div class="line">  &#125;))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">cols &lt;- rep(<span class="number">1</span>,nrow(wilcox))</div><div class="line">cols[grep(<span class="string">"chrx"</span>,rownames(wilcox))]&lt;-<span class="number">2</span></div><div class="line">cols[grep(<span class="string">"chry"</span>,rownames(wilcox))]&lt;-<span class="number">3</span></div><div class="line">qqnorm(wilcox[,<span class="number">1</span>],col=cols,cex=ifelse(cols==<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>),pch=<span class="number">16</span>)</div><div class="line">qqline(wilcox[,<span class="number">1</span>])</div><div class="line">legend(<span class="string">"topleft"</span>,c(<span class="string">"Autosome"</span>,<span class="string">"chrX"</span>,<span class="string">"chrY"</span>),pch=<span class="number">16</span>,col=<span class="number">1</span>:<span class="number">3</span>,box.lwd=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12">
+<p class="caption">plot of chunk unnamed-chunk-12</p>
+</div>
+<p>从上图我们可以看出来，排名前10位的基因并没像我们预期的那样在X染色体和Y染色体中高表达。使用Wilcoxon（稳健,robust)为基础的背后逻辑是，我们并不想看到一个或两个高表达的基因对基因集分析产生重要影响（Wilcoxon检验是功效比较低，但比较稳健，对异常值不敏感）。虽然这种统计方法能够降低低秩基因的假阳性，但是这牺牲了灵敏度（功效,power）。下面我们来考虑一个低稳健性(less robust)，但是通常情况下更加强大的方法。</p>
+<p>如果我们对基个基因集中向左分布（通常来说是表达量少的基因）的基因或者说是向右分布（通常来说是就是表达高的基因）的基因戌兴趣，那么我们可以使用的最简单的统计就是比较两组之间的均值，具体可以参考这篇文献<a href="https://www.ncbi.nlm.nih.gov/pubmed/?term=20048385" target="_blank" rel="external">《Gene set enrichment analysis made simple》</a>，其中G是基因在基因集中的索引，我们定义以下的统计量： <span class="math display">\[
+\bar{t}=\frac{1}{N} \sum_{i \in G} t_i
+\]</span></p>
+<p>零假设是基因集中的基因表达没有差异，这些t检验的均值为0。如果t检验统计量之间互相是独立的（后面我们会学习避免此假设的方法），那么<span class="math inline">\(\sqrt{N} \bar{t}\)</span> 服从以下分布： <span class="math display">\[
+\sqrt{N} \bar{t} \sim N(0,1)
+\]</span></p>
+<p>以下是这些统计量的qq图：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">avgt &lt;- sapply(gsids,function(i) sqrt(length(i))*mean(tt[i]))</div><div class="line">qqnorm(avgt,col=cols,cex=ifelse(cols==1,1,2),pch=16)</div><div class="line">qqline(avgt)</div><div class="line">legend(&quot;topleft&quot;,c(&quot;Autosome&quot;,&quot;chrX&quot;,&quot;chrY&quot;),pch=16,col=1:3,box.lwd=0)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13">
+<p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">avgt[order(-abs(avgt))[<span class="number">1</span>:<span class="number">10</span>]]</div><div class="line"><span class="comment">##    chryp11    chryq11    chrxq13    chr6p22   chr17p13    chrxp11 </span></div><div class="line"><span class="comment">## -17.749865 -15.287203   6.592806  -4.558008  -4.545851   4.420686 </span></div><div class="line"><span class="comment">##   chr20p13    chr4q35    chr7p22    chrxp22 </span></div><div class="line"><span class="comment">##  -4.241892  -4.033233  -3.642068   3.608926</span></div></pre></td></tr></table></figure>
+<p>有一些算法就是基于以上原理来转统计量的均值的，例如 <a href="http://www.ncbi.nlm.nih.gov/pubmed/16174746" target="_blank" rel="external">Tian et al 2005</a> , <a href="http://www.ncbi.nlm.nih.gov/pubmed/15647293" target="_blank" rel="external">SAFE</a>, <a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=20610611" target="_blank" rel="external">ROAST</a>, <a href="http://www.ncbi.nlm.nih.gov/pubmed/22638577" target="_blank" rel="external">CAMERA</a>.</p>
+<p>我们可以构建其它的得分来检验其它替代假设。例如我们可以检验<a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=20048385" target="_blank" rel="external">changes in variances</a> 与这个分布的常规变化 [<a href="http://www.ncbi.nlm.nih.gov/pubmed/12808457" target="_blank" rel="external">1</a>], [<a href="http://www.ncbi.nlm.nih.gov/pubmed/16199517" target="_blank" rel="external">2</a>]。</p>
+<h2 id="基因集的假设检验">基因集的假设检验</h2>
+<p>上面我们对<span class="math inline">\(\sqrt{N} \bar{t}\)</span> 的正态近似表明，t检验的统计量是独立的，并且分布相同，例如，现在我们看第二个公式，如下所示： <span class="math display">\[
+Var(\bar{t})= \frac{1}{N^2} \mbox{var}(t_1 + \dots + t_N) = \frac{1}{N^2}(\mbox{var}(t_1)+\dots+\mbox{var}(t_N)) = \frac{1}{N}
+\]</span> 这个公众就是假设t检验统计量是独立的。但是，即使在零假设下，我们也许会考虑到基因集之间是相互关联的。为了了解这一点，我们可以取每个基因集中所有成对相关的平均值，我们就会看到，它们并不都是0，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">N &lt;- sapply(gsids,length)</div><div class="line">ind1&lt;-which(X==<span class="number">0</span>)</div><div class="line">ind2&lt;-which(X==<span class="number">1</span>)</div><div class="line">corrs &lt;- t(sapply(gsids,<span class="keyword">function</span>(ind)&#123;</div><div class="line">  <span class="keyword">if</span>(length(ind)&gt;=<span class="number">2</span>)&#123;</div><div class="line">    cc1&lt;-cor(t(geneExpression[ind,ind1]))</div><div class="line">    cc2&lt;-cor(t(geneExpression[ind,ind2]))</div><div class="line">  <span class="keyword">return</span>(c(median(cc1[lower.tri(cc1)]),</div><div class="line">    median(cc2[lower.tri(cc2)])))</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">return</span>(c(<span class="literal">NA</span>,<span class="literal">NA</span>))</div><div class="line">&#125;))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">plot(corrs[N&gt;<span class="number">10</span>,],xlim=c(-<span class="number">1</span>,<span class="number">1</span>),ylim=c(-<span class="number">1</span>,<span class="number">1</span>),xlab=<span class="string">"Correlation within females"</span>,ylab=<span class="string">"Correlation within males"</span>)</div><div class="line">abline(h=<span class="number">0</span>,v=<span class="number">0</span>,lty=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<p>注意，在这个案例中，在一个基因集中，基因的检验统计量具有相关性的 <span class="math inline">\(\rho\)</span>， 平均t检验统计量的方差如下所示： <span class="math display">\[
+\begin{eqnarray}
+Var(\bar{t}) &amp;=&amp; \frac{1}{N^2} \mbox{var}( (1 \dots 1) (t_1 \dots 
+t_N)&#39; ) \\
+&amp;=&amp; \frac{1}{N^2}(1 \dots 1)
+\begin{pmatrix}
+1 &amp; \rho &amp; \dots &amp; \rho &amp; \rho \\
+\rho &amp; 1 &amp; \rho &amp; \dots  &amp; \rho \\
+\dots &amp; \dots &amp; \dots &amp; \dots &amp; \dots \\
+\rho &amp;  \rho &amp; \dots &amp; \rho &amp; 1 \\
+\end{pmatrix}
+(1 \dots 1) &#39; \\
+&amp;=&amp; \frac{1}{N^2}\{N + (N-1) N \rho \} \\
+&amp;=&amp; \frac{1}{N}\{1 + (N-1) \rho \} \\
+\end{eqnarray} %]]&gt;
+\]</span> 在上面公式里，<span class="math inline">\(\rho\)</span> 是正值，方差与 ${1 + (N-1) } <span class="math inline">\(有关。虽然常规情况下，在一个基因集内，\)</span>$ 并不一定都相等，但是我们仍然可以根据一个基因集内的平均 <span class="math inline">\(\rho\)</span> 来计算一个校正因子(correction factor)。这个公式可以参考这篇文献<a href="https://projecteuclid.org/euclid.aoas/1206367822" target="_blank" rel="external">《A statistical framework for testing functional categories in microarray data》</a>。公式中使用的校正方法还包括Wald统计量。</p>
+<p>这些校正因子可以对上述提到的统计量进行简单的汇总。事实上，现在已经有论文提出了基于简单的均值转换方法的算法，这些算法还考虑到了相关性，它们基于渐进近似的<a href="https://www.ncbi.nlm.nih.gov/pubmed/?term=20610611" target="_blank" rel="external">ROAST</a>和<a href="https://www.ncbi.nlm.nih.gov/pubmed/22638577" target="_blank" rel="external">CAMERA</a>，用于开发统计摘要(summary statistics)与统计推断。在计算机演示案例中，我们将会演示其中一款软件。简单起见，我们这里基于 <span class="math inline">\(\sqrt{N} \bar{t}\)</span> 计算近似，并使用校正因子。这里我们比较一下初始 <span class="math inline">\(\sqrt{N} \bar{t}\)</span> 以及校正后的 <span class="math inline">\(\sqrt{N} \bar{t}\)</span> ，如下所示：</p>
+<p>在下图里，我们注意到这个校正会降低分数(socres)（也就是将分数值降低到接近0的程度）。尤其注意的是，第三个最高的值现在非常接近0，它不再显著（参见箭头），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">avgcorrs &lt;- rowMeans(corrs)</div><div class="line">cf &lt;- (<span class="number">1</span>+(N-<span class="number">1</span>)*avgcorrs)</div><div class="line">cf[cf&lt;<span class="number">1</span>] &lt;- <span class="number">1</span> <span class="comment">## we ignore negative correlations</span></div><div class="line">correctedavgt &lt;- avgt/sqrt(cf)</div><div class="line">parampvaliid &lt;- <span class="number">2</span>*pnorm(-abs(avgt))</div><div class="line">parampval&lt;- <span class="number">2</span>*pnorm(-abs(correctedavgt))</div><div class="line">plot(avgt,correctedavgt,bg=cols,pch=<span class="number">21</span>,xlab=<span class="string">"Original"</span>,ylab=<span class="string">"With correction factor"</span>,xlim=c(-<span class="number">7</span>,<span class="number">20</span>),ylim=c(-<span class="number">7</span>,<span class="number">20</span>),cex=<span class="number">1.5</span>)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">abline(h=<span class="number">0</span>,v=<span class="number">0</span>,lty=<span class="number">2</span>)</div><div class="line">thirdhighest &lt;- order(-avgt)[<span class="number">3</span>]</div><div class="line">arrows(avgt[thirdhighest]+<span class="number">3</span>,correctedavgt[thirdhighest],x1=avgt[thirdhighest]+<span class="number">0.5</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-15-1.png" alt="plot of chunk unnamed-chunk-15">
+<p class="caption">plot of chunk unnamed-chunk-15</p>
+</div>
+<p>需要注意，标注出来的基因集具有相对高的相关性和大小(size)，它就使得校正因子变得很大，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">avgcorrs[thirdhighest]</div><div class="line"><span class="comment">##   chrxp22 </span></div><div class="line"><span class="comment">## 0.0287052</span></div><div class="line">length(gsids[[thirdhighest]])</div><div class="line"><span class="comment">## [1] 76</span></div><div class="line">cf[thirdhighest]</div><div class="line"><span class="comment">## chrxp22 </span></div><div class="line"><span class="comment">## 3.15289</span></div></pre></td></tr></table></figure>
+<p>在这一节中，我们已经使用了平均t检验统计量作为一个简单的案例来说明基因集在零假设下的统计摘要。我们证明了，当基因集中的基因并不独立时，需要一个校正因子。这里要注意的是，我们使用平均t检验统计量只是做了一个简单的说明，如果需要更加严格处理方法来实现均值偏移方法(testing-for-mean-shifts)，则需要参考 <a href="http://www.ncbi.nlm.nih.gov/pubmed/15647293" target="_blank" rel="external">SAFE</a>, <a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=20610611" target="_blank" rel="external">ROAST</a>和 <a href="http://www.ncbi.nlm.nih.gov/pubmed/22638577" target="_blank" rel="external">CAMERA</a>。</p>
+<p>即使在使用了膨胀因子(inflation factor)校正了平均t检验统计量后，零分布也有可能不成立。例如，对于平均t检验统计量是正态的假设而言，原始的样本大小和基因集大小有可能太小。在一次部分里，我们会演示如何在不使用参数假设的情况下，使用置换检验(Permutations)来估计零分布。</p>
+<h2 id="置换检验permutations">置换检验(Permutations)</h2>
+<p>当我们感兴趣的结果允许以及样本足够的情况下，我们可以使用基因集特定的转换检验来替换参数检验。参考文献中列出了几种这样的方法[<a href="http://www.ncbi.nlm.nih.gov/pubmed/16199517" target="_blank" rel="external">1</a>], [<a href="http://www.ncbi.nlm.nih.gov/pubmed/16174746" target="_blank" rel="external">2</a>]。对于大多数的富集分布而言，我们可以使用置换来创建一个零分布。例如，在这个案例中，我们对简单的t检验摘要执行置换检验，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line"><span class="comment">## matrixStats v0.50.1 (2015-12-14) successfully loaded. See ?matrixStats for help.</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## Attaching package: 'matrixStats'</span></div><div class="line"><span class="comment">## The following object is masked from 'package:GenomicFiles':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     rowRanges</span></div><div class="line"><span class="comment">## The following object is masked from 'package:SummarizedExperiment':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     rowRanges</span></div><div class="line"><span class="comment">## The following objects are masked from 'package:genefilter':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     rowSds, rowVars</span></div><div class="line"><span class="comment">## The following objects are masked from 'package:Biobase':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     anyMissing, rowMedians</span></div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">B &lt;- <span class="number">400</span> <span class="comment">##takes a few minutes</span></div><div class="line">null &lt;- sapply(<span class="number">1</span>:B,<span class="keyword">function</span>(b)&#123;</div><div class="line"> nullX&lt;- sample(X)</div><div class="line"> nullsvaX&lt;-model.matrix(~nullX+svafit$sv) <span class="comment">##note that we are not recomupting the surrogate values. </span></div><div class="line"> nulllmfit &lt;- lmFit(geneExpression,nullsvaX)</div><div class="line"> nulltt&lt;-nulllmfit$coef[,<span class="number">2</span>]*sqrt(nulllmfit$df.residual)/(<span class="number">2</span>*nulllmfit$sigma)</div><div class="line"> nullavgt &lt;- sapply(gsids,<span class="keyword">function</span>(i) sqrt(length(i))*mean(nulltt[i]))</div><div class="line"> <span class="keyword">return</span>(nullavgt)</div><div class="line">&#125;)</div><div class="line">permavgt &lt;- avgt/rowSds(null)</div><div class="line">permpval&lt;- rowMeans(abs(avgt) &lt; abs(null))</div></pre></td></tr></table></figure>
+<p>在这个案例中，使用置换得到的结果非常类似于使用了校正因子得到的参数检验结果，我们从比较的结果中就能看出这些信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">plot(correctedavgt,permavgt,bg=cols,pch=<span class="number">21</span>,xlab=<span class="string">"Parametric z-score (with correction)"</span>,ylab=<span class="string">"Permutation z-score"</span>,cex=<span class="number">1.5</span>,ylim=c(-<span class="number">5</span>,<span class="number">15</span>),xlim=c(-<span class="number">5</span>,<span class="number">15</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">abline(h=<span class="number">0</span>,v=<span class="number">0</span>,lty=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18">
+<p class="caption">plot of chunk unnamed-chunk-18</p>
+</div>
+<p>我们看到这两种方法得到的q值也是比较类似：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">tab &lt;- data.frame(avgt=p.adjust(signif(<span class="number">2</span>*pnorm(<span class="number">1</span>-abs(avgt)),<span class="number">2</span>),method=<span class="string">"BH"</span>),</div><div class="line">                  correctedavgt=p.adjust(signif(<span class="number">2</span>*pnorm(<span class="number">1</span>-abs(correctedavgt)),<span class="number">2</span>),method=<span class="string">"BH"</span>),</div><div class="line">                  permutations=p.adjust(permpval,method=<span class="string">"BH"</span>))</div><div class="line"><span class="comment">##include only gene sets with 10 or more genes in comparison</span></div><div class="line">tab&lt;-tab[N&gt;=<span class="number">10</span>,]</div><div class="line">tab &lt;- cbind(signif(tab,<span class="number">2</span>),apply(tab,<span class="number">2</span>,rank))</div><div class="line">tab&lt;-tab[order(tab[,<span class="number">1</span>]),]</div><div class="line">tab &lt;- tab[tab[,<span class="number">1</span>]&lt; <span class="number">0.25</span>,]</div><div class="line">tab</div><div class="line"><span class="comment">##             avgt correctedavgt permutations avgt correctedavgt</span></div><div class="line"><span class="comment">## chryp11  1.9e-60       1.5e-37         0.00  1.0             1</span></div><div class="line"><span class="comment">## chryq11  4.2e-44       6.3e-02         0.00  2.0             3</span></div><div class="line"><span class="comment">## chrxq13  2.4e-06       5.3e-03         0.00  3.0             2</span></div><div class="line"><span class="comment">## chr17p13 2.5e-02       1.0e+00         0.00  4.5           124</span></div><div class="line"><span class="comment">## chr6p22  2.5e-02       1.0e+00         0.77  4.5           124</span></div><div class="line"><span class="comment">## chrxp11  3.4e-02       1.0e+00         0.70  6.0           124</span></div><div class="line"><span class="comment">## chr20p13 5.6e-02       9.7e-02         0.00  7.0             4</span></div><div class="line"><span class="comment">## chr4q35  9.7e-02       1.0e+00         0.39  8.0           124</span></div><div class="line"><span class="comment">##          permutations</span></div><div class="line"><span class="comment">## chryp11             4</span></div><div class="line"><span class="comment">## chryq11             4</span></div><div class="line"><span class="comment">## chrxq13             4</span></div><div class="line"><span class="comment">## chr17p13            4</span></div><div class="line"><span class="comment">## chr6p22           114</span></div><div class="line"><span class="comment">## chrxp11            78</span></div><div class="line"><span class="comment">## chr20p13            4</span></div><div class="line"><span class="comment">## chr4q35            18</span></div></pre></td></tr></table></figure>
+<p>不过置换检验方法的一个局限就是，为了能够得到非常小的p值，我们需要进行多次置换。例如为了得到一个在10e-5到10e-6之间的一个p值，我们霜肆进行100万次置换。对于那些使用了保守的多重比较校正方法（例如Bonferonni校正）的人来说，很有必要进行更多次地的模拟。置换检验的另外一个局限就是，在更复杂的设计中，例如具有许多轭和连续协变量的实验中，如何对置换进行解读并不容易。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc1_geneset_1.html" target="_blank" rel="external">Gene set analysis</a></li>
+<li>Virtaneva K, “Expression profiling reveals fundamental biological differences in acute myeloid leukemia with isolated trisomy 8 and normal cytogenetics.” PNAS 2001 http://www.ncbi.nlm.nih.gov/pubmed/?term=11158605</li>
+<li>Jelle J. Goeman and Peter Bühlmann, “Analyzing gene expression data in terms of gene sets: methodological issues” Bioinformatics 2006. http://bioinformatics.oxfordjournals.org/content/23/8/980</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GSEA/" <i class="fa fa-tag"></i> GSEA</a>
+          
+            <a href="/tags/Bioconductor/" <i class="fa fa-tag"></i> Bioconductor</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/12/Genomics Data Analysis Series/GDAS012- 折衷t检验之limma分析微阵列数据/" rel="next" title="GDAS012-折衷t检验之limma分析微阵列数据">
+                <i class="fa fa-chevron-left"></i> GDAS012-折衷t检验之limma分析微阵列数据
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/14/Genomics Data Analysis Series/GDAS014-使用autoplot和Gviz绘图/" rel="prev" title="GDAS014-使用autoplot和Gviz绘图">
+                GDAS014-使用autoplot和Gviz绘图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">243</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备数据与基因集数据库"><span class="nav-number">2.</span> <span class="nav-text">准备数据与基因集数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于相关检验的方法"><span class="nav-number">3.</span> <span class="nav-text">基于相关检验的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基因集相关的统计学"><span class="nav-number">4.</span> <span class="nav-text">基因集相关的统计学</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基因集的假设检验"><span class="nav-number">5.</span> <span class="nav-text">基因集的假设检验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#置换检验permutations"><span class="nav-number">6.</span> <span class="nav-text">置换检验(Permutations)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共963.7k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

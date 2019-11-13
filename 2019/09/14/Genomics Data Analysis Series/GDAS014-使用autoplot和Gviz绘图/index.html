@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Bioconductor,RNA-seq," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="​ PH525x series - Biomedical Data Science 使用ggbio包绘制染色体图 我们可以通过各种方法来绘制基因组级规模的数据。Bioiconductor中有两个这样的包，即Gviz 和 ggbio。这两个包旨在绘制基因组级数据结构的图形示意图。 ggbio 包中的 autoplot 方法用途广泛。对于GRanges实例来说，存在于每个范围中的数据都可以绘制成">
+<meta name="keywords" content="Bioconductor,RNA-seq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDAS014-使用autoplot和Gviz绘图">
+<meta property="og:url" content="http://rvdsd.top/2019/09/14/Genomics Data Analysis Series/GDAS014-使用autoplot和Gviz绘图/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="​ PH525x series - Biomedical Data Science 使用ggbio包绘制染色体图 我们可以通过各种方法来绘制基因组级规模的数据。Bioiconductor中有两个这样的包，即Gviz 和 ggbio。这两个包旨在绘制基因组级数据结构的图形示意图。 ggbio 包中的 autoplot 方法用途广泛。对于GRanges实例来说，存在于每个范围中的数据都可以绘制成">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_ggbio-lkd-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_gvfeat-lknei-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_gvfeat-dofull-1.png">
+<meta property="og:updated_time" content="2019-11-13T07:59:49.980Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GDAS014-使用autoplot和Gviz绘图">
+<meta name="twitter:description" content="​ PH525x series - Biomedical Data Science 使用ggbio包绘制染色体图 我们可以通过各种方法来绘制基因组级规模的数据。Bioiconductor中有两个这样的包，即Gviz 和 ggbio。这两个包旨在绘制基因组级数据结构的图形示意图。 ggbio 包中的 autoplot 方法用途广泛。对于GRanges实例来说，存在于每个范围中的数据都可以绘制成">
+<meta name="twitter:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_ggbio-lkd-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/09/14/Genomics Data Analysis Series/GDAS014-使用autoplot和Gviz绘图/"/>
+
+
+
+
+
+  <title>GDAS014-使用autoplot和Gviz绘图 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/14/Genomics Data Analysis Series/GDAS014-使用autoplot和Gviz绘图/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GDAS014-使用autoplot和Gviz绘图</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-14T12:00:00+08:00">
+                2019-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  907
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>​ <a href="http://genomicsclass.github.io/book" target="_blank" rel="external">PH525x series - Biomedical Data Science</a></p>
+<h2 id="使用ggbio包绘制染色体图">使用<code>ggbio</code>包绘制染色体图</h2>
+<p>我们可以通过各种方法来绘制基因组级规模的数据。Bioiconductor中有两个这样的包，即<code>Gviz</code> 和 <code>ggbio</code>。这两个包旨在绘制基因组级数据结构的图形示意图。</p>
+<p><code>ggbio</code> 包中的 <code>autoplot</code> 方法用途广泛。对于GRanges实例来说，存在于每个范围中的数据都可以绘制成染色体上条带。核布图(karyogram)布局提供了全基因组的视图，不过这种图在处理染色体外序列水平方面有着重要作用。</p>
+<p>原文如下：</p>
+<blockquote>
+<p>The karyogram layout gives a genome-wide view, but it can be important to control the handling of extra-chromosomal sequence levels.</p>
+</blockquote>
+<p>以下是肝细胞系的布局：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ERBS)</div><div class="line">data(HepG2)</div><div class="line"><span class="keyword">library</span>(GenomeInfoDb)  <span class="comment"># trim all but autosomal chroms</span></div><div class="line">HepG2 = keepStandardChromosomes(HepG2)</div><div class="line">data(GM12878)</div><div class="line">GM12878 = keepStandardChromosomes(GM12878)</div><div class="line"><span class="keyword">library</span>(ggbio)</div><div class="line">autoplot(HepG2, layout=<span class="string">"karyogram"</span>, main=<span class="string">"ESRRA binding on HepG2"</span>)</div><div class="line"><span class="comment">## Scale for 'x' is already present. Adding another scale for 'x', which</span></div><div class="line"><span class="comment">## will replace the existing scale.</span></div><div class="line"><span class="comment">## Scale for 'x' is already present. Adding another scale for 'x', which</span></div><div class="line"><span class="comment">## will replace the existing scale.</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_ggbio-lkd-1.png" alt="plot of chunk lkd">
+<p class="caption">plot of chunk lkd</p>
+</div>
+<p>以下是B细胞系的布局：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">autoplot(GM12878, layout=&quot;karyogram&quot;, main=&quot;ESRRA binding on GM12878&quot;)</div><div class="line">## Scale for &apos;x&apos; is already present. Adding another scale for &apos;x&apos;, which</div><div class="line">## will replace the existing scale.</div><div class="line">## Scale for &apos;x&apos; is already present. Adding another scale for &apos;x&apos;, which</div><div class="line">## will replace the existing scale.</div></pre></td></tr></table></figure>
+<h2 id="使用gviz包绘制esrra结合位点与基因注释">使用<code>Gviz</code>包绘制ESRRA结合位点与基因注释</h2>
+<p>我们通常会将观察到的数据放在基因组的参考信息中来绘制这些数据的图形。现在我们演示一下如何ESRRA结合的图形。</p>
+<p>第一步我们先加载相关的数据、注释包与<code>Gviz</code>包，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ERBS)</div><div class="line"><span class="keyword">library</span>(Gviz)</div><div class="line"><span class="keyword">library</span>(Homo.sapiens)</div><div class="line"><span class="keyword">library</span>(TxDb.Hsapiens.UCSC.hg19.knownGene)</div><div class="line">txdb = TxDb.Hsapiens.UCSC.hg19.knownGene</div></pre></td></tr></table></figure>
+<h3 id="esrra附近的基因">ESRRA附近的基因</h3>
+<p>我们如何确定含有ESRRA以该基因附近的人类基因组片段呢？有几种方法，我们先从ENTREZ ID开始，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Homo.sapiens)</div><div class="line">eid = select(Homo.sapiens, keys=<span class="string">"ESRRA"</span>, keytype=<span class="string">"SYMBOL"</span>, columns=<span class="string">"ENTREZID"</span>)</div><div class="line"><span class="comment">## 'select()' returned 1:1 mapping between keys and columns</span></div><div class="line">eid</div><div class="line"><span class="comment">##   SYMBOL ENTREZID</span></div><div class="line"><span class="comment">## 1  ESRRA     2101</span></div></pre></td></tr></table></figure>
+<p>现在我们获取ESRRA基因的地址，并收拾它相邻基因的地址，并绑定这些基因的符号，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">allg = genes(txdb)</div><div class="line">esrraAddr = genes(txdb, filter=list(gene_id=<span class="number">2101</span>)) <span class="comment"># redundant...</span></div><div class="line">esrraNeigh = subsetByOverlaps(allg, esrraAddr+<span class="number">500000</span>)</div><div class="line">esrraNeigh$symbol = mapIds(Homo.sapiens, keys=esrraNeigh$gene_id, keytype=<span class="string">"ENTREZID"</span>,</div><div class="line">  column=<span class="string">"SYMBOL"</span>)</div><div class="line"><span class="comment">## 'select()' returned 1:1 mapping between keys and columns</span></div></pre></td></tr></table></figure>
+<p>使用<code>Gviz</code> 包快速绘制图形，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plotTracks(GeneRegionTrack(esrraNeigh, showId=TRUE))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_gvfeat-lknei-1.png" alt="plot of chunk lknei">
+<p class="caption">plot of chunk lknei</p>
+</div>
+<h3 id="此区域内的esrra结合峰">此区域内的ESRRA结合峰</h3>
+<p>我们从某个样本（GM12878 EBV-transformed B-cell）获取ESRRA结合数据，以及我们目标基因附近的子集，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">data(GM12878)</div><div class="line">sc = subsetByOverlaps(GM12878, range(esrraNeigh))</div><div class="line">sc</div><div class="line"><span class="comment">## GRanges object with 6 ranges and 7 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames               ranges strand |      name     score       col</span></div><div class="line"><span class="comment">##          &lt;Rle&gt;            &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;integer&gt; &lt;logical&gt;</span></div><div class="line"><span class="comment">##   [1]    chr11 [64071338, 64073242]      * |         3         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [2]    chr11 [63913452, 63914077]      * |        61         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [3]    chr11 [63741506, 63742754]      * |       210         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [4]    chr11 [63992515, 63994725]      * |       408         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [5]    chr11 [64098744, 64100083]      * |      1778         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [6]    chr11 [63639263, 63640021]      * |      2248         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##       signalValue    pValue    qValue      peak</span></div><div class="line"><span class="comment">##         &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]       69.87       310        32      1040</span></div><div class="line"><span class="comment">##   [2]       52.48    123.72  1.785156       259</span></div><div class="line"><span class="comment">##   [3]       18.24    59.652  2.022276       622</span></div><div class="line"><span class="comment">##   [4]        9.04    41.001  1.910095       990</span></div><div class="line"><span class="comment">##   [5]        9.03    19.758  2.075721       653</span></div><div class="line"><span class="comment">##   [6]        8.65    17.481  2.031517       436</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 93 sequences (1 circular) from hg19 genome</span></div></pre></td></tr></table></figure>
+<h3 id="计算表义文字ideogram从而给出染色体体的信息">计算表义文字(ideogram)从而给出染色体体的信息</h3>
+<p>计算过程有点慢。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">idxTrack = IdeogramTrack(genome=<span class="string">"hg19"</span>, chr=<span class="string">"chr11"</span>)</div></pre></td></tr></table></figure>
+<h3 id="数据合并">数据合并</h3>
+<p>我们从顶部开始，用表意文字来确定染色体和染色体上的区域，并且通过观察到的数据和结构信息放大这个区域，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">plotTracks(list(idxTrack, GenomeAxisTrack(), </div><div class="line">   DataTrack(sc[,<span class="number">7</span>], name=<span class="string">"ESRRA peak values"</span>), </div><div class="line">   GeneRegionTrack(esrraNeigh, showId=<span class="literal">TRUE</span>,</div><div class="line">         name=<span class="string">"genes near ESRRA"</span>), GenomeAxisTrack()))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_gvfeat-dofull-1.png" alt="plot of chunk dofull">
+<p class="caption">plot of chunk dofull</p>
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc2_ggbio.html" target="_blank" rel="external">Sketching the binding landscape over chromosomes with ggbio’s karyogram layout</a></li>
+<li><a href="http://genomicsclass.github.io/book/pages/bioc2_gvfeat.html" target="_blank" rel="external">Gviz for plotting data with genomic features</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Bioconductor/" <i class="fa fa-tag"></i> Bioconductor</a>
+          
+            <a href="/tags/RNA-seq/" <i class="fa fa-tag"></i> RNA-seq</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/" rel="next" title="GDAS013-基因集分析">
+                <i class="fa fa-chevron-left"></i> GDAS013-基因集分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/15/Genomics Data Analysis Series/GDAS015-NGS的可视化/" rel="prev" title="GDAS015-NGS的可视化">
+                GDAS015-NGS的可视化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">243</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用ggbio包绘制染色体图"><span class="nav-number">1.</span> <span class="nav-text">使用ggbio包绘制染色体图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用gviz包绘制esrra结合位点与基因注释"><span class="nav-number">2.</span> <span class="nav-text">使用Gviz包绘制ESRRA结合位点与基因注释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#esrra附近的基因"><span class="nav-number">2.1.</span> <span class="nav-text">ESRRA附近的基因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#此区域内的esrra结合峰"><span class="nav-number">2.2.</span> <span class="nav-text">此区域内的ESRRA结合峰</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算表义文字ideogram从而给出染色体体的信息"><span class="nav-number">2.3.</span> <span class="nav-text">计算表义文字(ideogram)从而给出染色体体的信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据合并"><span class="nav-number">2.4.</span> <span class="nav-text">数据合并</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共963.7k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

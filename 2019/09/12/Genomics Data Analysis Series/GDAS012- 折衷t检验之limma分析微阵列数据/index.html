@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Bioconductor,limma," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简单t检验 在这一节中，我们将展示一下使用简单t检验和使用limma层次模型进行差异分析的区别。limma的相关参考文献已经列到参考资料中。 在这一节中，我们还民法了执行limma分析的基本步骤。需要注意的是，limma的功能非常强大，它有数百页的文档，我们不能详细地介绍这个包以及函数，有兴趣的同学可以直接查看它的文档。 spike-in数据集 我们先加载一批由Affymetrix生成的均">
+<meta name="keywords" content="Bioconductor,limma">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDAS012-折衷t检验之limma分析微阵列数据">
+<meta property="og:url" content="http://rvdsd.top/2019/09/12/Genomics Data Analysis Series/GDAS012- 折衷t检验之limma分析微阵列数据/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="简单t检验 在这一节中，我们将展示一下使用简单t检验和使用limma层次模型进行差异分析的区别。limma的相关参考文献已经列到参考资料中。 在这一节中，我们还民法了执行limma分析的基本步骤。需要注意的是，limma的功能非常强大，它有数百页的文档，我们不能详细地介绍这个包以及函数，有兴趣的同学可以直接查看它的文档。 spike-in数据集 我们先加载一批由Affymetrix生成的均">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_limma-lkpl-1.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191109170623.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_limma-unnamed-chunk-5-1.png">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191109172143.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_limma-unnamed-chunk-10-1.png">
+<meta property="og:updated_time" content="2019-11-09T09:29:47.937Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GDAS012-折衷t检验之limma分析微阵列数据">
+<meta name="twitter:description" content="简单t检验 在这一节中，我们将展示一下使用简单t检验和使用limma层次模型进行差异分析的区别。limma的相关参考文献已经列到参考资料中。 在这一节中，我们还民法了执行limma分析的基本步骤。需要注意的是，limma的功能非常强大，它有数百页的文档，我们不能详细地介绍这个包以及函数，有兴趣的同学可以直接查看它的文档。 spike-in数据集 我们先加载一批由Affymetrix生成的均">
+<meta name="twitter:image" content="http://genomicsclass.github.io/book/pages/figure/bioc1_limma-lkpl-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/09/12/Genomics Data Analysis Series/GDAS012- 折衷t检验之limma分析微阵列数据/"/>
+
+
+
+
+
+  <title>GDAS012-折衷t检验之limma分析微阵列数据 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/12/Genomics Data Analysis Series/GDAS012- 折衷t检验之limma分析微阵列数据/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GDAS012-折衷t检验之limma分析微阵列数据</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-12T12:00:00+08:00">
+                2019-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,729
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简单t检验">简单t检验</h2>
+<p>在这一节中，我们将展示一下使用简单t检验和使用limma层次模型进行差异分析的区别。limma的相关参考文献已经列到参考资料中。</p>
+<p>在这一节中，我们还民法了执行limma分析的基本步骤。需要注意的是，limma的功能非常强大，它有数百页的文档，我们不能详细地介绍这个包以及函数，有兴趣的同学可以直接查看它的文档。</p>
+<h3 id="spike-in数据集">spike-in数据集</h3>
+<p>我们先加载一批由Affymetrix生成的均一化(normalized)后的spike-in数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># biocLite("SpikeInSubset")</span></div><div class="line"><span class="keyword">library</span>(SpikeInSubset)</div><div class="line">data(rma95)</div><div class="line">fac &lt;- factor(rep(<span class="number">1</span>:<span class="number">2</span>,each=<span class="number">3</span>))</div></pre></td></tr></table></figure>
+<p>简单来说，这里一共有16个mRNA的物种，它们都已经使用了固定的浓度，并混合起来使用了hgu95芯片进行了检验。这个子集中对于每个mRNA物种，ExpressionSet中的第一个三元组(trio)和第二个三元组有着固定的不同值。通过<code>pData</code>就能看到，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">pData(rma95)</div><div class="line"><span class="comment">##                  37777_at 684_at 1597_at 38734_at 39058_at 36311_at</span></div><div class="line"><span class="comment">## 1521a99hpp_av06      0.00   0.25     0.5        1        2        4</span></div><div class="line"><span class="comment">## 1532a99hpp_av04      0.00   0.25     0.5        1        2        4</span></div><div class="line"><span class="comment">## 2353a99hpp_av08      0.00   0.25     0.5        1        2        4</span></div><div class="line"><span class="comment">## 1521b99hpp_av06      0.25   0.50     1.0        2        4        8</span></div><div class="line"><span class="comment">## 1532b99hpp_av04      0.25   0.50     1.0        2        4        8</span></div><div class="line"><span class="comment">## 2353b99hpp_av08r     0.25   0.50     1.0        2        4        8</span></div><div class="line"><span class="comment">##                  36889_at 1024_at 36202_at 36085_at 40322_at 407_at</span></div><div class="line"><span class="comment">## 1521a99hpp_av06         8      16       32       64      128   0.00</span></div><div class="line"><span class="comment">## 1532a99hpp_av04         8      16       32       64      128   0.00</span></div><div class="line"><span class="comment">## 2353a99hpp_av08         8      16       32       64      128   0.00</span></div><div class="line"><span class="comment">## 1521b99hpp_av06        16      32       64      128      256   0.25</span></div><div class="line"><span class="comment">## 1532b99hpp_av04        16      32       64      128      256   0.25</span></div><div class="line"><span class="comment">## 2353b99hpp_av08r       16      32       64      128      256   0.25</span></div><div class="line"><span class="comment">##                  1091_at 1708_at 33818_at 546_at</span></div><div class="line"><span class="comment">## 1521a99hpp_av06      512    1024      256     32</span></div><div class="line"><span class="comment">## 1532a99hpp_av04      512    1024      256     32</span></div><div class="line"><span class="comment">## 2353a99hpp_av08      512    1024      256     32</span></div><div class="line"><span class="comment">## 1521b99hpp_av06     1024       0      512     64</span></div><div class="line"><span class="comment">## 1532b99hpp_av04     1024       0      512     64</span></div><div class="line"><span class="comment">## 2353b99hpp_av08r    1024       0      512     64</span></div></pre></td></tr></table></figure>
+<p>如果要了解这批数据这样设计的原理，现在我们来看一下下面的四张spiked mRNA，原文如下：</p>
+<blockquote>
+<p>To get a feel for the response of the array quantifications to this design, consider the following plots for four of the spiked mRNAs.</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">par(mfrow=c(2,2))</div><div class="line">for (i in 1:4) &#123;</div><div class="line">  spg = names(pData(rma95))</div><div class="line">  plot(1:6, exprs(rma95)[spg[i+6],], main=spg[i+6], ylab=&quot;RMA&quot;,</div><div class="line">    xlab=&quot;nominal&quot;, axes=FALSE)</div><div class="line">  axis(2)</div><div class="line">  axis(1, at=1:6, labels=pData(rma95)[[spg[i+6]]])</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_limma-lkpl-1.png" alt="plot of chunk lkpl">
+<p class="caption">plot of chunk lkpl</p>
+</div>
+<p>由于RMA(robust multi-array average,鲁棒多阵列平均 )是以log2转换为定量标准的，因此在归一化的检测值中观察到的差异是比较合理的。但是，在每个设计好的浓度内部，存在着相当大的变异。</p>
+<h3 id="rowttests"><code>rowttests</code></h3>
+<p>我们现在使用 <code>genefilter</code> 包中的 <code>rowttests</code> 函数来做一个简单的t检验，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(genefilter)</div><div class="line">rtt &lt;- rowttests(exprs(rma95),fac)</div></pre></td></tr></table></figure>
+<p>我们将根据p值，均值，以及特征值是否是spike-in值来设置颜色，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mask &lt;- with(rtt, abs(dm) &lt; .2 &amp; p.value &lt; .01)</div><div class="line">spike &lt;- rownames(rma95) %in% colnames(pData(rma95))</div><div class="line">cols &lt;- ifelse(mask,&quot;red&quot;,ifelse(spike,&quot;dodgerblue&quot;,&quot;black&quot;))</div></pre></td></tr></table></figure>
+<p>我们现在使用上面定义的颜色来绘制结果。我们将<code>dm</code>乘以-1，因为国我们感兴趣的是，第二组与第一组的差异（这是由<code>lm</code>与<code>limma</code>包默认情况下使用的差异）。spike-in基因是蓝色的，它们大多数有着较小的p值与较大的均值差异。红点表示较小p值的基因，同时也有着较小的均值差异。我们将会看到这些点使用<code>limma</code>后的变化，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">with(rtt, plot(-dm, -log10(p.value), cex=.8, pch=16,</div><div class="line">     xlim=c(-1,1), ylim=c(0,5),</div><div class="line">     xlab=&quot;difference in means&quot;,</div><div class="line">     col=cols))</div><div class="line">abline(h=2,v=c(-.2,.2), lty=2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191109170623.png">
+
+</div>
+<p>Note that the red genes have mostly low estimates of standard deviation.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">rtt$s &lt;- apply(exprs(rma95), 1, function(row) sqrt(.5 * (var(row[1:3]) + var(row[4:6]))))</div><div class="line">with(rtt, plot(s, -log10(p.value), cex=.8, pch=16,</div><div class="line">              log=&quot;x&quot;,xlab=&quot;estimate of standard deviation&quot;,</div><div class="line">              col=cols))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_limma-unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5">
+<p class="caption">plot of chunk unnamed-chunk-5</p>
+</div>
+<h2 id="limma步骤">limma步骤</h2>
+<p>以下是执行基本<code>limma</code>分析的三个步骤。我们指定<code>coef=2</code>，因为我感兴趣的是组与组之间的差异，而不是截距(intercept)，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">library(limma)</div><div class="line">options(digits=3)</div><div class="line">fit &lt;- lmFit(rma95, design=model.matrix(~ fac))  # step 1 least squares estimates</div><div class="line">colnames(coef(fit))     </div><div class="line">## [1] &quot;(Intercept)&quot; &quot;fac2&quot;</div><div class="line">fit &lt;- eBayes(fit)           # step 2 moderate the t statistics</div><div class="line">tt &lt;- topTable(fit, coef=2)  # step 3 report</div><div class="line">tt</div><div class="line">##           logFC AveExpr      t  P.Value adj.P.Val    B</div><div class="line">## 1708_at  -7.061    7.95 -73.53 7.82e-17  9.87e-13 8.65</div><div class="line">## 36202_at  0.853    9.37   9.98 4.94e-07  3.12e-03 4.59</div><div class="line">## 36311_at  0.832    8.56   8.36 3.02e-06  1.27e-02 3.57</div><div class="line">## 33264_at  0.712    4.92   7.43 9.67e-06  2.71e-02 2.84</div><div class="line">## 32660_at  0.655    8.68   7.36 1.07e-05  2.71e-02 2.77</div><div class="line">## 38734_at  0.747    6.26   7.19 1.35e-05  2.83e-02 2.62</div><div class="line">## 1024_at   0.843    9.70   6.73 2.50e-05  4.40e-02 2.20</div><div class="line">## 36085_at  0.645   12.19   6.65 2.79e-05  4.40e-02 2.12</div><div class="line">## 33818_at  0.532   12.29   6.45 3.70e-05  5.19e-02 1.92</div><div class="line">## 39058_at  0.609    7.53   6.28 4.77e-05  5.69e-02 1.74</div></pre></td></tr></table></figure>
+<p><code>topTable</code> 会返回你定义的值排序的前几个基因。你还可以使用<code>topTable</code>通过指定<code>none</code>来要求返回所有的值。需要注意的是，有一列会给出校正后的每个基因的p值。默认情况下，通过<code>p.adjust</code>函数中的<code>Benjamini-Hochberg</code>方法用于校正p值，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># ?topTable</div><div class="line">dim(topTable(fit, coef=2, number=Inf, sort.by=&quot;none&quot;))</div><div class="line">## [1] 12626     6</div><div class="line"># ?p.adjust</div></pre></td></tr></table></figure>
+<p>在这里，我们比较一下使用<code>limma</code>分析的结果与以前得到的火山图结果。注意，红点现在都位于<code>-log10(p.value)=2</code>之下。此外，表示实际差异的蓝点的p值比以前更高，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">limmares &lt;- data.frame(dm=coef(fit)[,&quot;fac2&quot;], p.value=fit$p.value[,&quot;fac2&quot;])</div><div class="line">with(limmares, plot(dm, -log10(p.value),cex=.8, pch=16,</div><div class="line">     col=cols,xlab=&quot;difference in means&quot;,</div><div class="line">     xlim=c(-1,1), ylim=c(0,5)))</div><div class="line">abline(h=2,v=c(-.2,.2), lty=2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191109172143.png">
+
+</div>
+<p>最后我们来构建一张图，用于展示<code>limma</code>是如何将方差估计缩小到一个共同值(common value)的，这能消除由于方差估计过低而导致的假阳性。</p>
+<p>在这里，我们为不同的方差估计值设计40个小区间(bin)，每个区间中落入一个基因。我们会删除那些不含有任何基因的区间，原文如下：</p>
+<blockquote>
+<p>Here we pick, for each of 40 bins of different variance estimates, a single gene which falls in that bin. We remove bins which do not have any such genes.</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n &lt;- 40</div><div class="line">qs &lt;- seq(from=0,to=.2,length=n)</div><div class="line">idx &lt;- sapply(seq_len(n),function(i) which(as.integer(cut(rtt$s^2,qs)) == i)[1])</div><div class="line">idx &lt;- idx[!is.na(idx)]</div></pre></td></tr></table></figure>
+<p>现在绘制一条直线，这个直线展示了那些基因最初的估计方差到运行了<code>limma</code>之后的估计方差，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">par(mar=c(5,5,2,2))</div><div class="line">plot(1,1,xlim=c(0,.21),ylim=c(0,1),type=&quot;n&quot;,</div><div class="line">     xlab=&quot;variance estimates&quot;,ylab=&quot;&quot;,yaxt=&quot;n&quot;)</div><div class="line">axis(2,at=c(.1,.9),c(&quot;before&quot;,&quot;after&quot;),las=2)</div><div class="line">segments((rtt$s^2)[idx],rep(.1,n),</div><div class="line">         fit$s2.post[idx],rep(.9,n))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_limma-unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10">
+<p class="caption">plot of chunk unnamed-chunk-10</p>
+</div>
+<p>关于limma校正的一些层级模型资料，可以参考以前的笔记<a href="http://rvdsd.top/2019/08/19/DAL/DALS019_StatisticalModels2_Beyes_Hierarchical/">《DALS019-统计模型2-贝叶斯分布与层次分析》</a>。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc1_limma.html" target="_blank" rel="external">Using limma for microarray analysis</a></li>
+<li>Smyth GK, “Linear models and empirical bayes methods for assessing differential expression in microarray experiments”. Stat Appl Genet Mol Biol. 2004 http://www.ncbi.nlm.nih.gov/pubmed/16646809</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Bioconductor/" <i class="fa fa-tag"></i> Bioconductor</a>
+          
+            <a href="/tags/limma/" <i class="fa fa-tag"></i> limma</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/11/Genomics Data Analysis Series/GDAS011-基因组级数据中的t检验/" rel="next" title="GDAS011-基因组级数据中的t检验与多重比较">
+                <i class="fa fa-chevron-left"></i> GDAS011-基因组级数据中的t检验与多重比较
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/" rel="prev" title="GDAS013-基因集分析">
+                GDAS013-基因集分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">243</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单t检验"><span class="nav-number">1.</span> <span class="nav-text">简单t检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#spike-in数据集"><span class="nav-number">1.1.</span> <span class="nav-text">spike-in数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rowttests"><span class="nav-number">1.2.</span> <span class="nav-text">rowttests</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#limma步骤"><span class="nav-number">2.</span> <span class="nav-text">limma步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共963.7k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Bioconductor,RNA-seq," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="NGS的可视化 We will use the following libraries to demonstrate visualization of NGS data. 123456#biocLite(&amp;quot;pasillaBamSubset&amp;quot;)#biocLite(&amp;quot;TxDb.Dmelanogaster.UCSC.dm3.ensGene&amp;quot;)library(p">
+<meta name="keywords" content="Bioconductor,RNA-seq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDAS015-NGS的可视化">
+<meta property="og:url" content="http://rvdsd.top/2019/09/15/Genomics Data Analysis Series/GDAS015-NGS的可视化/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="NGS的可视化 We will use the following libraries to demonstrate visualization of NGS data. 123456#biocLite(&amp;quot;pasillaBamSubset&amp;quot;)#biocLite(&amp;quot;TxDb.Dmelanogaster.UCSC.dm3.ensGene&amp;quot;)library(p">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-5-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-6-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-7-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-10-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-11-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-12-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-13-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-13-2.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-1.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-2.png">
+<meta property="og:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-3.png">
+<meta property="og:updated_time" content="2019-11-13T08:00:30.333Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GDAS015-NGS的可视化">
+<meta name="twitter:description" content="NGS的可视化 We will use the following libraries to demonstrate visualization of NGS data. 123456#biocLite(&amp;quot;pasillaBamSubset&amp;quot;)#biocLite(&amp;quot;TxDb.Dmelanogaster.UCSC.dm3.ensGene&amp;quot;)library(p">
+<meta name="twitter:image" content="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-5-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/09/15/Genomics Data Analysis Series/GDAS015-NGS的可视化/"/>
+
+
+
+
+
+  <title>GDAS015-NGS的可视化 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/15/Genomics Data Analysis Series/GDAS015-NGS的可视化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GDAS015-NGS的可视化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-15T12:00:00+08:00">
+                2019-09-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,455
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="ngs的可视化">NGS的可视化</h2>
+<p>We will use the following libraries to demonstrate visualization of NGS data.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#biocLite(&quot;pasillaBamSubset&quot;)</div><div class="line">#biocLite(&quot;TxDb.Dmelanogaster.UCSC.dm3.ensGene&quot;)</div><div class="line">library(pasillaBamSubset)</div><div class="line">library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)</div><div class="line">fl1 &lt;- untreated1_chr4()</div><div class="line">fl2 &lt;- untreated3_chr4()</div></pre></td></tr></table></figure>
+<p>We will try four ways to look at NGS coverage: using the standalone Java program IGV, using simple <code>plot</code> commands, and using the <code>Gviz</code> and <code>ggbio</code> packages in Bioconductor.</p>
+<h2 id="igv">IGV</h2>
+<p>Copy these files from the R library directory to the current working directory. First set the working directory to the source file location. We need to use the <code>Rsamtools</code> library to index the BAM files for using IGV.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">file.copy(from=fl1,to=basename(fl1))</div><div class="line">## [1] FALSE</div><div class="line">file.copy(from=fl2,to=basename(fl2))</div><div class="line">## [1] FALSE</div><div class="line">library(Rsamtools)</div><div class="line">## Loading required package: Biostrings</div><div class="line">## Loading required package: XVector</div><div class="line">indexBam(basename(fl1))</div><div class="line">##       untreated1_chr4.bam </div><div class="line">## &quot;untreated1_chr4.bam.bai&quot;</div><div class="line">indexBam(basename(fl2))</div><div class="line">##       untreated3_chr4.bam </div><div class="line">## &quot;untreated3_chr4.bam.bai&quot;</div></pre></td></tr></table></figure>
+<p>IGV is freely available for download here: https://www.broadinstitute.org/igv/home</p>
+<p>You will need to provide an email, and then you will get a download link.</p>
+<p>Using IGV, look for gene <em>lgs</em>.</p>
+<p>Note that if you have trouble downloading IGV, another option for visualization is the UCSC Genome Browser: http://genome.ucsc.edu/cgi-bin/hgTracks</p>
+<p>The UCSC Genome Browser is a great resource, having many tracks involving gene annotations, conservation over multiple species, and the ENCODE epigenetic tracks already available. However, the UCSC Genome Browser requires that you upload your genomic files to their server, or put your data on a publicly available server. This is not always possible if you are working with confidential data.</p>
+<h2 id="simple-plot">Simple plot</h2>
+<p>Next we will look at the same gene using the simple <code>plot</code> function in R.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">library(GenomicRanges)</div></pre></td></tr></table></figure>
+<p>Note: if you are using Bioconductor version 14, paired with R 3.1, you should also load this library. You do not need to load this library, and it will not be available to you, if you are using Bioconductor version 13, paired with R 3.0.x.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(GenomicAlignments)</div><div class="line">## Loading required package: SummarizedExperiment</div></pre></td></tr></table></figure>
+<p>We read in the alignments from the file <code>fl1</code>. Then we use the <code>coverage</code> function to tally up the basepair coverage. We then extract the subset of coverage which overlaps our gene of interest, and convert this coverage from an <code>RleList</code> into a <code>numeric</code> vector. Remember from Week 2, that <code>Rle</code> objects are compressed, such that repeating numbers are stored as a number and a length.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">x &lt;- readGAlignments(fl1)</div><div class="line">xcov &lt;- coverage(x)</div><div class="line">z &lt;- GRanges(&quot;chr4&quot;,IRanges(456500,466000))</div><div class="line"># Bioconductor 2.14</div><div class="line">xcov[z]</div><div class="line">## RleList of length 1</div><div class="line">## $$chr4</div><div class="line">## integer-Rle of length 9501 with 1775 runs</div><div class="line">##   Lengths: 1252   10   52    4    7    2 ...   10    7   12  392   75 1041</div><div class="line">##   Values :    0    2    3    4    5    6 ...    3    2    1    0    1    0</div><div class="line"># Bioconductor 2.13</div><div class="line">xcov$chr4[ranges(z)]</div><div class="line">## integer-Rle of length 9501 with 1775 runs</div><div class="line">##   Lengths: 1252   10   52    4    7    2 ...   10    7   12  392   75 1041</div><div class="line">##   Values :    0    2    3    4    5    6 ...    3    2    1    0    1    0</div><div class="line">xnum &lt;- as.numeric(xcov$chr4[ranges(z)])</div><div class="line">plot(xnum)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5">
+<p class="caption">plot of chunk unnamed-chunk-5</p>
+</div>
+<p>We can do the same for another file:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">y &lt;- readGAlignmentPairs(fl2)</div><div class="line">## Warning in .make_GAlignmentPairs_from_GAlignments(gal, strandMode = strandMode, : 63 pairs (0 proper, 63 not proper) were dropped because the seqname</div><div class="line">##   or strand of the alignments in the pair were not concordant.</div><div class="line">##   Note that a GAlignmentPairs object can only hold concordant pairs at the</div><div class="line">##   moment, that is, pairs where the 2 alignments are on the opposite strands</div><div class="line">##   of the same reference sequence.</div><div class="line">ycov &lt;- coverage(y)</div><div class="line">ynum &lt;- as.numeric(ycov$chr4[ranges(z)])</div><div class="line">plot(xnum, type=&quot;l&quot;, col=&quot;blue&quot;, lwd=2)</div><div class="line">lines(ynum, col=&quot;red&quot;, lwd=2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6">
+<p class="caption">plot of chunk unnamed-chunk-6</p>
+</div>
+<p>We can zoom in on a single exon:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">plot(xnum, type=&quot;l&quot;, col=&quot;blue&quot;, lwd=2, xlim=c(6200,6600))</div><div class="line">lines(ynum, col=&quot;red&quot;, lwd=2)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7">
+<p class="caption">plot of chunk unnamed-chunk-7</p>
+</div>
+<h2 id="extracting-the-gene-of-interest-using-the-transcript-database">Extracting the gene of interest using the transcript database</h2>
+<p>Suppose we are interested in visualizing the gene <em>lgs</em>. We can extract it from the transcript database <code>TxDb.Dmelanogaster.UCSC.dm3.ensGene</code> on Bioconductor, but first we need to look up the Ensembl gene name. We will use the functions that we learned in Week 7 to find the name.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"># biocLite(&quot;biomaRt&quot;)</div><div class="line">library(biomaRt)</div><div class="line">m &lt;- useMart(&quot;ensembl&quot;, dataset = &quot;dmelanogaster_gene_ensembl&quot;)</div><div class="line">lf &lt;- listFilters(m)</div><div class="line">lf[grep(&quot;name&quot;, lf$description, ignore.case=TRUE),]</div><div class="line">##                             name</div><div class="line">## 1                chromosome_name</div><div class="line">## 17         with_flybasename_gene</div><div class="line">## 19   with_flybasename_transcript</div><div class="line">## 23  with_flybasename_translation</div><div class="line">## 52            external_gene_name</div><div class="line">## 66              flybasename_gene</div><div class="line">## 67        flybasename_transcript</div><div class="line">## 68       flybasename_translation</div><div class="line">## 93                 wikigene_name</div><div class="line">## 107               go_parent_name</div><div class="line">## 208               so_parent_name</div><div class="line">##                                      description</div><div class="line">## 1                                Chromosome name</div><div class="line">## 17                   with FlyBaseName gene ID(s)</div><div class="line">## 19             with FlyBaseName transcript ID(s)</div><div class="line">## 23                with FlyBaseName protein ID(s)</div><div class="line">## 52          Associated Gene Name(s) [e.g. BRCA2]</div><div class="line">## 66           FlyBaseName Gene ID(s) [e.g. cul-2]</div><div class="line">## 67  FlyBaseName Transcript ID(s) [e.g. cul-2-RB]</div><div class="line">## 68     FlyBaseName Protein ID(s) [e.g. cul-2-PB]</div><div class="line">## 93                 WikiGene Name(s) [e.g. Ir21a]</div><div class="line">## 107                             Parent term name</div><div class="line">## 208                             Parent term name</div><div class="line">map &lt;- getBM(mart = m,</div><div class="line">  attributes = c(&quot;ensembl_gene_id&quot;, &quot;flybasename_gene&quot;),</div><div class="line">  filters = &quot;flybasename_gene&quot;, </div><div class="line">  values = &quot;lgs&quot;)</div><div class="line">map</div><div class="line">##   ensembl_gene_id flybasename_gene</div><div class="line">## 1     FBgn0039907              lgs</div></pre></td></tr></table></figure>
+<p>Now we extract the exons for each gene, and then the exons for the gene <em>lgs</em>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">library(GenomicFeatures)</div><div class="line">grl &lt;- exonsBy(TxDb.Dmelanogaster.UCSC.dm3.ensGene, by=&quot;gene&quot;)</div><div class="line">gene &lt;- grl[[map$ensembl_gene_id[1]]]</div><div class="line">gene</div><div class="line">## GRanges object with 6 ranges and 2 metadata columns:</div><div class="line">##       seqnames           ranges strand |   exon_id   exon_name</div><div class="line">##          &lt;Rle&gt;        &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt; &lt;character&gt;</div><div class="line">##   [1]     chr4 [457583, 459544]      - |     63350        &lt;NA&gt;</div><div class="line">##   [2]     chr4 [459601, 459791]      - |     63351        &lt;NA&gt;</div><div class="line">##   [3]     chr4 [460074, 462077]      - |     63352        &lt;NA&gt;</div><div class="line">##   [4]     chr4 [462806, 463015]      - |     63353        &lt;NA&gt;</div><div class="line">##   [5]     chr4 [463490, 463780]      - |     63354        &lt;NA&gt;</div><div class="line">##   [6]     chr4 [463839, 464533]      - |     63355        &lt;NA&gt;</div><div class="line">##   -------</div><div class="line">##   seqinfo: 15 sequences (1 circular) from dm3 genome</div></pre></td></tr></table></figure>
+<p>Finally we can plot these ranges to see what it looks like:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">rg &lt;- range(gene)</div><div class="line">plot(c(start(rg), end(rg)), c(0,0), type=&quot;n&quot;, xlab=seqnames(gene)[1], ylab=&quot;&quot;)</div><div class="line">arrows(start(gene),rep(0,length(gene)),</div><div class="line">       end(gene),rep(0,length(gene)),</div><div class="line">       lwd=3, length=.1)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10">
+<p class="caption">plot of chunk unnamed-chunk-10</p>
+</div>
+<p>But actually, the gene is on the minus strand. We should add a line which corrects for minus strand genes:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">plot(c(start(rg), end(rg)), c(0,0), type=&quot;n&quot;, xlab=seqnames(gene)[1], ylab=&quot;&quot;)</div><div class="line">arrows(start(gene),rep(0,length(gene)),</div><div class="line">       end(gene),rep(0,length(gene)),</div><div class="line">       lwd=3, length=.1, </div><div class="line">       code=ifelse(as.character(strand(gene)[1]) == &quot;+&quot;, 2, 1))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11">
+<p class="caption">plot of chunk unnamed-chunk-11</p>
+</div>
+<h2 id="gviz">Gviz</h2>
+<p>We will briefly show two packages for visualizing genomic data in Bioconductor. Note that each of these have extensive vignettes for plotting many kinds of data. We will show here how to make the coverage plots as before:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#biocLite(&quot;Gviz&quot;)</div><div class="line">library(Gviz)</div><div class="line">## Loading required package: grid</div><div class="line">gtrack &lt;- GenomeAxisTrack()</div><div class="line">atrack &lt;- AnnotationTrack(gene, name = &quot;Gene Model&quot;)</div><div class="line">plotTracks(list(gtrack, atrack))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12">
+<p class="caption">plot of chunk unnamed-chunk-12</p>
+</div>
+<p>Extract the coverage. <code>Gviz</code> expects that data will be provided as <code>GRanges</code> objects, so we convert the <code>RleList</code> coverage to a <code>GRanges</code> object:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">xgr &lt;- as(xcov, &quot;GRanges&quot;)</div><div class="line">ygr &lt;- as(ycov, &quot;GRanges&quot;)</div><div class="line">dtrack1 &lt;- DataTrack(xgr[xgr %over% z], name = &quot;sample 1&quot;)</div><div class="line">dtrack2 &lt;- DataTrack(ygr[ygr %over% z], name = &quot;sample 2&quot;)</div><div class="line">plotTracks(list(gtrack, atrack, dtrack1, dtrack2))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13">
+<p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plotTracks(list(gtrack, atrack, dtrack1, dtrack2), type=&quot;polygon&quot;)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-13-2.png" alt="plot of chunk unnamed-chunk-13">
+<p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
+<h2 id="ggbio">ggbio</h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#biocLite(&quot;ggbio&quot;)</div><div class="line">library(ggbio)</div><div class="line">## Loading required package: ggplot2</div><div class="line">## Warning: replacing previous import by &apos;BiocGenerics::Position&apos; when loading</div><div class="line">## &apos;ggbio&apos;</div><div class="line">## Need specific help about ggbio? try mailing </div><div class="line">##  the maintainer or visit http://tengfei.github.com/ggbio/</div><div class="line">## </div><div class="line">## Attaching package: &apos;ggbio&apos;</div><div class="line">## The following objects are masked from &apos;package:ggplot2&apos;:</div><div class="line">## </div><div class="line">##     geom_bar, geom_rect, geom_segment, ggsave, stat_bin,</div><div class="line">##     stat_identity, xlim</div><div class="line">autoplot(gene)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">autoplot(fl1, which=z)</div><div class="line">## reading in as Bamfile</div><div class="line">## Parsing raw coverage...</div><div class="line">## Read GAlignments from BamFile...</div><div class="line">## extracting information...</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-2.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">autoplot(fl2, which=z)</div><div class="line">## reading in as Bamfile</div><div class="line">## Parsing raw coverage...</div><div class="line">## Read GAlignments from BamFile...</div><div class="line">## extracting information...</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-3.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<h2 id="footnotes">Footnotes</h2>
+<ul>
+<li>IGV</li>
+</ul>
+<p>https://www.broadinstitute.org/igv/home</p>
+<ul>
+<li>Gviz</li>
+</ul>
+<p>http://www.bioconductor.org/packages/release/bioc/html/Gviz.html</p>
+<ul>
+<li>ggbio</li>
+</ul>
+<p>http://www.bioconductor.org/packages/release/bioc/html/ggbio.html</p>
+<ul>
+<li>UCSC Genome Browser: zooms and scrolls over chromosomes, showing the work of annotators worldwide</li>
+</ul>
+<p>http://genome.ucsc.edu/</p>
+<ul>
+<li>Ensembl genome browser: genome databases for vertebrates and other eukaryotic species</li>
+</ul>
+<p>http://ensembl.org</p>
+<ul>
+<li>Roadmap Epigenome browser: public resource of human epigenomic data</li>
+</ul>
+<p>http://www.epigenomebrowser.org http://genomebrowser.wustl.edu/ http://epigenomegateway.wustl.edu/</p>
+<ul>
+<li>“Sashimi plots” for RNA-Seq</li>
+</ul>
+<p>http://genes.mit.edu/burgelab/miso/docs/sashimi.html</p>
+<ul>
+<li>Circos: designed for visualizing genomic data in a cirlce</li>
+</ul>
+<p>http://circos.ca/</p>
+<ul>
+<li>SeqMonk: a tool to visualise and analyse high throughput mapped sequence data</li>
+</ul>
+<p>http://www.bioinformatics.babraham.ac.uk/projects/seqmonk/</p>
+<hr>
+<p>​ <a href="http://genomicsclass.github.io/book/" target="_blank" rel="external">PH525x</a>, Rafael Irizarry and Michael Love, <a href="https://github.com/genomicsclass/labs/blob/master/LICENSE" target="_blank" rel="external">MIT License</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Bioconductor/" <i class="fa fa-tag"></i> Bioconductor</a>
+          
+            <a href="/tags/RNA-seq/" <i class="fa fa-tag"></i> RNA-seq</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/14/Genomics Data Analysis Series/GDAS014-使用autoplot和Gviz绘图/" rel="next" title="GDAS014-使用autoplot和Gviz绘图">
+                <i class="fa fa-chevron-left"></i> GDAS014-使用autoplot和Gviz绘图
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/24/ggplot2/R语言拼图/" rel="prev" title="R语言拼图">
+                R语言拼图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">243</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ngs的可视化"><span class="nav-number">1.</span> <span class="nav-text">NGS的可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#igv"><span class="nav-number">2.</span> <span class="nav-text">IGV</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#simple-plot"><span class="nav-number">3.</span> <span class="nav-text">Simple plot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#extracting-the-gene-of-interest-using-the-transcript-database"><span class="nav-number">4.</span> <span class="nav-text">Extracting the gene of interest using the transcript database</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gviz"><span class="nav-number">5.</span> <span class="nav-text">Gviz</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ggbio"><span class="nav-number">6.</span> <span class="nav-text">ggbio</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#footnotes"><span class="nav-number">7.</span> <span class="nav-text">Footnotes</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共963.7k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
