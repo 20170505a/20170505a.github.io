@@ -259,335 +259,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/10/29/Genomics Data Analysis Series/GDAS008-IRanges和GRanges/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/29/Genomics Data Analysis Series/GDAS008-IRanges和GRanges/" itemprop="url">GDAS008-IRanges和GRanges</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-29T09:16:36+08:00">
-                2019-10-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
-                    <span itemprop="name">Genomics Data Analysis Series</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,178
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  24
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>原始的Rmd文档可以参考<a href="https://github.com/genomicsclass/labs/blob/master/biocintro_5x/bioc1_grangeOps.Rmd" target="_blank" rel="external">Github</a>上。</p>
-<p><code>IRanges</code> 和 <code>GRanges</code> 对象是Bioconductor基础数据类型的核心成员，其中 <code>IRanges</code> 定义了 <code>integer ranges</code> ，它用于解决基因组上的位置问题，而 <code>GRanges</code> 则包含了染色体和DNA链的信息。这里我们简介绍一下这两个对象，以及如何操作 <code>IRanges</code> 和 <code>GRanges</code> 。</p>
-<h2 id="iranges">IRanges</h2>
-<p>第一步是加载<code>IRanges</code>包，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">library(IRanges)</div></pre></td></tr></table></figure>
-<p><code>IRanges</code> 函数定义了区间范围(interval ranges)。如果你输入2个数据，那么就表示一个区间，例如 [5,10]={5,6,7,8,9,10}，它的宽度是6。另外，如果我们要查看一个 <code>IRanges</code> 定义的区间宽度，我们使用的<code>width()</code>函数，而非 <code>length()</code>函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">ir &lt;- IRanges(<span class="number">5</span>,<span class="number">10</span>)</div><div class="line">ir</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         5        10         6</span></div><div class="line">start(ir)</div><div class="line"><span class="comment">## [1] 5</span></div><div class="line">end(ir)</div><div class="line"><span class="comment">## [1] 10</span></div><div class="line">width(ir)</div><div class="line"><span class="comment">## [1] 6</span></div><div class="line"><span class="comment"># for detailed information on the IRanges class:</span></div><div class="line"><span class="comment"># ?IRanges</span></div><div class="line">length(ir)</div><div class="line"><span class="comment"># [1] 1</span></div></pre></td></tr></table></figure>
-<p>一个单独的<code>IRanges</code>对象可以含有多个范围。现在我们可以在一个向量中指定<code>start</code>，在另外一个向量中指定<code>end</code>，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">IRanges(start=c(<span class="number">3</span>,<span class="number">5</span>,<span class="number">17</span>), end=c(<span class="number">10</span>,<span class="number">8</span>,<span class="number">20</span>))</div><div class="line"><span class="comment">## IRanges object with 3 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3        10         8</span></div><div class="line"><span class="comment">##   [2]         5         8         4</span></div><div class="line"><span class="comment">##   [3]        17        20         4</span></div></pre></td></tr></table></figure>
-<h3 id="内部范围intra-range操作">内部范围(Intra-range)操作</h3>
-<p>现在我们继续使用单个范围[5,10]，我们查看内部范围(intra-range)<code>{…,−2,−1,0,1,2,…}</code>的一个数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># full details on the intra-range methods:</span></div><div class="line"><span class="comment"># ?"intra-range-methods"</span></div><div class="line">ir</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         5        10         6</span></div><div class="line">shift(ir, -<span class="number">2</span>)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3         8         6</span></div></pre></td></tr></table></figure>
-<p>这里我们展示了应用于<code>ir</code>的多个不同操作的结果，结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">ir</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         5        10         6</span></div><div class="line">narrow(ir, start=<span class="number">2</span>)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         6        10         5</span></div><div class="line">narrow(ir, end=<span class="number">5</span>)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         5         9         5</span></div><div class="line">flank(ir, width=<span class="number">3</span>, start=<span class="literal">TRUE</span>, both=<span class="literal">FALSE</span>)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         2         4         3</span></div><div class="line">flank(ir, width=<span class="number">3</span>, start=<span class="literal">FALSE</span>, both=<span class="literal">FALSE</span>)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]        11        13         3</span></div><div class="line">flank(ir, width=<span class="number">3</span>, start=<span class="literal">TRUE</span>, both=<span class="literal">TRUE</span>)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         2         7         6</span></div><div class="line">ir * <span class="number">2</span></div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         6         8         3</span></div><div class="line">ir * -<span class="number">2</span></div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         2        13        12</span></div><div class="line">ir + <span class="number">2</span></div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3        12        10</span></div><div class="line">ir - <span class="number">2</span></div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         7         8         2</span></div><div class="line">resize(ir, <span class="number">1</span>)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         5         5         1</span></div></pre></td></tr></table></figure>
-<p>我们使用下图展示了上面操作的结果。红色柱状部分显示了最初的<code>ir</code>范围。掌握这些操作的最好方法是在自己定义的范围内在控制台中亲自操作一下。</p>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_igranges-unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6">
-<p class="caption">plot of chunk unnamed-chunk-6</p>
-</div>
-<h3 id="内部范围方法">内部范围方法</h3>
-<p>针对<code>intra-range</code>有着一系列的方法。还有一些方法是针对一系列范围的操作，它的输出取决于所有的范围，因此这些方法与<code>intra-range</code>方法不同，后者不会改变输出。现在我们一些案例来说明一下。<code>range()</code>函数提供了从最左侧到最右侧的整数输出，如下所示：</p>
-<p>注：原文我不太理解，翻译的不精准，原文如下：</p>
-<blockquote>
-<p>There are also a set of <em>inter-range</em> methods. These are operations which work on a set of ranges, and the output depends on all the ranges, thus distinguishes these methods from the <em>intra-range</em> methods, for which the other ranges in the set do not change the output. This is best explained with some examples. The <code>range</code> function gives the integer range from the start of the leftmost range to the end of the rightmost range:</p>
-</blockquote>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># full details on the inter-range methods:</span></div><div class="line"><span class="comment"># ?"inter-range-methods"</span></div><div class="line">(ir &lt;- IRanges(start=c(<span class="number">3</span>,<span class="number">5</span>,<span class="number">17</span>), end=c(<span class="number">10</span>,<span class="number">8</span>,<span class="number">20</span>)))</div><div class="line"><span class="comment">## IRanges object with 3 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3        10         8</span></div><div class="line"><span class="comment">##   [2]         5         8         4</span></div><div class="line"><span class="comment">##   [3]        17        20         4</span></div><div class="line">range(ir)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3        20        18</span></div></pre></td></tr></table></figure>
-<p><code>reduce</code> 函数能折叠这些范围，以便于整个可以只被输出范围中的一个范围覆盖，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">reduce(ir)</div><div class="line"><span class="comment">## IRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3        10         8</span></div><div class="line"><span class="comment">##   [2]        17        20         4</span></div></pre></td></tr></table></figure>
-<p>注：ir原来有3个范围，其中[5,8]范围是在[3,10]之间，因此前者被折叠到了后者之中。</p>
-<p><code>gaps</code> 函数能够给出上面两个范围的区间，但是它不覆盖任何<code>ir</code>中的范围，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">gaps(ir)</div><div class="line"><span class="comment">## IRanges object with 1 range and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]        11        16         6</span></div></pre></td></tr></table></figure>
-<p><code>disjoin</code> 会打断 <code>ir</code>的范围，并它们分成不同的范围，如下所示：</p>
-<blockquote>
-<p>disjoin返回一个disjoint对象，它会查看参数中端点的并集，返回不相交的对象。换话句讲，结果中由区间的最大长度范围组成，在该范围上，对象x中的重叠范围集合是相同的，并且至少为1。</p>
-</blockquote>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">disjoin(ir)</div><div class="line"><span class="comment">## IRanges object with 4 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##           start       end     width</span></div><div class="line"><span class="comment">##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3         4         2</span></div><div class="line"><span class="comment">##   [2]         5         8         4</span></div><div class="line"><span class="comment">##   [3]         9        10         2</span></div><div class="line"><span class="comment">##   [4]        17        20         4</span></div></pre></td></tr></table></figure>
-<p>现在我们使用示意图来说明一下：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191104114940.png">
-
-</div>
-<p>第一二行是原始的范围，第四行是经过disjoin处理后的范围。</p>
-<h2 id="granges">GRanges</h2>
-<p>GRanges对象包含了Iranges，它含有2个方面的重要信息：</p>
-<ul>
-<li>染色体信息（Bioconductor称为 <code>seqnames</code>）。</li>
-<li>DNA链。</li>
-</ul>
-<p>链的信息可以指定为 <code>+</code> 号或 <code>-</code> ，或者是保留未指定的 <code>*</code> 。正义链的特征则是在编号线上从左到右的生物学方面，而负链特征则是从右到左。就IRanges而言，正链特征是从<code>start</code>到 <code>end</code> ,负链则是从 <code>end</code> 到 <code>start</code> 。这初看起来比较混乱，但这是必需的，因此 <code>width</code> 被定义为 <code>end - start + 1</code>，并且不允许有负的宽度范围。因为DNA有两条链，这两条链具有相反的方向性，因此当我们说DNA时，可以只指明其中的一条链。</p>
-<p>通过IRnage、染色体名称和一条链，我们可以确定我们与另外一个研究人员所指的DNA分子具有相同的区域和链，因为我们使用的相同的基因组构建的。GRanges对象中还可以包括其它部分的信息，不过上述的两个信息则是最重要的 。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GenomicRanges)</div></pre></td></tr></table></figure>
-<p>现在我们创建一个虚构染色体<code>chrZ</code> 上的两个范围。我们会说这两个范围指的基因组<code>hg19</code>上的范围。因为我们没有将我们的基因组链接到数据库，因此我们可以指定一个在hg19中并不存在的染色体，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">gr &lt;- GRanges(<span class="string">"chrZ"</span>, IRanges(start=c(<span class="number">5</span>,<span class="number">10</span>),end=c(<span class="number">35</span>,<span class="number">45</span>)),</div><div class="line">              strand=<span class="string">"+"</span>, seqlengths=c(chrZ=<span class="number">100L</span>))</div><div class="line">gr</div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [ 5, 35]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ  [10, 45]      +</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from an unspecified genome</span></div><div class="line">genome(gr) &lt;- <span class="string">"hg19"</span></div><div class="line">gr</div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [ 5, 35]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ  [10, 45]      +</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from hg19 genome</span></div></pre></td></tr></table></figure>
-<p>我们可以调用 <code>seqnames</code> 和 <code>seqlengths</code> 来查看上面的信息：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">seqnames(gr)</div><div class="line"><span class="comment">## factor-Rle of length 2 with 1 run</span></div><div class="line"><span class="comment">##   Lengths:    2</span></div><div class="line"><span class="comment">##   Values : chrZ</span></div><div class="line"><span class="comment">## Levels(1): chrZ</span></div><div class="line">seqlengths(gr)</div><div class="line"><span class="comment">## chrZ </span></div><div class="line"><span class="comment">##  100</span></div></pre></td></tr></table></figure>
-<p>我们可以使用 <code>shift</code> 函数（就像在IRanges中使用的一样）来处理GRanges。但是，当我们尝试超过染色体长度之外的范围时，就会出现警告信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">shift(gr, <span class="number">10</span>)</div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [15, 45]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ  [20, 55]      +</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from hg19 genome</span></div><div class="line">shift(gr, <span class="number">80</span>)</div><div class="line"><span class="comment">## Warning in valid.GenomicRanges.seqinfo(x, suggest.trim = TRUE): GRanges object contains 2 out-of-bound ranges located on sequence</span></div><div class="line"><span class="comment">##   chrZ. Note that only ranges located on a non-circular sequence</span></div><div class="line"><span class="comment">##   whose length is not NA can be considered out-of-bound (use</span></div><div class="line"><span class="comment">##   seqlengths() and isCircular() to get the lengths and circularity</span></div><div class="line"><span class="comment">##   flags of the underlying sequences). You can use trim() to trim</span></div><div class="line"><span class="comment">##   these ranges. See ?`trim,GenomicRanges-method` for more</span></div><div class="line"><span class="comment">##   information.</span></div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ [85, 115]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ [90, 125]      +</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from hg19 genome</span></div></pre></td></tr></table></figure>
-<p>如果我们使用 <code>trim</code> 处理这个范围，我们就能获取剩下的范围，而不考虑超出染色体长的部分：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">trim(shift(gr, <span class="number">80</span>))</div><div class="line"><span class="comment">## Warning in valid.GenomicRanges.seqinfo(x, suggest.trim = TRUE): GRanges object contains 2 out-of-bound ranges located on sequence</span></div><div class="line"><span class="comment">##   chrZ. Note that only ranges located on a non-circular sequence</span></div><div class="line"><span class="comment">##   whose length is not NA can be considered out-of-bound (use</span></div><div class="line"><span class="comment">##   seqlengths() and isCircular() to get the lengths and circularity</span></div><div class="line"><span class="comment">##   flags of the underlying sequences). You can use trim() to trim</span></div><div class="line"><span class="comment">##   these ranges. See ?`trim,GenomicRanges-method` for more</span></div><div class="line"><span class="comment">##   information.</span></div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ [85, 100]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ [90, 100]      +</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from hg19 genome</span></div></pre></td></tr></table></figure>
-<p>我们可以使用 <code>mcols</code> 函数（链表示元数据列）向每个范围添加列信息。需要注意的是，这个操作对IRanges也是可行的。我们还可以通过指定 <code>NULL</code> 来移除列信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">mcols(gr)</div><div class="line"><span class="comment">## DataFrame with 2 rows and 0 columns</span></div><div class="line">mcols(gr)$value &lt;- c(-<span class="number">1</span>,<span class="number">4</span>)</div><div class="line">gr</div><div class="line"><span class="comment">## GRanges object with 2 ranges and 1 metadata column:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand |     value</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [ 5, 35]      + |        -1</span></div><div class="line"><span class="comment">##   [2]     chrZ  [10, 45]      + |         4</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from hg19 genome</span></div><div class="line">mcols(gr)$value &lt;- <span class="literal">NULL</span></div><div class="line">&gt; gr</div><div class="line"><span class="comment"># GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">#      seqnames    ranges strand</span></div><div class="line"><span class="comment">#         &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">#  [1]     chrZ      5-35      +</span></div><div class="line"><span class="comment">#  [2]     chrZ     10-45      +</span></div><div class="line"><span class="comment">#  -------</span></div><div class="line"><span class="comment">#  seqinfo: 1 sequence from hg19 genome</span></div></pre></td></tr></table></figure>
-<h3 id="grangeslist">GRangesList</h3>
-<p>当我们涉及基因时，我们通过创建一个GRanges列表是很有用的，例如用于表示分组信息（比如每个基因的外显子）。该列表的元素是基因，并且在每个元素中，外显子的范围被定义为GRanges。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">gr2 &lt;- GRanges(<span class="string">"chrZ"</span>,IRanges(<span class="number">11</span>:<span class="number">13</span>,<span class="number">51</span>:<span class="number">53</span>))</div><div class="line">grl &lt;- GRangesList(gr, gr2)</div><div class="line">grl</div><div class="line"><span class="comment">## GRangesList object of length 2:</span></div><div class="line"><span class="comment">## [[1]] </span></div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [ 5, 35]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ  [10, 45]      +</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## [[2]] </span></div><div class="line"><span class="comment">## GRanges object with 3 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames   ranges strand</span></div><div class="line"><span class="comment">##   [1]     chrZ [11, 51]      *</span></div><div class="line"><span class="comment">##   [2]     chrZ [12, 52]      *</span></div><div class="line"><span class="comment">##   [3]     chrZ [13, 53]      *</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## -------</span></div><div class="line"><span class="comment">## seqinfo: 1 sequence from hg19 genome</span></div></pre></td></tr></table></figure>
-<p><code>GRangesList</code> 对象中的长度就是其中的<code>GRanges</code> 对象个数。为了获取每个GRanges的长度，我们可以调用 <code>elementNROWS</code>。我们可以通过两个方括号的典型列表索引方法来建立索引，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">length(grl)</div><div class="line"><span class="comment">## [1] 2</span></div><div class="line">elementNROWS(grl)</div><div class="line"><span class="comment">## [1] 2 3</span></div><div class="line">grl[[<span class="number">1</span>]]</div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [ 5, 35]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ  [10, 45]      +</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from hg19 genome</span></div></pre></td></tr></table></figure>
-<p><code>width</code>函数会返回一个 <code>integerList</code>。如果使用<code>sum</code>，我们会得到列表中每个GRanges对象的宽度向量，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">width(grl)</div><div class="line"><span class="comment">## IntegerList of length 2</span></div><div class="line"><span class="comment">## [[1]] 31 36</span></div><div class="line"><span class="comment">## [[2]] 41 41 41</span></div><div class="line">sum(width(grl))</div><div class="line"><span class="comment">## [1]  67 123</span></div></pre></td></tr></table></figure>
-<p>我们可以像以前那样添加元数据(metadata)，现在每个GRange对象都有一行元数据。当我们输出GRangesList时它们并不业显示出来，但我们可以通过 <code>mcols</code> 进行访问，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">mcols(grl)$value &lt;- c(<span class="number">5</span>,<span class="number">7</span>)</div><div class="line">grl</div><div class="line"><span class="comment">## GRangesList object of length 2:</span></div><div class="line"><span class="comment">## [[1]] </span></div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [ 5, 35]      +</span></div><div class="line"><span class="comment">##   [2]     chrZ  [10, 45]      +</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## [[2]] </span></div><div class="line"><span class="comment">## GRanges object with 3 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames   ranges strand</span></div><div class="line"><span class="comment">##   [1]     chrZ [11, 51]      *</span></div><div class="line"><span class="comment">##   [2]     chrZ [12, 52]      *</span></div><div class="line"><span class="comment">##   [3]     chrZ [13, 53]      *</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## -------</span></div><div class="line"><span class="comment">## seqinfo: 1 sequence from hg19 genome</span></div><div class="line">mcols(grl)</div><div class="line"><span class="comment">## DataFrame with 2 rows and 1 column</span></div><div class="line"><span class="comment">##       value</span></div><div class="line"><span class="comment">##   &lt;numeric&gt;</span></div><div class="line"><span class="comment">## 1         5</span></div><div class="line"><span class="comment">## 2         7</span></div></pre></td></tr></table></figure>
-<h3 id="findoverlaps与over">findOverlaps与%over%</h3>
-<p>现在我们来看两个比较<code>GRanges</code>对象的常用方法，首先我们要创建两组范围如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">(gr1 &lt;- GRanges(<span class="string">"chrZ"</span>,IRanges(c(<span class="number">1</span>,<span class="number">11</span>,<span class="number">21</span>,<span class="number">31</span>,<span class="number">41</span>),width=<span class="number">5</span>),strand=<span class="string">"*"</span>))</div><div class="line"><span class="comment">## GRanges object with 5 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [ 1,  5]      *</span></div><div class="line"><span class="comment">##   [2]     chrZ  [11, 15]      *</span></div><div class="line"><span class="comment">##   [3]     chrZ  [21, 25]      *</span></div><div class="line"><span class="comment">##   [4]     chrZ  [31, 35]      *</span></div><div class="line"><span class="comment">##   [5]     chrZ  [41, 45]      *</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from an unspecified genome; no seqlengths</span></div><div class="line">(gr2 &lt;- GRanges(<span class="string">"chrZ"</span>,IRanges(c(<span class="number">19</span>,<span class="number">33</span>),c(<span class="number">38</span>,<span class="number">35</span>)),strand=<span class="string">"*"</span>))</div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [19, 38]      *</span></div><div class="line"><span class="comment">##   [2]     chrZ  [33, 35]      *</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from an unspecified genome; no seqlengths</span></div></pre></td></tr></table></figure>
-<p><code>findOverlaps</code> 会返回一个 <code>Hits</code> 对象，这个对象含有关于检索范围的信息（第一个参数），这个范围与主题（第二个参数）有哪些地方重叠。还有许多参数用于指定计算哪种类型的重叠，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">fo &lt;- findOverlaps(gr1, gr2)</div><div class="line">fo</div><div class="line"><span class="comment">## Hits object with 3 hits and 0 metadata columns:</span></div><div class="line"><span class="comment">##       queryHits subjectHits</span></div><div class="line"><span class="comment">##       &lt;integer&gt;   &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]         3           1</span></div><div class="line"><span class="comment">##   [2]         4           1</span></div><div class="line"><span class="comment">##   [3]         4           2</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   queryLength: 5 / subjectLength: 2</span></div><div class="line">queryHits(fo)</div><div class="line"><span class="comment">## [1] 3 4 4</span></div><div class="line">subjectHits(fo)</div><div class="line"><span class="comment">## [1] 1 1 2</span></div></pre></td></tr></table></figure>
-<p>得到重叠信息的另外一种方式就是使用 <code>%over%</code> ，它返回一个逻辑向量，这个向量表示了第一个参数中的范围与第二个参数中任何范围重叠的信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">gr1 %over% gr2</div><div class="line"><span class="comment">## [1] FALSE FALSE  TRUE  TRUE FALSE</span></div><div class="line">gr1[gr1 %over% gr2]</div><div class="line"><span class="comment">## GRanges object with 2 ranges and 0 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames    ranges strand</span></div><div class="line"><span class="comment">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;</span></div><div class="line"><span class="comment">##   [1]     chrZ  [21, 25]      *</span></div><div class="line"><span class="comment">##   [2]     chrZ  [31, 35]      *</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 1 sequence from an unspecified genome; no seqlengths</span></div></pre></td></tr></table></figure>
-<p>需要注意的是，这两种操作方式都是链特异性的，虽然 <code>findOverlaps</code> 有一个 <code>ignore.strand</code> 选择参数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">gr1 &lt;- GRanges(<span class="string">"chrZ"</span>,IRanges(<span class="number">1</span>,<span class="number">10</span>),strand=<span class="string">"+"</span>)</div><div class="line">gr2 &lt;- GRanges(<span class="string">"chrZ"</span>,IRanges(<span class="number">1</span>,<span class="number">10</span>),strand=<span class="string">"-"</span>)</div><div class="line">gr1 %over% gr2</div><div class="line"><span class="comment">## [1] FALSE</span></div></pre></td></tr></table></figure>
-<h3 id="rle-和views">Rle 和Views</h3>
-<p>最后，我们来简单了解一下由IRanges定义的两个相关类，即Rle类和Views类。Rle全称为run-length encoding，它表示的是重复数据的压缩工，用于代替类似于[1, 1, 1, 1]这样的储存。</p>
-<p>我们只用储存数据1，以及重复次数4即可。数据越重复，使用Rle对象的压缩效果就越明显。</p>
-<p>我们使用 <code>str</code> 来查看 Rle的内部结构，用于显示它的储存数据和重复次数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">(r &lt;- Rle(c(<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,-<span class="number">2</span>,-<span class="number">2</span>,-<span class="number">2</span>,rep(-<span class="number">1</span>,<span class="number">20</span>))))</div><div class="line"><span class="comment">## numeric-Rle of length 28 with 4 runs</span></div><div class="line"><span class="comment">##   Lengths:  3  2  3 20</span></div><div class="line"><span class="comment">##   Values :  1  0 -2 -1</span></div><div class="line">str(r)</div><div class="line"><span class="comment">## Formal class 'Rle' [package "S4Vectors"] with 4 slots</span></div><div class="line"><span class="comment">##   ..@ values         : num [1:4] 1 0 -2 -1</span></div><div class="line"><span class="comment">##   ..@ lengths        : int [1:4] 3 2 3 20</span></div><div class="line"><span class="comment">##   ..@ elementMetadata: NULL</span></div><div class="line"><span class="comment">##   ..@ metadata       : list()</span></div><div class="line">as.numeric(r)</div><div class="line"><span class="comment">##  [1]  1  1  1  0  0 -2 -2 -2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1</span></div><div class="line"><span class="comment">## [24] -1 -1 -1 -1 -1</span></div></pre></td></tr></table></figure>
-<p>Views对象可以被为一个“窗口”用于查看一个序列信息，如下所示：</p>
-<p>A <em>Views</em> object can be thought of as “windows” looking into a sequence.</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">(v &lt;- Views(r, start=c(<span class="number">4</span>,<span class="number">2</span>), end=c(<span class="number">7</span>,<span class="number">6</span>)))</div><div class="line"><span class="comment">## Views on a 28-length Rle subject</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## views:</span></div><div class="line"><span class="comment">##     start end width</span></div><div class="line"><span class="comment">## [1]     4   7     4 [ 0  0 -2 -2]</span></div><div class="line"><span class="comment">## [2]     2   6     5 [ 1  1  0  0 -2]</span></div></pre></td></tr></table></figure>
-<p>需要注意的是，Veiws对象的内部结构只是原始对象，以及指定窗口的IRangs。使用Views的最好好处就是，当原始对象没有储存在内存中时，在这种情况下，View对象就是一个轻量级的类，它能帮助我们引用子序列，而不必将整个序列都加载到内存中，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">str(v)</div><div class="line"><span class="comment">## Formal class 'RleViews' [package "IRanges"] with 5 slots</span></div><div class="line"><span class="comment">##   ..@ subject        :Formal class 'Rle' [package "S4Vectors"] with 4 slots</span></div><div class="line"><span class="comment">##   .. .. ..@ values         : num [1:4] 1 0 -2 -1</span></div><div class="line"><span class="comment">##   .. .. ..@ lengths        : int [1:4] 3 2 3 20</span></div><div class="line"><span class="comment">##   .. .. ..@ elementMetadata: NULL</span></div><div class="line"><span class="comment">##   .. .. ..@ metadata       : list()</span></div><div class="line"><span class="comment">##   ..@ ranges         :Formal class 'IRanges' [package "IRanges"] with 6 slots</span></div><div class="line"><span class="comment">##   .. .. ..@ start          : int [1:2] 4 2</span></div><div class="line"><span class="comment">##   .. .. ..@ width          : int [1:2] 4 5</span></div><div class="line"><span class="comment">##   .. .. ..@ NAMES          : NULL</span></div><div class="line"><span class="comment">##   .. .. ..@ elementType    : chr "integer"</span></div><div class="line"><span class="comment">##   .. .. ..@ elementMetadata: NULL</span></div><div class="line"><span class="comment">##   .. .. ..@ metadata       : list()</span></div><div class="line"><span class="comment">##   ..@ elementType    : chr "ANY"</span></div><div class="line"><span class="comment">##   ..@ elementMetadata: NULL</span></div><div class="line"><span class="comment">##   ..@ metadata       : list()</span></div></pre></td></tr></table></figure>
-<h2 id="基因组元件的应用链特异性操作">基因组元件的应用：链特异性操作</h2>
-<p>在这一部分，我们使用一个小型的范围来说明一下基因的范围内(intra-range)操作，包括reduce, disjoin与gaps。我们添加链和seqname信息，并显示如想调整大小和侧翼(flank)用于识别TSS和启动子区域，如下所示：</p>
-<h3 id="一组简单的范围">一组简单的范围</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ir &lt;- IRanges(c(3, 8, 14, 15, 19, 34, 40),</div><div class="line">  width = c(12, 6, 6, 15, 6, 2, 7))</div></pre></td></tr></table></figure>
-<p>现在我们使用图片形式查看一下<code>ir</code>，以及内部范围(intra-range)操作，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">par(mfrow=c(4,1), mar=c(4,2,2,2))</div><div class="line">plotRanges(ir, xlim=c(0,60))</div><div class="line">plotRanges(reduce(ir), xlim=c(0,60))</div><div class="line">plotRanges(disjoin(ir), xlim=c(0,60))</div><div class="line">plotRanges(gaps(ir), xlim=c(0,60))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_igranges-lkir-1.png" alt="plot of chunk lkir">
-<p class="caption">plot of chunk lkir</p>
-</div>
-<p>注：<code>plotRange()</code>函数似乎不在这个包中，网上找到了它的原代码，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">plotRanges &lt;- <span class="keyword">function</span>(x, xlim = x, main = deparse(substitute(x)),</div><div class="line">                       col = <span class="string">"black"</span>, sep = <span class="number">0.5</span>, <span class="keyword">...</span>)</div><div class="line">&#123;</div><div class="line">  height &lt;- <span class="number">1</span></div><div class="line">  <span class="keyword">if</span> (is(xlim, <span class="string">"Ranges"</span>))</div><div class="line">    xlim &lt;- c(min(start(xlim)), max(end(xlim)))</div><div class="line">  bins &lt;- disjointBins(IRanges(start(x), end(x) + <span class="number">1</span>))</div><div class="line">  plot.new()</div><div class="line">  plot.window(xlim, c(<span class="number">0</span>, max(bins)*(height + sep)))</div><div class="line">  ybottom &lt;- bins * (sep + height) - height</div><div class="line">  rect(start(x)-<span class="number">0.5</span>, ybottom, end(x)+<span class="number">0.5</span>, ybottom + height, col = col, <span class="keyword">...</span>)</div><div class="line">  title(main)</div><div class="line">  axis(<span class="number">1</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>reduce(x)</code>函数生成一组不重叠的范围，它覆盖了x中的所有位点。这种操作用于生了你许多转录本的基因模式的复杂性，其中我们可能只想要转录出已知区间的地址，不考虑transcript of residence。</p>
-<p><code>disjoin(x)</code>生成一组覆盖x的所有位置的范围，使得分离输出中的任何范围都不会与x中的任何间隔的端点重叠。这为我们提供了连续间隔最大可能的集合，这些连续间隔在原始间隔集中具有端点的地方被分割开。</p>
-<p><code>gaps(x)</code>产生一组覆盖[start(X)，end(X)]中未被x中任何范围覆盖的位置的范围。它能给出编码序列位置和外显子间隔，这可用于枚举内含子。</p>
-<h3 id="granges的扩展">GRanges的扩展</h3>
-<p>现在我们添加上染色体与链信息，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(GenomicRanges)</div><div class="line">gir = GRanges(seqnames=&quot;chr1&quot;, ir, strand=c(rep(&quot;+&quot;, 4), rep(&quot;-&quot;,3)))</div></pre></td></tr></table></figure>
-<p>让我们假设间隔代表基因。下图说明了转录起始位点(绿色)、上游启动子区域(紫色)、下游启动子区域(棕色)的位置，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">par(mfrow=c(4,1), mar=c(4,2,2,2))</div><div class="line">plotGRanges(gir, xlim=c(0,60))</div><div class="line"># </div><div class="line">plotGRanges(resize(gir,1), xlim=c(0,60),col=&quot;green&quot;)</div><div class="line">plotGRanges(flank(gir,3), xlim=c(0,60), col=&quot;purple&quot;)</div><div class="line">plotGRanges(flank(gir,2,start=FALSE), xlim=c(0,60), col=&quot;brown&quot;)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_igranges-dopr-1.png" alt="plot of chunk dopr">
-<p class="caption">plot of chunk dopr</p>
-</div>
-<p>注：<code>plotGRanges</code>的源代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">plotGRanges = <span class="keyword">function</span> (x, xlim = x, col = <span class="string">"black"</span>, sep = <span class="number">0.5</span>, xlimits = c(<span class="number">0</span>, </div><div class="line">    <span class="number">60</span>), <span class="keyword">...</span>) </div><div class="line">&#123;</div><div class="line">    main = deparse(substitute(x))</div><div class="line">    ch = as.character(seqnames(x)[<span class="number">1</span>])</div><div class="line">    x = ranges(x)</div><div class="line">    height &lt;- <span class="number">1</span></div><div class="line">    <span class="keyword">if</span> (is(xlim, <span class="string">"Ranges"</span>)) </div><div class="line">        xlim &lt;- c(min(start(xlim)), max(end(xlim)))</div><div class="line">    bins &lt;- disjointBins(IRanges(start(x), end(x) + <span class="number">1</span>))</div><div class="line">    plot.new()</div><div class="line">    plot.window(xlim = xlimits, c(<span class="number">0</span>, max(bins) * (height + sep)))</div><div class="line">    ybottom &lt;- bins * (sep + height) - height</div><div class="line">    rect(start(x) - <span class="number">0.5</span>, ybottom, end(x) + <span class="number">0.5</span>, ybottom + height, </div><div class="line">        col = col, <span class="keyword">...</span>)</div><div class="line">    title(main, xlab = ch)</div><div class="line">    axis(<span class="number">1</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>请注意，我们不需要采取特殊步骤来处理链中的差异</p>
-<h2 id="甲基化微阵列数据的可视化">甲基化微阵列数据的可视化</h2>
-<p>在我们讨论 <a href="http://genomicsclass.github.io/book/pages/dataman2017.html#methy" target="_blank" rel="external">SummarizedExperiment applications</a>时，我们输入了由Illumina 450k甲基化微阵列生成的数据。</p>
-<p>在这一部分中，我们将介绍如何使用GenomicRanges和Gviz来研究一下在基因水平注释下的甲基化模型。这个思路非常简单：只需从所有样本中提取M值（甲基化与总DNA 比值的基因座特定的估计的log转换），并在选定基因的基因模型中绘制出来，如下所示：</p>
-<p>我们回顾一下数据是如何获取和导入的：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ArrayExpress)</div><div class="line"><span class="keyword">if</span> (!file.exists(<span class="string">"E-MTAB-5797.sdrf.txt"</span>)) nano = getAE(<span class="string">"E-MTAB-5797"</span>)</div><div class="line"><span class="keyword">library</span>(minfi)</div><div class="line">pref = unique(substr(dir(patt=<span class="string">"idat"</span>),<span class="number">1</span>,<span class="number">17</span>)) <span class="comment"># find the prefix strings</span></div><div class="line">raw = read.metharray(pref)</div><div class="line">glioMeth = preprocessQuantile(raw) <span class="comment"># generate SummarizedExperiment</span></div><div class="line"><span class="comment">## [preprocessQuantile] Mapping to genome.</span></div><div class="line"><span class="comment">## [preprocessQuantile] Fixing outliers.</span></div><div class="line"><span class="comment">## [preprocessQuantile] Quantile normalizing.</span></div></pre></td></tr></table></figure>
-<p>这些步骤需要网联，并且需要花几分钟。</p>
-<p>一旦我们的会话中有 <code>glioMeth</code> ，需要将以下代码添加到会话中。我们将会介绍它是如何工作的。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">MbyGene = <span class="keyword">function</span>(mset, symbol=<span class="string">"TP53"</span>, rad=<span class="number">5000</span>) &#123;</div><div class="line"><span class="comment"># phase 1: annotated GRanges for the gene</span></div><div class="line"> <span class="keyword">require</span>(erma)</div><div class="line"> <span class="keyword">require</span>(Gviz)</div><div class="line"> gmod = suppressMessages(genemodel(symbol))     <span class="comment"># erma utility</span></div><div class="line"> gseq = as.character(seqnames(gmod)[<span class="number">1</span>])</div><div class="line"> gmod$transcript = symbol</div><div class="line"><span class="comment"># phase 2: filter down to the region of interest</span></div><div class="line"> mlim = mset[which(seqnames(mset)==gseq),] <span class="comment"># restrict to chromosome</span></div><div class="line"> <span class="comment"># now focus the methylation data to vicinity of gene</span></div><div class="line"> d1 = subsetByOverlaps(GRanges(rowRanges(mlim),,, getM(mlim)), </div><div class="line">         range(gmod)+rad)</div><div class="line"><span class="comment"># phase 3: use Gviz</span></div><div class="line"> plotTracks(list(DataTrack(d1), </div><div class="line">              GeneRegionTrack(gmod, </div><div class="line">               transcriptAnnotation=<span class="string">"transcript"</span>, name=gseq), </div><div class="line">              GenomeAxisTrack(name=gseq, showTitle=<span class="literal">TRUE</span>)))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>代码表明了三个阶段：获取基因区域，并添加转录本(<code>transcript</code>)注释用于绘制所有外显子的结合；将<code>GenomicRatioSet</code>（继承自</p>
-<p>对代码的注释表明了三个阶段：获取基因区并添加用于所有外显子联合的信息性绘图的转录注释；将GenomicRatioSet（继承自RangedSummarizedExperiment）缩小到感兴趣的间隔，这个间隔是由基因模式和rad参数确定；使用Gviz来构建可用于绘图的对象，并绘制出来。</p>
-<p>Gviz的详细信息在该包的文档中。现在我们绘制出以基因为中心的图形，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MbyGene(glioMeth, symbol=<span class="string">"TERT"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20191104142451.png">
-
-</div>
-<p>从上图中我们可以发现这些信息：</p>
-<ul>
-<li>基因组背景（以兆(megabase)为单位的染色体和区域）。</li>
-<li>感兴趣的基因在单行中的结构，它们表示了表达间隔的联合。</li>
-<li>450k针近的位置（蓝色数据点的x坐标）。</li>
-<li>甲基化估计中的样本间变异。</li>
-<li>所选基因组区域的甲基化变异。</li>
-</ul>
-<p>在6x模块中，我们将学习如何使用额外的软件包来创建这种类型的交互式展示，允许我们选择基因并随意放大感兴趣的区域。</p>
-<h2 id="脚注">脚注</h2>
-<p>更多的信息可以查看 <code>GenomicRanges</code> 包，以及查阅PLOS Comp Bio上的文献，它是GenomicRanges的作者写的：</p>
-<p>http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118</p>
-<p>使用vignettes也能查看这个包的众多功能文档，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">browseVignettes(&quot;GenomicRanges&quot;)</div></pre></td></tr></table></figure>
-<p>或者是使用help函数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">help(package=&quot;GenomicRanges&quot;, help_type=&quot;html&quot;)</div></pre></td></tr></table></figure>
-<p>对于Bed Tools的用户来说，<code>HelloRanges</code>包对于在BEd和GRanges概念框架之间转换概念非常有用。</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://github.com/genomicsclass/labs/blob/master/biocintro_5x/bioc1_grangeOps.Rmd" target="_blank" rel="external">bioc1_grangeOps.Rmd</a></li>
-<li><a href="http://genomicsclass.github.io/book/pages/bioc1_igranges.html" target="_blank" rel="external">IRanges and GRanges</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/10/16/BioStatistics/标准差为什么除以n-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3153,6 +2824,304 @@ s=\sqrt{s^{2}}=\sqrt{\frac{S S}{n-1}}
 <ol style="list-style-type: decimal">
 <li><a href="http://genomicsclass.github.io/book/pages/bioc2_ggbio.html" target="_blank" rel="external">Sketching the binding landscape over chromosomes with ggbio’s karyogram layout</a></li>
 <li><a href="http://genomicsclass.github.io/book/pages/bioc2_gvfeat.html" target="_blank" rel="external">Gviz for plotting data with genomic features</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/" itemprop="url">GDAS013-基因集分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-13T12:00:00+08:00">
+                2019-09-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,393
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  19
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>在这一节中我们将学习基因集分析(gene set analysis)背后的统计学原理。在这一部分里，我们要记住三个重要的步骤，这三个步骤都非常重要，但它们又相互独立，分别如下所示：</p>
+<ul>
+<li>参与统计的基因集</li>
+<li>汇总每个基因集的统计学指标</li>
+<li>评估不确定性的方法</li>
+</ul>
+<h2 id="准备数据与基因集数据库">准备数据与基因集数据库</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">source</span>(<span class="string">"http://www.bioconductor.org/biocLite.R"</span>)</div><div class="line">biocLite(<span class="string">"GSEABase"</span>)</div></pre></td></tr></table></figure>
+<p>加载以下包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">library(GSEABase)</div><div class="line">library(GSE5859Subset)</div><div class="line">library(sva)</div><div class="line">library(limma)</div><div class="line">library(matrixStats)</div></pre></td></tr></table></figure>
+<p>我们使用下面包中的数据来说明一下，这个包可以从Github中下载，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(devtools)</div><div class="line">install_github(<span class="string">"genomicsclass/GSE5859Subset"</span>)</div></pre></td></tr></table></figure>
+<p>我们构建的这个数据含有批次效应，因此我们需要使用SVA对其进行校正，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GSE5859Subset)</div><div class="line">data(GSE5859Subset)</div><div class="line"><span class="keyword">library</span>(sva)</div><div class="line"><span class="keyword">library</span>(limma)</div><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">X = sampleInfo$group</div><div class="line">mod&lt;-model.matrix(~X)</div><div class="line">svafit &lt;- sva(geneExpression,mod)</div><div class="line"><span class="comment">## Number of significant surrogate variables is:  5 </span></div><div class="line"><span class="comment">## Iteration (out of 5 ):1  2  3  4  5</span></div><div class="line">svaX&lt;-model.matrix(~X+svafit$sv)</div><div class="line">lmfit &lt;- lmFit(geneExpression,svaX)</div><div class="line">tt&lt;-lmfit$coef[,<span class="number">2</span>]*sqrt(lmfit$df.residual)/(<span class="number">2</span>*lmfit$sigma)</div><div class="line">pval&lt;-<span class="number">2</span>*(<span class="number">1</span>-pt(abs(tt),lmfit$df.residual[<span class="number">1</span>]))</div><div class="line">qval &lt;- p.adjust(pval,<span class="string">"BH"</span>)</div></pre></td></tr></table></figure>
+<p>我们需要注意一下，在这一节中，我们需要每个基因的评分和差异表达基因基因的候选列表。我们如何获取这个候选基因列表与所表示的基因丰度的单位无关。为了说明这一点，我们会假装我们事先不知道在不同组之间基因表达的关系。</p>
+<p>我们构建一个FDR为25%的候选基因列表。这个列表中有23个基因。我们从中能了解到什么生物学信息呢？既然我们知道基因存在着相互作用，那么研究一组基因，而不是单个基因有着重要意义。通常来说，这就是基因集分析的原始想法。</p>
+<p>网上有各种提供基因集的资源。这些资源中的基因都是经过缜密筛选的，它们都有着一些共同的特征。这些基因分组的方式是通过通路（例如KEGG）或GO来划分的。在下面的网站上就能找到许多这样的资源：</p>
+<p>http://www.broadinstitute.org/gsea/msigdb/index.jsp</p>
+<p>在以下的案例中，我闪将使用一个根据染色体进行分组的基因集来分析数据。第一步就是下载数据库，不过你需要在<a href="http://software.broadinstitute.org/gsea/login.jsp;jsessionid=C7D472C24D6D4FF96526F3868A8CCCC9" target="_blank" rel="external">网站注册</a>。</p>
+<p>当你下载好文件后，就可以通过以下的命令读入数据库（文件扩展名为gmt，其实就是GSEA分析中的基因集文件），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gsets &lt;- getGmt(<span class="string">"c1.all.v6.1.entrez.gmt"</span>) <span class="comment">##must provide correct path to file</span></div></pre></td></tr></table></figure>
+<p>这个对象中含有326个基因集。每个基因集使用ENTREZ ID标明了基因，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">length(gsets)</div><div class="line">## [1] 326</div><div class="line">head(names(gsets))</div><div class="line">## [1] &quot;chr5q23&quot;  &quot;chr16q24&quot; &quot;chr8q24&quot;  &quot;chr13q11&quot; &quot;chr7p21&quot;  &quot;chr10q23&quot;</div><div class="line">gsets[[&quot;chryq11&quot;]]</div><div class="line">## setName: chryq11 </div><div class="line">## geneIds: 728512, 392597, ..., 360027 (total: 204)</div><div class="line">## geneIdType: Null</div><div class="line">## collectionType: Null </div><div class="line">## details: use &apos;details(object)&apos;</div></pre></td></tr></table></figure>
+<p>我们可以使用以下方式获取ENTREZ ID，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">head(geneIds(gsets[[&quot;chryq11&quot;]]))</div><div class="line">## [1] &quot;728512&quot; &quot;392597&quot; &quot;9086&quot;   &quot;359796&quot; &quot;83864&quot;  &quot;425057&quot;</div></pre></td></tr></table></figure>
+<p>现在，为了将其应用于我们的数据，我们必须将这些ID映射到Affymetrix ID上。现在我们编写这样一个函数，这个函数会使用Expression Set类，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">mapGMT2Affy &lt;- <span class="keyword">function</span>(object,gsets)&#123;</div><div class="line">  ann&lt;-annotation(object)</div><div class="line">  dbname&lt;-paste(ann,<span class="string">"db"</span>,sep=<span class="string">"."</span>)</div><div class="line">  <span class="keyword">require</span>(dbname,character.only=<span class="literal">TRUE</span>)</div><div class="line">  gns&lt;-featureNames(object)</div><div class="line"></div><div class="line">  <span class="comment">##This call may generate warnings</span></div><div class="line">  map&lt;-select(get(dbname), keys=gns,columns=c(<span class="string">"ENTREZID"</span>, <span class="string">"PROBEID"</span>))</div><div class="line">  map&lt;-split(map[,<span class="number">1</span>],map[,<span class="number">2</span>])</div><div class="line">  indexes&lt;-sapply(gsets,<span class="keyword">function</span>(ids)&#123;</div><div class="line">    gns2&lt;-unlist(map[geneIds(ids)])</div><div class="line">    match(gns2,gns)</div><div class="line">    &#125;)</div><div class="line">  names(indexes)&lt;-names(gsets)</div><div class="line">  <span class="keyword">return</span>(indexes)</div><div class="line">&#125;</div><div class="line"><span class="comment">##create an Expression Set</span></div><div class="line">rownames(sampleInfo)&lt;- colnames(geneExpression)</div><div class="line">e=ExpressionSet(assay=geneExpression,</div><div class="line">                phenoData=AnnotatedDataFrame(sampleInfo),</div><div class="line">                annotation=<span class="string">"hgfocus"</span>)</div><div class="line"><span class="comment">##can safely ignore the warning</span></div><div class="line">gsids &lt;- mapGMT2Affy(e,gsets) </div><div class="line"><span class="comment">## 'select()' returned 1:many mapping between keys and columns</span></div></pre></td></tr></table></figure>
+<h2 id="基于相关检验的方法">基于相关检验的方法</h2>
+<p>现在我们就可以计算差异表达基因是否在某个基因集中富集。那么我们如何计算呢？最简单的方法就是独立卡方检验，这种统计方法我们以前学过。现在我们对这些差异基因是否在Y染色体上的基因集中富集进行计算，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">tab &lt;- table(ingenset=<span class="number">1</span>:nrow(e) %<span class="keyword">in</span>% gsids[[<span class="string">"chryq11"</span>]],signif=qval&lt;<span class="number">0.05</span>)</div><div class="line">tab</div><div class="line"><span class="comment">##         signif</span></div><div class="line"><span class="comment">## ingenset FALSE TRUE</span></div><div class="line"><span class="comment">##    FALSE  8769    9</span></div><div class="line"><span class="comment">##    TRUE     11    4</span></div><div class="line">chisq.test(tab)$p.val</div><div class="line"><span class="comment">## Warning in chisq.test(tab): Chi-squared approximation may be incorrect</span></div><div class="line"><span class="comment">## [1] 5.264033e-121</span></div></pre></td></tr></table></figure>
+<p>因为我们比较的是男性与女性，因此我们使用Y染色体上基因集来进行富集，这样比较便于富集差异基因，更能说明这种算法的原理。但是，由于只有13个基因有显著性（在Y染色体上的只有4个），这种方法对于寻找可能在某些方面具有生物学意义的基因集来说，实际意义不大。例如，X染色体上的基因集是我们感兴趣的基因集么？这里需要注意的是，一些基因在X染色体上并不活性，因此与男性相比，女性体内这样的基因数目更多。</p>
+<p>这里我们面临的问题是，FDR值为0.25，这是任意设置的一个截止值。为什么不设为0.05或0.01呢？我们如何设置这个截止值？</p>
+<p>如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">qs&lt;-seq(<span class="number">0</span>,<span class="number">1</span>,len=length(tt)+<span class="number">1</span>)-<span class="number">1</span>/(<span class="number">2</span>*length(tt));qs&lt;-qs[-<span class="number">1</span>]</div><div class="line">qqplot(qt(qs,lmfit$df.resid),tt,ylim=c(-<span class="number">10</span>,<span class="number">10</span>),xlab=<span class="string">"Theoretical quantiles"</span>,ylab=<span class="string">"Observed"</span>) <span class="comment">##note we leave some of the obvious ones out</span></div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10">
+<p class="caption">plot of chunk unnamed-chunk-10</p>
+</div>
+<h2 id="基因集相关的统计学">基因集相关的统计学</h2>
+<p>目前大多数进行基因集分析的方法都没有将基因分析为差异表达部分和非差异表达部分。相反，我们会使用一些类似于t检验的方法来进行计算。为了了解这种方法比基因列表的二分法更为强大，现在我们提出一个问题：一些基因是否在X染色体上并没有失活？我们不像前面提到的那样创建一个基因表，而是查看一下X染色体中第一组基因t检验中t值的分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ind &lt;- gsids[[<span class="string">"chrxp11"</span>]]</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">plot(density(tt[-ind]),xlim=c(-<span class="number">7</span>,<span class="number">7</span>),main=<span class="string">""</span>,xlab=<span class="string">"t-stat"</span>,sub=<span class="string">""</span>,lwd=<span class="number">4</span>)</div><div class="line">lines(density(tt[ind],bw=<span class="number">.7</span>),col=<span class="number">2</span>,lty=<span class="number">2</span>,lwd=<span class="number">4</span>)</div><div class="line">rug(tt[ind],col=<span class="number">2</span>)</div><div class="line">legend(-<span class="number">6.5</span>, <span class="number">.3</span>, legend=c(<span class="string">"present on xp11"</span>, <span class="string">"not on xp11"</span>),</div><div class="line">     col=c(<span class="number">2</span>,<span class="number">1</span>), lty=c(<span class="number">2</span>,<span class="number">1</span>), lwd=<span class="number">4</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11">
+<p class="caption">plot of chunk unnamed-chunk-11</p>
+</div>
+<p>从上图我们可以看到基因集的t统计量的分布，它的分布似乎不同于所有基因的分布。那么我们如何地这个结果进行定量呢？</p>
+<p>有关基因集分析的第一篇文献是于2001年由[Virtaneva]发表的，他在前面部分中讨论了Wilcoxon Mann-Whitney检验。那篇文献的基本思路就是统计实验组和对照组之间的差异基因在某个特定的基因集中的数目是否比在其它基因集中的数目更大。Wilcoxon比较的是基因集上基因的秩是否在中位数以上。</p>
+<p>在这里我们计算了每个基因集的Wilcoxon检验。然后我们对Wilcoxon统计量的结果进行标准(standardize)，也就是将它们转换为均值为0，标准差为1的数据。注意，中心极限理论告诉我们，如果基因集足够大，并且每个基因的效应大小彼此独立，那么这些统计量将遵循正态分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">es &lt;- lmfit$coef[,<span class="number">2</span>]</div><div class="line">wilcox &lt;- t(sapply(gsids,<span class="keyword">function</span>(i)&#123;</div><div class="line">  <span class="keyword">if</span>(length(i)&gt;<span class="number">2</span>)&#123;</div><div class="line">  tmp&lt;- wilcox.test(es[i],es[-i])  </div><div class="line">  n1&lt;-length(i);n2&lt;-length(es)-n1</div><div class="line">  z &lt;- (tmp$stat -n1*n2/<span class="number">2</span>) / sqrt(n1*n2*(n1+n2+<span class="number">1</span>)/<span class="number">12</span>)</div><div class="line">  <span class="keyword">return</span>(c(z,tmp$p.value))</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">return</span>(rep(<span class="literal">NA</span>,<span class="number">2</span>))  </div><div class="line">  &#125;))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">cols &lt;- rep(<span class="number">1</span>,nrow(wilcox))</div><div class="line">cols[grep(<span class="string">"chrx"</span>,rownames(wilcox))]&lt;-<span class="number">2</span></div><div class="line">cols[grep(<span class="string">"chry"</span>,rownames(wilcox))]&lt;-<span class="number">3</span></div><div class="line">qqnorm(wilcox[,<span class="number">1</span>],col=cols,cex=ifelse(cols==<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>),pch=<span class="number">16</span>)</div><div class="line">qqline(wilcox[,<span class="number">1</span>])</div><div class="line">legend(<span class="string">"topleft"</span>,c(<span class="string">"Autosome"</span>,<span class="string">"chrX"</span>,<span class="string">"chrY"</span>),pch=<span class="number">16</span>,col=<span class="number">1</span>:<span class="number">3</span>,box.lwd=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12">
+<p class="caption">plot of chunk unnamed-chunk-12</p>
+</div>
+<p>从上图我们可以看出来，排名前10位的基因并没像我们预期的那样在X染色体和Y染色体中高表达。使用Wilcoxon（稳健,robust)为基础的背后逻辑是，我们并不想看到一个或两个高表达的基因对基因集分析产生重要影响（Wilcoxon检验是功效比较低，但比较稳健，对异常值不敏感）。虽然这种统计方法能够降低低秩基因的假阳性，但是这牺牲了灵敏度（功效,power）。下面我们来考虑一个低稳健性(less robust)，但是通常情况下更加强大的方法。</p>
+<p>如果我们对基个基因集中向左分布（通常来说是表达量少的基因）的基因或者说是向右分布（通常来说是就是表达高的基因）的基因戌兴趣，那么我们可以使用的最简单的统计就是比较两组之间的均值，具体可以参考这篇文献<a href="https://www.ncbi.nlm.nih.gov/pubmed/?term=20048385" target="_blank" rel="external">《Gene set enrichment analysis made simple》</a>，其中G是基因在基因集中的索引，我们定义以下的统计量： <span class="math display">\[
+\bar{t}=\frac{1}{N} \sum_{i \in G} t_i
+\]</span></p>
+<p>零假设是基因集中的基因表达没有差异，这些t检验的均值为0。如果t检验统计量之间互相是独立的（后面我们会学习避免此假设的方法），那么<span class="math inline">\(\sqrt{N} \bar{t}\)</span> 服从以下分布： <span class="math display">\[
+\sqrt{N} \bar{t} \sim N(0,1)
+\]</span></p>
+<p>以下是这些统计量的qq图：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">avgt &lt;- sapply(gsids,function(i) sqrt(length(i))*mean(tt[i]))</div><div class="line">qqnorm(avgt,col=cols,cex=ifelse(cols==1,1,2),pch=16)</div><div class="line">qqline(avgt)</div><div class="line">legend(&quot;topleft&quot;,c(&quot;Autosome&quot;,&quot;chrX&quot;,&quot;chrY&quot;),pch=16,col=1:3,box.lwd=0)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13">
+<p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">avgt[order(-abs(avgt))[<span class="number">1</span>:<span class="number">10</span>]]</div><div class="line"><span class="comment">##    chryp11    chryq11    chrxq13    chr6p22   chr17p13    chrxp11 </span></div><div class="line"><span class="comment">## -17.749865 -15.287203   6.592806  -4.558008  -4.545851   4.420686 </span></div><div class="line"><span class="comment">##   chr20p13    chr4q35    chr7p22    chrxp22 </span></div><div class="line"><span class="comment">##  -4.241892  -4.033233  -3.642068   3.608926</span></div></pre></td></tr></table></figure>
+<p>有一些算法就是基于以上原理来转统计量的均值的，例如 <a href="http://www.ncbi.nlm.nih.gov/pubmed/16174746" target="_blank" rel="external">Tian et al 2005</a> , <a href="http://www.ncbi.nlm.nih.gov/pubmed/15647293" target="_blank" rel="external">SAFE</a>, <a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=20610611" target="_blank" rel="external">ROAST</a>, <a href="http://www.ncbi.nlm.nih.gov/pubmed/22638577" target="_blank" rel="external">CAMERA</a>.</p>
+<p>我们可以构建其它的得分来检验其它替代假设。例如我们可以检验<a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=20048385" target="_blank" rel="external">changes in variances</a> 与这个分布的常规变化 [<a href="http://www.ncbi.nlm.nih.gov/pubmed/12808457" target="_blank" rel="external">1</a>], [<a href="http://www.ncbi.nlm.nih.gov/pubmed/16199517" target="_blank" rel="external">2</a>]。</p>
+<h2 id="基因集的假设检验">基因集的假设检验</h2>
+<p>上面我们对<span class="math inline">\(\sqrt{N} \bar{t}\)</span> 的正态近似表明，t检验的统计量是独立的，并且分布相同，例如，现在我们看第二个公式，如下所示： <span class="math display">\[
+Var(\bar{t})= \frac{1}{N^2} \mbox{var}(t_1 + \dots + t_N) = \frac{1}{N^2}(\mbox{var}(t_1)+\dots+\mbox{var}(t_N)) = \frac{1}{N}
+\]</span> 这个公众就是假设t检验统计量是独立的。但是，即使在零假设下，我们也许会考虑到基因集之间是相互关联的。为了了解这一点，我们可以取每个基因集中所有成对相关的平均值，我们就会看到，它们并不都是0，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">N &lt;- sapply(gsids,length)</div><div class="line">ind1&lt;-which(X==<span class="number">0</span>)</div><div class="line">ind2&lt;-which(X==<span class="number">1</span>)</div><div class="line">corrs &lt;- t(sapply(gsids,<span class="keyword">function</span>(ind)&#123;</div><div class="line">  <span class="keyword">if</span>(length(ind)&gt;=<span class="number">2</span>)&#123;</div><div class="line">    cc1&lt;-cor(t(geneExpression[ind,ind1]))</div><div class="line">    cc2&lt;-cor(t(geneExpression[ind,ind2]))</div><div class="line">  <span class="keyword">return</span>(c(median(cc1[lower.tri(cc1)]),</div><div class="line">    median(cc2[lower.tri(cc2)])))</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">return</span>(c(<span class="literal">NA</span>,<span class="literal">NA</span>))</div><div class="line">&#125;))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">plot(corrs[N&gt;<span class="number">10</span>,],xlim=c(-<span class="number">1</span>,<span class="number">1</span>),ylim=c(-<span class="number">1</span>,<span class="number">1</span>),xlab=<span class="string">"Correlation within females"</span>,ylab=<span class="string">"Correlation within males"</span>)</div><div class="line">abline(h=<span class="number">0</span>,v=<span class="number">0</span>,lty=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<p>注意，在这个案例中，在一个基因集中，基因的检验统计量具有相关性的 <span class="math inline">\(\rho\)</span>， 平均t检验统计量的方差如下所示： <span class="math display">\[
+\begin{eqnarray}
+Var(\bar{t}) &amp;=&amp; \frac{1}{N^2} \mbox{var}( (1 \dots 1) (t_1 \dots 
+t_N)&#39; ) \\
+&amp;=&amp; \frac{1}{N^2}(1 \dots 1)
+\begin{pmatrix}
+1 &amp; \rho &amp; \dots &amp; \rho &amp; \rho \\
+\rho &amp; 1 &amp; \rho &amp; \dots  &amp; \rho \\
+\dots &amp; \dots &amp; \dots &amp; \dots &amp; \dots \\
+\rho &amp;  \rho &amp; \dots &amp; \rho &amp; 1 \\
+\end{pmatrix}
+(1 \dots 1) &#39; \\
+&amp;=&amp; \frac{1}{N^2}\{N + (N-1) N \rho \} \\
+&amp;=&amp; \frac{1}{N}\{1 + (N-1) \rho \} \\
+\end{eqnarray} %]]&gt;
+\]</span> 在上面公式里，<span class="math inline">\(\rho\)</span> 是正值，方差与 ${1 + (N-1) } <span class="math inline">\(有关。虽然常规情况下，在一个基因集内，\)</span>$ 并不一定都相等，但是我们仍然可以根据一个基因集内的平均 <span class="math inline">\(\rho\)</span> 来计算一个校正因子(correction factor)。这个公式可以参考这篇文献<a href="https://projecteuclid.org/euclid.aoas/1206367822" target="_blank" rel="external">《A statistical framework for testing functional categories in microarray data》</a>。公式中使用的校正方法还包括Wald统计量。</p>
+<p>这些校正因子可以对上述提到的统计量进行简单的汇总。事实上，现在已经有论文提出了基于简单的均值转换方法的算法，这些算法还考虑到了相关性，它们基于渐进近似的<a href="https://www.ncbi.nlm.nih.gov/pubmed/?term=20610611" target="_blank" rel="external">ROAST</a>和<a href="https://www.ncbi.nlm.nih.gov/pubmed/22638577" target="_blank" rel="external">CAMERA</a>，用于开发统计摘要(summary statistics)与统计推断。在计算机演示案例中，我们将会演示其中一款软件。简单起见，我们这里基于 <span class="math inline">\(\sqrt{N} \bar{t}\)</span> 计算近似，并使用校正因子。这里我们比较一下初始 <span class="math inline">\(\sqrt{N} \bar{t}\)</span> 以及校正后的 <span class="math inline">\(\sqrt{N} \bar{t}\)</span> ，如下所示：</p>
+<p>在下图里，我们注意到这个校正会降低分数(socres)（也就是将分数值降低到接近0的程度）。尤其注意的是，第三个最高的值现在非常接近0，它不再显著（参见箭头），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">avgcorrs &lt;- rowMeans(corrs)</div><div class="line">cf &lt;- (<span class="number">1</span>+(N-<span class="number">1</span>)*avgcorrs)</div><div class="line">cf[cf&lt;<span class="number">1</span>] &lt;- <span class="number">1</span> <span class="comment">## we ignore negative correlations</span></div><div class="line">correctedavgt &lt;- avgt/sqrt(cf)</div><div class="line">parampvaliid &lt;- <span class="number">2</span>*pnorm(-abs(avgt))</div><div class="line">parampval&lt;- <span class="number">2</span>*pnorm(-abs(correctedavgt))</div><div class="line">plot(avgt,correctedavgt,bg=cols,pch=<span class="number">21</span>,xlab=<span class="string">"Original"</span>,ylab=<span class="string">"With correction factor"</span>,xlim=c(-<span class="number">7</span>,<span class="number">20</span>),ylim=c(-<span class="number">7</span>,<span class="number">20</span>),cex=<span class="number">1.5</span>)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">abline(h=<span class="number">0</span>,v=<span class="number">0</span>,lty=<span class="number">2</span>)</div><div class="line">thirdhighest &lt;- order(-avgt)[<span class="number">3</span>]</div><div class="line">arrows(avgt[thirdhighest]+<span class="number">3</span>,correctedavgt[thirdhighest],x1=avgt[thirdhighest]+<span class="number">0.5</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-15-1.png" alt="plot of chunk unnamed-chunk-15">
+<p class="caption">plot of chunk unnamed-chunk-15</p>
+</div>
+<p>需要注意，标注出来的基因集具有相对高的相关性和大小(size)，它就使得校正因子变得很大，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">avgcorrs[thirdhighest]</div><div class="line"><span class="comment">##   chrxp22 </span></div><div class="line"><span class="comment">## 0.0287052</span></div><div class="line">length(gsids[[thirdhighest]])</div><div class="line"><span class="comment">## [1] 76</span></div><div class="line">cf[thirdhighest]</div><div class="line"><span class="comment">## chrxp22 </span></div><div class="line"><span class="comment">## 3.15289</span></div></pre></td></tr></table></figure>
+<p>在这一节中，我们已经使用了平均t检验统计量作为一个简单的案例来说明基因集在零假设下的统计摘要。我们证明了，当基因集中的基因并不独立时，需要一个校正因子。这里要注意的是，我们使用平均t检验统计量只是做了一个简单的说明，如果需要更加严格处理方法来实现均值偏移方法(testing-for-mean-shifts)，则需要参考 <a href="http://www.ncbi.nlm.nih.gov/pubmed/15647293" target="_blank" rel="external">SAFE</a>, <a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=20610611" target="_blank" rel="external">ROAST</a>和 <a href="http://www.ncbi.nlm.nih.gov/pubmed/22638577" target="_blank" rel="external">CAMERA</a>。</p>
+<p>即使在使用了膨胀因子(inflation factor)校正了平均t检验统计量后，零分布也有可能不成立。例如，对于平均t检验统计量是正态的假设而言，原始的样本大小和基因集大小有可能太小。在一次部分里，我们会演示如何在不使用参数假设的情况下，使用置换检验(Permutations)来估计零分布。</p>
+<h2 id="置换检验permutations">置换检验(Permutations)</h2>
+<p>当我们感兴趣的结果允许以及样本足够的情况下，我们可以使用基因集特定的转换检验来替换参数检验。参考文献中列出了几种这样的方法[<a href="http://www.ncbi.nlm.nih.gov/pubmed/16199517" target="_blank" rel="external">1</a>], [<a href="http://www.ncbi.nlm.nih.gov/pubmed/16174746" target="_blank" rel="external">2</a>]。对于大多数的富集分布而言，我们可以使用置换来创建一个零分布。例如，在这个案例中，我们对简单的t检验摘要执行置换检验，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(matrixStats)</div><div class="line"><span class="comment">## matrixStats v0.50.1 (2015-12-14) successfully loaded. See ?matrixStats for help.</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## Attaching package: 'matrixStats'</span></div><div class="line"><span class="comment">## The following object is masked from 'package:GenomicFiles':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     rowRanges</span></div><div class="line"><span class="comment">## The following object is masked from 'package:SummarizedExperiment':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     rowRanges</span></div><div class="line"><span class="comment">## The following objects are masked from 'package:genefilter':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     rowSds, rowVars</span></div><div class="line"><span class="comment">## The following objects are masked from 'package:Biobase':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     anyMissing, rowMedians</span></div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">B &lt;- <span class="number">400</span> <span class="comment">##takes a few minutes</span></div><div class="line">null &lt;- sapply(<span class="number">1</span>:B,<span class="keyword">function</span>(b)&#123;</div><div class="line"> nullX&lt;- sample(X)</div><div class="line"> nullsvaX&lt;-model.matrix(~nullX+svafit$sv) <span class="comment">##note that we are not recomupting the surrogate values. </span></div><div class="line"> nulllmfit &lt;- lmFit(geneExpression,nullsvaX)</div><div class="line"> nulltt&lt;-nulllmfit$coef[,<span class="number">2</span>]*sqrt(nulllmfit$df.residual)/(<span class="number">2</span>*nulllmfit$sigma)</div><div class="line"> nullavgt &lt;- sapply(gsids,<span class="keyword">function</span>(i) sqrt(length(i))*mean(nulltt[i]))</div><div class="line"> <span class="keyword">return</span>(nullavgt)</div><div class="line">&#125;)</div><div class="line">permavgt &lt;- avgt/rowSds(null)</div><div class="line">permpval&lt;- rowMeans(abs(avgt) &lt; abs(null))</div></pre></td></tr></table></figure>
+<p>在这个案例中，使用置换得到的结果非常类似于使用了校正因子得到的参数检验结果，我们从比较的结果中就能看出这些信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">plot(correctedavgt,permavgt,bg=cols,pch=<span class="number">21</span>,xlab=<span class="string">"Parametric z-score (with correction)"</span>,ylab=<span class="string">"Permutation z-score"</span>,cex=<span class="number">1.5</span>,ylim=c(-<span class="number">5</span>,<span class="number">15</span>),xlim=c(-<span class="number">5</span>,<span class="number">15</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">abline(h=<span class="number">0</span>,v=<span class="number">0</span>,lty=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_geneset_1-unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18">
+<p class="caption">plot of chunk unnamed-chunk-18</p>
+</div>
+<p>我们看到这两种方法得到的q值也是比较类似：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">tab &lt;- data.frame(avgt=p.adjust(signif(<span class="number">2</span>*pnorm(<span class="number">1</span>-abs(avgt)),<span class="number">2</span>),method=<span class="string">"BH"</span>),</div><div class="line">                  correctedavgt=p.adjust(signif(<span class="number">2</span>*pnorm(<span class="number">1</span>-abs(correctedavgt)),<span class="number">2</span>),method=<span class="string">"BH"</span>),</div><div class="line">                  permutations=p.adjust(permpval,method=<span class="string">"BH"</span>))</div><div class="line"><span class="comment">##include only gene sets with 10 or more genes in comparison</span></div><div class="line">tab&lt;-tab[N&gt;=<span class="number">10</span>,]</div><div class="line">tab &lt;- cbind(signif(tab,<span class="number">2</span>),apply(tab,<span class="number">2</span>,rank))</div><div class="line">tab&lt;-tab[order(tab[,<span class="number">1</span>]),]</div><div class="line">tab &lt;- tab[tab[,<span class="number">1</span>]&lt; <span class="number">0.25</span>,]</div><div class="line">tab</div><div class="line"><span class="comment">##             avgt correctedavgt permutations avgt correctedavgt</span></div><div class="line"><span class="comment">## chryp11  1.9e-60       1.5e-37         0.00  1.0             1</span></div><div class="line"><span class="comment">## chryq11  4.2e-44       6.3e-02         0.00  2.0             3</span></div><div class="line"><span class="comment">## chrxq13  2.4e-06       5.3e-03         0.00  3.0             2</span></div><div class="line"><span class="comment">## chr17p13 2.5e-02       1.0e+00         0.00  4.5           124</span></div><div class="line"><span class="comment">## chr6p22  2.5e-02       1.0e+00         0.77  4.5           124</span></div><div class="line"><span class="comment">## chrxp11  3.4e-02       1.0e+00         0.70  6.0           124</span></div><div class="line"><span class="comment">## chr20p13 5.6e-02       9.7e-02         0.00  7.0             4</span></div><div class="line"><span class="comment">## chr4q35  9.7e-02       1.0e+00         0.39  8.0           124</span></div><div class="line"><span class="comment">##          permutations</span></div><div class="line"><span class="comment">## chryp11             4</span></div><div class="line"><span class="comment">## chryq11             4</span></div><div class="line"><span class="comment">## chrxq13             4</span></div><div class="line"><span class="comment">## chr17p13            4</span></div><div class="line"><span class="comment">## chr6p22           114</span></div><div class="line"><span class="comment">## chrxp11            78</span></div><div class="line"><span class="comment">## chr20p13            4</span></div><div class="line"><span class="comment">## chr4q35            18</span></div></pre></td></tr></table></figure>
+<p>不过置换检验方法的一个局限就是，为了能够得到非常小的p值，我们需要进行多次置换。例如为了得到一个在10e-5到10e-6之间的一个p值，我们霜肆进行100万次置换。对于那些使用了保守的多重比较校正方法（例如Bonferonni校正）的人来说，很有必要进行更多次地的模拟。置换检验的另外一个局限就是，在更复杂的设计中，例如具有许多轭和连续协变量的实验中，如何对置换进行解读并不容易。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc1_geneset_1.html" target="_blank" rel="external">Gene set analysis</a></li>
+<li>Virtaneva K, “Expression profiling reveals fundamental biological differences in acute myeloid leukemia with isolated trisomy 8 and normal cytogenetics.” PNAS 2001 http://www.ncbi.nlm.nih.gov/pubmed/?term=11158605</li>
+<li>Jelle J. Goeman and Peter Bühlmann, “Analyzing gene expression data in terms of gene sets: methodological issues” Bioinformatics 2006. http://bioinformatics.oxfordjournals.org/content/23/8/980</li>
 </ol>
 
           
