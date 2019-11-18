@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="RNA-seq,Bioconductor," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Interaction beyond the “read-eval-print” loop Working do with R through the command line imposes a certain laborious sequentiality to everything we do. The advantage to this mode of data-analytic com">
+<meta name="keywords" content="RNA-seq,Bioconductor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDAS010-Bioconductor中的基因组注释">
+<meta property="og:url" content="http://rvdsd.top/2019/09/06/Genomics Data Analysis Series/GDAS016-shiny的交互式操作/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="Interaction beyond the “read-eval-print” loop Working do with R through the command line imposes a certain laborious sequentiality to everything we do. The advantage to this mode of data-analytic com">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-18T10:13:19.891Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GDAS010-Bioconductor中的基因组注释">
+<meta name="twitter:description" content="Interaction beyond the “read-eval-print” loop Working do with R through the command line imposes a certain laborious sequentiality to everything we do. The advantage to this mode of data-analytic com">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/09/06/Genomics Data Analysis Series/GDAS016-shiny的交互式操作/"/>
+
+
+
+
+
+  <title>GDAS010-Bioconductor中的基因组注释 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/06/Genomics Data Analysis Series/GDAS016-shiny的交互式操作/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GDAS010-Bioconductor中的基因组注释</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-06T12:00:00+08:00">
+                2019-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,294
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="interaction-beyond-the-read-eval-print-loop">Interaction beyond the “read-eval-print” loop</h2>
+<p>Working do with R through the command line imposes a certain laborious sequentiality to everything we do. The advantage to this mode of data-analytic computing is that every step is defined by code and every result can be viewed (and traced) as a sequence of explicit function evaluations on a well-defined environment.</p>
+<p>An alternative mode of data-analytic computing uses graphical user interfaces (GUIs) in which mouse movements and button clicks are the primary means of specifying computations. This mode of interaction is sequential and traceable as well, but the path from mouse click to data-analytic function is technically complex and we will not pursue the matter any further.</p>
+<p>The Rstudio group has produced a package called <code>shiny</code> <a href="http://genomicsclass.github.io/book/pages/shiny.rstudio.com" target="_blank" rel="external">URL</a> that simplifies the creation of browser-driven GUIs for specific data-analytic activities. In this lab we’ll explore some of the potential of this package. We’ve added a “shiny app” to the ph525x package that we’ll now investigate.</p>
+<h2 id="running-the-dfhclust-function">Running the dfHclust function</h2>
+<h3 id="the-main-display-layout">The main display layout</h3>
+<p>The ph525x package includes the <code>dfHclust</code> function. This takes a <code>data.frame</code> instance as sole argument and starts a browser session. You can try it directly with</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(ph525x)</div><div class="line">dfHclust(mtcars)</div></pre></td></tr></table></figure>
+<p>There is a sidebar panel on the left that accepts selections for</p>
+<ul>
+<li><code>distance</code> for object proximity</li>
+<li><code>clustering method</code> to form the hierarchy through object agglomeration</li>
+<li><code>height</code> for cutting the cluster dendrogram into groups of objects</li>
+<li>features to use for computation of object distance</li>
+</ul>
+<p>In this application, the objects are cars with different manufacturer and model types; the features are structural or operating characteristics of cars. Note that the application starts with certain defaults:</p>
+<ul>
+<li>euclidean distance</li>
+<li>ward.D as the agglomeration procedure</li>
+<li>40 as the cut height</li>
+<li>the first two variables as features</li>
+</ul>
+<p>The main panel to the right includes tabs for three types of display:</p>
+<ul>
+<li>tree for the clustering dendrogram</li>
+<li>pairs plot for direct pairwise scatterplot visualization</li>
+<li>silhouette plot for assessing cluster quality at the selected cutting height</li>
+</ul>
+<p>To fully understand the quantities displayed in the “tree” and “silh” tabs, you should review the definitions of distance, clustering method, and silhouette until you feel comfortable explaining these to a non-statistician.</p>
+<ul>
+<li>Distance measures are very important in multivariate analysis</li>
+<li>Hierarchical clustering procedures are complex; see the <a href="https://en.wikipedia.org/wiki/Ward&#39;s_method" target="_blank" rel="external">definition of Ward’s method</a> in Wikipedia for a clear exposition of one important approach</li>
+<li>Silhouette is defined clearly in the man page for <code>silhouette</code> in the <code>cluster</code> package</li>
+</ul>
+<h3 id="interacting-with-the-display">Interacting with the display</h3>
+<p>Notice that the defaults lead to a tree with three main lobes in the panel displayed when the “tree” tab is selected. The panel for the “silh” tab shows a measure of cluster membership for each observation in the dataset, using the height-to-cut setting to partition the data using the tree.</p>
+<ul>
+<li>note that the average silhouette width at the defaults for mtcars is 0.56</li>
+<li>if, leaving all other selections alone, you change the “Select height for cut” value to 70, the silhouette plot changes to show an average silhouette of 0.59 – an improvement, but now we have only two clusters, and one observation with a negative silhouette value</li>
+<li>for an amusing observation, return to the tree tab, set the distance to “euclidean” and the clustering method to <code>single</code> – now the closest neighbor to the Mercedes 450 SLC is the AMC Javelin. I guess the Javelin wasn’t such a bad car after all….</li>
+</ul>
+<h2 id="a-view-of-the-code">A view of the code</h2>
+<p>In this subsection we will break up the main <code>dfHclust</code> function and explain its elements. The code was written in a very naive manner but even so has three virtues:</p>
+<ul>
+<li>it is relatively short and self-contained</li>
+<li>it works and does something useful in interactive data exploration</li>
+<li>it is easy to extend by replicating and modifying short subparts</li>
+</ul>
+<p>Some aspects that are likely to need improvement</p>
+<ul>
+<li>handling of global variables for use in the <code>ui</code> component</li>
+<li>excessive repetition of data.frame subsetting in the <code>server</code> component</li>
+</ul>
+<h3 id="starting-out">Starting out</h3>
+<p>We have a simple fixed interface and fail if we don’t get a data.frame with at least two columns. We fail if the necessary software is not in place.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">dfHclust = function(df) &#123;</div><div class="line"># validate input</div><div class="line">   stopifnot(inherits(df, &quot;data.frame&quot;))</div><div class="line">   stopifnot(ncol(df)&gt;1)</div><div class="line"># obtain software</div><div class="line">   require(shiny)</div><div class="line">   require(cluster)</div></pre></td></tr></table></figure>
+<h3 id="some-vectors-to-populate-interface-option-sets">Some vectors to populate interface option sets</h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># global variables ... </div><div class="line">   nms = names(df)</div><div class="line">   cmeths = c(&quot;ward.D&quot;, &quot;ward.D2&quot;,</div><div class="line">             &quot;single&quot;, &quot;complete&quot;, &quot;average&quot;, &quot;mcquitty&quot;,</div><div class="line">             &quot;median&quot;, &quot;centroid&quot;)</div><div class="line">   dmeths = c(&quot;euclidean&quot;, &quot;maximum&quot;, &quot;manhattan&quot;, &quot;canberra&quot;,</div><div class="line">             &quot;binary&quot;)</div></pre></td></tr></table></figure>
+<h3 id="the-layout-of-the-user-interface">The layout of the user interface</h3>
+<p>There are several high-level options that can control the browser interface. We’ll use a flexible approach called <code>fluidPage</code>; see also the shinydashboard package.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line"># main shiny components: ui and server</div><div class="line">#   ui: defines page layout and components</div><div class="line">#   server: defines operations</div><div class="line">#</div><div class="line">   ui &lt;- fluidPage(</div><div class="line">#</div><div class="line"># we will have four components on sidebar: selectors for </div><div class="line"># distance, agglomeration method, height for tree cut, and variables to use</div></pre></td></tr></table></figure>
+<h4 id="title-and-sidebar">Title and sidebar</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line">     titlePanel(paste(substitute(df), &quot;hclust&quot;)),</div><div class="line">     sidebarPanel(</div><div class="line">          helpText(paste(&quot;Select distance:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             selectInput(&quot;dmeth&quot;, NULL, choices=dmeths,</div><div class="line">               selected=dmeths[1])),</div><div class="line">          helpText(paste(&quot;Select clustering method:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             selectInput(&quot;meth&quot;, NULL, choices=cmeths,</div><div class="line">               selected=cmeths[1])),</div><div class="line">          helpText(paste(&quot;Select height for cut:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             numericInput(&quot;cutval&quot;, NULL, value=40, min=0, max=Inf, step=1)),</div><div class="line">          helpText(paste(&quot;Select variables for clustering from&quot;, substitute(df), &quot;:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             checkboxGroupInput(&quot;vars&quot;, NULL, choices=nms,</div><div class="line">               selected=nms[1:2]))</div><div class="line">            ),</div></pre></td></tr></table></figure>
+<h4 id="tabs-for-the-primary-displays">Tabs for the primary displays</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line"># main panel is a simple plot</div><div class="line">#</div><div class="line">     mainPanel(</div><div class="line">       tabsetPanel(</div><div class="line">        tabPanel(&quot;tree&quot;, </div><div class="line">         plotOutput(&quot;plot1&quot;)),</div><div class="line">        tabPanel(&quot;pairs&quot;, </div><div class="line">         plotOutput(&quot;pairsplot&quot;)),</div><div class="line">        tabPanel(&quot;silh&quot;, </div><div class="line">         plotOutput(&quot;silplot&quot;))</div><div class="line">         )</div><div class="line">       )</div><div class="line">  )  # end fluidPage</div></pre></td></tr></table></figure>
+<h3 id="defining-the-server">Defining the server</h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line"># a function with up to three arguments (input, output, session)</div><div class="line"># can be used to define the server component of the app</div><div class="line"># renderPlot makes it reactive, so when input components are altered,</div><div class="line"># data frame in use and plot are updated</div><div class="line">#</div><div class="line">   server &lt;- function(input, output) &#123;</div><div class="line">     output$plot1 &lt;- renderPlot(&#123;</div><div class="line">       xv = df[,input$vars]</div><div class="line">       plot(hclust(dist(data.matrix(xv),method=input$dmeth), method=input$meth),</div><div class="line">         xlab=paste(input$dmeth, &quot;distance;&quot;, input$meth, &quot;clustering&quot;))</div><div class="line">       abline(h=input$cutval, lty=2, col=&quot;gray&quot;)</div><div class="line">     &#125;)</div><div class="line">     output$pairsplot &lt;- renderPlot(&#123;</div><div class="line">       xv = df[,input$vars]</div><div class="line">       pairs(data.matrix(xv))</div><div class="line">     &#125;)</div><div class="line">     output$silplot &lt;- renderPlot(&#123;</div><div class="line">       xv = df[,input$vars]</div><div class="line">       dm = dist(data.matrix(xv),method=input$dmeth)</div><div class="line">       hc = hclust(dist(data.matrix(xv),method=input$dmeth), method=input$meth)</div><div class="line">       ct = cutree(hc, h=input$cutval)</div><div class="line">       plot(silhouette(ct, dm))</div><div class="line">     &#125;)</div><div class="line">   &#125;</div><div class="line">   </div><div class="line">   shinyApp(ui, server)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="some-gory-details">Some gory details</h2>
+<p>A “shiny app” consists of two main components, a user interface and a server function. To use the infrastructure the <code>shiny</code> library must be attached to an R session. The application can be started in various ways; we use <code>shinyApp</code> and supply two arguments, <code>ui</code> and <code>server</code>.</p>
+<ul>
+<li><code>ui</code> is an instance of <code>shiny.tag.list</code>. You can get a feel for this by inspecting the result of <code>fluidPage()</code>.</li>
+<li><code>server</code> is a function of three arguments <code>input</code>, <code>output</code> and <code>session</code>; the latter is optional. <code>input</code> is a list with bindings given values in the <code>ui</code> component, and <code>output</code> will be populated with elements in the server for rendering in the UI.</li>
+</ul>
+<h3 id="an-example-with-fluidpage">An example with fluidPage</h3>
+<p>To appreciate what shiny is doing for you, try the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">library(shiny)</div><div class="line">fluidPage(</div><div class="line">  titlePanel(&quot;a title&quot;),</div><div class="line">  sidebarPanel(</div><div class="line">    selectInput(&quot;seli1&quot;, &quot;some letters&quot;, letters[1:4])</div><div class="line">    )</div><div class="line">  )</div></pre></td></tr></table></figure>
+<p>Set <code>sink(file=&quot;dem.html&quot;)</code> and run the above code again. Then issue <code>sink(NULL); browseURL(&quot;dem.html&quot;)</code>. R will fire up the browser and show a fairly anemic page. There will be a select control with options a, …, d. This particular example would be easy to code by hand, but the <code>selectInput</code> function allows you to develop controls with choices defined by any R vector. Furthermore, high-level R functions are defined to allow different kinds of input, which may be driven by mouse events.</p>
+<hr>
+<p>​ <a href="http://genomicsclass.github.io/book/" target="_blank" rel="external">PH525x</a>, Rafael Irizarry and Michael Love, <a href="https://github.com/genomicsclass/labs/blob/master/LICENSE" target="_blank" rel="external">MIT License</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RNA-seq/" <i class="fa fa-tag"></i> RNA-seq</a>
+          
+            <a href="/tags/Bioconductor/" <i class="fa fa-tag"></i> Bioconductor</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/06/Genomics Data Analysis Series/GDAS006-深入理解SummarizedExperiment类/" rel="next" title="GDAS006-深入理解SummarizedExperiment类">
+                <i class="fa fa-chevron-left"></i> GDAS006-深入理解SummarizedExperiment类
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/07/Genomics Data Analysis Series/GDAS007-管理与处理大量BED文件/" rel="prev" title="GDAS007-管理与处理大量BED文件">
+                GDAS007-管理与处理大量BED文件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">246</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#interaction-beyond-the-read-eval-print-loop"><span class="nav-number">1.</span> <span class="nav-text">Interaction beyond the “read-eval-print” loop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#running-the-dfhclust-function"><span class="nav-number">2.</span> <span class="nav-text">Running the dfHclust function</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-main-display-layout"><span class="nav-number">2.1.</span> <span class="nav-text">The main display layout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#interacting-with-the-display"><span class="nav-number">2.2.</span> <span class="nav-text">Interacting with the display</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a-view-of-the-code"><span class="nav-number">3.</span> <span class="nav-text">A view of the code</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#starting-out"><span class="nav-number">3.1.</span> <span class="nav-text">Starting out</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#some-vectors-to-populate-interface-option-sets"><span class="nav-number">3.2.</span> <span class="nav-text">Some vectors to populate interface option sets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-layout-of-the-user-interface"><span class="nav-number">3.3.</span> <span class="nav-text">The layout of the user interface</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#title-and-sidebar"><span class="nav-number">3.3.1.</span> <span class="nav-text">Title and sidebar</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tabs-for-the-primary-displays"><span class="nav-number">3.3.2.</span> <span class="nav-text">Tabs for the primary displays</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#defining-the-server"><span class="nav-number">3.4.</span> <span class="nav-text">Defining the server</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#some-gory-details"><span class="nav-number">4.</span> <span class="nav-text">Some gory details</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#an-example-with-fluidpage"><span class="nav-number">4.1.</span> <span class="nav-text">An example with fluidPage</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共980.9k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

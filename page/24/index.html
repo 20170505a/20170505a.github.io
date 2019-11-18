@@ -259,6 +259,614 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/14/ggplot2/ggplot2(4) - 散点图/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/04/14/ggplot2/ggplot2(4) - 散点图/" itemprop="url">ggplot2(4)-散点图</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-14T12:00:00+08:00">
+                2017-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ggplot2/" itemprop="url" rel="index">
+                    <span itemprop="name">ggplot2</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5,175
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  25
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="数据集">数据集</h2>
+<p>使用的数据信为<code>gcookhook</code>包中的数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">head(heightweight)</div></pre></td></tr></table></figure>
+<p>数据如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(heightweight)</div><div class="line">  sex ageYear ageMonth heightIn weightLb</div><div class="line"><span class="number">1</span>   f   <span class="number">11.92</span>      <span class="number">143</span>     <span class="number">56.3</span>     <span class="number">85.0</span></div><div class="line"><span class="number">2</span>   f   <span class="number">12.92</span>      <span class="number">155</span>     <span class="number">62.3</span>    <span class="number">105.0</span></div><div class="line"><span class="number">3</span>   f   <span class="number">12.75</span>      <span class="number">153</span>     <span class="number">63.3</span>    <span class="number">108.0</span></div><div class="line"><span class="number">4</span>   f   <span class="number">13.42</span>      <span class="number">161</span>     <span class="number">59.0</span>     <span class="number">92.0</span></div><div class="line"><span class="number">5</span>   f   <span class="number">15.92</span>      <span class="number">191</span>     <span class="number">62.5</span>    <span class="number">112.5</span></div><div class="line"><span class="number">6</span>   f   <span class="number">14.25</span>      <span class="number">171</span>     <span class="number">62.5</span>    <span class="number">112.0</span></div></pre></td></tr></table></figure>
+<h2 id="基本散点图">基本散点图</h2>
+<p>用到的函数是<code>geom_point()</code>，默认为黑色圆点：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">head(heightweight[,c(<span class="string">"ageYear"</span>,<span class="string">"heightIn"</span>)]) </div><div class="line"><span class="comment"># 只显示ageYear与heightIn这两列，等价于heightweight[,c(2,4)]</span></div><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn)) + geom_point()</div></pre></td></tr></table></figure>
+<p>数据如下所示:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(heightweight[,c(<span class="string">"ageYear"</span>,<span class="string">"heightIn"</span>)]) </div><div class="line">  ageYear heightIn</div><div class="line"><span class="number">1</span>   <span class="number">11.92</span>     <span class="number">56.3</span></div><div class="line"><span class="number">2</span>   <span class="number">12.92</span>     <span class="number">62.3</span></div><div class="line"><span class="number">3</span>   <span class="number">12.75</span>     <span class="number">63.3</span></div><div class="line"><span class="number">4</span>   <span class="number">13.42</span>     <span class="number">59.0</span></div><div class="line"><span class="number">5</span>   <span class="number">15.92</span>     <span class="number">62.5</span></div><div class="line"><span class="number">6</span>   <span class="number">14.25</span>     <span class="number">62.5</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/1k58gCCfmE.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="改变形状">改变形状</h2>
+<p>在geom_point()参数中加入shape=21，改为圆点：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn)) + geom_point(shape=<span class="number">21</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/c7jkgDfLCg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="改变大小">改变大小</h2>
+<p>在geom_point()参数中加入size=2，将原来的点扩大2倍：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn)) + </div><div class="line">  geom_point(size=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/Dj5gcbG9db.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>还可以改变点的其它属性：其它属性包括点形(shape)，颜色(colour)。</p>
+<h2 id="分组">分组</h2>
+<h3 id="以颜色分组">以颜色分组</h3>
+<p>把根据性别(sex)进行分组，用不同的颜色把不同性别表示出来：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(heightweight[,c(<span class="string">"sex"</span>,<span class="string">"ageYear"</span>,<span class="string">"heightIn"</span>)]) <span class="comment"># 列出要绘图的列</span></div><div class="line">  sex ageYear heightIn</div><div class="line"><span class="number">1</span>   f   <span class="number">11.92</span>     <span class="number">56.3</span></div><div class="line"><span class="number">2</span>   f   <span class="number">12.92</span>     <span class="number">62.3</span></div><div class="line"><span class="number">3</span>   f   <span class="number">12.75</span>     <span class="number">63.3</span></div><div class="line"><span class="number">4</span>   f   <span class="number">13.42</span>     <span class="number">59.0</span></div><div class="line"><span class="number">5</span>   f   <span class="number">15.92</span>     <span class="number">62.5</span></div><div class="line"><span class="number">6</span>   f   <span class="number">14.25</span>     <span class="number">62.5</span></div></pre></td></tr></table></figure>
+<p>绘图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,colour=sex)) + </div><div class="line">  geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/H4FAhjDCLg.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="用形状分组">用形状分组</h3>
+<p>用不同的形状把不同性别表示出来：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,shape=sex)) + </div><div class="line">  geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/CFdHejb2fD.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="用形状和颜色两个图形属性同时分组">用形状和颜色两个图形属性同时分组</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,shape=sex,colour=sex)) + geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/aFg545ECke.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="用内置的函数进行形状与颜色的设置">用内置的函数进行形状与颜色的设置</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,shape=sex,colour=sex)) + </div><div class="line">  geom_point()+</div><div class="line">  scale_shape_manual(values=c(<span class="number">1</span>,<span class="number">2</span>)) + </div><div class="line">  scale_colour_brewer(palette=<span class="string">"Set1"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/c03b7A8d1j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="使用不同于默认设置的点型">使用不同于默认设置的点型</h3>
+<p>使用参数geom_point()中的shape=可以设置不同的点型：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn)) + geom_point(shape=<span class="number">3</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/j65ghFfE4m.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="用scale_shape_manual来修饰点型">用scale_shape_manual()来修饰点型</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,shape=sex)) + </div><div class="line">  geom_point(size=<span class="number">3</span>) +</div><div class="line">  scale_shape_manual(values=c(<span class="number">1</span>,<span class="number">4</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/LdILl0kJFj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="满足某一条的绘图">满足某一条的绘图</h2>
+<p>下面以heightweight数据集为例，在数据集中增加一个用来标识儿童体重是否超过100磅的列：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">hw &lt;- heightweight</div><div class="line">hw$weightGroup &lt;- cut(hw$weightLb,breaks=c(-<span class="literal">Inf</span>, <span class="number">100</span>, <span class="literal">Inf</span>),</div><div class="line">                      labels=c(<span class="string">"&lt; 100"</span>, <span class="string">"&gt;=100"</span>))</div><div class="line">head(hw)</div></pre></td></tr></table></figure>
+<p>最终数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; hw &lt;- heightweight</div><div class="line">&gt; hw$weightGroup &lt;- cut(hw$weightLb,breaks=c(-<span class="literal">Inf</span>, <span class="number">100</span>, <span class="literal">Inf</span>),</div><div class="line">+                       labels=c(<span class="string">"&lt; 100"</span>, <span class="string">"&gt;=100"</span>))</div><div class="line">&gt; head(hw)</div><div class="line">  sex ageYear ageMonth heightIn weightLb weightGroup</div><div class="line"><span class="number">1</span>   f   <span class="number">11.92</span>      <span class="number">143</span>     <span class="number">56.3</span>     <span class="number">85.0</span>       &lt; <span class="number">100</span></div><div class="line"><span class="number">2</span>   f   <span class="number">12.92</span>      <span class="number">155</span>     <span class="number">62.3</span>    <span class="number">105.0</span>       &gt;=<span class="number">100</span></div><div class="line"><span class="number">3</span>   f   <span class="number">12.75</span>      <span class="number">153</span>     <span class="number">63.3</span>    <span class="number">108.0</span>       &gt;=<span class="number">100</span></div><div class="line"><span class="number">4</span>   f   <span class="number">13.42</span>      <span class="number">161</span>     <span class="number">59.0</span>     <span class="number">92.0</span>       &lt; <span class="number">100</span></div><div class="line"><span class="number">5</span>   f   <span class="number">15.92</span>      <span class="number">191</span>     <span class="number">62.5</span>    <span class="number">112.5</span>       &gt;=<span class="number">100</span></div><div class="line"><span class="number">6</span>   f   <span class="number">14.25</span>      <span class="number">171</span>     <span class="number">62.5</span>    <span class="number">112.0</span>       &gt;=<span class="number">100</span></div></pre></td></tr></table></figure>
+<p>上一段代码中，将hw中的weightLb的数据分开，区间是负无穷(-Inf)到100，100到正无穷(Inf)，将分割的结果给weightGroup，其标签为“&lt; 100”, “&gt;=100”</p>
+<p>绘图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ggplot(hw,aes(x=ageYear,y=heightIn,shape=sex,fill=weightGroup)) + </div><div class="line">  geom_point(size=<span class="number">2.5</span>)+</div><div class="line">  scale_shape_manual(values=c(<span class="number">21</span>,<span class="number">24</span>)) +scale_fill_manual(values=c(<span class="literal">NA</span>,<span class="string">"black"</span>),guide=guide_legend(override.aes=list(shape=<span class="number">21</span>)))</div><div class="line"><span class="comment"># guide_legend(override.aes=list(shape=21))指定图例中的点</span></div><div class="line"><span class="comment"># scale_shape_manual(values=c(21,24))设置点的</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/mjB5d50bkJ.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="用连续型变量映射到点的颜色或大小属性上">用连续型变量映射到点的颜色或大小属性上</h2>
+<h3 id="把体重映射到颜色上">把体重映射到颜色上：</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,colour=weightLb)) + geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/kbfEm3makA.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="把体重映射到大小上">把体重映射到大小上</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,size=weightLb)) + geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/Bm5mg4KHgj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="精确绘图控制">精确绘图控制</h3>
+<h4 id="连续型图例">连续型图例</h4>
+<p>将数值最小值的用黑色表示，数值最高的是白色表示，<code>scale_fill_gradient()</code>用以控制颜色的渐变，这样图例是连续型的：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,fill=weightLb)) + </div><div class="line">  geom_point(shape=<span class="number">21</span>,size=<span class="number">2.5</span>) +</div><div class="line">  scale_fill_gradient(low=<span class="string">"black"</span>,high=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/48Dm0gEdGF.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h4 id="离散型图例">离散型图例</h4>
+<p>下面的图例是离散的：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,fill=weightLb)) +</div><div class="line">  geom_point(shape=<span class="number">21</span>,size=<span class="number">2.5</span>) +</div><div class="line">  scale_fill_gradient(low=<span class="string">"black"</span>,high=<span class="string">"white"</span>,breaks=seq(<span class="number">70</span>,<span class="number">170</span>,by=<span class="number">20</span>),guide=guide_legend())</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/CIbcGeK6gl.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="避开重复的点">避开重复的点</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,size=weightLb,colour=sex)) +</div><div class="line">  geom_point(alpha=<span class="number">0.5</span>) +</div><div class="line">  scale_size_area() + <span class="comment"># 把相应的数值与点的面积对应起来</span></div><div class="line">  scale_colour_brewer(palette=<span class="string">"Set1"</span>) <span class="comment"># 修改颜色</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/ddl8gJ1Idi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="图形重复问题">图形重复问题</h2>
+<p>先看一个案例：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sp &lt;- ggplot(diamonds,aes(x=carat,y=price))</div><div class="line">sp + geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/EFbbB74C2c.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上面例子中，点比较多有54000个，有重叠的部分。但可以通过调节点的透明度进行调节：</p>
+<p>透明度为0.1：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sp &lt;- ggplot(diamonds,aes(x=carat,y=price))</div><div class="line">sp + geom_point()</div><div class="line">sp + geom_point(alpha=<span class="number">0.1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/76K63c3fgc.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="另外一种解决数据点重叠的方法">另外一种解决数据点重叠的方法</h3>
+<p>将数据点进行分箱(bin)，并以矩形来表示，同时将数据点的密度映射为矩形 填充色，stat_bin2d()的功能在于将数据进行分箱，默认的是把每个坐标轴上对应的点分30个箱子，即把数据集分为900个箱子如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sp &lt;- ggplot(diamonds,aes(x=carat,y=price))</div><div class="line">sp + stat_bin2d()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/GLL811bC5h.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>分箱数据的进一步优化：</p>
+<p>stat_bin2d(bins=52)可以把每个坐标轴的数据点分为52个箱子，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sp &lt;- ggplot(diamonds,aes(x=carat,y=price))</div><div class="line">sp + stat_bin2d(bins=<span class="number">52</span>) + </div><div class="line">  scale_fill_gradient(low=<span class="string">"lightblue"</span>,high=<span class="string">"red"</span>,limits=c(<span class="number">0</span>,<span class="number">6000</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/FekLf0HfHa.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="分箱数据形状的改变">分箱数据形状的改变：</h3>
+<p>默认的分箱形状是正方形，可以换一下:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(hexbin) <span class="comment"># 用到里面的函数stat_binhex()</span></div><div class="line">sp + stat_binhex() +</div><div class="line">  scale_fill_gradient(low=<span class="string">"lightblue"</span>,high=<span class="string">"red"</span>,</div><div class="line">                      limits=c(<span class="number">0</span>,<span class="number">8000</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/F9KC562b3F.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上图的图例是连续型变量，现在改为离散型变量：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sp + stat_binhex() +</div><div class="line">  scale_fill_gradient(low=<span class="string">"lightblue"</span>,high=<span class="string">"red"</span>,</div><div class="line">                    breaks=c(<span class="number">0</span>,<span class="number">250</span>,<span class="number">500</span>,<span class="number">1000</span>,<span class="number">2000</span>,<span class="number">4000</span>,<span class="number">6000</span>),</div><div class="line">                    limits=c(<span class="number">0</span>,<span class="number">6000</span>))+</div><div class="line">   guides(fill=guide_legend(reverse=<span class="literal">FALSE</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/6861ffa4cD.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="x轴是离散型变量">x轴是离散型变量</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sp1 &lt;- ggplot(ChickWeight,aes(x=Time,y=weight))</div><div class="line">sp1 + geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/49ej2AfB2K.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上图所示，x轴上的Time是因子型变量，映射到y轴上的点有重复，现在添加geom_point(position=“jitter”)可以添加一定的扰动，避开重复：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp1 + geom_point(position=<span class="string">"jitter"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/fA155jH6Lk.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>对振动的程度，也可以进行修饰,width是水平方向的扰动，height是垂直方向上的扰动：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp1 + geom_point(position=position_jitter(width=<span class="number">0.1</span>,height=<span class="number">0</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/lKDD7F5mAi.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="箱线图">箱线图</h2>
+<p>如果x轴是因子型变量，y轴是连续型变量，则用箱线图比较合适：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp1 + geom_boxplot(aes(group=Time))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/2cFb2e7HfE.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="添加回归模型拟合线">添加回归模型拟合线</h2>
+<h3 id="基本绘图">基本绘图</h3>
+<p>用stat_smooth()添加置信域，默认的是95%，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sp &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn))</div><div class="line">sp + geom_point() + stat_smooth(method=lm)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/BA6B50K5De.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>用stat_smooth(method=lm, levels=0.99)可以对置信域进行修改：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_point() + stat_smooth(method=lm, levels=<span class="number">0.99</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/Ghd92JdlDH.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="去掉置信区间">去掉置信区间</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_point() + stat_smooth(method=lm,se=<span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/0k7A0gfakh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="置信区间的颜色设置">置信区间的颜色设置</h3>
+<p>将点改为灰色，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sp + geom_point(colour=<span class="string">"grey60"</span>)+</div><div class="line">  stat_smooth(method=lm,se=<span class="literal">FALSE</span>,colour=<span class="string">"black"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/k4ijg52ibG.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>置信区间的其他拟合方式：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_point(colour=<span class="string">"grey60"</span>) + stat_smooth()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/GELh0FE8if.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>loess拟合，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_point(colour=<span class="string">"grey60"</span>) + stat_smooth(method=loess)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/c7JeA4fjgj.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="logistics回归">Logistics回归</h2>
+<h3 id="数据集-1">数据集</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">b &lt;- biopsy</div><div class="line">b$classen[b$class==<span class="string">"benign"</span>] &lt;- <span class="number">0</span></div><div class="line">b$classen[b$class==<span class="string">"malignant"</span>] &lt;- <span class="number">1</span></div><div class="line">head(b,<span class="number">10</span>)</div></pre></td></tr></table></figure>
+<p>数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; head(b,<span class="number">10</span>)</div><div class="line">        ID V1 V2 V3 V4 V5 V6 V7 V8 V9     class classen</div><div class="line"><span class="number">1</span>  <span class="number">1000025</span>  <span class="number">5</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">3</span>  <span class="number">1</span>  <span class="number">1</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">2</span>  <span class="number">1002945</span>  <span class="number">5</span>  <span class="number">4</span>  <span class="number">4</span>  <span class="number">5</span>  <span class="number">7</span> <span class="number">10</span>  <span class="number">3</span>  <span class="number">2</span>  <span class="number">1</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">3</span>  <span class="number">1015425</span>  <span class="number">3</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">2</span>  <span class="number">3</span>  <span class="number">1</span>  <span class="number">1</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">4</span>  <span class="number">1016277</span>  <span class="number">6</span>  <span class="number">8</span>  <span class="number">8</span>  <span class="number">1</span>  <span class="number">3</span>  <span class="number">4</span>  <span class="number">3</span>  <span class="number">7</span>  <span class="number">1</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">5</span>  <span class="number">1017023</span>  <span class="number">4</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">3</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">3</span>  <span class="number">1</span>  <span class="number">1</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">6</span>  <span class="number">1017122</span>  <span class="number">8</span> <span class="number">10</span> <span class="number">10</span>  <span class="number">8</span>  <span class="number">7</span> <span class="number">10</span>  <span class="number">9</span>  <span class="number">7</span>  <span class="number">1</span> malignant       <span class="number">1</span></div><div class="line"><span class="number">7</span>  <span class="number">1018099</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">2</span> <span class="number">10</span>  <span class="number">3</span>  <span class="number">1</span>  <span class="number">1</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">8</span>  <span class="number">1018561</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">3</span>  <span class="number">1</span>  <span class="number">1</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">9</span>  <span class="number">1033078</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">5</span>    benign       <span class="number">0</span></div><div class="line"><span class="number">10</span> <span class="number">1033078</span>  <span class="number">4</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">2</span>  <span class="number">1</span>  <span class="number">1</span>    benign       <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>绘图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(b,aes(x=V1,y=classen))+</div><div class="line">  geom_point(position=position_jitter(width=<span class="number">0.3</span>,height=<span class="number">0.06</span>),alpha=<span class="number">0.4</span>,shape=<span class="number">21</span>,size=<span class="number">1.5</span>)+</div><div class="line">  stat_smooth(method=glm,method.args = list(family = <span class="string">"binomial"</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/5hhGJe8h63.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="有分组变量的的散点图拟合">有分组变量的的散点图拟合</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(RColorBrewer)</div><div class="line">sps &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn,colour=sex))+</div><div class="line">  geom_point() +</div><div class="line">  scale_colour_brewer(palette=<span class="string">"Set1"</span>)</div><div class="line">sps + geom_smooth()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/6D9b2eadhK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="基于数据集对拟合线进行外推">基于数据集对拟合线进行外推：</h2>
+<p>此时需要添加<code>fullrange=TRUE</code>参数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/3E3cFg4m60.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="向已有散点图添加拟合曲线">向已有散点图添加拟合曲线</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">model &lt;- lm(heightIn~ageYear+I(ageYear^<span class="number">2</span>),heightweight)</div><div class="line">model</div><div class="line"><span class="comment"># 创建一个包含变量ageYear的列，并对其进行插值</span></div><div class="line">xmin &lt;- min(heightweight$ageYear)</div><div class="line">xmax &lt;- max(heightweight$ageYear)</div><div class="line">predicted &lt;- data.frame(ageYear=seq(xmin,xmax,length.out = <span class="number">1000</span>))</div><div class="line"><span class="comment"># 计算变量heightIn的预测值</span></div><div class="line">predicted$heightIn &lt;- predict(model,predicted)</div><div class="line">head(predicted)</div><div class="line"><span class="comment">#下面代码是将数据点与模型预测值一起绘制在图形上：</span></div><div class="line">sp &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn))+</div><div class="line">  geom_point()</div><div class="line">sp + geom_line(data=predicted,size=<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt; model</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = heightIn ~ ageYear + I(ageYear^<span class="number">2</span>), data = heightweight)</div><div class="line"></div><div class="line">Coefficients:</div><div class="line"> (Intercept)       ageYear  I(ageYear^<span class="number">2</span>)  </div><div class="line">    -<span class="number">10.3136</span>        <span class="number">8.6673</span>       -<span class="number">0.2478</span>  </div><div class="line"></div><div class="line">&gt; <span class="comment"># 创建一个包含变量ageYear的列，并对其进行插值</span></div><div class="line">&gt; xmin &lt;- min(heightweight$ageYear)</div><div class="line">&gt; xmax &lt;- max(heightweight$ageYear)</div><div class="line">&gt; predicted &lt;- data.frame(ageYear=seq(xmin,xmax,length.out = <span class="number">1000</span>))</div><div class="line">&gt; <span class="comment"># 计算变量heightIn的预测值</span></div><div class="line">&gt; predicted$heightIn &lt;- predict(model,predicted)</div><div class="line">&gt; head(predicted)</div><div class="line">   ageYear heightIn</div><div class="line"><span class="number">1</span> <span class="number">11.58000</span> <span class="number">56.82624</span></div><div class="line"><span class="number">2</span> <span class="number">11.58593</span> <span class="number">56.84358</span></div><div class="line"><span class="number">3</span> <span class="number">11.59185</span> <span class="number">56.86091</span></div><div class="line"><span class="number">4</span> <span class="number">11.59778</span> <span class="number">56.87822</span></div><div class="line"><span class="number">5</span> <span class="number">11.60370</span> <span class="number">56.89551</span></div><div class="line"><span class="number">6</span> <span class="number">11.60963</span> <span class="number">56.91279</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/4Il7KGli1j.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="定义函数绘制拟合曲线">定义函数绘制拟合曲线</h2>
+<p>定义predictvals()函数可以简化向散点图添加模型拟合线的过程。使用时，只需要向其传递一个模型作为参数，该函数就会自动查询变量名、预测变量范围、并返回一个包含预测变量和模型预测值的数据框。将该数据框传递给geom_line()函数，即可绘制出模型拟合线：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 根据模型和变量xvar预测变量yvar</span></div><div class="line"><span class="comment"># 仅支持单一预测变量的模型</span></div><div class="line"><span class="comment"># xrange:x轴范围，当值为NULL时，等于模型对象中提取的x轴范围；当设定为包含两个数字的向量时，两个数字分别对应于x轴的上下限</span></div><div class="line"><span class="comment"># sample: x轴上包含的样本数</span></div><div class="line"><span class="comment"># ...：可传递给predict()函数的其他参数：</span></div><div class="line"></div><div class="line">predictvals &lt;- <span class="keyword">function</span>(model, xvar,yvar,xrange=<span class="literal">NULL</span>,samples=<span class="number">100</span>, <span class="keyword">...</span>)&#123;</div><div class="line">  <span class="comment"># 如果xrange没有输入，则从模型对象中自动提取x轴范围作为参数</span></div><div class="line">  <span class="comment"># 提取xrange参数的方法如下所示</span></div><div class="line">  <span class="keyword">if</span> (is.null(xrange))&#123;</div><div class="line">    <span class="keyword">if</span>(any(class(model)%<span class="keyword">in</span>%c(<span class="string">"lm"</span>,<span class="string">"glm"</span>)))</div><div class="line">      xrange &lt;- range(model$model[[xvar]]) <span class="keyword">else</span> <span class="keyword">if</span>(any(class(model) %<span class="keyword">in</span>% <span class="string">"loess"</span>))</div><div class="line">      xrange &lt;- range(model$x)</div><div class="line">  &#125;</div><div class="line">      </div><div class="line">  newdata &lt;- data.frame(x=seq(xrange[<span class="number">1</span>],xrange[<span class="number">2</span>],length.out=samples))</div><div class="line">  names(newdata) &lt;- xvar</div><div class="line">  newdata[[yvar]] &lt;- predict(model,newdata=newdata,<span class="keyword">...</span>)</div><div class="line">  newdata</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>调用lm()函数与loess()函数可以对数据集建立线性模型和LOESS模型：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">modlinear &lt;- lm(heightIn~ageYear,heightweight)</div><div class="line">modloess &lt;- loess(heightIn~ageYear,heightweight)</div></pre></td></tr></table></figure>
+<p>针对两个模型分别调用predictvals()函数，并将得到的结果（数据框）传递给geom_line()：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">lm_predicted &lt;- predictvals(modlinear,<span class="string">"ageYear"</span>,<span class="string">"heightIn"</span>)</div><div class="line">loess_predicted &lt;- predictvals(modloess,<span class="string">"ageYear"</span>,<span class="string">"heightIn"</span>)</div><div class="line"></div><div class="line">sp + geom_line(data=lm_predicted,colour=<span class="string">"red"</span>,size=<span class="number">0.8</span>)+</div><div class="line">  geom_line(data=loess_predicted,colour=<span class="string">"blue"</span>,size=<span class="number">0.8</span>)+geom_point()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/5Jk913106L.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>另外一个案例：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">b &lt;- biopsy</div><div class="line"></div><div class="line">b$classn[b$class==<span class="string">"benign"</span>] &lt;- <span class="number">0</span></div><div class="line">b$classn[b$class==<span class="string">"malignant"</span>] &lt;- <span class="number">1</span></div><div class="line"></div><div class="line">fitlogistic &lt;- glm(classn ~ V1,b,family=binomial)</div><div class="line"></div><div class="line"><span class="comment"># 获得预测值 </span></div><div class="line">glm_predicted &lt;- predictvals(fitlogistic,<span class="string">"V1"</span>,<span class="string">"classn"</span>,type=<span class="string">"response"</span>)</div><div class="line"></div><div class="line">ggplot(b,aes(x=V1,y=classn))+</div><div class="line">  geom_point(position=position_jitter(width=<span class="number">0.3</span>,height=<span class="number">0.08</span>),alpha=<span class="number">0.4</span>,shape=<span class="number">21</span>,size=<span class="number">1.5</span>)+</div><div class="line">  geom_line(data=glm_predicted,colour=<span class="string">"blue"</span>,size=<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/Jjlellf6ge.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="添加来自多个模型的拟合线">添加来自多个模型的拟合线</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">make_model &lt;- <span class="keyword">function</span>(data)&#123;</div><div class="line">  lm(heightIn~ageYear,data)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">library</span>(plyr)</div><div class="line">models&lt;- dlply(heightweight,<span class="string">"sex"</span>,.fun=make_model)</div><div class="line"></div><div class="line"><span class="comment"># 有了模型对象之后，配合使用ldply()函数和predictvals()函数即可获取两个模型对应的预测值</span></div><div class="line"></div><div class="line">predvals &lt;- ldply(models,.fun=predictvals,xvar=<span class="string">"ageYear"</span>,yvar=<span class="string">"heightIn"</span>)</div><div class="line">head(predvals)</div></pre></td></tr></table></figure>
+<p>查看数据：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(predvals)</div><div class="line">  sex  ageYear heightIn</div><div class="line"><span class="number">1</span>   f <span class="number">11.58000</span> <span class="number">57.96250</span></div><div class="line"><span class="number">2</span>   f <span class="number">11.63980</span> <span class="number">58.03478</span></div><div class="line"><span class="number">3</span>   f <span class="number">11.69960</span> <span class="number">58.10707</span></div><div class="line"><span class="number">4</span>   f <span class="number">11.75939</span> <span class="number">58.17936</span></div><div class="line"><span class="number">5</span>   f <span class="number">11.81919</span> <span class="number">58.25165</span></div><div class="line"><span class="number">6</span>   f <span class="number">11.87899</span> <span class="number">58.32394</span></div></pre></td></tr></table></figure>
+<p>绘图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,colour=sex))+</div><div class="line">  geom_point()+</div><div class="line">  geom_line(data=predvals)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/AdKdI2K6ge.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上图中男性的数据点（即m颜色的点）终止于年龄最大点，女性的数据点（即f的颜色点）终止于女性组中年龄的最大点，为了使两组预测线对应的x轴范围与整个数据集的范围相同，可以向其传递一个xrange参数：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">predvals &lt;- ldply(models,.fun=predictvals,xvar=<span class="string">"ageYear"</span>,yvar=<span class="string">"heightIn"</span>,xrange=range(heightweight$ageYear))</div><div class="line"></div><div class="line">ggplot(heightweight,aes(x=ageYear,y=heightIn,colour=sex))+geom_point()+geom_line(data=predvals)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/3mGgba6ih8.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="向散点图中添加模型系数">向散点图中添加模型系数</h2>
+<p>如果需要向拟合曲线中添加系数，则如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">model &lt;- lm(heightIn~ageYear,heightweight)</div><div class="line">summary(model)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; summary(model)</div><div class="line"></div><div class="line">Call:</div><div class="line">lm(formula = heightIn ~ ageYear, data = heightweight)</div><div class="line"></div><div class="line">Residuals:</div><div class="line">    Min      1Q  Median      3Q     Max </div><div class="line">-<span class="number">8.3517</span> -<span class="number">1.9006</span>  <span class="number">0.1378</span>  <span class="number">1.9071</span>  <span class="number">8.3371</span> </div><div class="line"></div><div class="line">Coefficients:</div><div class="line">            Estimate Std. Error t value Pr(&gt;|t|)    </div><div class="line">(Intercept)  <span class="number">37.4356</span>     <span class="number">1.8281</span>   <span class="number">20.48</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">ageYear       <span class="number">1.7483</span>     <span class="number">0.1329</span>   <span class="number">13.15</span>   &lt;<span class="number">2e-16</span> ***</div><div class="line">---</div><div class="line">Signif. codes:  <span class="number">0</span> ‘***’ <span class="number">0.001</span> ‘**’ <span class="number">0.01</span> ‘*’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></div><div class="line"></div><div class="line">Residual standard error: <span class="number">2.989</span> on <span class="number">234</span> degrees of freedom</div><div class="line">Multiple R-squared:  <span class="number">0.4249</span>,	Adjusted R-squared:  <span class="number">0.4225</span> </div><div class="line"><span class="literal">F</span>-statistic: <span class="number">172.9</span> on <span class="number">1</span> and <span class="number">234</span> DF,  p-value: &lt; <span class="number">2.2e-16</span></div></pre></td></tr></table></figure>
+<p>由分析结果可知，模型的R^2=0.4249，则可以用annotate()函数将其添加到曲线上：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pred &lt;- predictvals(model,<span class="string">"ageYear"</span>,<span class="string">"heightIn"</span>)</div><div class="line">sp &lt;- ggplot(heightweight,aes(x=ageYear,y=heightIn)) + geom_point()+geom_line(data=pred)</div><div class="line">sp+annotate(<span class="string">"text"</span>,label=<span class="string">"r^2=0.42"</span>,x=<span class="number">16.5</span>,y=<span class="number">52</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/HbeFJh2f5m.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果不想使用纯文本字符串当注释的话，可以通过设置parse=TRUE调用R的数学表达式来输入公式：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + annotate(<span class="string">"text"</span>,label=<span class="string">"r^2==0.42"</span>,parse=<span class="literal">TRUE</span>,x=<span class="number">16.5</span>,y=<span class="number">52</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/8G959ILifI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="添加公式">添加公式</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">eqn &lt;- as.character(as.expression(</div><div class="line">  substitute(italic(y)==a+b*italic(x)*<span class="string">","</span>~~italic(r)^<span class="number">2</span>~<span class="string">"="</span>~r2,</div><div class="line">             list(a=format(coef(model)[<span class="number">1</span>],digits=<span class="number">3</span>),</div><div class="line">                  b=format(coef(model)[<span class="number">2</span>],digits=<span class="number">3</span>),</div><div class="line">                  r2=format(summary(model)$r.squared,digits=<span class="number">2</span>)))</div><div class="line">))</div><div class="line"></div><div class="line">parse(text=eqn)</div><div class="line"></div><div class="line"><span class="comment">## expression(italic(y) == "37.4" + "1.75" * italic(x) * "," ~ ~italic(r)^2 ~ </span></div><div class="line"><span class="comment">##     "=" ~ "0.42")</span></div><div class="line"></div><div class="line">sp + annotate(<span class="string">"text"</span>,label=eqn,parse=<span class="literal">TRUE</span>,x=<span class="literal">Inf</span>,y=-<span class="literal">Inf</span>,hjust=<span class="number">1.1</span>,vjust=-<span class="number">0.5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/h80ijJa15b.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="向散点图添加边际地毯">向散点图添加边际地毯</h2>
+<p>用到的函数是geom_rug(),以faithful数据集为例说明：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(faithful)</div><div class="line">  eruptions waiting</div><div class="line"><span class="number">1</span>     <span class="number">3.600</span>      <span class="number">79</span></div><div class="line"><span class="number">2</span>     <span class="number">1.800</span>      <span class="number">54</span></div><div class="line"><span class="number">3</span>     <span class="number">3.333</span>      <span class="number">74</span></div><div class="line"><span class="number">4</span>     <span class="number">2.283</span>      <span class="number">62</span></div><div class="line"><span class="number">5</span>     <span class="number">4.533</span>      <span class="number">85</span></div><div class="line"><span class="number">6</span>     <span class="number">2.883</span>      <span class="number">55</span></div></pre></td></tr></table></figure>
+<p>绘图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(faithful,aes(x=eruptions,y=waiting))+geom_point() + geom_rug()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/4dg2eLaIdI.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="添加扰动避免重叠">添加扰动，避免重叠</h2>
+<p>上图中的waiting中的边际地毯线有重叠的（虽然看起来很稀疏，其实都重叠在了一起），因此通过向边际地毯线的位置坐标添加扰动并设定size减少线宽可以减轻边际地毯线的重叠程度。如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggplot(faithful,aes(x=eruptions,y=waiting))+geom_point()+geom_rug(position=<span class="string">"jitter"</span>,size=<span class="number">0.2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/HhGC4L4249.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="向散点图添加标签">向散点图添加标签</h2>
+<p>用annotate()可以向数据点中添加标签，以countries数据集为例说明，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(gcookbook)</div><div class="line">data1 &lt;- subset(countries,Year==<span class="number">2009</span>&amp;healthexp&gt;<span class="number">2000</span>)</div><div class="line">head(data1)</div></pre></td></tr></table></figure>
+<p>数据如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(data1)</div><div class="line">          Name Code Year      GDP laborrate healthexp infmortality</div><div class="line"><span class="number">254</span>    Andorra  AND <span class="number">2009</span>       <span class="literal">NA</span>        <span class="literal">NA</span>  <span class="number">3089.636</span>          <span class="number">3.1</span></div><div class="line"><span class="number">560</span>  Australia  AUS <span class="number">2009</span> <span class="number">42130.82</span>      <span class="number">65.2</span>  <span class="number">3867.429</span>          <span class="number">4.2</span></div><div class="line"><span class="number">611</span>    Austria  AUT <span class="number">2009</span> <span class="number">45555.43</span>      <span class="number">60.4</span>  <span class="number">5037.311</span>          <span class="number">3.6</span></div><div class="line"><span class="number">968</span>    Belgium  BEL <span class="number">2009</span> <span class="number">43640.20</span>      <span class="number">53.5</span>  <span class="number">5104.019</span>          <span class="number">3.6</span></div><div class="line"><span class="number">1733</span>    Canada  CAN <span class="number">2009</span> <span class="number">39599.04</span>      <span class="number">67.8</span>  <span class="number">4379.761</span>          <span class="number">5.2</span></div><div class="line"><span class="number">2702</span>   Denmark  DNK <span class="number">2009</span> <span class="number">55933.35</span>      <span class="number">65.4</span>  <span class="number">6272.729</span>          <span class="number">3.4</span></div></pre></td></tr></table></figure>
+<p>绘图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sp &lt;- ggplot(data1,aes(x=healthexp,y=infmortality))+geom_point()</div><div class="line">sp + annotate(<span class="string">"text"</span>,x=<span class="number">4350</span>,y=<span class="number">5.4</span>,label=<span class="string">"Canada"</span>)+annotate(<span class="string">"text"</span>,x=<span class="number">7400</span>,y=<span class="number">6.8</span>,label=<span class="string">"USA"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/1mLfGhhBAh.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="如果要向每一个数据点添加标签如下所示">如果要向每一个数据点添加标签，如下所示：</h3>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_text(aes(label=Name),size=<span class="number">4</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/eJiiFhD8e1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="对数据点的标签进行微调">对数据点的标签进行微调</h3>
+<p>vjust=0时，标签文本的基线会与数据点对齐，设定vjust=1时，标签文本的顶部会与数据点对齐。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_text(aes(label=Name),vjust=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/I1ahDLKc34.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="添加y的取值">添加y的取值</h3>
+<p>也可以添加y的映射来进行微调</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_text(aes(y=infmortality+<span class="number">0.1</span>,label=Name),size=<span class="number">4</span>,vjust=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/bDHI5dm4BG.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="左对齐">左对齐</h3>
+<p>添加参数hjust=0，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_text(aes(label=Name),size=<span class="number">4</span>,hjust=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/m13kI4jGjK.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="右对齐">右对齐</h3>
+<p>添加参数hjust=1，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sp + geom_text(aes(label=Name),size=<span class="number">4</span>,hjust=<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p><strong><img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/ggLiALF7h5.png?imageslim" alt="mark"></strong></p>
+<h3 id="有针对性的增加标签">有针对性的增加标签</h3>
+<p>如果只想给为个别数据点添加标签，但希望R自动设定标签位置的话，可以给数据框增加一个只包含拟使用的标签的新列。一个可行的方案是：首先，将所用数据复制一个副本，并将Name复制为Name1</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">data1$Name1 &lt;- data1$Name</div><div class="line">idx &lt;- data1$Name1 %<span class="keyword">in</span>% c(<span class="string">"Canada"</span>,<span class="string">"Ireland"</span>,<span class="string">"United Kingdom"</span>,<span class="string">"United States"</span>,<span class="string">"New Zealand"</span>,<span class="string">"Iceland"</span>,<span class="string">"Japan"</span>,<span class="string">"Luxembourg"</span>,<span class="string">"Netherlands"</span>,<span class="string">"Switzerland"</span>)</div><div class="line">idx</div><div class="line"></div><div class="line"><span class="comment">##  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE</span></div><div class="line"><span class="comment">## [12]  TRUE FALSE  TRUE  TRUE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE</span></div><div class="line"><span class="comment">## [23] FALSE FALSE  TRUE  TRUE  TRUE</span></div><div class="line">data1$Name1[!idx] &lt;- <span class="literal">NA</span></div><div class="line"><span class="comment"># 把需要的标签留下</span></div><div class="line"></div><div class="line">head(data1)</div><div class="line"></div><div class="line"><span class="comment">##           Name Code Year      GDP laborrate healthexp infmortality  Name1</span></div><div class="line"><span class="comment">## 254    Andorra  AND 2009       NA        NA  3089.636          3.1   &lt;NA&gt;</span></div><div class="line"><span class="comment">## 560  Australia  AUS 2009 42130.82      65.2  3867.429          4.2   &lt;NA&gt;</span></div><div class="line"><span class="comment">## 611    Austria  AUT 2009 45555.43      60.4  5037.311          3.6   &lt;NA&gt;</span></div><div class="line"><span class="comment">## 968    Belgium  BEL 2009 43640.20      53.5  5104.019          3.6   &lt;NA&gt;</span></div><div class="line"><span class="comment">## 1733    Canada  CAN 2009 39599.04      67.8  4379.761          5.2 Canada</span></div><div class="line"><span class="comment">## 2702   Denmark  DNK 2009 55933.35      65.4  6272.729          3.4   &lt;NA&gt;</span></div><div class="line"></div><div class="line">ggplot(data1,aes(x=healthexp,y=infmortality))+</div><div class="line">  geom_point()+</div><div class="line">  geom_text(aes(x=healthexp+<span class="number">100</span>,label=Name1),size=<span class="number">4</span>,hjust=<span class="number">0</span>)+</div><div class="line">  xlim(<span class="number">2000</span>,<span class="number">10000</span>)</div><div class="line"></div><div class="line"><span class="comment">## Warning in loop_apply(n, do.ply): Removed 17 rows containing missing</span></div><div class="line"><span class="comment">## values (geom_text).</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/g47B8cfc7L.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>注意<code>%in%</code>的功能，此符号的功能是如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">x &lt;- c(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">6</span>,<span class="number">11</span>,<span class="number">12</span>)</div><div class="line">y &lt;- c(<span class="number">1</span>,<span class="number">5</span>,<span class="number">12</span>)</div><div class="line">x%<span class="keyword">in</span>%y</div><div class="line"></div><div class="line"><span class="comment">##  [1]  TRUE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE</span></div><div class="line"><span class="comment">## [12]  TRUE</span></div><div class="line"></div><div class="line">x[x%<span class="keyword">in</span>%y] <span class="comment"># 找出x中包含y的元素</span></div><div class="line"></div><div class="line"><span class="comment">## [1]  1  5  5  5  5 12</span></div></pre></td></tr></table></figure>
+<p>可以看出，%in%的功能是在x中查找y，如果有则为TRUE，若无则为FALSE。</p>
+<h2 id="气泡图">气泡图</h2>
+<p>气泡图的每个面积正比于变量值</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">data2 &lt;- subset(countries,Year==<span class="number">2009</span>&amp;Name %<span class="keyword">in</span>% c(<span class="string">"Canada"</span>,<span class="string">"Ireland"</span>,<span class="string">"United Kingdom"</span>,<span class="string">"United States"</span>,<span class="string">"New Zealand"</span>,<span class="string">"Iceland"</span>,<span class="string">"Japan"</span>,<span class="string">"Luxembourg"</span>,<span class="string">"Netherlands"</span>,<span class="string">"Switzerland"</span>))</div><div class="line"></div><div class="line">head(data2)</div><div class="line"></div><div class="line"><span class="comment">##             Name Code Year       GDP laborrate healthexp infmortality</span></div><div class="line"><span class="comment">## 1733      Canada  CAN 2009  39599.04      67.8  4379.761          5.2</span></div><div class="line"><span class="comment">## 4436     Iceland  ISL 2009  37972.24      77.5  3130.391          1.7</span></div><div class="line"><span class="comment">## 4691     Ireland  IRL 2009  49737.93      63.6  4951.845          3.4</span></div><div class="line"><span class="comment">## 4946       Japan  JPN 2009  39456.44      59.5  3321.466          2.4</span></div><div class="line"><span class="comment">## 5864  Luxembourg  LUX 2009 106252.24      55.5  8182.855          2.2</span></div><div class="line"><span class="comment">## 7088 Netherlands  NLD 2009  48068.35      66.1  5163.740          3.8</span></div><div class="line"></div><div class="line"><span class="comment"># 如果把GDP映射给size，则表示把GDP映射给了点的半径，并非面积，如下所示：</span></div><div class="line">p &lt;- ggplot(data2,aes(x=healthexp,y=infmortality,size=GDP))+</div><div class="line">  geom_point(shape=<span class="number">21</span>,colour=<span class="string">"black"</span>,fill=<span class="string">"cornsilk"</span>)</div><div class="line">p</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/kDFgD1dl31.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>如果想要把数据点的值映射给面积，用到的函数是scale_size_area()</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p + scale_size_area(max_size=<span class="number">15</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/J55h36mm6D.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h3 id="其他用法">其他用法</h3>
+<p>当x轴与y轴都为分类变量时，气泡图可以用来表示风格点上的变量值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 以HairEyeColor数据集为例</span></div><div class="line">HairEyeColor</div><div class="line"></div><div class="line"><span class="comment">## , , Sex = Male</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##        Eye</span></div><div class="line"><span class="comment">## Hair    Brown Blue Hazel Green</span></div><div class="line"><span class="comment">##   Black    32   11    10     3</span></div><div class="line"><span class="comment">##   Brown    53   50    25    15</span></div><div class="line"><span class="comment">##   Red      10   10     7     7</span></div><div class="line"><span class="comment">##   Blond     3   30     5     8</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## , , Sex = Female</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##        Eye</span></div><div class="line"><span class="comment">## Hair    Brown Blue Hazel Green</span></div><div class="line"><span class="comment">##   Black    36    9     5     2</span></div><div class="line"><span class="comment">##   Brown    66   34    29    14</span></div><div class="line"><span class="comment">##   Red      16    7     7     7</span></div><div class="line"><span class="comment">##   Blond     4   64     5     8</span></div><div class="line"></div><div class="line">hec &lt;- HairEyeColor[,,<span class="string">"Male"</span>] + HairEyeColor[,,<span class="string">"Female"</span>]</div><div class="line"><span class="keyword">library</span>(reshape2)</div><div class="line"></div><div class="line">hec &lt;- melt(hec,value.name=<span class="string">"count"</span>)</div><div class="line"></div><div class="line">ggplot(hec,aes(x=Eye,y=Hair))+</div><div class="line">  geom_point(aes(size=count),shape=<span class="number">21</span>,colour=<span class="string">"black"</span>,fill=<span class="string">"cornsilk"</span>)+</div><div class="line">  scale_size_area(max_size=<span class="number">20</span>,guide=<span class="literal">FALSE</span>)+</div><div class="line">  geom_text(aes(y=as.numeric(Hair)-sqrt(count)/<span class="number">22</span>,label=count),vjust=<span class="number">1</span>,colour=<span class="string">"grey60"</span>,size=<span class="number">4</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/6bcEJikla4.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="绘制散点矩阵图">绘制散点矩阵图</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">c2009 &lt;- subset(countries,Year == <span class="number">2009</span>,</div><div class="line">                select = c(Name,GDP,laborrate,healthexp,infmortality))</div><div class="line"></div><div class="line">head(c2009)</div><div class="line"></div><div class="line"><span class="comment">##               Name      GDP laborrate  healthexp infmortality</span></div><div class="line"><span class="comment">## 50     Afghanistan       NA      59.8   50.88597        103.2</span></div><div class="line"><span class="comment">## 101        Albania 3772.605      59.5  264.60406         17.2</span></div><div class="line"><span class="comment">## 152        Algeria 4022.199      58.5  267.94653         32.0</span></div><div class="line"><span class="comment">## 203 American Samoa       NA        NA         NA           NA</span></div><div class="line"><span class="comment">## 254        Andorra       NA        NA 3089.63589          3.1</span></div><div class="line"><span class="comment">## 305         Angola 4068.576      81.3  203.80787         99.9</span></div><div class="line"></div><div class="line">pairs(c2009[,<span class="number">2</span>:<span class="number">5</span>])</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/d6E58FEJjE.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>上面的绘图没有使用ggplot2，是因为它不能绘制散点图矩阵（至少绘制的效果不佳），上述绘图过得也可以使用自定义的面板函数，现在我们定义一个<code>panel.cor</code>函数来展示变量两两之间的相关系数，以代替默认的散点图。相关系数较大的位置将对应较大的字符，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">panel.cor &lt;- <span class="keyword">function</span>(x,y,digits=<span class="number">2</span>, prefix=<span class="string">""</span>,cex.cor,<span class="keyword">...</span>)&#123;</div><div class="line">  usr &lt;- par(<span class="string">"usr"</span>)</div><div class="line">  on.exit(par(<span class="string">"usr"</span>))</div><div class="line">  par(usr=c(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>))</div><div class="line">  r &lt;- abs(cor(x,y,use=<span class="string">"complete.obs"</span>))</div><div class="line">  txt &lt;- format(c(r,<span class="number">0.123456789</span>),digits=digits)[<span class="number">1</span>]</div><div class="line">  txt &lt;- paste(prefix, txt, sep=<span class="string">""</span>)</div><div class="line">  <span class="keyword">if</span>(missing(cex.cor)) cex.cor &lt;- <span class="number">0.8</span>/strwidth(txt)</div><div class="line">  text(<span class="number">0.5</span>,<span class="number">0.5</span>,txt,cex=cex.cor*(<span class="number">1</span>+r)/<span class="number">2</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>为了在面板的对角线上展示各个变量的直方图，我们再定义一个<code>panel.hist</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">panel.hist &lt;- <span class="keyword">function</span>(x,<span class="keyword">...</span>)&#123;</div><div class="line">  usr &lt;-par(<span class="string">"usr"</span>)</div><div class="line">  on.exit(par(usr))</div><div class="line">  par(usr=c(usr[<span class="number">1</span>:<span class="number">2</span>],<span class="number">0</span>,<span class="number">1.5</span>))</div><div class="line">  h&lt;-hist(x,plot=<span class="literal">FALSE</span>)</div><div class="line">  breaks&lt;-h$breaks</div><div class="line">  nB &lt;- length(breaks)</div><div class="line">  y&lt;-h$counts</div><div class="line">  y&lt;-y/max(y)</div><div class="line">  rect(breaks[-nB],<span class="number">0</span>,breaks[-<span class="number">1</span>],y,col=<span class="string">"white"</span>,<span class="keyword">...</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的函数都源于<code>pairs</code>函数的帮助页面，可以直接复制这个函数的相关代码，定义了这些函数后，我们哦可以高骼它来绘制散点图矩阵。令<code>pairs()</code>函数在面板的上三角执行<code>panel.cor</code>函数，在面板的对角线执行<code>panel.hist</code>函数，在绘图时也添加了一些东西，在面板的下三角执行<code>panel.smooth</code>函数，这个函数将在散点图矩阵的下三角绘制散点图，并添加一个LOWESS平滑曲线，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pairs(c2009[,<span class="number">2</span>:<span class="number">5</span>],upper.panel=panel.cor,</div><div class="line">      diag.panel = panel.hist,</div><div class="line">      lower.panel = panel.smooth)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/d591DFbe6G.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>也许我们希望用线性模型来代替LOWESS模型，<code>panel.lm</code>函数可以完成该操作，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">panel.lm &lt;- <span class="keyword">function</span>(x,y,col=par(<span class="string">"col"</span>),bg=<span class="literal">NA</span>,pch=par(<span class="string">"pch"</span>),</div><div class="line">                     cex=<span class="number">1</span>,col.smooth=<span class="string">"black"</span>,<span class="keyword">...</span>)&#123;</div><div class="line">  points(x,y,pch=pch,col=col,bg=bg,cex=cex)</div><div class="line">  abline(stats::lm(y~x),col=col.smooth,<span class="keyword">...</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这次系统默认的线条颜色不再是红色，而是黑色，调用函数<code>pairs()</code>时（与函数panel.smooth配合使用），设定col.smooth参数可以对线条颜色进行修改，为了便于辩认数据点，我们在图中使用更小的点，该操作可以通过<code>pch=&quot;.&quot;</code>来实现，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">pairs(c2009[,<span class="number">2</span>:<span class="number">5</span>],pch=<span class="string">"."</span>,</div><div class="line">        upper.panel=panel.cor,</div><div class="line">        diag.panel = panel.hist,</div><div class="line">        lower.panel = panel.lm)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/kH91kDg75H.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<p>cex参数可以控制图中点的大小，cex参数的默认值是1，其值越大，数据点越大，但如果cex小于0.5，那么图形输出为PDF文件时可能无法很好地渲染。</p>
+<h3 id="ggally包的ggpairs函数">GGally包的ggpairs函数</h3>
+<p>使用GGally包的ggpairs函数也能绘制散点矩阵图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ggpairs(c2009[,<span class="number">2</span>:<span class="number">5</span>])</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://ortxpw68f.bkt.clouddn.com/professional/180831/387lC2aCf1.png?imageslim" alt="mark">
+<p class="caption">mark</p>
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>常肖楠, 邓一硕, 魏太云. R数据可视化手册[M]. 人民邮电出版社, 2014.</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/13/ggplot2/ggplot2(3) - 条形图/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -682,303 +1290,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/ggplot2/ggplot2(1) - 概述/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/04/12/ggplot2/ggplot2(1) - 概述/" itemprop="url">ggplot2(1) - 概述</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-12T12:00:00+08:00">
-                2017-04-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ggplot2/" itemprop="url" rel="index">
-                    <span itemprop="name">ggplot2</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,517
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  7
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="r语言中的绘图系统">R语言中的绘图系统</h2>
-<p>R语言中存在着3种不同的绘图系统：</p>
-<ul>
-<li>base：这是最早的绘图系统，这种绘图系统非常简单，容易上手，使用plot()函数就是这个系统的，但是很难绘出比较好看的图形。后来又开发了grid绘图系统，当时开发grid绘图系统时，是为了修改base中的一些限制，从而使用绘图更为灵活。</li>
-<li>lattice：中文名称是晶格，格子的意思。lattice绘图系统是建立在grid系统之上的。它有grid不具备的两个特点：①每个绘图的结果都能被保存到一个变量中，而不仅仅是绘制在屏幕上。这表明用户可以先画出一些图形，再对其进行编辑，然后再把它画出来。②可在一个格子中包含多个面板，因此可以将图形分成不同的类别，并比较各级之间的差异。</li>
-<li>ggplot2：这个gg指的是grammar of graphics，这种绘图系统的目标在于把图形分解成不同的组块。</li>
-</ul>
-<h2 id="lattice绘图系统简要">lattice绘图系统简要</h2>
-<p><code>lattice</code>绘图系统中对应的plot函数是xyplot，它使用了一个公式接口来指定x和y坐标变量，绘图效果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(lattice) </div><div class="line">xyplot(Turnout ~ Income, obama_vs_mccain)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111046.png">
-
-</div>
-<p>它的很多参数与base系统中的基本一致，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xyplot(Turnout ~ Income, obama_vs_mccain, col = <span class="string">"violet"</span>, pch = <span class="number">20</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111151.png">
-
-</div>
-<h2 id="ggplot2绘图系统">ggplot2绘图系统</h2>
-<p>在ggplot2绘图系统中，每个绘图都由<code>ggplot</code>函数创建，它的第一个参数是数据框，第二个参数是aesthetic，这个参数其实就是把x和y列变量传递给<code>aes</code>函数，最后再添加一个<code>geom_</code>这种形式的参数，让图形显示出一些点，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2) </div><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) + geom_point()</div></pre></td></tr></table></figure>
-<h3 id="绘图数据集">绘图数据集</h3>
-<p>我们用的数据集是<code>obama_vs_mccain</code>，这个数据集中的信息是2008年美国大选的数据，位于<code>learningr</code>包中，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(obama_vs_mccain[<span class="number">1</span>:<span class="number">5</span>])</div><div class="line">       State Region Obama McCain Turnout</div><div class="line"><span class="number">1</span>    Alabama     IV <span class="number">38.74</span>  <span class="number">60.32</span>    <span class="number">61.6</span></div><div class="line"><span class="number">2</span>     Alaska      X <span class="number">37.89</span>  <span class="number">59.42</span>    <span class="number">68.0</span></div><div class="line"><span class="number">3</span>    Arizona     IX <span class="number">44.91</span>  <span class="number">53.39</span>    <span class="number">55.7</span></div><div class="line"><span class="number">4</span>   Arkansas     VI <span class="number">38.86</span>  <span class="number">58.72</span>    <span class="number">53.1</span></div><div class="line"><span class="number">5</span> California     IX <span class="number">60.94</span>  <span class="number">36.91</span>    <span class="number">62.0</span></div><div class="line"><span class="number">6</span>   Colorado   VIII <span class="number">53.66</span>  <span class="number">44.71</span>    <span class="number">70.8</span></div></pre></td></tr></table></figure>
-<p>绘图结果如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111747.png">
-
-</div>
-<h3 id="修改绘图参数">修改绘图参数</h3>
-<p>ggplot2可以识别base中的图形系统的命令来改变点的颜色和形状，也有自己的绘图参数，现在将代码修改为以下内容：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point(color = <span class="string">"violet"</span>, shape = <span class="number">20</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112054.png">
-
-</div>
-<h3 id="设置对数坐标">设置对数坐标</h3>
-<p>如果要将坐标以对数的形式进行设置，可以添加<code>scale_x_log10</code>与<code>scale_y_log10</code>参数，参数内的参数是<code>breaks</code>，它表示的是意思是指定刻度值的位置，代码修改为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point()+</div><div class="line">  scale_x_log10(breaks=seq(<span class="number">2e4</span>,<span class="number">4e4</span>,<span class="number">1e4</span>))+</div><div class="line">  scale_y_log10(breaks=seq(<span class="number">50</span>, <span class="number">75</span>, <span class="number">5</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112325.png">
-
-</div>
-<h3 id="图形的分面">图形的分面</h3>
-<p>使用切面(facet)可以将图形分割为不同的面板，此时需要添加的函数是<code>facet_wrap</code>，如下所示</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point()+</div><div class="line">  scale_x_log10(breaks=seq(<span class="number">2e4</span>,<span class="number">4e4</span>,<span class="number">1e4</span>))+</div><div class="line">  scale_y_log10(breaks=seq(<span class="number">50</span>, <span class="number">75</span>, <span class="number">5</span>))+</div><div class="line">  facet_wrap(~ Region, ncol = <span class="number">4</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112519.png">
-
-</div>
-<h3 id="将图形储存在变量中">将图形储存在变量中</h3>
-<p>ggplot2可以将图形存储在变量中，然后继续往这个变量中添加新的函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gg1 &lt;- ggplot(obama_vs_mccain, aes(Income, Turnout)) + </div><div class="line">  geom_point()</div></pre></td></tr></table></figure>
-<p>如果要显示其输出，直接输入<code>print(gg1)</code>或<code>gg1</code>即可：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(gg1)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112817.png">
-
-</div>
-<p>或者是继续往里面添加函数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">gg1 &lt;- ggplot(obama_vs_mccain, aes(Income, Turnout)) + </div><div class="line">  geom_point() </div><div class="line">gg2 &lt;- gg1 + </div><div class="line">  facet_wrap(~ Region, ncol = <span class="number">5</span>) +</div><div class="line">  theme(axis.text.x = element_text(angle = <span class="number">30</span>, hjust =<span class="number">1</span>))</div><div class="line">gg2</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705113017.png">
-
-</div>
-<h2 id="绘制线图">绘制线图</h2>
-<p>现在使用ggplot2来绘制一下线图，使用的数据是<code>learningr</code>包中的<code>crab_tag</code>数据集，这个数据集记录了2008年和2009年，蟹类的迁移深度与温度。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(learningr)</div><div class="line">ggplot(crab_tag$daylog, aes(Date, -Min.Depth))+ geom_line()</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115204.png">
-
-</div>
-<p>在绘制多条线条时有一点复杂，当在ggplot中指定aesthetics时，用户是为所有的geom都指定了这个aesthetics，也就是说，aesthetics对绘图的影响来说是“全局的”，在下面的案例中，我们希望在一条线上指定最大深度，在另外一条线上指定最小深度，代码如下所示:</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(crab_tag$daylog, aes(Date, -Min.Depth))+ </div><div class="line">  geom_line(aes(y = -Max.Depth))+</div><div class="line">  geom_line(aes(y = -Min.Depth))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115550.png">
-
-</div>
-<p>而在实际操作中，通常不采用这种方法，而是使用reshape2包中的melt函数处理一下数据，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(reshape2)</div><div class="line">crab_long &lt;- melt(</div><div class="line">  crab_tag$daylog,</div><div class="line">  id.vars = <span class="string">"Date"</span>,</div><div class="line">  measure.vars = c(<span class="string">"Min.Depth"</span>,<span class="string">"Max.Depth"</span>)</div><div class="line">)</div><div class="line">ggplot(crab_long, aes(Date, -value, group=variable))+</div><div class="line">  geom_line()</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115842.png">
-
-</div>
-<p>再来查看一下原始数据与经melt处理后的数据：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; head(crab_tag$daylog)</div><div class="line">  Mission.Day       Date Max.Temp Min.Temp Max.Depth Min.Depth Batt.Volts</div><div class="line"><span class="number">1</span>           <span class="number">0</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">08</span>   <span class="number">27.734</span>   <span class="number">25.203</span>      <span class="number">0.06</span>     -<span class="number">0.07</span>       <span class="number">3.06</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">09</span>   <span class="number">25.203</span>   <span class="number">23.859</span>      <span class="number">0.06</span>     -<span class="number">0.07</span>       <span class="number">3.09</span></div><div class="line"><span class="number">3</span>           <span class="number">2</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">10</span>   <span class="number">24.016</span>   <span class="number">23.500</span>     -<span class="number">0.07</span>     -<span class="number">0.10</span>       <span class="number">3.09</span></div><div class="line"><span class="number">4</span>           <span class="number">3</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">11</span>   <span class="number">26.453</span>   <span class="number">23.281</span>     -<span class="number">0.04</span>     -<span class="number">0.10</span>       <span class="number">3.09</span></div><div class="line"><span class="number">5</span>           <span class="number">4</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">12</span>   <span class="number">27.047</span>   <span class="number">23.609</span>     -<span class="number">0.10</span>     -<span class="number">0.26</span>       <span class="number">3.09</span></div><div class="line"><span class="number">6</span>           <span class="number">5</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">13</span>   <span class="number">24.625</span>   <span class="number">23.438</span>     -<span class="number">0.04</span>     -<span class="number">0.13</span>       <span class="number">3.09</span></div><div class="line">&gt; head(crab_long)</div><div class="line">        Date  variable value</div><div class="line"><span class="number">1</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">08</span> Min.Depth -<span class="number">0.07</span></div><div class="line"><span class="number">2</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">09</span> Min.Depth -<span class="number">0.07</span></div><div class="line"><span class="number">3</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">10</span> Min.Depth -<span class="number">0.10</span></div><div class="line"><span class="number">4</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">11</span> Min.Depth -<span class="number">0.10</span></div><div class="line"><span class="number">5</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">12</span> Min.Depth -<span class="number">0.26</span></div><div class="line"><span class="number">6</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">13</span> Min.Depth -<span class="number">0.13</span></div></pre></td></tr></table></figure>
-<p>第二修改后的图形还不好看，因为两条线颜色是相同的，我们可以使用<code>geom_ribbon</code>来美化一下，使最大值与最小值之间进行填充，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(crab_tag$daylog, aes(Date, ymin = -Min.Depth, ymax = -Max.Depth))+</div><div class="line">  geom_ribbon(color = <span class="string">"black"</span>, fill=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120218.png">
-
-</div>
-<h2 id="绘制直方图">绘制直方图</h2>
-<p>这里还用<code>learningr</code>包中的<code>obama_vs_mccain</code>数据集，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Obama))+</div><div class="line">  geom_histogram(binwidth = <span class="number">5</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120655.png">
-
-</div>
-<p>通过传递特殊的名字，例如<code>..count..</code>或<code>..density..</code>到<code>y-aesthetic</code>中来可以计数或密度，现在我们使用<code>..density..</code>参数，注意看y轴的坐标：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Obama, ..density..))+</div><div class="line">  geom_histogram(binwidth = <span class="number">5</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120829.png">
-
-</div>
-<h2 id="箱线图">箱线图</h2>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ovm &lt;- within( </div><div class="line">  obama_vs_mccain, </div><div class="line">  Region &lt;- reorder(Region, Obama, median) </div><div class="line">) </div><div class="line">head(ovm)</div><div class="line">ggplot(ovm, aes(Region, Obama))+</div><div class="line">  geom_boxplot()</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705121027.png">
-
-</div>
-<h2 id="条形图">条形图</h2>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">ovm &lt;- within( </div><div class="line">  obama_vs_mccain, </div><div class="line">  Region &lt;- reorder(Region, Obama, median) </div><div class="line">) </div><div class="line"></div><div class="line">ovm &lt;- ovm[!(ovm$State %<span class="keyword">in</span>% c(<span class="string">"Alaska"</span>, <span class="string">"Hawaii"</span>)), ]</div><div class="line">religions &lt;- with(ovm, rbind(Catholic, Protestant, Non.religious, Other))</div><div class="line"></div><div class="line">religions_long &lt;- melt( </div><div class="line">  ovm, </div><div class="line">  id.vars = <span class="string">"State"</span>, </div><div class="line">  measure.vars = c(<span class="string">"Catholic"</span>, <span class="string">"Protestant"</span>, <span class="string">"Non.religious"</span>, <span class="string">"Other"</span>) </div><div class="line">)</div><div class="line"></div><div class="line">ggplot(religions_long, aes(State, value, fill = variable)) +</div><div class="line">  geom_bar(stat = <span class="string">"identity"</span>) + </div><div class="line">  coord_flip()</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705121710.png">
-
-</div>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>学习R.[美] Richard，Cotton 著刘军 译</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/R/数据管理之dplyr与SQL笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1308,6 +1619,303 @@
 <li>学习R.[美] Richard，Cotton 著刘军 译</li>
 <li><a href="https://github.com/jumanbar/Curso-R/blob/master/lecciones/manipular-tablas.R" target="_blank" rel="external">manipular-tablas.R</a></li>
 <li><a href="https://mp.weixin.qq.com/s/a_np5fI5aWx8DMqXCf9knQ" target="_blank" rel="external">数据追加与合并</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/12/ggplot2/ggplot2(1) - 概述/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/04/12/ggplot2/ggplot2(1) - 概述/" itemprop="url">ggplot2(1) - 概述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-12T12:00:00+08:00">
+                2017-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ggplot2/" itemprop="url" rel="index">
+                    <span itemprop="name">ggplot2</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,517
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="r语言中的绘图系统">R语言中的绘图系统</h2>
+<p>R语言中存在着3种不同的绘图系统：</p>
+<ul>
+<li>base：这是最早的绘图系统，这种绘图系统非常简单，容易上手，使用plot()函数就是这个系统的，但是很难绘出比较好看的图形。后来又开发了grid绘图系统，当时开发grid绘图系统时，是为了修改base中的一些限制，从而使用绘图更为灵活。</li>
+<li>lattice：中文名称是晶格，格子的意思。lattice绘图系统是建立在grid系统之上的。它有grid不具备的两个特点：①每个绘图的结果都能被保存到一个变量中，而不仅仅是绘制在屏幕上。这表明用户可以先画出一些图形，再对其进行编辑，然后再把它画出来。②可在一个格子中包含多个面板，因此可以将图形分成不同的类别，并比较各级之间的差异。</li>
+<li>ggplot2：这个gg指的是grammar of graphics，这种绘图系统的目标在于把图形分解成不同的组块。</li>
+</ul>
+<h2 id="lattice绘图系统简要">lattice绘图系统简要</h2>
+<p><code>lattice</code>绘图系统中对应的plot函数是xyplot，它使用了一个公式接口来指定x和y坐标变量，绘图效果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(lattice) </div><div class="line">xyplot(Turnout ~ Income, obama_vs_mccain)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111046.png">
+
+</div>
+<p>它的很多参数与base系统中的基本一致，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xyplot(Turnout ~ Income, obama_vs_mccain, col = <span class="string">"violet"</span>, pch = <span class="number">20</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111151.png">
+
+</div>
+<h2 id="ggplot2绘图系统">ggplot2绘图系统</h2>
+<p>在ggplot2绘图系统中，每个绘图都由<code>ggplot</code>函数创建，它的第一个参数是数据框，第二个参数是aesthetic，这个参数其实就是把x和y列变量传递给<code>aes</code>函数，最后再添加一个<code>geom_</code>这种形式的参数，让图形显示出一些点，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2) </div><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) + geom_point()</div></pre></td></tr></table></figure>
+<h3 id="绘图数据集">绘图数据集</h3>
+<p>我们用的数据集是<code>obama_vs_mccain</code>，这个数据集中的信息是2008年美国大选的数据，位于<code>learningr</code>包中，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(obama_vs_mccain[<span class="number">1</span>:<span class="number">5</span>])</div><div class="line">       State Region Obama McCain Turnout</div><div class="line"><span class="number">1</span>    Alabama     IV <span class="number">38.74</span>  <span class="number">60.32</span>    <span class="number">61.6</span></div><div class="line"><span class="number">2</span>     Alaska      X <span class="number">37.89</span>  <span class="number">59.42</span>    <span class="number">68.0</span></div><div class="line"><span class="number">3</span>    Arizona     IX <span class="number">44.91</span>  <span class="number">53.39</span>    <span class="number">55.7</span></div><div class="line"><span class="number">4</span>   Arkansas     VI <span class="number">38.86</span>  <span class="number">58.72</span>    <span class="number">53.1</span></div><div class="line"><span class="number">5</span> California     IX <span class="number">60.94</span>  <span class="number">36.91</span>    <span class="number">62.0</span></div><div class="line"><span class="number">6</span>   Colorado   VIII <span class="number">53.66</span>  <span class="number">44.71</span>    <span class="number">70.8</span></div></pre></td></tr></table></figure>
+<p>绘图结果如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705111747.png">
+
+</div>
+<h3 id="修改绘图参数">修改绘图参数</h3>
+<p>ggplot2可以识别base中的图形系统的命令来改变点的颜色和形状，也有自己的绘图参数，现在将代码修改为以下内容：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point(color = <span class="string">"violet"</span>, shape = <span class="number">20</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112054.png">
+
+</div>
+<h3 id="设置对数坐标">设置对数坐标</h3>
+<p>如果要将坐标以对数的形式进行设置，可以添加<code>scale_x_log10</code>与<code>scale_y_log10</code>参数，参数内的参数是<code>breaks</code>，它表示的是意思是指定刻度值的位置，代码修改为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point()+</div><div class="line">  scale_x_log10(breaks=seq(<span class="number">2e4</span>,<span class="number">4e4</span>,<span class="number">1e4</span>))+</div><div class="line">  scale_y_log10(breaks=seq(<span class="number">50</span>, <span class="number">75</span>, <span class="number">5</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112325.png">
+
+</div>
+<h3 id="图形的分面">图形的分面</h3>
+<p>使用切面(facet)可以将图形分割为不同的面板，此时需要添加的函数是<code>facet_wrap</code>，如下所示</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Income, Turnout)) +</div><div class="line">  geom_point()+</div><div class="line">  scale_x_log10(breaks=seq(<span class="number">2e4</span>,<span class="number">4e4</span>,<span class="number">1e4</span>))+</div><div class="line">  scale_y_log10(breaks=seq(<span class="number">50</span>, <span class="number">75</span>, <span class="number">5</span>))+</div><div class="line">  facet_wrap(~ Region, ncol = <span class="number">4</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112519.png">
+
+</div>
+<h3 id="将图形储存在变量中">将图形储存在变量中</h3>
+<p>ggplot2可以将图形存储在变量中，然后继续往这个变量中添加新的函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gg1 &lt;- ggplot(obama_vs_mccain, aes(Income, Turnout)) + </div><div class="line">  geom_point()</div></pre></td></tr></table></figure>
+<p>如果要显示其输出，直接输入<code>print(gg1)</code>或<code>gg1</code>即可：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(gg1)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705112817.png">
+
+</div>
+<p>或者是继续往里面添加函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">gg1 &lt;- ggplot(obama_vs_mccain, aes(Income, Turnout)) + </div><div class="line">  geom_point() </div><div class="line">gg2 &lt;- gg1 + </div><div class="line">  facet_wrap(~ Region, ncol = <span class="number">5</span>) +</div><div class="line">  theme(axis.text.x = element_text(angle = <span class="number">30</span>, hjust =<span class="number">1</span>))</div><div class="line">gg2</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705113017.png">
+
+</div>
+<h2 id="绘制线图">绘制线图</h2>
+<p>现在使用ggplot2来绘制一下线图，使用的数据是<code>learningr</code>包中的<code>crab_tag</code>数据集，这个数据集记录了2008年和2009年，蟹类的迁移深度与温度。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(learningr)</div><div class="line">ggplot(crab_tag$daylog, aes(Date, -Min.Depth))+ geom_line()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115204.png">
+
+</div>
+<p>在绘制多条线条时有一点复杂，当在ggplot中指定aesthetics时，用户是为所有的geom都指定了这个aesthetics，也就是说，aesthetics对绘图的影响来说是“全局的”，在下面的案例中，我们希望在一条线上指定最大深度，在另外一条线上指定最小深度，代码如下所示:</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ggplot(crab_tag$daylog, aes(Date, -Min.Depth))+ </div><div class="line">  geom_line(aes(y = -Max.Depth))+</div><div class="line">  geom_line(aes(y = -Min.Depth))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115550.png">
+
+</div>
+<p>而在实际操作中，通常不采用这种方法，而是使用reshape2包中的melt函数处理一下数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(reshape2)</div><div class="line">crab_long &lt;- melt(</div><div class="line">  crab_tag$daylog,</div><div class="line">  id.vars = <span class="string">"Date"</span>,</div><div class="line">  measure.vars = c(<span class="string">"Min.Depth"</span>,<span class="string">"Max.Depth"</span>)</div><div class="line">)</div><div class="line">ggplot(crab_long, aes(Date, -value, group=variable))+</div><div class="line">  geom_line()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705115842.png">
+
+</div>
+<p>再来查看一下原始数据与经melt处理后的数据：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt; head(crab_tag$daylog)</div><div class="line">  Mission.Day       Date Max.Temp Min.Temp Max.Depth Min.Depth Batt.Volts</div><div class="line"><span class="number">1</span>           <span class="number">0</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">08</span>   <span class="number">27.734</span>   <span class="number">25.203</span>      <span class="number">0.06</span>     -<span class="number">0.07</span>       <span class="number">3.06</span></div><div class="line"><span class="number">2</span>           <span class="number">1</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">09</span>   <span class="number">25.203</span>   <span class="number">23.859</span>      <span class="number">0.06</span>     -<span class="number">0.07</span>       <span class="number">3.09</span></div><div class="line"><span class="number">3</span>           <span class="number">2</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">10</span>   <span class="number">24.016</span>   <span class="number">23.500</span>     -<span class="number">0.07</span>     -<span class="number">0.10</span>       <span class="number">3.09</span></div><div class="line"><span class="number">4</span>           <span class="number">3</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">11</span>   <span class="number">26.453</span>   <span class="number">23.281</span>     -<span class="number">0.04</span>     -<span class="number">0.10</span>       <span class="number">3.09</span></div><div class="line"><span class="number">5</span>           <span class="number">4</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">12</span>   <span class="number">27.047</span>   <span class="number">23.609</span>     -<span class="number">0.10</span>     -<span class="number">0.26</span>       <span class="number">3.09</span></div><div class="line"><span class="number">6</span>           <span class="number">5</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">13</span>   <span class="number">24.625</span>   <span class="number">23.438</span>     -<span class="number">0.04</span>     -<span class="number">0.13</span>       <span class="number">3.09</span></div><div class="line">&gt; head(crab_long)</div><div class="line">        Date  variable value</div><div class="line"><span class="number">1</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">08</span> Min.Depth -<span class="number">0.07</span></div><div class="line"><span class="number">2</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">09</span> Min.Depth -<span class="number">0.07</span></div><div class="line"><span class="number">3</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">10</span> Min.Depth -<span class="number">0.10</span></div><div class="line"><span class="number">4</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">11</span> Min.Depth -<span class="number">0.10</span></div><div class="line"><span class="number">5</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">12</span> Min.Depth -<span class="number">0.26</span></div><div class="line"><span class="number">6</span> <span class="number">2008</span>-<span class="number">08</span>-<span class="number">13</span> Min.Depth -<span class="number">0.13</span></div></pre></td></tr></table></figure>
+<p>第二修改后的图形还不好看，因为两条线颜色是相同的，我们可以使用<code>geom_ribbon</code>来美化一下，使最大值与最小值之间进行填充，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(crab_tag$daylog, aes(Date, ymin = -Min.Depth, ymax = -Max.Depth))+</div><div class="line">  geom_ribbon(color = <span class="string">"black"</span>, fill=<span class="string">"white"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120218.png">
+
+</div>
+<h2 id="绘制直方图">绘制直方图</h2>
+<p>这里还用<code>learningr</code>包中的<code>obama_vs_mccain</code>数据集，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Obama))+</div><div class="line">  geom_histogram(binwidth = <span class="number">5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120655.png">
+
+</div>
+<p>通过传递特殊的名字，例如<code>..count..</code>或<code>..density..</code>到<code>y-aesthetic</code>中来可以计数或密度，现在我们使用<code>..density..</code>参数，注意看y轴的坐标：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ggplot(obama_vs_mccain, aes(Obama, ..density..))+</div><div class="line">  geom_histogram(binwidth = <span class="number">5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705120829.png">
+
+</div>
+<h2 id="箱线图">箱线图</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ovm &lt;- within( </div><div class="line">  obama_vs_mccain, </div><div class="line">  Region &lt;- reorder(Region, Obama, median) </div><div class="line">) </div><div class="line">head(ovm)</div><div class="line">ggplot(ovm, aes(Region, Obama))+</div><div class="line">  geom_boxplot()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705121027.png">
+
+</div>
+<h2 id="条形图">条形图</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">ovm &lt;- within( </div><div class="line">  obama_vs_mccain, </div><div class="line">  Region &lt;- reorder(Region, Obama, median) </div><div class="line">) </div><div class="line"></div><div class="line">ovm &lt;- ovm[!(ovm$State %<span class="keyword">in</span>% c(<span class="string">"Alaska"</span>, <span class="string">"Hawaii"</span>)), ]</div><div class="line">religions &lt;- with(ovm, rbind(Catholic, Protestant, Non.religious, Other))</div><div class="line"></div><div class="line">religions_long &lt;- melt( </div><div class="line">  ovm, </div><div class="line">  id.vars = <span class="string">"State"</span>, </div><div class="line">  measure.vars = c(<span class="string">"Catholic"</span>, <span class="string">"Protestant"</span>, <span class="string">"Non.religious"</span>, <span class="string">"Other"</span>) </div><div class="line">)</div><div class="line"></div><div class="line">ggplot(religions_long, aes(State, value, fill = variable)) +</div><div class="line">  geom_bar(stat = <span class="string">"identity"</span>) + </div><div class="line">  coord_flip()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190705121710.png">
+
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li>学习R.[美] Richard，Cotton 著刘军 译</li>
 </ol>
 
           
@@ -3642,236 +4250,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2017/04/05/R/数据类型6-列表/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/04/05/R/数据类型6-列表/" itemprop="url">R语言笔记之数据类型6-列表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-05T12:00:00+08:00">
-                2017-04-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index">
-                    <span itemprop="name">R</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,771
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  8
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="列表">列表</h1>
-<h2 id="什么是列表">什么是列表</h2>
-<p>列表(list)为最复杂的数据类型，是一些对象或成分的有序集合，例如可以是向量，矩阵，数据框，或其他列表的组合。用<code>list()</code>创建：<code>mylist&lt;-list(object1,object2,...)</code>， 或命名列表：<code>mylist&lt;-list(name1=object1,name2=object2,...)</code>。</p>
-<p>列表(list)是一个广义的向量，它可以包含其它类型的对象，甚至可以包括其它列表。列表的灵活性非常有用，例如，当我们使用R拟合了一个线性模型时，其结果本质上就是一个列表，它里面包括了线性回归的详细结果，例如回归系数（数值向量），残差（数值向量）和QR分析（包含一个矩阵和其它对象的列表）等。</p>
-<p>就我个人理解而言，列表更像是对数据框的拓展，它可以含有多个不同类型，不同长度的数据，而数据框只能是含有不同类型的相同数据。</p>
-<h2 id="创建列表">创建列表</h2>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">g&lt;-<span class="string">"My First List"</span></div><div class="line">h&lt;-c(<span class="number">25</span>,<span class="number">26</span>,<span class="number">18</span>,<span class="number">39</span>)</div><div class="line">j&lt;-matrix(<span class="number">1</span>:<span class="number">10</span>,nrow=<span class="number">5</span>)</div><div class="line">k&lt;-c(<span class="string">"one"</span>,<span class="string">"two"</span>,<span class="string">"three"</span>)</div><div class="line">mylist&lt;-list(title=g,ages=h,j,k)</div><div class="line">mylist <span class="comment">#输出列表</span></div><div class="line"></div><div class="line"><span class="comment">## $title</span></div><div class="line"><span class="comment">## [1] "My First List"</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## $ages</span></div><div class="line"><span class="comment">## [1] 25 26 18 39</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## [[3]]</span></div><div class="line"><span class="comment">##      [,1] [,2]</span></div><div class="line"><span class="comment">## [1,]1    6</span></div><div class="line"><span class="comment">## [2,]2    7</span></div><div class="line"><span class="comment">## [3,]3    8</span></div><div class="line"><span class="comment">## [4,]4    9</span></div><div class="line"><span class="comment">## [5,]5   10</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## [[4]]</span></div><div class="line"><span class="comment">## [1] "one"   "two"   "three"</span></div></pre></td></tr></table></figure>
-<h2 id="显示列表数据">显示列表数据</h2>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">mylist[<span class="number">1</span>]</div><div class="line"><span class="comment">## $title</span></div><div class="line"><span class="comment">## [1] "My First List"</span></div><div class="line"></div><div class="line">mylist[<span class="number">2</span>]</div><div class="line"><span class="comment">## $ages</span></div><div class="line"><span class="comment">## [1] 25 26 18 39</span></div><div class="line"></div><div class="line">mylist[[<span class="number">2</span>]]</div><div class="line"><span class="comment">## [1] 25 26 18 39</span></div><div class="line"></div><div class="line">mylist[<span class="string">"ages"</span>]</div><div class="line"><span class="comment">## $ages</span></div><div class="line"><span class="comment">## [1] 25 26 18 39</span></div></pre></td></tr></table></figure>
-<h2 id="删除列表数据">删除列表数据</h2>
-<p>将需要删除的内容直接赋值为<code>NULL</code>即可，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">g&lt;-<span class="string">"My First List"</span></div><div class="line">h&lt;-c(<span class="number">25</span>,<span class="number">26</span>,<span class="number">18</span>,<span class="number">39</span>)</div><div class="line">j&lt;-matrix(<span class="number">1</span>:<span class="number">10</span>,nrow=<span class="number">5</span>)</div><div class="line">k&lt;-c(<span class="string">"one"</span>,<span class="string">"two"</span>,<span class="string">"three"</span>)</div><div class="line">mylist&lt;-list(title=g,ages=h,j,k)</div><div class="line">mylist <span class="comment">#输出列表</span></div><div class="line">mylist</div><div class="line">mylist$ages</div><div class="line">mylist$ages &lt;- <span class="literal">NULL</span></div><div class="line">mylist</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">&gt; mylist</div><div class="line">$title</div><div class="line">[<span class="number">1</span>] <span class="string">"My First List"</span></div><div class="line"></div><div class="line">$ages</div><div class="line">[<span class="number">1</span>] <span class="number">25</span> <span class="number">26</span> <span class="number">18</span> <span class="number">39</span></div><div class="line"></div><div class="line">[[<span class="number">3</span>]]</div><div class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]</div><div class="line">[<span class="number">1</span>,]    <span class="number">1</span>    <span class="number">6</span></div><div class="line">[<span class="number">2</span>,]    <span class="number">2</span>    <span class="number">7</span></div><div class="line">[<span class="number">3</span>,]    <span class="number">3</span>    <span class="number">8</span></div><div class="line">[<span class="number">4</span>,]    <span class="number">4</span>    <span class="number">9</span></div><div class="line">[<span class="number">5</span>,]    <span class="number">5</span>   <span class="number">10</span></div><div class="line"></div><div class="line">[[<span class="number">4</span>]]</div><div class="line">[<span class="number">1</span>] <span class="string">"one"</span>   <span class="string">"two"</span>   <span class="string">"three"</span></div><div class="line"></div><div class="line">&gt; mylist$ages</div><div class="line">[<span class="number">1</span>] <span class="number">25</span> <span class="number">26</span> <span class="number">18</span> <span class="number">39</span></div><div class="line">&gt; mylist$ages &lt;- <span class="literal">NULL</span></div><div class="line">&gt; mylist</div><div class="line">$title</div><div class="line">[<span class="number">1</span>] <span class="string">"My First List"</span></div><div class="line"></div><div class="line">[[<span class="number">2</span>]]</div><div class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]</div><div class="line">[<span class="number">1</span>,]    <span class="number">1</span>    <span class="number">6</span></div><div class="line">[<span class="number">2</span>,]    <span class="number">2</span>    <span class="number">7</span></div><div class="line">[<span class="number">3</span>,]    <span class="number">3</span>    <span class="number">8</span></div><div class="line">[<span class="number">4</span>,]    <span class="number">4</span>    <span class="number">9</span></div><div class="line">[<span class="number">5</span>,]    <span class="number">5</span>   <span class="number">10</span></div><div class="line"></div><div class="line">[[<span class="number">3</span>]]</div><div class="line">[<span class="number">1</span>] <span class="string">"one"</span>   <span class="string">"two"</span>   <span class="string">"three"</span></div></pre></td></tr></table></figure>
-<h2 id="提取列表子集">提取列表子集</h2>
-<p>有的时候，我们需要从一个列表中提取多个元素，由这些元素组成的列表构成了原列表的一个子集。构建一个列表的子集，我们可以使用单层方括号，就像提取向量和矩阵中的元素一样。取些这些元素后，然后放到一个新列表中。 这里的方括号用法与其在向量中的用法非常类似。我们可以用字符向量表示成分名称，用数值向量表示成分位置，用逻辑向量指定选择标准，来取出列表元素。</p>
-<p>例如<code>mylist[[N]][M]</code>表示提取N列中的第M个元素，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">g&lt;-<span class="string">"My First List"</span></div><div class="line">h&lt;-c(<span class="number">25</span>,<span class="number">26</span>,<span class="number">18</span>,<span class="number">39</span>)</div><div class="line">j&lt;-matrix(<span class="number">1</span>:<span class="number">10</span>,nrow=<span class="number">5</span>)</div><div class="line">k&lt;-c(<span class="string">"one"</span>,<span class="string">"two"</span>,<span class="string">"three"</span>)</div><div class="line">mylist&lt;-list(title=g,ages=h,j,k)</div><div class="line">mylist <span class="comment">#输出列表</span></div><div class="line">mylist[[<span class="number">2</span>]][<span class="number">1</span>] <span class="comment"># 第取第2列第1个元素</span></div></pre></td></tr></table></figure>
-<p>结果运行如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; mylist <span class="comment">#输出列表</span></div><div class="line">$title</div><div class="line">[<span class="number">1</span>] <span class="string">"My First List"</span></div><div class="line"></div><div class="line">$ages</div><div class="line">[<span class="number">1</span>] <span class="number">25</span> <span class="number">26</span> <span class="number">18</span> <span class="number">39</span></div><div class="line"></div><div class="line">[[<span class="number">3</span>]]</div><div class="line">     [,<span class="number">1</span>] [,<span class="number">2</span>]</div><div class="line">[<span class="number">1</span>,]    <span class="number">1</span>    <span class="number">6</span></div><div class="line">[<span class="number">2</span>,]    <span class="number">2</span>    <span class="number">7</span></div><div class="line">[<span class="number">3</span>,]    <span class="number">3</span>    <span class="number">8</span></div><div class="line">[<span class="number">4</span>,]    <span class="number">4</span>    <span class="number">9</span></div><div class="line">[<span class="number">5</span>,]    <span class="number">5</span>   <span class="number">10</span></div><div class="line"></div><div class="line">[[<span class="number">4</span>]]</div><div class="line">[<span class="number">1</span>] <span class="string">"one"</span>   <span class="string">"two"</span>   <span class="string">"three"</span></div><div class="line"></div><div class="line">&gt; mylist[[<span class="number">2</span>]][<span class="number">1</span>] <span class="comment"># 第取第2列第1个元素</span></div><div class="line">[<span class="number">1</span>] <span class="number">25</span></div></pre></td></tr></table></figure>
-<h2 id="判断列表完整">判断列表完整</h2>
-<p>使用<code>complete.cases()</code>函数可以判断一个列表是否完整，但是，此函数要求列表的所有行长度都相等，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">h&lt;-c(<span class="number">25</span>,<span class="number">26</span>,<span class="literal">NA</span>,<span class="literal">NA</span>)</div><div class="line">k&lt;-c(<span class="string">"one"</span>,<span class="string">"two"</span>,<span class="string">"three"</span>,<span class="string">"four"</span>)</div><div class="line">mylist&lt;-list(ages=h,k)</div><div class="line">complete.cases(mylist)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; complete.cases(mylist)</div><div class="line">[<span class="number">1</span>]  <span class="literal">TRUE</span>  <span class="literal">TRUE</span> <span class="literal">FALSE</span> <span class="literal">FALSE</span></div></pre></td></tr></table></figure>
-<p>更多情况下，<code>complete.cases()</code>函数用于判断数据框是否有缺失值，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">test &lt;- data.frame(h&lt;-c(<span class="number">25</span>,<span class="number">26</span>,<span class="literal">NA</span>,<span class="literal">NA</span>),</div><div class="line">                   k&lt;-c(<span class="string">"one"</span>,<span class="string">"two"</span>,<span class="string">"three"</span>,<span class="string">"four"</span>))</div><div class="line">complete.cases(test)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; test &lt;- data.frame(h&lt;-c(<span class="number">25</span>,<span class="number">26</span>,<span class="literal">NA</span>,<span class="literal">NA</span>),</div><div class="line">+                    k&lt;-c(<span class="string">"one"</span>,<span class="string">"two"</span>,<span class="string">"three"</span>,<span class="string">"four"</span>))</div><div class="line">&gt; complete.cases(test)</div><div class="line">[<span class="number">1</span>]  <span class="literal">TRUE</span>  <span class="literal">TRUE</span> <span class="literal">FALSE</span> <span class="literal">FALSE</span></div></pre></td></tr></table></figure>
-<h2 id="do.call函数">do.call()函数</h2>
-<p><code>do.call()</code>函数可以根据名称或函数以及要传递给它的一个列表参数构建并执行一个函数的调用，它的用法如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">do.call(what, args, quote = <span class="literal">FALSE</span>, envir = parent.frame())</div></pre></td></tr></table></figure>
-<p>参数说明如下所示：</p>
-<ol style="list-style-type: decimal">
-<li><code>what</code>：函数或者是一个要调用函数的名称的字符串；</li>
-<li><code>args</code>：列表(list)参数，是函数执行的对象；</li>
-<li><code>quote</code>：逻辑值，用于指定是否引用参数，默认情况下是FALSE，如果是FALSE，那么<code>do.call()</code>就会检测调用环境中的参数，而非<code>envir</code>中的参数。如果参数为<code>TRUE</code>，那么前面每个参数都会引用，</li>
-<li><code>envir</code>：调用的函数。如果<code>what</code>参数是一个字符串，参数是一个符号或引号的表达式，<code>envir</code>这个参数比较有用。</li>
-</ol>
-<p>看下面的案例：</p>
-<p>第一个案例：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; do.call(<span class="string">"complex"</span>, list(imag = <span class="number">1</span>:<span class="number">3</span>))</div><div class="line">[<span class="number">1</span>] <span class="number">0</span>+<span class="number">1i</span> <span class="number">0</span>+<span class="number">2i</span> <span class="number">0</span>+<span class="number">3i</span></div></pre></td></tr></table></figure>
-<p><code>&quot;complex&quot;</code>表示复数，这也是一个函数，<code>list(imag=1:3)</code>则是生成一个列表，并且将列表中的元素转换为复数。</p>
-<p>第二个案例：如果我们已经有了一个数据框，可以通过<code>c()</code>函数添加另外的参数，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tmp &lt;- expand.grid(letters[<span class="number">1</span>:<span class="number">2</span>], <span class="number">1</span>:<span class="number">3</span>, c(<span class="string">"+"</span>, <span class="string">"-"</span>))</div><div class="line">tmp</div><div class="line">do.call(<span class="string">"paste"</span>, c(tmp, sep = <span class="string">""</span>))</div><div class="line">do.call(paste, list(as.name(<span class="string">"A"</span>), as.name(<span class="string">"B"</span>)), quote = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&gt; tmp &lt;- expand.grid(letters[<span class="number">1</span>:<span class="number">2</span>], <span class="number">1</span>:<span class="number">3</span>, c(<span class="string">"+"</span>, <span class="string">"-"</span>))</div><div class="line">&gt; tmp</div><div class="line">   Var1 Var2 Var3</div><div class="line"><span class="number">1</span>     a    <span class="number">1</span>    +</div><div class="line"><span class="number">2</span>     b    <span class="number">1</span>    +</div><div class="line"><span class="number">3</span>     a    <span class="number">2</span>    +</div><div class="line"><span class="number">4</span>     b    <span class="number">2</span>    +</div><div class="line"><span class="number">5</span>     a    <span class="number">3</span>    +</div><div class="line"><span class="number">6</span>     b    <span class="number">3</span>    +</div><div class="line"><span class="number">7</span>     a    <span class="number">1</span>    -</div><div class="line"><span class="number">8</span>     b    <span class="number">1</span>    -</div><div class="line"><span class="number">9</span>     a    <span class="number">2</span>    -</div><div class="line"><span class="number">10</span>    b    <span class="number">2</span>    -</div><div class="line"><span class="number">11</span>    a    <span class="number">3</span>    -</div><div class="line"><span class="number">12</span>    b    <span class="number">3</span>    -</div><div class="line">&gt; do.call(<span class="string">"paste"</span>, c(tmp, sep = <span class="string">""</span>))</div><div class="line"> [<span class="number">1</span>] <span class="string">"a1+"</span> <span class="string">"b1+"</span> <span class="string">"a2+"</span> <span class="string">"b2+"</span> <span class="string">"a3+"</span> <span class="string">"b3+"</span> <span class="string">"a1-"</span> <span class="string">"b1-"</span> <span class="string">"a2-"</span> <span class="string">"b2-"</span> <span class="string">"a3-"</span> <span class="string">"b3-"</span></div><div class="line">&gt; do.call(paste, list(as.name(<span class="string">"A"</span>), as.name(<span class="string">"B"</span>)), quote = <span class="literal">TRUE</span>)</div><div class="line">[<span class="number">1</span>] <span class="string">"A B"</span></div></pre></td></tr></table></figure>
-<p>在这个案例中，先创建了一个tmp数据框，然后调用了<code>paste()</code>函数，并且添加了<code>&quot;&quot;</code>。</p>
-<p>第三个案例：这里需要注意就是参数<code>what</code>加引号与不加引号的作用。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">A &lt;- <span class="number">2</span></div><div class="line">f &lt;- <span class="keyword">function</span>(x) print(x^<span class="number">2</span>)</div><div class="line">env &lt;- new.env()</div><div class="line">assign(<span class="string">"A"</span>, <span class="number">10</span>, envir = env)</div><div class="line">assign(<span class="string">"f"</span>, f, envir = env)</div><div class="line">f &lt;- <span class="keyword">function</span>(x) print(x)</div><div class="line">f(A)                                      <span class="comment"># 2</span></div><div class="line">do.call(<span class="string">"f"</span>, list(A))                     <span class="comment"># 2</span></div><div class="line"><span class="comment"># 在env里，加引号和不加引号是有区别的</span></div><div class="line"><span class="comment"># 加引号，代表引用的是env里的</span></div><div class="line"></div><div class="line">do.call(<span class="string">"f"</span>, list(A), envir = env)        <span class="comment"># 4</span></div><div class="line">do.call(f, list(A), envir = env)          <span class="comment"># 2</span></div><div class="line"><span class="comment"># 不加引号，代表是parent.frame()里的f</span></div><div class="line"></div><div class="line">do.call(<span class="string">"f"</span>, list(quote(A)), envir = env) <span class="comment"># 100</span></div><div class="line">do.call(f, list(quote(A)), envir = env)   <span class="comment"># 10</span></div><div class="line">do.call(<span class="string">"f"</span>, list(as.name(<span class="string">"A"</span>)), envir = env) <span class="comment"># 100</span></div><div class="line"></div><div class="line">eval(call(<span class="string">"f"</span>, A))                      <span class="comment"># 2</span></div><div class="line">eval(call(<span class="string">"f"</span>, quote(A)))               <span class="comment"># 2</span></div><div class="line">eval(call(<span class="string">"f"</span>, A), envir = env)         <span class="comment"># 4</span></div><div class="line">eval(call(<span class="string">"f"</span>, quote(A)), envir = env)  <span class="comment"># 100</span></div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">&gt; A &lt;- <span class="number">2</span></div><div class="line">&gt; f &lt;- <span class="keyword">function</span>(x) print(x^<span class="number">2</span>)</div><div class="line">&gt; env &lt;- new.env()</div><div class="line">&gt; assign(<span class="string">"A"</span>, <span class="number">10</span>, envir = env)</div><div class="line">&gt; assign(<span class="string">"f"</span>, f, envir = env)</div><div class="line">&gt; f &lt;- <span class="keyword">function</span>(x) print(x)</div><div class="line">&gt; f(A)                                      <span class="comment"># 2</span></div><div class="line">[<span class="number">1</span>] <span class="number">2</span></div><div class="line">&gt; do.call(<span class="string">"f"</span>, list(A))                     <span class="comment"># 2</span></div><div class="line">[<span class="number">1</span>] <span class="number">2</span></div><div class="line">&gt; <span class="comment"># 在env里，加引号和不加引号是有区别的</span></div><div class="line">&gt; <span class="comment"># 加引号，代表引用的是env里的</span></div><div class="line">&gt; </div><div class="line">&gt; do.call(<span class="string">"f"</span>, list(A), envir = env)        <span class="comment"># 4</span></div><div class="line">[<span class="number">1</span>] <span class="number">4</span></div><div class="line">&gt; do.call(f, list(A), envir = env)          <span class="comment"># 2</span></div><div class="line">[<span class="number">1</span>] <span class="number">2</span></div><div class="line">&gt; <span class="comment"># 不加引号，代表是parent.frame()里的f</span></div><div class="line">&gt; </div><div class="line">&gt; do.call(<span class="string">"f"</span>, list(quote(A)), envir = env) <span class="comment"># 100</span></div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div><div class="line">&gt; do.call(f, list(quote(A)), envir = env)   <span class="comment"># 10</span></div><div class="line">[<span class="number">1</span>] <span class="number">10</span></div><div class="line">&gt; do.call(<span class="string">"f"</span>, list(as.name(<span class="string">"A"</span>)), envir = env) <span class="comment"># 100</span></div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div><div class="line">&gt; </div><div class="line">&gt; eval(call(<span class="string">"f"</span>, A))                      <span class="comment"># 2</span></div><div class="line">[<span class="number">1</span>] <span class="number">2</span></div><div class="line">&gt; eval(call(<span class="string">"f"</span>, quote(A)))               <span class="comment"># 2</span></div><div class="line">[<span class="number">1</span>] <span class="number">2</span></div><div class="line">&gt; eval(call(<span class="string">"f"</span>, A), envir = env)         <span class="comment"># 4</span></div><div class="line">[<span class="number">1</span>] <span class="number">4</span></div><div class="line">&gt; eval(call(<span class="string">"f"</span>, quote(A)), envir = env)  <span class="comment"># 100</span></div><div class="line">[<span class="number">1</span>] <span class="number">100</span></div></pre></td></tr></table></figure>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://bbs.pinggu.org/thread-4472093-1-1.html" target="_blank" rel="external">do.call 函数使用问题</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3922,7 +4300,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">245</span>
+                  <span class="site-state-item-count">246</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4021,7 +4399,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共979.3k字</span>
+  <span class="post-count">博客全站共980.9k字</span>
 </div>
 
         
