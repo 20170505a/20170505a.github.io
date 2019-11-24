@@ -259,6 +259,1272 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/08/Data Analysis for the life sciences/DALS008_Exploratory_Data_Analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/08/Data Analysis for the life sciences/DALS008_Exploratory_Data_Analysis/" itemprop="url">DALS008-数据探索(Exploratory Data Analysis)01-图表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-08T12:00:00+08:00">
+                2019-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  9,250
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  38
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第3章：探索性数据分析，主要内容涉及常见图表的解读，数据的描述，秩和检验。</p>
+<blockquote>
+<p>图片的最大价值就在于能够强迫我们发现一些我们预料不到的东西——John W.Tukey</p>
+</blockquote>
+<p>生命科学的研究，由于检测存在的误差，会导致一些异常值的出现。如果不没有发现这些问题，那么就会导致错误的分析结果以及假的发现。例如，有时候实验失败，或者是说在分析流程中，对涉及到的所有实验数据都进行检验，也无法发现它们，例如使用R中的<code>t.test()</code>函数。但是，这些分析流程仍然会给我们一些启示。此外，仅仅通过实验报告中的结果，也很难或者是几乎无法发现一些错误。</p>
+<p>图表就是一种发现这些问题的强大工具，这一章节的内容就是探索性数据分析(Exploratory Data Analysis,EDA)。现存很多数据分析方法都是通过EDA来得到启示的。此外，EDA还能发现一些有意思的物理物现象，如果使用其它常规的统计学方法，这些现象有可能就会错失。在这本书中，我们会使用探索性数据来选择合适的统计学方法。</p>
+<h2 id="qq图">QQ图</h2>
+<p>qq图的全称为quantile quantile Plots，它经常用于验证一批数据是否服从正态分布。我们通过一些具体的案例来说明一下什么是分位数。</p>
+<p>在一批数据中，第p个百分位数被定义为这个数大于p%的数，具体的定义可以参考以前的笔记<a href="https://www.jianshu.com/p/dd372640b146" target="_blank" rel="external">《StatQuest学习笔记06——分位数及其应用》</a>，再比如中间的50%百分位数就是中位数。</p>
+<p>我们可以计算出一批身高的百分位数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(UsingR) <span class="comment">##available from CRAN</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">x &lt;- father.son$fheight</div><div class="line">head(x)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; head(x)</div><div class="line">[<span class="number">1</span>] <span class="number">65.04851</span> <span class="number">63.25094</span> <span class="number">64.95532</span> <span class="number">65.75250</span> <span class="number">61.13723</span> <span class="number">63.02254</span></div></pre></td></tr></table></figure>
+<p>现在我们计算一批服合正态分布的数据：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">99</span>) + <span class="number">0.5</span> )/<span class="number">100</span></div><div class="line"><span class="comment"># Calculate standard quantile</span></div><div class="line">qs &lt;- quantile(x, ps)</div><div class="line"><span class="comment"># produces sample quantiles corresponding to the given probabilitie</span></div><div class="line"><span class="comment"># For example</span></div><div class="line"><span class="comment"># ps2 &lt;- c(0.005,0.515,0.995)</span></div><div class="line"><span class="comment"># quantile(x,ps2)</span></div><div class="line"><span class="comment"># &gt; quantile(x,ps2)</span></div><div class="line"><span class="comment"># 0.5%    51.5%    99.5% </span></div><div class="line"><span class="comment"># 60.29272 67.84169 74.58332 </span></div><div class="line">normalqs &lt;- qnorm(ps, mean(x), popsd(x))</div><div class="line">plot(normalqs,qs,xlab=<span class="string">"Normal percentiles"</span>,ylab=<span class="string">"Height percentiles"</span>)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>) <span class="comment">##identity line</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190810131549.jpeg">
+
+</div>
+<p>上图显示的是，(<code>mean(x)</code>)为均值，总体方差为（<code>pposd(x)</code>）的正态分布数据集的qq图，这里的x指的是前文提到的father.son中fheight的身高，也就是父亲的身高，这里的qq图是理论上的qq图，代码中的<code>qnorm()</code>函数用于计算正态分布中的第p个分位一数的Z-score，具体的可以参考这篇笔记<a href="https://www.jianshu.com/p/a24eb1b94177" target="_blank" rel="external">《R语言中dnorm, pnorm, qnorm与rnorm以及随机数》</a>，现在看一下实际的qq图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(x)</div><div class="line">qqline(x)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190810134743.jpeg">
+
+</div>
+<p><code>qqnorm()</code>函数绘制的图形都是按照标准正态分布来进行绘制，因此，上图中的直接斜率为<code>popas(x)</code>，截矩为<code>mean(x)</code>。</p>
+<p>在前面的案例中，多数点与直线的匹配程度都非常好，实际上，我们可以使用Monte Carlo来模拟一下已知数据是否符合正态分布，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n &lt;-1000</div><div class="line">x &lt;- rnorm(n)</div><div class="line">qqnorm(x)</div><div class="line">qqline(x)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190810135337.jpeg">
+
+</div>
+<p>现在我们来模拟一下不符合正态分布的数据在qq图中是什么样子的，我们从不同自由度的t分布的数据中来抽取一些数据来画图，服从t分布的数据有这么一个特点：自由度越低，t分布的尾部就越平坦，自由度越高，尾部越高，整体越接近正态分布。在qq图中，我们可以看到，在qq图的左侧，这些数据点低于直线，而在右侧，这些点高于直线，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">dfs &lt;- c(<span class="number">3</span>,<span class="number">6</span>,<span class="number">12</span>,<span class="number">30</span>)</div><div class="line">mypar(<span class="number">2</span>,<span class="number">2</span>)</div><div class="line"><span class="keyword">for</span>(df <span class="keyword">in</span> dfs)&#123;</div><div class="line">x &lt;- rt(<span class="number">1000</span>,df)</div><div class="line">qqnorm(x,xlab=<span class="string">"t quantiles"</span>,main=paste0(<span class="string">"d.f="</span>,df),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">qqline(x)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190810140047.jpeg">
+
+</div>
+<h2 id="箱线图boxplot">箱线图(boxplot)</h2>
+<p>我们获取的数据并非总是符合正态分布的，例如收入(income)就不符合正态分布，对于那些不符合正态分布的数据来说，谈论均值与标准差就没有多大意义，因为我们无法从均值与标准差中推测出相应的总体信息，只有数据符合正态时，谈论均值与标准差才有意义，现在我们来看一下2000年美国CEO的收入，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line"><span class="keyword">library</span>(UsingR)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">hist(exec.pay)</div><div class="line">qqnorm(exec.pay)</div><div class="line">qqline(exec.pay)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190812153606.jpeg">
+
+</div>
+<p>除了使用QQ外，另外一种估计数据的实用手段就是计算一组数据的25%，50%与75%分位数。箱线图就能展示这3个计算值，以及这些数据的范围，即中位数±1.5（75%百分位数-25%百分位数）。超过这个范围的数据点有时候称为异常值(outliers)。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">boxplot(exec.pay, ylab=<span class="string">"10,000s of dollars"</span>,ylim=c(<span class="number">0</span>,<span class="number">400</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190812154457.png">
+
+</div>
+<h2 id="散点图与相关scatterplots-and-correlation">散点图与相关(Scatterplots And Correlation)</h2>
+<p>前面提到的方法都是单变量(univariate variables)。而在生物学研究中，我们往往关注两个变量或多个变量之间的关系。一个典型的案例就是Francis Galton通过计算父亲与儿子身高的关系来理解遗传学。如果我们想要计算一下这些数据，我们就能利用这两组数据（也就是父亲的身高这一组数据与儿子的身高这一组数据）的均值与标准差来描述这些数据，因为身高这种数据是符合正态分布的。但是，我们通常这种常规方法无法找出这两组数据的关系，先来看一下散点图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(UsingR)</div><div class="line">data(<span class="string">"father.son"</span>)</div><div class="line">x &lt;- father.son$fheight</div><div class="line">y &lt;- father.son$sheight</div><div class="line">plot(x,y, xlab=<span class="string">"Father's height in inches"</span>,ylab=<span class="string">"Son's height in inches"</span>,main=paste(<span class="string">"Correlation="</span>, signif(cor(x,y),<span class="number">2</span>)))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190812155537.png">
+
+</div>
+<p>这个散点图展示出了一个趋势：父亲越高，儿子就越高。这个趋势可以使用相关系数(correlation coefficient)来表示，这个案例中的相关系数是0.5。也就是说我们可以使用父亲的身高来预测儿子的身高。</p>
+<h2 id="分层stratification">分层(Stratification)</h2>
+<p>现在我们假设一种场景，比如我们随机地选取一个儿子来猜测他的身高，其中儿子这一组数据的平均身高是68.7英寸（），这个身高所占的比例是最大的（可以看直方图），因此我们可以根据这个预测一个儿子的身高。但是，如果我们被告知，这个选中的儿子的父亲身高是72英寸，那么我们还会猜测这个儿子身高是68.7英寸么？</p>
+<p>父亲的身高是高于平均值的，尤其是当这个父亲的身高还高于父亲这一组数据均值的1.75个标准差时。我们有可能会预测，这个父亲的儿子身高是否也高于1.75个标准差？结果发现，这个结果是高估了。为了验证这个结果，我们来看一下，那些身高约为72英寸的父亲的儿子的身高，我们可以对父亲这一组数据进行分层(stratifying)。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">groups &lt;- split(y, round(x))</div><div class="line">boxplot(groups)</div><div class="line">print(mean(y[ round(x) == <span class="number">72</span>]))</div><div class="line"><span class="comment"># [1] 70.67719</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190812161555.png">
+
+</div>
+<p>对数据进行分层后，再绘制箱线图，我们就可以看到每组数据的分布。身高约为72英寸父亲的平均身高是70.7英寸。我们还能看到，分层后的数据的中位数大概是一条直接（箱线图中间的线是中位数值，而非均值）。中位数构成的这条直线比较类似于回归线(regression line)，而回归线的斜率与相关有关。</p>
+<h2 id="二元正态分布bi-variate-normal-distribution">二元正态分布(Bi-variate Normal Distribution)</h2>
+<p>一对随机变量，例如(X,Y)，当它们值的比例可以按照以下公式来表示时，例如a和b，就可以认为它们接近二元正态分布：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190812164350.png">
+
+</div>
+<p>上面的这个公式看起来很复杂，但是背后的原理非常简单。另外一种比较简单的理解就是：先固定一个值x，然后观察当X=x时，所有的点(X,Y)。通常来说，在统计学中我们把这一过程称为设定条件(conditioning)。我们可以根据X来设定Y。如果一对随机变量接近双变量正态分布，那么X=x时，Y的分布也就服从一个正态分布，而x的值可以是任意的，现在我们来看一下身高数据，看一下上述的思路是否符合，身高数据一共分为4层，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">groups &lt;- split(y, round(x))</div><div class="line">mypar(<span class="number">2</span>,<span class="number">2</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> c(<span class="number">5</span>,<span class="number">8</span>,<span class="number">11</span>,<span class="number">14</span>))&#123;</div><div class="line">  qqnorm(groups[[i]], main = paste0(<span class="string">"X="</span>, names(groups)[i],<span class="string">" strate"</span>),</div><div class="line">         ylim=range(y), xlim=c(-<span class="number">2.5</span>, <span class="number">2.5</span>))</div><div class="line">  qqline(groups[[i]])</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190812180851.png">
+
+</div>
+<p>当两个变量服从双变量正态分布时，从数学统计学的公式就可以知道，对于给定的x值，相对应的Y（与X=x配对）平均值为： <span class="math display">\[
+\mu_{Y}+\rho \frac{X-\mu_{X}}{\sigma_{X}} \sigma_{Y}
+\]</span> 从上面公式我们可以知道，这个直线的斜率为<span class="math inline">\(\rho \frac{\sigma_{Y}}{\sigma_{X}}\)</span>，这个直线就是回归直线(regression line)。如果SD一样，那么这个回归线的斜率就是<span class="math inline">\(\rho\)</span>。因此，如果我们对X和Y进行标准化后，那么相关(correlation)就是这个回归直线的斜率。</p>
+<p>这个公式的另外一种表示就是我们可以构建一个预测值<span class="math inline">\(\hat{Y}\)</span>：即对于距离x均值1个SD的x值，我们可以预测相应Y的值，是远离y均值的<span class="math inline">\(\rho\)</span>个SD的值，如下所示： <span class="math display">\[
+\frac{\hat{Y}-\mu_{Y}}{\sigma_{Y}}=\rho \frac{x-\mu_{X}}{\sigma_{X}}
+\]</span> 如果两个变量，即X和Y存在着很好的相关性，那么我们可以预测出相同的SD数目。如果相关性为0，那么我们就无法根据x的值来预测y的值。现在我们在计算一下每层的均值，进而确定回归直线：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">x=( x-mean(x) )/sd(x)</div><div class="line">y=( y-mean(y) )/sd(y)</div><div class="line">means=tapply(y, round(x*<span class="number">4</span>)/<span class="number">4</span>, mean)</div><div class="line">fatherheights=as.numeric(names(means))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">plot(fatherheights, means, ylab=<span class="string">"average of strata of son heights"</span>, ylim=range(fatherheights))</div><div class="line">abline(<span class="number">0</span>, cor(x,y))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190812201906.png">
+
+</div>
+<h2 id="方差解释variance-explained">方差解释(Variance explained)</h2>
+<p>前面提到的条件分布(conditional distribution)的标准差如下所示： <span class="math display">\[
+\sqrt{1-\rho^{2}} \sigma_{Y}
+\]</span> 这个公式与X能够解释Y的多少方差类似，这个解释程度是<span class="math inline">\(\rho^{2} \times 100 \%\)</span>。而上述的那个公式中：Y的方差是<span class="math inline">\(\rho^{2}\)</span>，如果给定X的值，那么Y自身能够解释Y值波动的程度就是$ (1-^{2}) _{Y}^{2} $。这个里我们只需要记住，方差解释(variance explained)这种表述只有在两组数据接近双变量正态分布(bivariate normal distribution)的情况下才有意义（注：对于书中的这段话我没太明白，按照自己的理解来记的笔记）。</p>
+<h2 id="绘图原则">绘图原则</h2>
+<p>优秀数据图主要是为了能够准确清楚地展示你的数据，Karl Broman（注：此人是华盛顿大学生物统计与医学信息学系教授，主要研究统计遗传学）提出了几点绘图中要避开以下操作：</p>
+<ul>
+<li>展示信息太少(Display as little information as possible)；</li>
+<li>阅读体验不好（乱堆图表）(Obscure what you do show (with chart junk))；</li>
+<li>使用伪3D图形，瞎用颜色(Use pseudo-3D and color gratuitously)；</li>
+<li>随意使用饼图（尤其是各种颜色与3D饼图）(Make a pie chart (preferably in color and 3D))；</li>
+<li>没有图例(Use a poorly chosen scale)；</li>
+<li>没有展示有效数字(Ignore significant figures)。</li>
+</ul>
+<h2 id="常见各种图形">常见各种图形</h2>
+<p>这一部分涉及常见的各种图形，例如饼图，柱状图等。</p>
+<h3 id="饼图pie-charts">饼图(pie charts)</h3>
+<p>现在我们来看一个数据，这个数据是2013年的调查的各个浏览器的使用率，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">browsers &lt;- c(Opera=<span class="number">1</span>,Safari=<span class="number">9</span>,Firefox=<span class="number">20</span>,IE=<span class="number">26</span>,Chrome=<span class="number">44</span>)</div><div class="line">pie(browsers,main=<span class="string">"Browser Usage (August 2013)"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813090542.png">
+
+</div>
+<p>但是饼图有很大局限，在R中，我们查看一下<code>pie()</code>函数的说明，如下所示： &gt; “Pie charts are a very bad way of displaying information. The eye is good at judging &gt; linear measures and bad at judging relative areas. A bar chart or dot chart is a preferable &gt; way of displaying this type of data.”</p>
+<p>上述就提到了，饼图展示的信息有限。人眼善于判断线性度量，不善于判断面积度量。因此，使用条形图来展示相关的信息比饼图更好。</p>
+<p>从饼图中我们只能看出每个浏览器的占有率，但是，除非这些占有率接近25%，50%或75%，否则也不太容易看出来，此时如果直接展示数字反而好一些。为了更好地展示数据，现在使用柱状图(barplot)来看一下这些数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">barplot(browsers, main=<span class="string">"Browser Usage (August 2013)"</span>, ylim=c(<span class="number">0</span>,<span class="number">55</span>))</div><div class="line">abline(h=<span class="number">1</span>:<span class="number">5</span> * <span class="number">10</span>)</div><div class="line">barplot(browsers, add=<span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813091355.png">
+
+</div>
+<p>从柱状图上的柱子，以及平行于x轴的几条水平线我们就很容易看到每个浏览器的市场占有率。不过在画柱状图的时候，要避免画成3D的，因为3D图很直观地看到其顶部对应的数字，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813092149.png">
+
+</div>
+<p>更差的是画环形图(donut plot)，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813092246.png">
+
+</div>
+<h3 id="柱状图barplot">柱状图(barplot)</h3>
+<p>这里注明一下，barplot有的翻译为柱状图，有的翻译为条形图，我觉得是一样的，这两种图形的x轴（或y轴）上都是分类变量，而不是连续变量。需要与柱状图进行区分的则是直方图(histogram)，直方图的x轴上是连续变量。</p>
+<p>虽然柱状图在展示百分比方面很有用，但是柱状图经常被错误地用于比较两组数据，在这类应用中，常常用均值作为柱子的高度，使用误差棒来表示标准误，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813093556.png">
+
+</div>
+<p>这种图展示的信息很少，例如没有说明数据的分布情况。其实针对这种情况，使用箱线图(boxplot)更合适，如果数据点比较少，可以直接在箱线图上添加上数据点。如果数据点很多，只用画箱线图，不加数据点注行。如果在箱线图函数<code>boxplot()</code>中添加上<code>range=0</code>参数的话，也可以不绘制离群点(outlier)，现在我们绘制箱线图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">x &lt;- rnorm(<span class="number">8</span>,<span class="number">30</span>,<span class="number">5</span>)</div><div class="line">y &lt;- rnorm(<span class="number">8</span>,<span class="number">38</span>,<span class="number">5</span>)</div><div class="line"></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">dat &lt;- list(Treatment=x,Control=y)</div><div class="line">boxplot(dat,xlab=<span class="string">"Group"</span>,ylab=<span class="string">"Response"</span>,cex=<span class="number">0</span>)</div><div class="line">stripchart(dat,vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,pch=<span class="number">16</span>,add=<span class="literal">TRUE</span>,col=<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813094533.jpeg">
+
+</div>
+<p>从上面的箱线图我们可以看到以下信息： - 数据的中心； - 数据的分布，范围； - 所有的数据点。</p>
+<p>而在柱状图中，我们仅能看到均值与SE，况且SE还与样本的数目(sample size)有关，无法发现数据的分布规律。当我们的数据有离群点或者是有很大拖尾时(very large tails)时，柱状图的一些局限就会更加明显，在下面的图形中我们会觉得这两组数据的差异非常大：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813095001.png">
+
+</div>
+<p>但是，如果我们仔细研究一下这两组数据，就会发现，这两组数据的差异主要是由第二数据的两个离群值导致的，为了解决这个问题，现在我们分别绘制一下常规的箱线图以及经过log转换后的箱线图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line"></div><div class="line">x &lt;- <span class="number">10</span>^rnorm(<span class="number">10</span>,<span class="number">0.2</span>)</div><div class="line">y &lt;- <span class="number">10</span>^rnorm(<span class="number">10</span>,<span class="number">1.2</span>)</div><div class="line"></div><div class="line">dat &lt;- list(Treatment=x,Control=y)</div><div class="line">boxplot(dat,xlab=<span class="string">"Group"</span>,ylab=<span class="string">"Response"</span>,cex=<span class="number">0</span>)</div><div class="line">stripchart(dat,vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,pch=<span class="number">16</span>,add=<span class="literal">TRUE</span>,col=<span class="number">1</span>)</div><div class="line">boxplot(dat,xlab=<span class="string">"Group"</span>,ylab=<span class="string">"Response"</span>,log=<span class="string">"y"</span>,cex=<span class="number">0</span>)</div><div class="line">stripchart(dat,vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,pch=<span class="number">16</span>,add=<span class="literal">TRUE</span>,col=<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813095508.png">
+
+</div>
+<h3 id="散点图scatter-plot">散点图(scatter plot)</h3>
+<p>许多统计分析研究的目标就是找到两个变量的关系。在这些统计结果中通常会报告简单的相关性(correlation)，有时候还会画出相应的图形。但是，仅仅展示出一个回归直线(regression line)还不够，因为直线无法显示出背后的数据，此时最好还要加上数据点，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">x &lt;- rnorm(<span class="number">100</span>,<span class="number">100</span>,<span class="number">10</span>)</div><div class="line">y &lt;- <span class="number">100</span>+<span class="number">10</span>*sqrt(<span class="number">2</span>*(x-min(x)))+rnorm(<span class="number">100</span>,<span class="number">0</span>,<span class="number">10</span>)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">plot(x,y,lwd=<span class="number">2</span>,type=<span class="string">"n"</span>)</div><div class="line">fit &lt;- lm(y~x)</div><div class="line">abline(fit$coef,lwd=<span class="number">2</span>)</div><div class="line">b &lt;- round(fit$coef,<span class="number">4</span>)</div><div class="line">text(<span class="number">78</span>, <span class="number">200</span>, paste(<span class="string">"y ="</span>, b[<span class="number">1</span>], <span class="string">"+"</span>, b[<span class="number">2</span>], <span class="string">"x"</span>), adj=c(<span class="number">0</span>,<span class="number">0.5</span>))</div><div class="line">rho &lt;- round(cor(x,y),<span class="number">4</span>)</div><div class="line">text(<span class="number">78</span>, <span class="number">187</span>,expression(paste(rho,<span class="string">" = 0.8567"</span>)),adj=c(<span class="number">0</span>,<span class="number">0.5</span>))</div><div class="line">plot(x,y,lwd=<span class="number">2</span>)</div><div class="line">fit &lt;- lm(y~x)</div><div class="line">abline(fit$coef,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813100648.jpeg">
+
+</div>
+<h3 id="高度的相关性并不意味着相同high-correlation-does-not-imply-replication">高度的相关性并不意味着相同(High correlation does not imply replication)</h3>
+<p>当出现一个新的技术，或者是在实验室中引入一项新技术时，我们通常会用这些技术来检测相同的样本(replicated sample)，进而绘制出散点图来看一下它们的相关性。高度的相关性(high correlation)用于评估这项新技术是否有重现性(reproducible)。</p>
+<p>但是，相关性有时候也会误导人(misleading)，下面的散点图展示的是一项高通量技术对相同样本的检测结果。这项技术同时输出12626个检测值。在下图的左侧中，我们可以看到原始数据显示出很高的相关性。但是这组数据拖尾严重(very fat tails)，其中有95%的数据是在绿线以下，另外，下图的右侧是经过log转换后的图：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813105226.png">
+
+</div>
+<p>虽然上面两张图都显示出了高度的相关性（都接近1）。这是否就意味着这些数据能够重复？为了研究第二次检测的结果能否重现第一次的检测，我们需要研究这两组数据的差值。为此，我们可以绘制差值与均值的图型，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813112113.png">
+
+</div>
+<p>上面的这种分析方法叫Bland-Altman绘图法，也叫MA图。MA的意思是minus与average，因为在这种图中上，y轴表示了两个样本数据经过log转换后，取的差值，x轴表示的是两个样本的数据经过log转换后，两个数据的平均值。在这张图形中，我们使用的是log2转换，从y轴上可以看到，两次测量后的差值多数情况下是1。这意味着当测量应该相同时，我们将平均观察到2倍的差异。我们现在可以将这种可变性(variability)与检测的差值(differences)进行比较，从而决定这项技术是否达到了我们想要的精度。</p>
+<h3 id="配对数据的柱状图">配对数据的柱状图</h3>
+<p>数据分析的一项常规任务就是比较两组数据。当数据集比较小，并且是配对数据（例如治疗前与治疗后），可以使用两种颜色的柱状图来展示结果，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813165133.png">
+
+</div>
+<p>除此之外，还有更好的展示数据的方式，这些展示方式能够看到治疗效果。第一种就是简单地绘制散点图，从散点图中我们可以发现，多数点都在直线上方。另外一种就是绘制箱线图。 先看散点图，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">12201970</span>)</div><div class="line">before &lt;- runif(<span class="number">6</span>, <span class="number">5</span>, <span class="number">8</span>)</div><div class="line">after &lt;- rnorm(<span class="number">6</span>, before*<span class="number">1.05</span>, <span class="number">2</span>)</div><div class="line">li &lt;- range(c(before, after))</div><div class="line">ymx &lt;- max(abs(after-before))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">plot(before, after, xlab=<span class="string">"Before"</span>, ylab=<span class="string">"After"</span>,</div><div class="line">     ylim=li, xlim=li)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>, lty=<span class="number">2</span>, col=<span class="number">1</span>)</div><div class="line">plot(before, after-before, xlab=<span class="string">"Before"</span>, ylim=c(-ymx, ymx),</div><div class="line">     ylab=<span class="string">"Change (After - Before)"</span>, lwd=<span class="number">2</span>)</div><div class="line">abline(h=<span class="number">0</span>, lty=<span class="number">2</span>, col=<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813165425.png">
+
+</div>
+<p>从上图可以看出来，右侧的图比较像MA图，其实就是相当于把左侧的散点图旋转了一下。</p>
+<p>散点图中的直线并不直观，而箱线图则能很好地显示变化的效果，但是会丧失配对信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">z &lt;- rep(c(<span class="number">0</span>,<span class="number">1</span>), rep(<span class="number">6</span>,<span class="number">2</span>))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">plot(z, c(before, after),</div><div class="line">xaxt=<span class="string">"n"</span>, ylab=<span class="string">"Response"</span>,</div><div class="line">xlab=<span class="string">""</span>, xlim=c(-<span class="number">0.5</span>, <span class="number">1.5</span>))</div><div class="line">axis(side=<span class="number">1</span>, at=c(<span class="number">0</span>,<span class="number">1</span>), c(<span class="string">"Before"</span>,<span class="string">"After"</span>))</div><div class="line">segments(rep(<span class="number">0</span>,<span class="number">6</span>), before, rep(<span class="number">1</span>,<span class="number">6</span>), after, col=<span class="number">1</span>)</div><div class="line">boxplot(before,after,names=c(<span class="string">"Before"</span>,<span class="string">"After"</span>),ylab=<span class="string">"Response"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813170145.png">
+
+</div>
+<h3 id="折线图line-chart">折线图(line chart)</h3>
+<p>先看一个反面典型：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813172337.png">
+
+</div>
+<p>这个折线图是一个伪3D图，它表示的信息不清楚，也许是为了区分这三条曲线，但是，从这3条曲线上的点很难找到对应的数值，这种图不推荐使用。</p>
+<p>现在来看一个比较正常的图表，代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">log_dose &lt;- <span class="number">1</span>:<span class="number">10</span></div><div class="line">Drug_A &lt;- c(<span class="number">0.8</span>, <span class="number">0.75</span>, <span class="number">0.76</span>, <span class="number">0.71</span>, <span class="number">0.73</span>, <span class="number">0.7</span>,<span class="number">0.67</span>,<span class="number">0.66</span>,<span class="number">0.68</span>,<span class="number">0.65</span>)</div><div class="line">Drug_B &lt;- c(<span class="number">0.75</span>,<span class="number">0.73</span>,<span class="number">0.7</span>,<span class="number">0.65</span>,<span class="number">0.62</span>,<span class="number">0.5</span>,<span class="number">0.3</span>,<span class="number">0.28</span>,<span class="number">0.27</span>,<span class="number">0.29</span>)</div><div class="line">Drug_C &lt;- c(<span class="number">0.92</span>,<span class="number">0.9</span>,<span class="number">0.87</span>,<span class="number">0.75</span>,<span class="number">0.74</span>,<span class="number">0.73</span>,<span class="number">0.64</span>,<span class="number">0.6</span>,<span class="number">0.58</span>,<span class="number">0.52</span>)</div><div class="line">x &lt;- data.frame(log_dose,Drug_A,Drug_B,Drug_C)</div><div class="line">plot(x[,<span class="number">1</span>],x[,<span class="number">2</span>],xlab=<span class="string">"log Dose"</span>,ylab=<span class="string">"Proportion survived"</span>,ylim=c(<span class="number">0</span>,<span class="number">1</span>),</div><div class="line">     type=<span class="string">"l"</span>,lwd=<span class="number">2</span>,col=<span class="number">1</span>)</div><div class="line">lines(x[,<span class="number">1</span>],x[,<span class="number">3</span>],lwd=<span class="number">2</span>,col=<span class="number">2</span>)</div><div class="line">lines(x[,<span class="number">1</span>],x[,<span class="number">4</span>],lwd=<span class="number">2</span>,col=<span class="number">3</span>)</div><div class="line">legend(<span class="number">1</span>,<span class="number">0.3</span>,c(<span class="string">"Drug A"</span>,<span class="string">"Drug B"</span>,<span class="string">"Drug C"</span>),lwd=<span class="number">2</span>, col=<span class="number">1</span>:<span class="number">3</span>,horiz=<span class="literal">T</span>,bty = <span class="string">"n"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813174434.jpeg">
+
+</div>
+<h3 id="添加重要信息">添加重要信息</h3>
+<p>在下面的案例中，我们会模拟生成一批数据来研究两组之间的关系：对照组与治疗组。每组分别有3次实验，现在我们使用普通的柱状图来描述一下这两种干预结果，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813182210.png">
+
+</div>
+<p>这类图形并没有很好地展示不同药物剂量的治疗效果，也就是没有展示出量效关系这种重要信息，现在我们使用折线图来展示一下这些信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">x &lt;- <span class="number">1</span>:<span class="number">8</span></div><div class="line">y1 &lt;- <span class="number">0.9</span> - x/<span class="number">80</span> + rnorm(length(x), <span class="number">0</span>, <span class="number">0.02</span>)</div><div class="line">y2 &lt;- <span class="number">0.9</span> - x/<span class="number">40</span> + rnorm(length(x), <span class="number">0</span>, <span class="number">0.02</span>)</div><div class="line">y3 &lt;- <span class="number">0.85</span> - x/<span class="number">30</span> + rnorm(length(x), <span class="number">0</span>, <span class="number">0.02</span>)</div><div class="line">y &lt;- cbind(y1, y2, y3)</div><div class="line"></div><div class="line">z1 &lt;- <span class="number">0.95</span> - x/<span class="number">40</span> + rnorm(length(x), <span class="number">0</span>, <span class="number">0.02</span>)</div><div class="line">z2 &lt;- ilogit(-<span class="number">0.4</span>*(x-<span class="number">4.5</span>) + rnorm(length(x), <span class="number">0</span>, <span class="number">0.04</span>))</div><div class="line">z3 &lt;- ilogit(-<span class="number">0.5</span>*(x-<span class="number">4.5</span>) + rnorm(length(x), <span class="number">0</span>, <span class="number">0.04</span>))</div><div class="line">z1[<span class="number">6</span>:<span class="number">8</span>] &lt;- z1[<span class="number">6</span>:<span class="number">8</span>] - <span class="number">0.18</span>*<span class="number">3</span></div><div class="line">z &lt;- cbind(z1, z2, z3)</div><div class="line">ym &lt;- apply(y, <span class="number">1</span>, mean)</div><div class="line">zm &lt;- apply(z, <span class="number">1</span>, mean)</div><div class="line"></div><div class="line">dev.off()</div><div class="line">png(file=<span class="string">"../fig9b.png"</span>, width=<span class="number">1200</span>, height=<span class="number">1000</span>, res=<span class="number">288</span>,pointsize=<span class="number">12</span>)</div><div class="line">bgcolor &lt;- rgb(<span class="number">0</span>, <span class="number">0</span>, <span class="number">98</span>, maxColorValue=<span class="number">255</span>)</div><div class="line">par(las=<span class="number">1</span>,fg=<span class="string">"white"</span>,col=<span class="string">"white"</span>,col.axis=<span class="string">"white"</span>,col.lab=<span class="string">"white"</span>,</div><div class="line">    bg=bgcolor,mar=c(<span class="number">0.1</span>,<span class="number">0.1</span>,<span class="number">0.1</span>,<span class="number">0.1</span>))</div><div class="line">plot(x, y1, ylim=c(<span class="number">0</span>,<span class="number">1</span>), type=<span class="string">"n"</span>, xlab=<span class="string">"Dose"</span>, ylab=<span class="string">"Response"</span>)</div><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">3</span>) lines(x, y[,i], col=<span class="number">1</span>, lwd=<span class="number">1</span>, lty=<span class="number">2</span>)</div><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">3</span>) lines(x, z[,i], col=<span class="number">2</span>, lwd=<span class="number">1</span>, lty=<span class="number">2</span>)</div><div class="line">lines(x, ym, col=<span class="number">1</span>, lwd=<span class="number">2</span>)</div><div class="line">lines(x, zm, col=<span class="number">2</span>, lwd=<span class="number">2</span>)</div><div class="line">legend(<span class="string">"bottomleft"</span>, lwd=<span class="number">2</span>, col=c(<span class="number">1</span>, <span class="number">2</span>), c(<span class="string">"Control"</span>, <span class="string">"Treated"</span>))</div><div class="line">dev.off()</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190813182044.png">
+
+</div>
+<h2 id="有效数字">有效数字</h2>
+<p>R的统计结果的小数点数位很多，有的时候直接粘贴比较麻烦，此时就可以减少一些小数位，先来看一批数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">heights &lt;- cbind(rnorm(<span class="number">8</span>,<span class="number">73</span>,<span class="number">3</span>),rnorm(<span class="number">8</span>,<span class="number">73</span>,<span class="number">3</span>),rnorm(<span class="number">8</span>,<span class="number">80</span>,<span class="number">3</span>),</div><div class="line">                 rnorm(<span class="number">8</span>,<span class="number">78</span>,<span class="number">3</span>),rnorm(<span class="number">8</span>,<span class="number">78</span>,<span class="number">3</span>))</div><div class="line">colnames(heights)&lt;-c(<span class="string">"SG"</span>,<span class="string">"PG"</span>,<span class="string">"C"</span>,<span class="string">"PF"</span>,<span class="string">"SF"</span>)</div><div class="line">rownames(heights)&lt;- paste(<span class="string">"team"</span>,<span class="number">1</span>:<span class="number">8</span>)</div><div class="line">heights</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; heights</div><div class="line">             SG       PG        C       PF       SF</div><div class="line">team <span class="number">1</span> <span class="number">70.28569</span> <span class="number">73.53063</span> <span class="number">77.97624</span> <span class="number">75.53098</span> <span class="number">79.91438</span></div><div class="line">team <span class="number">2</span> <span class="number">69.13691</span> <span class="number">72.98393</span> <span class="number">79.53870</span> <span class="number">77.05309</span> <span class="number">73.23242</span></div><div class="line">team <span class="number">3</span> <span class="number">69.66017</span> <span class="number">70.11667</span> <span class="number">80.43766</span> <span class="number">80.39365</span> <span class="number">76.69519</span></div><div class="line">team <span class="number">4</span> <span class="number">73.95542</span> <span class="number">72.61165</span> <span class="number">77.36032</span> <span class="number">79.48383</span> <span class="number">75.00610</span></div><div class="line">team <span class="number">5</span> <span class="number">73.36905</span> <span class="number">77.19182</span> <span class="number">78.59511</span> <span class="number">78.28309</span> <span class="number">81.98515</span></div><div class="line">team <span class="number">6</span> <span class="number">74.03342</span> <span class="number">67.47227</span> <span class="number">79.25801</span> <span class="number">70.24398</span> <span class="number">77.07891</span></div><div class="line">team <span class="number">7</span> <span class="number">74.14659</span> <span class="number">76.21967</span> <span class="number">81.25641</span> <span class="number">74.01896</span> <span class="number">80.90877</span></div><div class="line">team <span class="number">8</span> <span class="number">70.57122</span> <span class="number">68.65044</span> <span class="number">84.30345</span> <span class="number">76.18054</span> <span class="number">77.83099</span></div></pre></td></tr></table></figure>
+<p>上述的这些数字精确到小点第5位，很多时候在写实验结果时根本没必要，此时使用<code>round()</code>函数，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt; round(heights,<span class="number">1</span>)</div><div class="line">         SG   PG    C   PF   SF</div><div class="line">team <span class="number">1</span> <span class="number">70.3</span> <span class="number">73.5</span> <span class="number">78.0</span> <span class="number">75.5</span> <span class="number">79.9</span></div><div class="line">team <span class="number">2</span> <span class="number">69.1</span> <span class="number">73.0</span> <span class="number">79.5</span> <span class="number">77.1</span> <span class="number">73.2</span></div><div class="line">team <span class="number">3</span> <span class="number">69.7</span> <span class="number">70.1</span> <span class="number">80.4</span> <span class="number">80.4</span> <span class="number">76.7</span></div><div class="line">team <span class="number">4</span> <span class="number">74.0</span> <span class="number">72.6</span> <span class="number">77.4</span> <span class="number">79.5</span> <span class="number">75.0</span></div><div class="line">team <span class="number">5</span> <span class="number">73.4</span> <span class="number">77.2</span> <span class="number">78.6</span> <span class="number">78.3</span> <span class="number">82.0</span></div><div class="line">team <span class="number">6</span> <span class="number">74.0</span> <span class="number">67.5</span> <span class="number">79.3</span> <span class="number">70.2</span> <span class="number">77.1</span></div><div class="line">team <span class="number">7</span> <span class="number">74.1</span> <span class="number">76.2</span> <span class="number">81.3</span> <span class="number">74.0</span> <span class="number">80.9</span></div><div class="line">team <span class="number">8</span> <span class="number">70.6</span> <span class="number">68.7</span> <span class="number">84.3</span> <span class="number">76.2</span> <span class="number">77.8</span></div></pre></td></tr></table></figure>
+<h2 id="相关的误解misunderstanding-correlation">相关的误解(Misunderstanding Correlation)</h2>
+<p>相关性(correlation)广泛用于表示数据的重现性(reproducibility)，例如在基因组学(genomics)常会用到。但在数学角度来看，相关性与重现性关系不大，这里简单描述三个关于相关性的问题。</p>
+<p>关于相关性最大的误用就是计算那些不服从双变量正态分布数据的相关性。前面提到，如果两组数据服从双变量正态分布，那么使用均值、标准差以及相关性来描述这些数据是合适的。但是，还有很多数据不是双变量正态分布。例如基因表达的数据就不服从双变量正态分布，这种数据的右侧有着扁平的尾巴(with a very fat right tail)。</p>
+<p>研究两个重复检测数据重现性(reproducibility)的标准做法是先计算一下这两组数据的距离，如下所示： <span class="math display">\[
+\sqrt{\sum_{i=1}^{n} d_{i}^{2}} \text { with } d_{i}=x_{i}-y_{i}
+\]</span> 当两次检测的数值重复性很好的时候，这个度量(metric)是降低的，当这个值是0的时候（其实就相当于两次检测的结果完全一样），结果最完美（这只是理想情况）。使用这种度量的另外一个好处就是，如果我们将它除以N，那么得到的数值就是就是作为<span class="math inline">\(d_{1},\dots,d_{N}\)</span>的标准差（此时我们假设d是大于0的）（原文是if we assume the d average out to 0，我的理解是，我们假设d的平均值为0，或者是d的平均值大于0）。如果将d视为残差(residuals)，那么这个统计量（已经除以N了）就相当于RMSE（全称为Root Mean Squared Error，译为均方根误差），我们称为<code>距离度量(distance metric)</code>。此外，这个统计量的单位与检测值的单位是一样的，因此能很好地解释结果。</p>
+<p>使用相关性(correlation)是另外一个局限是，相关性计算无法检测到由于平均值改变而导致的不可重复性（原文是：Another limitation of the correlation is that it does not detect cases that are not reproducible due to average changes.），而距离度量则能检测到这些差异，因此前面的公式可以写为下面的形式： <span class="math display">\[
+\frac{1}{n} \sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}=\frac{1}{n} \sum_{i=1}^{n}\left[\left(x_{i}-\mu_{x}\right)-\left(y_{i}-\mu_{y}\right)+\left(\mu_{x}-\mu_{y}\right)\right]^{2}
+\]</span> 其中<span class="math inline">\(\mu_{x}\)</span>和<span class="math inline">\(\mu_{y}\)</span>表示的是两次检测的均值，因此上面的公式还可以写为如下形式： <span class="math display">\[
+\frac{1}{n} \sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}=\frac{1}{n} \sum_{i=1}^{n}\left(x_{i}-\mu_{x}\right)^{2}+\frac{1}{n} \sum_{i=1}^{n}\left(y_{i}-\mu_{y}\right)^{2}+\left(\mu_{x}-\mu_{y}\right)^{2}+\frac{1}{n} \sum_{i=1}^{n}\left(x_{i}-\mu_{x}\right)\left(y_{i}-\mu_{y}\right)
+\]</span> 如果我们假设前后两次检测的结果的方差都是1，那么上面的公式就可以简化为如下形式： <span class="math display">\[
+\frac{1}{n} \sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}=2+\left(\mu_{x}-\mu_{y}\right)^{2}-2 \rho
+\]</span> 其中<span class="math inline">\(\rho\)</span>表示相关性，因此我们可以直接看到距离度量(distance metric)与相关性(correlation)的关系，但是，距离度量与相关性的一个重要差异就是距离度量含有<span class="math inline">\(\left(\mu_{x}-\mu_{y}\right)^{2}\)</span>，因此，它可以检测到那些由于大量均值变化而导致的无法重复。</p>
+<p>相关性不能当成重复性(reproducibility)指标的另外一个因素就是，相关性没有单位(units)。我们使用一个公式就能看到这种局限，假如我们有两个变量，分别为<code>x</code>和<code>y</code>，其中<code>y=x+d</code>。如果<code>d</code>的方差越大，那么<code>x+d</code>就越无法重现<code>x</code>，也就是说，如果<code>d</code>这个数值波动越大，表示的就是第二次检测与第一次检测的数值偏差越大，进而可以得出结果：两次检测数据之间的重复性越差。而<code>距离度量(distrance metric)</code>仅取决于<code>d</code>的方差，也就是说它只取决于前后两次检测的偏差程度，它表示的是就是重复性的好坏，而相关性还依赖于<code>x</code>的方差，如果<code>d</code>与<code>x</code>是独立的，那么相关性的公式就如下所示： <span class="math display">\[
+\operatorname{cor}(x, y)=\frac{1}{\sqrt{1+\operatorname{var}(d) / \operatorname{var}(x)}}
+\]</span> 从上面的公式我们就可以看出来，相关性取决于<code>d</code>的方差与<code>x</code>的方差，这就说明了，即使相关性接近于1，也无法说明重复性很好。具体来说就是，无论<code>d</code>的方差怎么样，我们通过增加<code>x</code>的方差，就可以使相关系数随意地接近于1。</p>
+<h2 id="练习">练习</h2>
+<p>P131</p>
+<h2 id="异常值的总结">异常值的总结</h2>
+<p>正态分布在分析生命科学相关数据中有着重要作用，但是，由于相关检测仪器的复杂性，也会偶尔观察到一些异常值。例如某些扫描仪的缺陷会出现几个异常值的点，或者说是PCR过程中会产生一些偏倚。</p>
+<p>因此我们往往会遇到一些情况，即在一群数据中，除了某个异常值外，其余的数据符合正态分布，如下所示： <figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">x &lt;- c(rnorm(<span class="number">100</span>,<span class="number">0</span>,<span class="number">1</span>))</div><div class="line">x[<span class="number">23</span>] &lt;- <span class="number">100</span></div><div class="line">boxplot(x)</div></pre></td></tr></table></figure></p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190815184258.png">
+
+</div>
+<p>例如在上面的图形中，有一个点的数值是100，在统计学中，我们将这种点称为异常值(outliers)。一小部分的异常值会严重误导我们的数据分析，例如，这组数据中的均值与方差差就会远远偏离实际值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; cat(<span class="string">"The average is"</span>,mean(x),<span class="string">"and the SD is"</span>,sd(x))</div><div class="line">The average is <span class="number">1.108142</span> and the SD is <span class="number">10.02938</span></div></pre></td></tr></table></figure>
+<p>我们生成的数据是标准正态分布，也就是均值为1，标准差为0，而加了一个异常值后，均值就变成了1.108142，标准差就变成了10.02938。</p>
+<h3 id="中位数">中位数</h3>
+<p>中位数的定义就是，将一组数据按从小到大的顺序排列，这个数字位于中间，有50%的数字大于它，有50%的数字小于它，对于含有异常值的一组数据来说，中位数比较稳健(robust)，现在我们来看一下我们前面数据的中位数（理论上应该比较接近于0），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">median(x)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; median(x)</div><div class="line">[<span class="number">1</span>] <span class="number">0.1684483</span></div></pre></td></tr></table></figure>
+<h3 id="中位数绝对偏差the-median-absolute-deviationmad">中位数绝对偏差(The median absolute deviation,MAD)</h3>
+<p>中位数绝对偏差，即The median absolute deviation，缩写为MAD，它是对标准差的稳健性描述。它的计算方法为：</p>
+<p>第一步：计算每个数据点与中位数的差值；</p>
+<p>第二步：取第一步中的绝对值；</p>
+<p>第三步：取第二步中绝对值的中位数，再乘以1.4826。</p>
+<p>其中，1.4826是一个比例因子(scaling factor )，MAD是一个无偏估计，现在我们使用MAD来估计前面的那组数据（就是服从标准正态分布的那组数据），那么它的值就非常接近于1了，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mad(x)</div><div class="line">[<span class="number">1</span>] <span class="number">0.8857141</span></div></pre></td></tr></table></figure>
+<h3 id="spearman相关系数">Spearman相关系数</h3>
+<p>前面我们提到，相关性对异常值比较敏感，这里我们构建了两组独立的数据，基中它们都含有以前面类似的异常值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">x=c(rnorm(<span class="number">100</span>,<span class="number">0</span>,<span class="number">1</span>)) <span class="comment">##real distribution</span></div><div class="line">x[<span class="number">23</span>] &lt;- <span class="number">100</span> <span class="comment">##mistake made in 23th measurement</span></div><div class="line">y=c(rnorm(<span class="number">100</span>,<span class="number">0</span>,<span class="number">1</span>)) <span class="comment">##real distribution</span></div><div class="line">y[<span class="number">23</span>] &lt;- <span class="number">84</span> <span class="comment">##similar mistake made in 23th measurement</span></div><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">plot(x,y,main=paste0(<span class="string">"correlation="</span>,round(cor(x,y),<span class="number">3</span>)),pch=<span class="number">21</span>,bg=<span class="number">1</span>,xlim=c(-<span class="number">3</span>,<span class="number">100</span>),ylim=c(-<span class="number">3</span>,<span class="number">100</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190815190642.jpeg">
+
+</div>
+<p>Spearman相关系数遵循中位数与MAD的基本思想，也就是使用了分位数(quantiles)的原理。这个原理很简单：我们将每个数据集转换为秩(rank)，然后计算它们的相关性，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">plot(x,y,main=paste0(<span class="string">"correlation="</span>,round(cor(x,y),<span class="number">3</span>)),pch=<span class="number">21</span>,bg=<span class="number">1</span>,xlim=c(-<span class="number">3</span>,<span class="number">100</span>),ylim=c(-<span class="number">3</span>,<span class="number">100</span>))</div><div class="line">plot(rank(x),rank(y),main=paste0(<span class="string">"correlation="</span>,round(cor(x,y,method=<span class="string">"spearman"</span>),<span class="number">3</span>)),pch=<span class="number">21</span>,bg=<span class="number">1</span>,xlim=c(-<span class="number">3</span>,<span class="number">100</span>),ylim=c(-<span class="number">3</span>,<span class="number">100</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190815190916.jpeg">
+
+</div>
+<p>从上面的结果我们可以知道，这些统计量对异常值很稳健，但为什么我们会使用那些不稳健的相关性计算方法呢？通常来说，如果我们知道异常值，那么我们最好使用中位数和MAD来替代均值与标准差来描述一组数据。但是，与非稳健性的相关性计算方法相比，这些稳健的统计方法的功效比较低。</p>
+<h3 id="对数比的对称性symmetry-of-log-ratio">对数比的对称性(Symmetry of log ratio)</h3>
+<p>比值(ratio)通常并不对称，现在我们来模拟一组比值来看一下，这组比值表示的是两个样本中100个基因的比值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">x &lt;- <span class="number">2</span>^(rnorm(<span class="number">100</span>))</div><div class="line">y &lt;- <span class="number">2</span>^(rnorm(<span class="number">100</span>))</div><div class="line">ratios &lt;- x / y</div></pre></td></tr></table></figure>
+<p>在生命科学中，我们经常使用比值或表达倍数(fold changes, FC)。假设现在们就在研究某个因素干预前后基因的变化的比值。因此在这些数据中，有些比值大于1，就表示经过干预后，基因表达上升。如果干预没有效果，那么这些比值小于1和大于1的数目是差不多的，通过直方图我们就可以看到干预后的基因变化量，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">hist(ratios)</div><div class="line">logratios &lt;- log2(ratios)</div><div class="line">hist(logratios)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190815192005.jpeg">
+
+</div>
+<p>从上面的这两张图我们可以看到，这些数据并不关于1对称。例如，1/32比32/1更接近于1，其实这两个数字表示的比值意义其实是相反的，一个是降低了32倍，一个是升高了32倍，但是它们不对称。如果我们经过了log转换，这两个数值就会关于0对称，转换的过程如下所示： <span class="math display">\[
+\log (x / y)=\log (x)-\log (y)=-(\log (y)-\log (x))=\log (y / x)
+\]</span> 现在我们看一下这些数据点，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190815192411.png">
+
+</div>
+<p>在生命科学中，经常使用log转换，这是因为100倍的变化可能是100/1或1/100，但是1/100比100/1更接近于1。</p>
+<h2 id="wilcoxon秩和检测wilcoxon-rank-sum-test">Wilcoxon秩和检测(Wilcoxon Rank Sum Test)</h2>
+<p>从前面内容我们可以知道，样本的均值(mean)和SD对异常值(outlier)敏感。t检验的计算原理就是均值与SD。因此在有异常值存在的情况下，Wilcoxon秩和检验（其本质与Mann-Whitney检验）就成了一种替代选择。</p>
+<p>在下面的代码中，我们进行了t检验（其零假设为真）。当使用这些原始数据进行计算时，t检验与Wilcoxon检验的p值都大于0.05，但是，当我们在每个样本中故意错误地更改了一个观测值后，并将其输入计算过程，此时，t检验就会计算出一个小p值，而Wilcoxon检验则不会这样，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">set.seed(<span class="number">779</span>) </div><div class="line"><span class="comment">##779 picked for illustration purposes</span></div><div class="line">N=<span class="number">25</span></div><div class="line">x&lt;- rnorm(N,<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">y&lt;- rnorm(N,<span class="number">0</span>,<span class="number">1</span>)</div><div class="line">cat(<span class="string">"t-test pval:"</span>,t.test(x,y)$p.value,<span class="string">"\n"</span>)</div><div class="line">cat(<span class="string">"Wilcox test pval:"</span>,wilcox.test(x,y)$p.value,<span class="string">"\n"</span>)</div><div class="line">x[<span class="number">1</span>] &lt;- <span class="number">5</span></div><div class="line">x[<span class="number">2</span>] &lt;- <span class="number">7</span></div><div class="line">cat(<span class="string">"t-test pval:"</span>,t.test(x,y)$p.value,<span class="string">"\n"</span>)</div><div class="line"></div><div class="line">cat(<span class="string">"Wilcox test pval:"</span>,wilcox.test(x,y)$p.value,<span class="string">"\n"</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; cat(<span class="string">"t-test pval:"</span>,t.test(x,y)$p.value,<span class="string">"\n"</span>)</div><div class="line">t-test pval: <span class="number">0.1589672</span> </div><div class="line">&gt; cat(<span class="string">"Wilcox test pval:"</span>,wilcox.test(x,y)$p.value,<span class="string">"\n"</span>)</div><div class="line">Wilcox test pval: <span class="number">0.3066718</span> </div><div class="line">&gt; x[<span class="number">1</span>] &lt;- <span class="number">5</span></div><div class="line">&gt; x[<span class="number">2</span>] &lt;- <span class="number">7</span></div><div class="line">&gt; cat(<span class="string">"t-test pval:"</span>,t.test(x,y)$p.value,<span class="string">"\n"</span>)</div><div class="line">t-test pval: <span class="number">0.04439948</span> </div><div class="line">&gt; </div><div class="line">&gt; cat(<span class="string">"Wilcox test pval:"</span>,wilcox.test(x,y)$p.value,<span class="string">"\n"</span>)</div><div class="line">Wilcox test pval: <span class="number">0.1310212</span></div></pre></td></tr></table></figure>
+<h3 id="wilcoxon检验的基本思想">Wilcoxon检验的基本思想</h3>
+<p>Wilcoxon检验的基本思想如下所示：</p>
+<ol style="list-style-type: decimal">
+<li>汇总所有数据；</li>
+<li>将数据的值转换为秩(rank)，也就是排序；</li>
+<li>然后将这些秩再按原来的组别分开；</li>
+<li>计算出每组秩的总和，进行检验。</li>
+</ol>
+<p>检验的过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">stripchart(list(x,y),vertical=<span class="literal">TRUE</span>,ylim=c(-<span class="number">7</span>,<span class="number">7</span>),ylab=<span class="string">"Observations"</span>,pch=<span class="number">21</span>,bg=<span class="number">1</span>)</div><div class="line">abline(h=<span class="number">0</span>)</div><div class="line">xrank&lt;-rank(c(x,y))[seq(along=x)]</div><div class="line">yrank&lt;-rank(c(x,y))[-seq(along=y)]</div><div class="line">stripchart(list(xrank,yrank),vertical=<span class="literal">TRUE</span>,ylab=<span class="string">"Ranks"</span>,pch=<span class="number">21</span>,bg=<span class="number">1</span>,cex=<span class="number">1.25</span>)</div><div class="line">ws &lt;- sapply(x,<span class="keyword">function</span>(z) rank(c(z,y))[<span class="number">1</span>]-<span class="number">1</span>)</div><div class="line">text( rep(<span class="number">1.05</span>,length(ws)), xrank, ws, cex=<span class="number">0.8</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190816082005.jpeg">
+
+</div>
+<p>上图是含有异常值的两个图表，左侧是原始图形，它含有的异常值，右则是将数值点转换为秩后的图形，可以发现右侧的数据分布就比较正常了，没有异常值。</p>
+<p>秩和检验中的W值是对第一组相对于第二组的秩。通过排列组合(combinatorics)，我们可以精确地计算出W的p值。我们也可以使用CLT来计算，因为W是近拉于正态分布的，下面我们构建了z-score来进行计算，如下所示；</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">W &lt;-sum(ws)</div><div class="line">W</div><div class="line">n1&lt;-length(x);n2&lt;-length(y)</div><div class="line">Z &lt;- (mean(ws)-n2/<span class="number">2</span>)/ sqrt(n2*(n1+n2+<span class="number">1</span>)/<span class="number">12</span>/n1)</div><div class="line">print(Z)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; W &lt;-sum(ws)</div><div class="line">&gt; W</div><div class="line">[<span class="number">1</span>] <span class="number">391</span></div><div class="line">&gt; n1&lt;-length(x);n2&lt;-length(y)</div><div class="line">&gt; Z &lt;- (mean(ws)-n2/<span class="number">2</span>)/ sqrt(n2*(n1+n2+<span class="number">1</span>)/<span class="number">12</span>/n1)</div><div class="line">&gt; print(Z)</div><div class="line">[<span class="number">1</span>] <span class="number">1.523124</span></div></pre></td></tr></table></figure>
+<p>在这个计算过程中，我们得到了Z值，这个Z值对应的p值大于0.05。</p>
+<h2 id="练习-1">练习</h2>
+<p>P140</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/07/Data Analysis for the life sciences/DALS007_Inference06_AssociationTests/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/07/Data Analysis for the life sciences/DALS007_Inference06_AssociationTests/" itemprop="url">DALS007-统计推断(Inference)06-关联检验(Association Tests)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-07T12:00:00+08:00">
+                2019-08-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,706
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第6部分。这一部分的主要内容涉及卡方检验。</p>
+<h2 id="关联检验">关联检验</h2>
+<p>前面所提到的案例都是普通的统计学案例，这些普通案例指的是，它们的数据是二元的(binary)，分类的(categorical)或有序的(ordinal)。现在我们考虑一种特殊的案例，例如基因型数据，现在我们有两组基因型数据，一组基因是AA/Aa，另外一组是aa（某个特定疾病的对照）。现在我们的问题是，这个基因型(genotype)是否与疾病相关。这个案例与我们前面提到的案例就有点像了，我们有两个总体，即AA/Aa与aa，我们使用1或0来表示它们对应的疾病状态，其中0是不患病，1是患病的。此时我们不能使用t检验，因为这种数据明显不符合正态分布，无法使用t检验。如果样本足够大的话，可以使用CLT，否则，可以使用关联检验(association test)。</p>
+<h2 id="女士品茶">女士品茶</h2>
+<p>关于假设检验最有名的一个案例就是Fisher提出的。这个案例大概是这个样子的，一名女士声称，如果牛奶与红茶加入的先后顺序不同，得到的奶茶口味也不同，并且她自己能品尝出来。Fisher就给了4杯奶茶，这4杯奶茶加入的花与牛奶顺序是不同的，是随机的。后来这个女士品尝对了3个，此时，我们能认为这个女士确实有这种能力么，她品尝出的这3杯奶茶是否是出于偶然因素？假设检验就能回答这个问题，并且能够对这种偶然因素进行定量。</p>
+<p>现在我们提出我们的基础问题：假如这个女士品尝出的这3杯奶茶是她自己瞎猜（瞎猜说明她没有品尝出奶茶这种能力），并且猜对了，那么她瞎猜对3杯，或者是比3杯更难发生的事件（例如猜对4杯）的概率是多少？现在我们做一个零假设，假设她能猜对4杯，这个事件的概率是多少？</p>
+<p>现在我们就把这个事件再简化一下，我们做一个零假设，我们可以把女士品尝这个特殊案例看作是从一个含有4个绿球（正确答案）和4个红球（错误答案）的瓮中挑出4个小球的试验。</p>
+<p>零假设就是：这个女士品尝出正确奶茶的结果纯粹是她自己瞎猜的，也就是说，每个小球有着相同的机会被挑中。现在计算一下每个事件的概率，那么挑中3个绿球的概率就是： <span class="math display">\[
+\left(\begin{array}{l}{4} \\ {3}\end{array}\right)\left(\begin{array}{l}{4} \\ {1}\end{array}\right) /\left(\begin{array}{l}{8} \\ {4}\end{array}\right)=16 / 70
+\]</span> 挑中4个绿球的概率是： <span class="math display">\[
+\left(\begin{array}{l}{4} \\ {4}\end{array}\right)\left(\begin{array}{l}{4} \\ {0}\end{array}\right) /\left(\begin{array}{l}{8} \\ {4}\end{array}\right)=1 / 70
+\]</span> 现在我们把这两个数值相应，就是约等于0.24，这个数字表示，这个女士能够品尝对3杯奶茶，甚至比3杯奶茶这个事件更加极端的概率（例如4杯奶茶），这就是p值。这个p值产生的过程就是Fisher精确检验(<code>Fisher's exact test</code>)，这类数据服从超几何分布(<code>hypergeometric distribution</code>)。</p>
+<h2 id="二联表">二联表</h2>
+<p>前面提到的数据我们可以使用二联表来创建，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tab &lt;- matrix(c(<span class="number">3</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">3</span>),<span class="number">2</span>,<span class="number">2</span>)</div><div class="line">rownames(tab)&lt;-c(<span class="string">"Poured Before"</span>,<span class="string">"Poured After"</span>)</div><div class="line">colnames(tab)&lt;-c(<span class="string">"Guessed before"</span>,<span class="string">"Guessed after"</span>)</div><div class="line">tab</div></pre></td></tr></table></figure>
+<p>数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; tab</div><div class="line">              Guessed before Guessed after</div><div class="line">Poured Before              <span class="number">3</span>             <span class="number">1</span></div><div class="line">Poured After               <span class="number">1</span>             <span class="number">3</span></div></pre></td></tr></table></figure>
+<p>使用<code>fisher.test()</code>这个函数就能计算出p值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fisher.test(tab,alternative=<span class="string">"greater"</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; fisher.test(tab,alternative=<span class="string">"greater"</span>)</div><div class="line"></div><div class="line">	Fisher<span class="string">'s Exact Test for Count Data</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">data:  tab</span></div><div class="line"><span class="string">p-value = 0.2429</span></div><div class="line"><span class="string">alternative hypothesis: true odds ratio is greater than 1</span></div><div class="line"><span class="string">95 percent confidence interval:</span></div><div class="line"><span class="string"> 0.3135693       Inf</span></div><div class="line"><span class="string">sample estimates:</span></div><div class="line"><span class="string">odds ratio </span></div><div class="line"><span class="string">  6.408309</span></div></pre></td></tr></table></figure>
+<h2 id="卡方检验">卡方检验</h2>
+<p>GWAS全称是Genome-wide association studies，即全基因组关联分析。这种分析的统计结果常用曼哈顿图(Manhattan)图来表示。曼哈顿图的y轴是p值的负的log值（底为10），这个p值则是通过计算数百万个SNP的关联检验得到的。x轴通常是染色体的位置（例如chromosome 1 to 22, X,Y等）。这引起p值的计算类似于前面提到的女士品茶的计算过程。但是，在女士品茶那个案例中，绿球与红球的数目是固定的，针对每种事件的发生次数也是固定的，换句话讲，在列联表中，行与列的中的数字之和是固定的。这种限定条件就对二联表中所有的可能性进行了约束，并且还可以使用超几何分布来计算p值。但是，实际情况并非如此，这时，可以使用另外一种方法，即卡方检验(Chi-squared test)。</p>
+<p>假如我们有250个人，他们中有一些人患有某种疾病，剩下的则不患。在这些人中，纯合子(aa)有50人，这些纯合子中又有20%的人患病，即有10名患有该病，而非纯合子(AA/Aa)的人中则有10%患有该病。如果我们再挑250个人，那么又是什么情况呢？</p>
+<p>现在我们先根据既有的数据来过计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">disease=factor(c(rep(<span class="number">0</span>,<span class="number">180</span>),rep(<span class="number">1</span>,<span class="number">20</span>),rep(<span class="number">0</span>,<span class="number">40</span>),rep(<span class="number">1</span>,<span class="number">10</span>)),</div><div class="line">labels=c(<span class="string">"control"</span>,<span class="string">"cases"</span>))</div><div class="line">genotype=factor(c(rep(<span class="string">"AA/Aa"</span>,<span class="number">200</span>),rep(<span class="string">"aa"</span>,<span class="number">50</span>)),</div><div class="line">levels=c(<span class="string">"AA/Aa"</span>,<span class="string">"aa"</span>))</div><div class="line">dat &lt;- data.frame(disease, genotype)</div><div class="line">dat &lt;- dat[sample(nrow(dat)),] <span class="comment">#shuffle them up</span></div><div class="line">head(dat)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; head(dat)</div><div class="line">    disease genotype</div><div class="line"><span class="number">130</span> control    AA/Aa</div><div class="line"><span class="number">191</span>   cases    AA/Aa</div><div class="line"><span class="number">187</span>   cases    AA/Aa</div><div class="line"><span class="number">233</span> control       aa</div><div class="line"><span class="number">144</span> control    AA/Aa</div><div class="line"><span class="number">91</span>  control    AA/Aa</div></pre></td></tr></table></figure>
+<p>使用<code>table()</code>函数可以创建一个列联表，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">table(genotype)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; table(genotype)</div><div class="line">genotype</div><div class="line">AA/Aa    aa </div><div class="line">  <span class="number">200</span>    <span class="number">50</span></div></pre></td></tr></table></figure>
+<p>查看一下疾病的列联表，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">table(disease)</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; table(disease)</div><div class="line">disease</div><div class="line">control   cases </div><div class="line">    <span class="number">220</span>      <span class="number">30</span></div></pre></td></tr></table></figure>
+<p>现在把基因型与疾病关联起来，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tab &lt;- table(genotype,disease)</div><div class="line">tab</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; tab</div><div class="line">        disease</div><div class="line">genotype control cases</div><div class="line">   AA/Aa     <span class="number">180</span>    <span class="number">20</span></div><div class="line">   aa         <span class="number">40</span>    <span class="number">10</span></div></pre></td></tr></table></figure>
+<p>从上面结果可以看出来，我们使用了2个因素，即基因型，疾病，函数<code>table()</code>返回了<code>2X2</code>列联表。</p>
+<p>对于上述的这种数据，我们通常会使用比数比(OR, odds ratio)来表示。现在我们计算一下<code>aa</code>的比数(odd)，即<code>10/40</code>，也就是说在50个纯合子(aa)中，有10名患病，40名不患病，这个数值是患病与不患病的比值。那么AA/Aa这种基因型患病的比数为20/180，这两个比值再进行比，就是比数比(odd ratio)，即：<code>(10/40)/(20/180)</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(tab[<span class="number">2</span>,<span class="number">2</span>]/tab[<span class="number">2</span>,<span class="number">1</span>]) / (tab[<span class="number">1</span>,<span class="number">2</span>]/tab[<span class="number">1</span>,<span class="number">1</span>])</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; (tab[<span class="number">2</span>,<span class="number">2</span>]/tab[<span class="number">2</span>,<span class="number">1</span>]) / (tab[<span class="number">1</span>,<span class="number">2</span>]/tab[<span class="number">1</span>,<span class="number">1</span>])</div><div class="line">[<span class="number">1</span>] <span class="number">2.25</span></div></pre></td></tr></table></figure>
+<p>我们并不使用OR来直接计算p值。相反，我们会先假设基因型与疾病没有关联，然后计算出表格中每个单元格的期望数值。在零假设下，含有200个人的AA/Aa和含有50个人的aa都被计算出相应的患病数，把他们都当成一个总体，那么患病率是：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p=mean(disease==<span class="string">"cases"</span>)</div><div class="line">p</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; p</div><div class="line">[<span class="number">1</span>] <span class="number">0.12</span></div></pre></td></tr></table></figure>
+<p>那么这个表格的期望值是（期望值是使用每组的人数乘以发病率）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">expected &lt;- rbind(c(<span class="number">1</span>-p,p)*sum(genotype==<span class="string">"AA/Aa"</span>),</div><div class="line">c(<span class="number">1</span>-p,p)*sum(genotype==<span class="string">"aa"</span>))</div><div class="line">dimnames(expected)&lt;-dimnames(tab)</div><div class="line">expected</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; expected</div><div class="line">        disease</div><div class="line">genotype control cases</div><div class="line">   AA/Aa     <span class="number">176</span>    <span class="number">24</span></div><div class="line">   aa         <span class="number">44</span>     <span class="number">6</span></div></pre></td></tr></table></figure>
+<p>卡方检验的p值计算结果如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chisq.test(tab)$p.value</div></pre></td></tr></table></figure>
+<p>结果为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; chisq.test(tab)$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">0.08857435</span></div></pre></td></tr></table></figure>
+<h2 id="大样本小p值">大样本，小p值</h2>
+<p>前面提到，在报道一项发现时，仅报道p值是不合适。许多遗传学关联研究似乎过于强调p值，在这些研究中，研究者们使用了大量的样本，因此他们报道的p值非常低。但是，如果我们仔细看一下他们的结果就会发现，比数比(odd ratio)则表现得很一般：很少有大于1的。在这种情况下，基因型为AA/Aa或aa的差异也许并不改变个体的疾病风险，虽然这有着实际意义(practically significant)，但是，一个人不可能根据这些基因型与疾病的关系而对自己的行为进行改变。</p>
+<p>比数比(odds ration)与p值之间并非是一对一的关系。为了说明这一点，我们在保证所有比例相同的前提下来重新计算一下p值。现在我们把样本数目扩大10倍，这就会明显地降低p值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tab &lt;- tab*<span class="number">10</span></div><div class="line">chisq.test(tab)$p.value</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; tab &lt;- tab*<span class="number">10</span></div><div class="line">&gt; chisq.test(tab)$p.value</div><div class="line">[<span class="number">1</span>] <span class="number">1.219624e-09</span></div></pre></td></tr></table></figure>
+<h2 id="比数比的置信区间confidence-intervals-for-the-odd-ratio">比数比的置信区间(Confidence Intervals For The Odd Ratio)</h2>
+<p>在数学上计算OR的置信区间并不简单明了。在计算其它统计量时，我们可以推导出那些统计量的近似，但是OR的计算与之不同，OR不仅是一个比值，而是一个比值的比值。因此，没有简单的方法（例如CLT）来计算OR。</p>
+<p>一种方法是使用广义线性模型(generalized linear models )的理论，这种理论可以对比数比的log值(log odds ratio)进行估计。经过log转换的比数比就可以被证明是接近正态分布的，如下所示（具体的理论可以参考文献）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">fit &lt;- glm(disease~genotype,family=<span class="string">"binomial"</span>,data=dat)</div><div class="line">coeftab&lt;- summary(fit)$coef</div><div class="line">coeftab</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; fit &lt;- glm(disease~genotype,family=<span class="string">"binomial"</span>,data=dat)</div><div class="line">&gt; coeftab&lt;- summary(fit)$coef</div><div class="line">&gt; coeftab</div><div class="line">              Estimate Std. Error   z value     Pr(&gt;|z|)</div><div class="line">(Intercept) -<span class="number">2.1972246</span>  <span class="number">0.2356828</span> -<span class="number">9.322803</span> <span class="number">1.133070e-20</span></div><div class="line">genotypeaa   <span class="number">0.8109302</span>  <span class="number">0.4249074</span>  <span class="number">1.908487</span> <span class="number">5.632834e-02</span></div></pre></td></tr></table></figure>
+<p>数据的表格中的第2行就是估计值与log(odds ratio)的值。数学理论告诉我们，这个估计值是接近于正态分布的。因此我们可以构建一个置信区间，然后再化为正常值，就能计算出OR的置信区间，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ci &lt;- coeftab[<span class="number">2</span>,<span class="number">1</span>] + c(-<span class="number">2</span>,<span class="number">2</span>)*coeftab[<span class="number">2</span>,<span class="number">2</span>]</div><div class="line">exp(ci)</div></pre></td></tr></table></figure>
+<p>计算结果为：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; ci &lt;- coeftab[<span class="number">2</span>,<span class="number">1</span>] + c(-<span class="number">2</span>,<span class="number">2</span>)*coeftab[<span class="number">2</span>,<span class="number">2</span>]</div><div class="line">&gt; exp(ci)</div><div class="line">[<span class="number">1</span>] <span class="number">0.9618616</span> <span class="number">5.2632310</span></div></pre></td></tr></table></figure>
+<p>这个置信区间包括1，这与p值大于于0.05的结果是一致的。需要注意的是，这里的p值是基于另一种不同方法计算的，它以前面使用卡方检验得到的p值计算过程不一样。</p>
+<h2 id="练习">练习</h2>
+<p>P91</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/06/Data Analysis for the life sciences/DALS006_Inference05_PermutationTest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/06/Data Analysis for the life sciences/DALS006_Inference05_PermutationTest/" itemprop="url">DALS006-统计推断(Inference)05-置换检验(Permutation Test)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-06T12:00:00+08:00">
+                2019-08-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,577
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第5部分。这一部分的主要内容涉及置换检验。</p>
+<p>置换检验英文是Permutation test，这是Fisher于20世纪30年代提出的一种基于大量计算（computationally intensive），利用样本数据的全（或随机）排列，进行统计推断的方法，因其对总体分布自由，应用较为广泛，特别适用于总体分布未知的小样本资料，以及某些难以用常规方法分析资料的假设检验问题。在具体使用上它和Bootstrap Methods类似，通过对样本进行顺序上的置换，重新计算统计检验量，构造经验分布，然后在此基础上求出P-value，进行推断，生信中常用的GSEA分析本质上就是置换检验。</p>
+<p>置换检验的根本原理就是<strong>重新采样增加小样本的整体样本量，然后看其的概率分布来预测假设是否成立</strong>。</p>
+<h2 id="置换检验permutation-test">置换检验(Permutation Test)</h2>
+<p>现在考虑一种情况，在这种情况下，标准的数理统计近拟(standard mathematical statistical approximation)都不适用。但是，我们已经计算出了一个总结性的统计，例如均值的差值，但是，我们的这些数据不符合一些即定分布，也没有办法得到总体，也就是说无法进行一些数据模拟，例如Monte Carlo模拟，面对这种情况，我们可以采用置换检验(Permutation test)。</p>
+<h2 id="置换检验过程">置换检验过程</h2>
+<p>在前面部分中，我们介绍了参数模拟，这种方法有助于我们计算出观察到的差值是否有统计学的意义。而置换检验则会使用另外一种计算方法，它也是利用了两组的差值。在这种方法中，我们会随机置换干预组与对照组的分组标签。当我们置换了干预组与对照组的分级标签后，得到的新数据我们会假设它们服从零分布，现在我们通过置换这两组数据来计算一下零分布（这里假设置换1000次）。</p>
+<p>第一步，是先计算出两组（这里是treatment组与control组） 的均值差值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/femaleMiceWeights.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">control &lt;- filter(dat, Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line">treatment &lt;- filter(dat, Diet == <span class="string">"hf"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line">obsdiff &lt;- mean(treatment) - mean(control)</div></pre></td></tr></table></figure>
+<p>第二步，对样本重新进行分组，也就是将上述的两组的所有数据（每组都是12个样本，一共是24个数据）重新进行分组，每组12个数值，每组重新分组时，都计算出均数差，24个数据随机等分为2组，一共是2704156个均数差（使用<code>choose(24,12)</code>就能计算出来，不过我们这里只不进行全部置换，我们只置换1000次，现在我们通过置换这两组数据来计算一下零分布（置换1000次），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">N &lt;- <span class="number">12</span></div><div class="line">avgdiff &lt;- replicate(<span class="number">1000</span>, &#123;</div><div class="line">  all &lt;- sample(c(control, treatment))</div><div class="line">  newcontrols &lt;- all[<span class="number">1</span>:N]</div><div class="line">  newtreatments &lt;- all[(N+<span class="number">1</span>):(<span class="number">2</span>*N)]</div><div class="line">  <span class="keyword">return</span>(mean(newtreatments)-mean(newcontrols))</div><div class="line">&#125;)</div><div class="line">hist(avgdiff)</div><div class="line">abline(v=obsdiff,col=<span class="string">"red"</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728170314.jpeg">
+
+</div>
+<p>第三步：计算出上面那1000个均数差中大于<code>obsdiff</code>的个数。</p>
+<p>现在我们考虑一下，有多少个零均值(null means，结合上下文，这里的零均值应该是在零假设成立的前面下的均值）大于观察值呢？这个比值就是零假设成立下的p值。我们向分子与分母都加1，用于校正一下p值（书中列出的参考文献，这里不解释它的数学原理），如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># the proportion of permutations with larger difference</span></div><div class="line">(sum(abs(avgdiff) &gt; abs(obsdiff))+<span class="number">1</span>)/(length(avgdiff)+<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="comment"># the proportion of permutations with larger difference</span></div><div class="line">&gt; (sum(abs(avgdiff) &gt; abs(obsdiff))+<span class="number">1</span>)/(length(avgdiff)+<span class="number">1</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.04795205</span></div></pre></td></tr></table></figure>
+<p>第四步：就是根据第三步中的计算结果（上面的计算结果是0.04795205）来下结论。</p>
+<p>如果p&gt;0.05，说明在两样本来自同一总体的假设下，当前样本的出现是很平常的，不能拒绝H0假设，认为两样本的差异无统计学意义；如果p&lt;0.05，则认为两样本的差异有统计学意义，不过考虑到这里的p值基本上就是在0.05附近，因此下结论也应该慎重。</p>
+<p>现在我们使用小样本数据来重复一下这个实验，我们通过抽样的方式来创建一个小样本数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">N &lt;- <span class="number">5</span></div><div class="line">control &lt;- sample(control, N)</div><div class="line">treatment &lt;- sample(treatment, N)</div><div class="line">obsdiff &lt;- mean(treatment) - mean(control)</div><div class="line"></div><div class="line">avgdiff &lt;- replicate(<span class="number">1000</span>,&#123;</div><div class="line">  all &lt;- sample(c(control, treatment))</div><div class="line">  newcontrols &lt;- all[<span class="number">1</span>:N]</div><div class="line">  newtreatments &lt;- all[(N+<span class="number">1</span>):(<span class="number">2</span>*N)]</div><div class="line">  <span class="keyword">return</span>(mean(newtreatments) - mean(newcontrols))</div><div class="line">&#125;)</div><div class="line">hist(avgdiff)</div><div class="line">abline(v=obsdiff, col=<span class="string">"red"</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728173556.jpeg">
+
+</div>
+<p>上面的直方图显示的是使用置换检验计算出来的小样本数据的均值之差，红线表示的是观察值的差异。</p>
+<p>现在我们发现，使用这种方法得到的观察差值并不显著，这里需要记住，没有理论能保证，置换的结果接近于实际的零分布。例如，如果不同的总体之间确实存在着差异，一些置换检验的结果可能就计算不出差异，也有一些能计算出差异。这说明，在置换检验中，零分布比实际的零分布有着一个更扁平的尾部。这也就说明了，为什么置换检验会得到一个比较保守的p值。出于这种原因，当我们的样本数目比较少时通常不做置换检验。</p>
+<p>另外我们还要注意，置换检验也有是假设的：假设样本是独立的，是可以进行交换的(“exchangeable”)。如果你的数据中含有隐藏的结构，置换检验生成的估计的零分布分则会低估该分布的尾部面积，这有可能破坏原始数据中的现在结构（注：这里我的理解就是，假设A样本和B样本数据没有差异，那么它们无论怎么置换后，得到的数据应该是差不多的，也就是说得到的p值会比较大）。</p>
+<h2 id="练习">练习</h2>
+<p>书中还列出一个练习题，现在我们来做一下。</p>
+<p>第一步，下载原始数据，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">url &lt;- <span class="string">"https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/babies.txt"</span></div><div class="line">filename &lt;- basename(url)</div><div class="line"><span class="keyword">library</span>(downloader)</div><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">download(url, destfile=filename)</div><div class="line">babies &lt;- read.table(<span class="string">"babies.txt"</span>, header=<span class="literal">TRUE</span>)</div><div class="line">bwt.nonsmoke &lt;- filter(babies, smoke==<span class="number">0</span>) %&gt;% dplyr::select(bwt) %&gt;% unlist</div><div class="line">bwt.smoke &lt;- filter(babies, smoke==<span class="number">1</span>) %&gt;% dplyr::select(bwt) %&gt;% unlist</div></pre></td></tr></table></figure>
+<p>第二步，现在我们生成一个数据集，先来观察一下它们的差值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">N=<span class="number">10</span></div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">nonsmokers &lt;- sample(bwt.nonsmoke , N)</div><div class="line">smokers &lt;- sample(bwt.smoke , N)</div><div class="line">obs &lt;- mean(smokers) - mean(nonsmokers)</div><div class="line">obs</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; obs</div><div class="line">[<span class="number">1</span>] -<span class="number">16.9</span></div></pre></td></tr></table></figure>
+<p>现在我们的问题就是：在我们构建的这个数据里（这个数据含有1个nonsmokers样本，1个smokers样本），这个观察到的差值<code>-16.9</code>是否有统计学上的意义？</p>
+<p>这里我们使用前面提到的置换检测来计算一下上面构建好的p值。我们会重新杂揉(原文是reshuffle，没找到相应的中文翻译，这里我译为“杂揉”，也就是把这两组数据混合起来)，然后重新计算它们的均值。现在我们称使用下面的代码来计算一下，经过置换后的，其中的一个均值的差值，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dat &lt;- c(smokers,nonsmokers)</div><div class="line">shuffle &lt;- sample(dat)</div><div class="line">smokersstar &lt;- shuffle[<span class="number">1</span>:N]</div><div class="line">nonsmokersstar &lt;- shuffle[(N+<span class="number">1</span>):(<span class="number">2</span>*N)]</div><div class="line">mean(smokersstar)-mean(nonsmokersstar)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(smokersstar)-mean(nonsmokersstar)</div><div class="line">[<span class="number">1</span>] -<span class="number">8.5</span></div></pre></td></tr></table></figure>
+<p>上面的这个值就是我们即将构建的零分布中的一个观测值。</p>
+<p>现在我们开始计算p值，将随机数种子设为1，即<code>set.seed(1)</code>，用于置换1000次，生成一个零分布。现在我们从这个零分布中观察到的前面的那个差值的p值是多少呢？</p>
+<p>计算过程的完整代码如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">N=<span class="number">10</span></div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">nonsmokers &lt;- sample(bwt.nonsmoke , N)</div><div class="line">smokers &lt;- sample(bwt.smoke , N)</div><div class="line">obs &lt;- mean(smokers) - mean(nonsmokers)</div><div class="line"></div><div class="line">avgdiff &lt;- replicate(<span class="number">1000</span>,&#123;</div><div class="line">  shuffle &lt;- sample(dat)</div><div class="line">  sample_smokers &lt;- shuffle[<span class="number">1</span>:N]</div><div class="line">  sample_nonsmokers &lt;- shuffle[(N+<span class="number">1</span>):(<span class="number">2</span>*N)]</div><div class="line">  <span class="keyword">return</span>(mean(sample_smokers) - mean(sample_nonsmokers))</div><div class="line">&#125;)</div><div class="line"></div><div class="line">hist(avgdiff)</div><div class="line">abline(v=obs, col=<span class="string">"red"</span>,lwd=<span class="number">2</span>)</div><div class="line">(sum(abs(avgdiff) &gt; abs(obs))+<span class="number">1</span>)/(length(avgdiff)+<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; (sum(abs(avgdiff) &gt; abs(obs))+<span class="number">1</span>)/(length(avgdiff)+<span class="number">1</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.05394605</span></div></pre></td></tr></table></figure>
+<p>从上面我们可以看到，p值是大于0.05的。我们来看一下直方图的结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hist(avgdiff)</div><div class="line">abline(v=obs, col=<span class="string">"red"</span>,lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190923183550.jpeg">
+
+</div>
+<p>现在我们分别使用t检验和Wilcoxon检验分别计算如下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">t.test(smokers,nonsmokers)</div><div class="line">wilcox.test(smokers,nonsmokersstar)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt; t.test(smokers,nonsmokers)</div><div class="line"></div><div class="line">	Welch Two Sample t-test</div><div class="line"></div><div class="line">data:  smokers and nonsmokers</div><div class="line">t = -<span class="number">2.067</span>, df = <span class="number">13.159</span>, p-value = <span class="number">0.059</span></div><div class="line">alternative hypothesis: true difference <span class="keyword">in</span> means is not equal to <span class="number">0</span></div><div class="line"><span class="number">95</span> percent confidence interval:</div><div class="line"> -<span class="number">34.5419234</span>   <span class="number">0.7419234</span></div><div class="line">sample estimates:</div><div class="line">mean of x mean of y </div><div class="line">    <span class="number">109.9</span>     <span class="number">126.8</span> </div><div class="line"></div><div class="line">&gt; wilcox.test(smokers,nonsmokersstar)</div><div class="line"></div><div class="line">	Wilcoxon rank sum test with continuity correction</div><div class="line"></div><div class="line">data:  smokers and nonsmokersstar</div><div class="line">W = <span class="number">34</span>, p-value = <span class="number">0.2399</span></div><div class="line">alternative hypothesis: true location shift is not equal to <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>从上面的结果来看，置换检验算出的p值为0.053，t检验计算出的p值为0.059，这两个计算结果还是比较接近的。最后我们使用了Wilcoxon检验，p值是大于0.05的，毕竟Wilcoxon检验的功效较小。</p>
+<p>练习中的第2题提到，我们不使用均值之差，而是使用中位数之差，即<code>obsdiff &lt;- median(smokers) - median(nonsmokers)</code>，看一下p值，计算过程如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">N=<span class="number">10</span></div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">nonsmokers &lt;- sample(bwt.nonsmoke , N)</div><div class="line">smokers &lt;- sample(bwt.smoke , N)</div><div class="line">(obs &lt;- median(smokers) - median(nonsmokers))</div><div class="line">dat &lt;- c(nonsmokers,smokers)</div><div class="line">  </div><div class="line">avgdiff &lt;- replicate(<span class="number">1000</span>, &#123;</div><div class="line">  shuffle &lt;- sample(dat)</div><div class="line">  smokersstar &lt;- shuffle[<span class="number">1</span>:N]</div><div class="line">  nonsmokersstar &lt;- shuffle[(N+<span class="number">1</span>):(<span class="number">2</span>*N)]</div><div class="line">  obs = median(smokersstar)-median(nonsmokersstar)</div><div class="line">  <span class="keyword">return</span>(obs)</div><div class="line">&#125;)</div><div class="line">hist(avgdiff)</div><div class="line">abline(v=obs, col=<span class="string">"red"</span>,lwd=<span class="number">2</span>)</div><div class="line">(sum(abs(avgdiff) &gt; abs(obs))+<span class="number">1</span>)/(length(avgdiff)+<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; (sum(abs(avgdiff) &gt; abs(obs))+<span class="number">1</span>)/(length(avgdiff)+<span class="number">1</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.02197802</span></div></pre></td></tr></table></figure>
+<p>从结果来看，通过来看中位数差值，p值是小于0.05的。来看一下直方图的结果：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190923183619.jpeg">
+
+</div>
+<p>出现这种结果我的理解就是因为，随机了取样的数目太少，是10个，如果变成20个，有可能p值就大于0.05了（当把N变为20，那么p值就在于0.05，并且中位数的直方图也更像正态分布的钟形曲线）。</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://blog.csdn.net/u011467621/article/details/47971917" target="_blank" rel="external">Permutation Test 置换检验(转）</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/Data Analysis for the life sciences/DALS005_Inference04_MonteCarlo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/05/Data Analysis for the life sciences/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
+                2019-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,211
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言">前言</h2>
+<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
+<h2 id="随机数">随机数</h2>
+<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种理念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
+<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
+<h2 id="什么是monte-carl模拟">什么是Monte Carl模拟</h2>
+<p>Monte Carl中文译为<code>蒙特卡罗</code>，蒙特卡罗是一种统计学方法，它使用大量的模拟数据来逼近真相，我也不太好解释，我们通过几个例子来说明一下，这一部分书本上没有，而是参考了<a href="https://www.countbayesie.com/all-posts" target="_blank" rel="external">Count Bayesie</a>的博客，里面有不少介绍统计学的知识。</p>
+<h3 id="案例之一积分">案例之一：积分</h3>
+<p>现在我们使用了一个均值为1，标准差为10的标准正态分布来讲解，下面这张图就是这个正态分布，蓝色部分是3到6构成的面积（其实就是积分），如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920124923.png">
+
+</div>
+<p>此时，如果我们学了微积分，就知道很容易计算出这个面积，但是，在这个案例中，我们使用Monte Carlo模拟来计算这个面积，于是，我们就能简单地使用R来写几行代码，从这个分布中采样10万次，看看有多少个值介于3到6之间，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line">sims &lt;- rnorm(runs,mean=<span class="number">1</span>,sd=<span class="number">10</span>)</div><div class="line">mc.integral &lt;- sum(sims &gt;= <span class="number">3</span> &amp; sims &lt;= <span class="number">6</span>)/runs</div><div class="line">mc.integral</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.integral</div><div class="line">[<span class="number">1</span>] <span class="number">0.11288</span></div></pre></td></tr></table></figure>
+<p>现在我们直接使用R中的累积分布函数<code>pnorm()</code>来计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.1122028</span></div></pre></td></tr></table></figure>
+<p>从这两次的计算结果来看，Monte Carlo模拟出来的结果与我们实际计算的结果非常接近，可以说是完全相等了。</p>
+<h3 id="案例之二估计二项分布">案例之二：估计二项分布</h3>
+<p>我们再来看一个案例，我们来抛一个硬币，抛10次，现在我们想知道，至少有3次正面朝上概论，这其实就是一个二项分布的问题，用传统的二项分布很容易计算。但是，这里我们假设我们不知道二项分布，我们就用Monte Carlo模拟来计算一下。现在我们使用0表示反面，1表示下面，然后模拟10次抛硬币的情况，我们模拟10万次，来看一下结果如何：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"></div><div class="line">one.trial &lt;- <span class="keyword">function</span>()&#123;</div><div class="line">  sum(sample(c(<span class="number">0</span>,<span class="number">1</span>),<span class="number">10</span>,replace=<span class="literal">T</span>)) &gt; <span class="number">3</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">mc.binom &lt;- sum(replicate(runs,one.trial()))/runs</div><div class="line">mc.binom</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.binom</div><div class="line">[<span class="number">1</span>] <span class="number">0.82844</span></div></pre></td></tr></table></figure>
+<p>现在我们使用R中的<code>pbinom()</code>函数直接计算一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.828125</span></div></pre></td></tr></table></figure>
+<p>前后计算出来的结果差不多。</p>
+<h3 id="案例之三计算周率">案例之三：计算周率</h3>
+<p>我们知道，圆的面积是<span class="math inline">\(A=\pi r^2\)</span>，现在我们通过Monte Carlo模拟来计算一下 <span class="math inline">\(\pi\)</span> 值。如果我们绘制了一个正方形，这个正方形的边长为<span class="math inline">\(2r\)</span>，那么此时这个正方形的面积为 <span class="math inline">\(A=4r^2\)</span> ，如下所示：</p>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920130405.png">
+
+</div>
+<p>此时，我们如何得到 $$ 呢？我们知道，上面这个圆的面积与正方形的面积之比就是<span class="math inline">\(\pi /4\)</span> 。那么我们就可以通过一定的计算来获知这个比值的近似值，然后乘以4就得到了 <span class="math inline">\(\pi\)</span> 的近似值。接着我们就来做一下这个近似计算。</p>
+<p>现在，我们假设上面的这个图形在一个坐标系中，圆心就是圆点 <span class="math inline">\((0,0)\)</span> 。我们以圆心为中心，随机抽一个点，这个点的坐标是 <span class="math inline">\((x,y)\)</span> ，圆的半径为 <span class="math inline">\(r\)</span> ，随机样本一个点后，如果 <span class="math inline">\(x^2+y^2 \leq r^2\)</span> ，那么这个点就在圆内，否则就在圆外，然后我们做10万次这样的抽取，我们计算出圆内点的数目与总的点的数目之比，然后再乘以4，就得到了 <span class="math inline">\(\pi\)</span> 的近似值，计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"><span class="comment">#runif samples from a uniform distribution</span></div><div class="line">xs &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">ys &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">in.circle &lt;- xs^<span class="number">2</span> + ys^<span class="number">2</span> &lt;= <span class="number">0.5</span>^<span class="number">2</span></div><div class="line">mc.pi &lt;- (sum(in.circle)/runs)*<span class="number">4</span></div><div class="line">mc.pi</div><div class="line">plot(xs,ys,pch=<span class="string">'.'</span>,col=ifelse(in.circle,<span class="string">"blue"</span>,<span class="string">"grey"</span>)</div><div class="line">     ,xlab=<span class="string">''</span>,ylab=<span class="string">''</span>,asp=<span class="number">1</span>,</div><div class="line">     main=paste(<span class="string">"MC Approximation of Pi ="</span>,mc.pi))</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.pi</div><div class="line">[<span class="number">1</span>] <span class="number">3.14124</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920131517.jpeg">
+
+</div>
+<p>从计算结果来看，我们得到的 <span class="math inline">\(\pi\)</span> 近似为3.14124，还是比较接近的。</p>
+<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
+<p>现在我们再回到原书，我们使用Monte Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
+<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
+
+</div>
+<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
+
+</div>
+<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
+
+</div>
+<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
+
+</div>
+<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
+
+</div>
+<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
+<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
+<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
+<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="练习">练习</h2>
+<p>P88</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/Literature/文献笔记-RNA sequencing the teenage years/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -791,7 +2057,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/04/Data Analysis for the life sciences/DALS004_Inference03_CLT_T_test/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -810,270 +2076,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/05/DAL/DALS005_Inference04_MonteCarlo/" itemprop="url">DALS005-统计推断(Inference)04-Monte Carlo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T12:00:00+08:00">
-                2019-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
-                    <span itemprop="name">Data Analysis for the life sciences</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,211
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  9
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>这篇笔记是《Data Analysis for the Life Sciences》的第2章：统计推断(Inference)的第4部分。这一部分的主要内容涉及Monte Carlo模拟。</p>
-<h2 id="随机数">随机数</h2>
-<p>计算机可以生成伪随机数(pseudo-random numbers)，使用这些伪随机数可以用于模拟来自真实世界的随机变量。这可以让我们利用计算机来，而不是理论分析或推导来研究一些随机变量的特异。使用这种理念的一个非常有用的地方就在于，我们可以创建一些模拟数据来测试来验证我们的一些想法，而不必在实验室中做一些实验。</p>
-<p>模拟数据也可以用于检测一些理论或分析结果的可靠性。此外，在统计学中，我们使用的很多结果是渐时性的：只当样本达到无穷大时它们才有可能成立。在实际中，我们无法收集所有的样本来验证理论与实际的关系如何。有时候我们就需要一些模拟数据。</p>
-<h2 id="什么是monte-carl模拟">什么是Monte Carl模拟</h2>
-<p>Monte Carl中文译为<code>蒙特卡罗</code>，蒙特卡罗是一种统计学方法，它使用大量的模拟数据来逼近真相，我也不太好解释，我们通过几个例子来说明一下，这一部分书本上没有，而是参考了<a href="https://www.countbayesie.com/all-posts" target="_blank" rel="external">Count Bayesie</a>的博客，里面有不少介绍统计学的知识。</p>
-<h3 id="案例之一积分">案例之一：积分</h3>
-<p>现在我们使用了一个均值为1，标准差为10的标准正态分布来讲解，下面这张图就是这个正态分布，蓝色部分是3到6构成的面积（其实就是积分），如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920124923.png">
-
-</div>
-<p>此时，如果我们学了微积分，就知道很容易计算出这个面积，但是，在这个案例中，我们使用Monte Carlo模拟来计算这个面积，于是，我们就能简单地使用R来写几行代码，从这个分布中采样10万次，看看有多少个值介于3到6之间，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line">sims &lt;- rnorm(runs,mean=<span class="number">1</span>,sd=<span class="number">10</span>)</div><div class="line">mc.integral &lt;- sum(sims &gt;= <span class="number">3</span> &amp; sims &lt;= <span class="number">6</span>)/runs</div><div class="line">mc.integral</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.integral</div><div class="line">[<span class="number">1</span>] <span class="number">0.11288</span></div></pre></td></tr></table></figure>
-<p>现在我们直接使用R中的累积分布函数<code>pnorm()</code>来计算一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pnorm(<span class="number">6</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>) -pnorm(<span class="number">3</span>, mean = <span class="number">1</span>, sd = <span class="number">10</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.1122028</span></div></pre></td></tr></table></figure>
-<p>从这两次的计算结果来看，Monte Carlo模拟出来的结果与我们实际计算的结果非常接近，可以说是完全相等了。</p>
-<h3 id="案例之二估计二项分布">案例之二：估计二项分布</h3>
-<p>我们再来看一个案例，我们来抛一个硬币，抛10次，现在我们想知道，至少有3次正面朝上概论，这其实就是一个二项分布的问题，用传统的二项分布很容易计算。但是，这里我们假设我们不知道二项分布，我们就用Monte Carlo模拟来计算一下。现在我们使用0表示反面，1表示下面，然后模拟10次抛硬币的情况，我们模拟10万次，来看一下结果如何：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"></div><div class="line">one.trial &lt;- <span class="keyword">function</span>()&#123;</div><div class="line">  sum(sample(c(<span class="number">0</span>,<span class="number">1</span>),<span class="number">10</span>,replace=<span class="literal">T</span>)) &gt; <span class="number">3</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">mc.binom &lt;- sum(replicate(runs,one.trial()))/runs</div><div class="line">mc.binom</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.binom</div><div class="line">[<span class="number">1</span>] <span class="number">0.82844</span></div></pre></td></tr></table></figure>
-<p>现在我们使用R中的<code>pbinom()</code>函数直接计算一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
-<p>结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pbinom(<span class="number">3</span>,<span class="number">10</span>,<span class="number">0.5</span>,lower.tail=<span class="literal">FALSE</span>)</div><div class="line">[<span class="number">1</span>] <span class="number">0.828125</span></div></pre></td></tr></table></figure>
-<p>前后计算出来的结果差不多。</p>
-<h3 id="案例之三计算周率">案例之三：计算周率</h3>
-<p>我们知道，圆的面积是<span class="math inline">\(A=\pi r^2\)</span>，现在我们通过Monte Carlo模拟来计算一下 <span class="math inline">\(\pi\)</span> 值。如果我们绘制了一个正方形，这个正方形的边长为<span class="math inline">\(2r\)</span>，那么此时这个正方形的面积为 <span class="math inline">\(A=4r^2\)</span> ，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920130405.png">
-
-</div>
-<p>此时，我们如何得到 $$ 呢？我们知道，上面这个圆的面积与正方形的面积之比就是<span class="math inline">\(\pi /4\)</span> 。那么我们就可以通过一定的计算来获知这个比值的近似值，然后乘以4就得到了 <span class="math inline">\(\pi\)</span> 的近似值。接着我们就来做一下这个近似计算。</p>
-<p>现在，我们假设上面的这个图形在一个坐标系中，圆心就是圆点 <span class="math inline">\((0,0)\)</span> 。我们以圆心为中心，随机抽一个点，这个点的坐标是 <span class="math inline">\((x,y)\)</span> ，圆的半径为 <span class="math inline">\(r\)</span> ，随机样本一个点后，如果 <span class="math inline">\(x^2+y^2 \leq r^2\)</span> ，那么这个点就在圆内，否则就在圆外，然后我们做10万次这样的抽取，我们计算出圆内点的数目与总的点的数目之比，然后再乘以4，就得到了 <span class="math inline">\(\pi\)</span> 的近似值，计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">runs &lt;- <span class="number">100000</span></div><div class="line"><span class="comment">#runif samples from a uniform distribution</span></div><div class="line">xs &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">ys &lt;- runif(runs,min=-<span class="number">0.5</span>,max=<span class="number">0.5</span>)</div><div class="line">in.circle &lt;- xs^<span class="number">2</span> + ys^<span class="number">2</span> &lt;= <span class="number">0.5</span>^<span class="number">2</span></div><div class="line">mc.pi &lt;- (sum(in.circle)/runs)*<span class="number">4</span></div><div class="line">mc.pi</div><div class="line">plot(xs,ys,pch=<span class="string">'.'</span>,col=ifelse(in.circle,<span class="string">"blue"</span>,<span class="string">"grey"</span>)</div><div class="line">     ,xlab=<span class="string">''</span>,ylab=<span class="string">''</span>,asp=<span class="number">1</span>,</div><div class="line">     main=paste(<span class="string">"MC Approximation of Pi ="</span>,mc.pi))</div></pre></td></tr></table></figure>
-<p>计算结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mc.pi</div><div class="line">[<span class="number">1</span>] <span class="number">3.14124</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190920131517.jpeg">
-
-</div>
-<p>从计算结果来看，我们得到的 <span class="math inline">\(\pi\)</span> 近似为3.14124，还是比较接近的。</p>
-<h2 id="monte-carlo模拟">Monte Carlo模拟</h2>
-<p>现在我们再回到原书，我们使用Monte Carlo模拟来比较一下在不同样本数目中，CLT与t分布的接近程度，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div></pre></td></tr></table></figure>
-<p>现在构建一个函数，这个函数用于生成零假设下，样本数目<code>n</code>的t统计量，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(dplyr)</div><div class="line">dir &lt;- system.file(package = <span class="string">"dagdata"</span>)</div><div class="line">filename &lt;- file.path(dir,<span class="string">"extdata/mice_pheno.csv"</span>)</div><div class="line">dat &lt;- read.csv(filename)</div><div class="line">controlPopulation &lt;- filter(dat, Sex == <span class="string">"F"</span> &amp; Diet == <span class="string">"chow"</span>) %&gt;% dplyr::select(Bodyweight) %&gt;% unlist</div><div class="line"></div><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n)&#123;</div><div class="line">  <span class="comment"># note that here we have a false "high fat" group where we actually</span></div><div class="line">  <span class="comment"># sample from the nonsmokers. this is because we are modeling the *null*</span></div><div class="line">  cases &lt;- sample(controlPopulation, n)</div><div class="line">  controls &lt;- sample(controlPopulation,n)</div><div class="line">  tstat &lt;- (mean(cases) - mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div><div class="line">ttests &lt;- replicate(<span class="number">1000</span>,ttestgenerator(<span class="number">10</span>))</div><div class="line">hist(ttests)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144306.jpeg">
-
-</div>
-<p>这个t分布是否非常接近于正态分布？我们可以使用qq图(quantile-quantile)来看一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144406.jpeg">
-
-</div>
-<p>从上图我们可以看出来，这个数据集非常接近于正态分布。如果现在我们将样本数改为3，qq图如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ttests &lt;- replicate(<span class="number">1000</span>, ttestgenerator(<span class="number">3</span>))</div><div class="line">qqnorm(ttests)</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728144516.jpeg">
-
-</div>
-<p>从上图可以看出来，数据的高分位数(large quantiles)区，也就是统计学家称的尾部(tails)，比较大，这个尾部区就是上图中直线左侧的下方数据，以及右侧直线上方的数据。在前面的部分我们提到，即使总体服从正态分布，那么小样本则是更加近似地服从t分布，下面我们来的模拟一下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ps &lt;- (seq(<span class="number">0</span>,<span class="number">999</span>)+<span class="number">0.5</span>)/<span class="number">1000</span></div><div class="line">qqplot(qt(ps,df=<span class="number">2</span>*<span class="number">3</span>-<span class="number">2</span>),ttests,xlim=c(-<span class="number">6</span>,<span class="number">6</span>),ylim=c(-<span class="number">6</span>,<span class="number">6</span>))</div><div class="line">abline(<span class="number">0</span>,<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155402.jpeg">
-
-</div>
-<p>从上面两张图可以看出来，数据更接近于t分布，而不是正态分布，不过虽然接近于t分布，但是这种接近也并非完全，这是由于原始数据也并不是完美的服从正态分布，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qqnorm(controlPopulation)</div><div class="line">qqline(controlPopulation)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190728155539.jpeg">
-
-</div>
-<h3 id="观测值的参数化模拟parametric-simulations-for-the-observations">观测值的参数化模拟(Parametric Simulations for the Observations)</h3>
-<p>上述我们模拟随机变量的方法叫Monte Carlo模拟。我们利用既有的总体数据，随机抽取了一些样本。在实际分析中，我们无法获取整个总体。但是，当我们想在实际分析过程中使用Monte Carlo模拟时，一种比较典型的做法是，假设一个参数分布(parametric distribution)，并根据此分布生成一个总体，这种手段叫参数模拟(parametric simulation)。这就意味着，我们从真实的数据（这里指的是样本的均值与标准差）中提取参数，将这些参数添加一个模型（这里指的是正态分布）。这是Monte Carlo模拟最普遍的手段。</p>
-<p>回到小鼠的体重案例上来，我们可以利用我们现在有的知识，例如小鼠的体重通常是24g，SD为3.5g，小鼠的体重用了近服从正态分布，我们可以产生一个总体：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">controls&lt;- rnorm(<span class="number">5000</span>, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)</div></pre></td></tr></table></figure>
-<p>当我们生成了这批数据后，我们可以重复再生成几次。此时，我们并不使用<code>sample()</code>函数来进行抽样，而是使用随机数来生成一些服从正态分布的数据，前面提到的<code>ttestgenerator()</code>函数更改如下：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ttestgenerator &lt;- <span class="keyword">function</span>(n, mean=<span class="number">24</span>, sd=<span class="number">3.5</span>)&#123;</div><div class="line">  cases &lt;- rnorm(n, mean,sd)</div><div class="line">  controls &lt;- rnorm(n, mean, sd)</div><div class="line">  tstat &lt;- (mean(cases)-mean(controls))/</div><div class="line">    sqrt(var(cases)/n + var(controls)/n)</div><div class="line">  <span class="keyword">return</span>(tstat)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="练习">练习</h2>
-<p>P88</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/04/DAL/DALS004_Inference03_CLT_T_test/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/04/DAL/DALS004_Inference03_CLT_T_test/" itemprop="url">DALS004-统计推断(Inference)02-CLT与T-test</a></h1>
+                <a class="post-title-link" href="/2019/08/04/Data Analysis for the life sciences/DALS004_Inference03_CLT_T_test/" itemprop="url">DALS004-统计推断(Inference)02-CLT与T-test</a></h1>
         
 
         <div class="post-meta">
@@ -1504,7 +2507,7 @@ S E(\overline{X})=\sigma / \sqrt{N}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/03/DAL/DALS003_Inference02_Population_Estimates/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/03/Data Analysis for the life sciences/DALS003_Inference02_Population_Estimates/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -1523,7 +2526,7 @@ S E(\overline{X})=\sigma / \sqrt{N}
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/03/DAL/DALS003_Inference02_Population_Estimates/" itemprop="url">DALS003-统计推断(Inference)02-总体与样本估计</a></h1>
+                <a class="post-title-link" href="/2019/08/03/Data Analysis for the life sciences/DALS003_Inference02_Population_Estimates/" itemprop="url">DALS003-统计推断(Inference)02-总体与样本估计</a></h1>
         
 
         <div class="post-meta">
@@ -1712,7 +2715,7 @@ S E(\overline{X})=\sigma / \sqrt{N}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/02/DAL/DALS002_Inference01_Distribution/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/02/Data Analysis for the life sciences/DALS002_Inference01_Distribution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -1731,7 +2734,7 @@ S E(\overline{X})=\sigma / \sqrt{N}
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/02/DAL/DALS002_Inference01_Distribution/" itemprop="url">DALS002-统计推断(Inference)01-概率分布</a></h1>
+                <a class="post-title-link" href="/2019/08/02/Data Analysis for the life sciences/DALS002_Inference01_Distribution/" itemprop="url">DALS002-统计推断(Inference)01-概率分布</a></h1>
         
 
         <div class="post-meta">
@@ -2006,7 +3009,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/01/DAL/DALS001_Getting_Start/">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/01/Data Analysis for the life sciences/DALS001_Getting_Start/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RVDSD">
@@ -2025,7 +3028,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/01/DAL/DALS001_Getting_Start/" itemprop="url">DALS01-数据准备(Getting Started)</a></h1>
+                <a class="post-title-link" href="/2019/08/01/Data Analysis for the life sciences/DALS001_Getting_Start/" itemprop="url">DALS01-数据准备(Getting Started)</a></h1>
         
 
         <div class="post-meta">
@@ -2426,796 +3429,6 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/15/R/R语言中的颜色设置/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/15/R/R语言中的颜色设置/" itemprop="url">R语言中的颜色设置</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-15T12:00:00+08:00">
-                2019-07-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/R/" itemprop="url" rel="index">
-                    <span itemprop="name">R</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  860
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="rcolorbrewer包">RColorBrewer包</h2>
-<p>此包的官方配色网站是：http://colorbrewer2.org</p>
-<h3 id="brewer.pal"><code>brewer.pal()</code></h3>
-<p>参数为：<code>brewer.pal(n ,name)</code>，其中n为不同颜色数，最小为3，最大取决于调色板中的颜色数。name指颜色的名称，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mypalette&lt;-brewer.pal(<span class="number">7</span>,<span class="string">"Greens"</span>)</div><div class="line">mypalette</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; mypalette&lt;-brewer.pal(<span class="number">7</span>,<span class="string">"Greens"</span>)</div><div class="line">&gt; mypalette</div><div class="line">[<span class="number">1</span>] <span class="string">"#EDF8E9"</span> <span class="string">"#C7E9C0"</span> <span class="string">"#A1D99B"</span> <span class="string">"#74C476"</span> <span class="string">"#41AB5D"</span> <span class="string">"#238B45"</span> <span class="string">"#005A32"</span></div></pre></td></tr></table></figure>
-<h3 id="display.brewer.pal"><code>display.brewer.pal()</code></h3>
-<p>在窗口中显示显示的颜色，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">display.brewer.pal(<span class="number">7</span>,<span class="string">"BrBG"</span>)</div></pre></td></tr></table></figure>
-<p>运行结果如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715095133.png">
-
-</div>
-<h3 id="brewer.pal.info可以查看颜色信息"><code>brewer.pal.info()</code>可以查看颜色信息</h3>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brewer.pal.info[<span class="string">"Blues"</span>,]</div></pre></td></tr></table></figure>
-<p>如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; brewer.pal.info[<span class="string">"Blues"</span>,]</div><div class="line">      maxcolors category colorblind</div><div class="line">Blues         <span class="number">9</span>      seq       <span class="literal">TRUE</span></div></pre></td></tr></table></figure>
-<h3 id="display.brewer.all"><code>display.brewer.all()</code></h3>
-<p>参数为：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">display.brewer.all(n=<span class="number">10</span>, type=<span class="string">"all"</span>, select=<span class="literal">NULL</span>, exact.n=<span class="literal">TRUE</span>, </div><div class="line">colorblindFriendly=<span class="literal">FALSE</span>)</div></pre></td></tr></table></figure>
-<p>同时显示几个调色板，如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715095827.png">
-
-</div>
-<h4 id="颜色类型">颜色类型</h4>
-<p>其中参数<code>type</code>是显示颜色类型，一共有三种颜色类型，分别是seq连续型，div离散型，qual极端型，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">display.brewer.all(type = <span class="string">"seq"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715095816.png">
-
-</div>
-<p>如果我们要使用YIOrRd组中的第1，3，4，6，8，9这6种颜色，可以使用下面的代码：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">barplot(rep(<span class="number">1</span>,<span class="number">6</span>),col = brewer.pal(<span class="number">9</span>,<span class="string">"YlOrRd"</span>)[c(<span class="number">1</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">8</span>,<span class="number">9</span>)])</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715100025.png">
-
-</div>
-<p>div离散型颜色，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">display.brewer.all(type = <span class="string">"div"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715100112.png">
-
-</div>
-<p>这种颜色两边亮，中间暗，比较适合进行高低对比。</p>
-<p>现在我们使用BrBG组中的3到8种颜色，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">barplot(rep(<span class="number">1</span>,<span class="number">6</span>),col = brewer.pal(<span class="number">11</span>,<span class="string">"BrBG"</span>)[<span class="number">3</span>:<span class="number">8</span>])</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715100205.png">
-
-</div>
-<p>qual极端型颜色</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">display.brewer.all(type = <span class="string">"qual"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715100235.png">
-
-</div>
-<p>这种颜色比较适合呈现分类变量。</p>
-<p>现在使用Set3中的3到8种颜色，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">barplot(rep(<span class="number">1</span>,<span class="number">6</span>),col = brewer.pal(<span class="number">12</span>,<span class="string">"Set3"</span>)[<span class="number">3</span>:<span class="number">8</span>])</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715100306.png">
-
-</div>
-<h2 id="rcolorbrewer包使用案例">RColorBrewer包使用案例</h2>
-<h3 id="第1案例从现在的颜色中挑选颜色">第1案例：从现在的颜色中挑选颜色</h3>
-<p>代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">### Set the display a 1 by 1 grid</span></div><div class="line">par(mfrow=c(<span class="number">1</span>,<span class="number">1</span>))</div><div class="line"><span class="comment">### Generate random data matrix</span></div><div class="line">rand.data &lt;- replicate(<span class="number">8</span>,rnorm(<span class="number">100</span>,<span class="number">100</span>,sd=<span class="number">1.5</span>))</div><div class="line"><span class="comment">### Draw a box plot, with each box coloured by the 'Set3' palette</span></div><div class="line">boxplot(rand.data,col=brewer.pal(<span class="number">8</span>,<span class="string">"Set3"</span>))</div></pre></td></tr></table></figure>
-<p>这里使用到了<code>replicate()</code>函数，这个函数在<code>rand.data &lt;- replicate(8,rnorm(100,100,sd=1.5))</code>这个语句中的意思是，将后面的<code>rnorm(100,100,sd=1.5)</code>这个语句运行100次，也就是生成800个均值为100，sd为1.5的，符合正态分布的数据，结果如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715100823.png">
-
-</div>
-<h3 id="第2案例使用colorramppalette来扩展颜色">第2案例：使用<code>colorRampPalette()</code>来扩展颜色</h3>
-<p>代码如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">### 使用colorRampPalette可以扩展颜色。</span></div><div class="line">newpalette&lt;-colorRampPalette(brewer.pal(<span class="number">9</span>,<span class="string">"Blues"</span>))(<span class="number">10</span>)</div><div class="line"><span class="comment">### Generate random data matrix</span></div><div class="line">rand.data &lt;- replicate(<span class="number">10</span>,rnorm(<span class="number">100</span>,<span class="number">100</span>,sd=<span class="number">1.5</span>))</div><div class="line"><span class="comment">### Draw a box plot, with each box coloured by the 'newpalette' palette</span></div><div class="line">boxplot(rand.data,col=newpalette)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715101208.png">
-
-</div>
-<p>这里使用到了<code>colorRampPalette()</code>函数，此函数可以自定义一繁殖颜色梯度，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">colors &lt;- colorRampPalette(c(<span class="string">"green"</span>, <span class="string">"red"</span>))(<span class="number">5</span>)</div><div class="line">colors</div><div class="line">rand.data &lt;- replicate(<span class="number">10</span>,rnorm(<span class="number">100</span>,<span class="number">100</span>,sd=<span class="number">1.5</span>))</div><div class="line">boxplot(rand.data,col=colors)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715101512.png">
-
-</div>
-<p>这种功能在绘制热图时很有用。</p>
-<h2 id="wesanderson颜色包"><code>wesanderson</code>颜色包</h2>
-<p>可用的颜色有好几个，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; names(wes_palettes)</div><div class="line"> [<span class="number">1</span>] <span class="string">"BottleRocket1"</span>  <span class="string">"BottleRocket2"</span>  <span class="string">"Rushmore1"</span>      <span class="string">"Rushmore"</span>      </div><div class="line"> [<span class="number">5</span>] <span class="string">"Royal1"</span>         <span class="string">"Royal2"</span>         <span class="string">"Zissou1"</span>        <span class="string">"Darjeeling1"</span>   </div><div class="line"> [<span class="number">9</span>] <span class="string">"Darjeeling2"</span>    <span class="string">"Chevalier1"</span>     <span class="string">"FantasticFox1"</span>  <span class="string">"Moonrise1"</span>     </div><div class="line">[<span class="number">13</span>] <span class="string">"Moonrise2"</span>      <span class="string">"Moonrise3"</span>      <span class="string">"Cavalcanti1"</span>    <span class="string">"GrandBudapest1"</span></div><div class="line">[<span class="number">17</span>] <span class="string">"GrandBudapest2"</span> <span class="string">"IsleofDogs1"</span>    <span class="string">"IsleofDogs2"</span></div></pre></td></tr></table></figure>
-<p>查看一下，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wes_palette(<span class="string">"BottleRocket1"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715102342.png">
-
-</div>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wes_palette(<span class="string">"BottleRocket2"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715102408.png">
-
-</div>
-<p>看一下使用案例：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(<span class="string">"ggplot2"</span>)</div><div class="line">ggplot(mtcars, aes(factor(cyl), fill=factor(vs))) +  geom_bar() +</div><div class="line">  scale_fill_manual(values = wes_palette(<span class="string">"Royal1"</span>))</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715102457.png">
-
-</div>
-<p>看一下热图案例：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">pal &lt;- wes_palette(<span class="string">"Zissou1"</span>, <span class="number">100</span>, type = <span class="string">"continuous"</span>)</div><div class="line"><span class="comment"># heatmap is a local dataset</span></div><div class="line">ggplot(heatmap, aes(x = X2, y = X1, fill = value)) +</div><div class="line">  geom_tile() + </div><div class="line">  scale_fill_gradientn(colours = pal) + </div><div class="line">  scale_x_discrete(expand = c(<span class="number">0</span>, <span class="number">0</span>)) +</div><div class="line">  scale_y_discrete(expand = c(<span class="number">0</span>, <span class="number">0</span>)) + </div><div class="line">  coord_equal()</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715102638.png">
-
-</div>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="https://www.cnblogs.com/homewch/archive/2016/07/25/5704153.html" target="_blank" rel="external">R语言配色方案 — RColorBrewer包</a></li>
-<li><a href="https://www.cnblogs.com/huzs/p/3742000.html" target="_blank" rel="external">R语言编程入门–replicate()函数比较有意思!</a></li>
-<li><a href="https://www.cnblogs.com/xudongliang/p/6932195.html" target="_blank" rel="external">R语言colorRampPalette函数-创建颜色梯度(渐变色)</a></li>
-<li><a href="https://www.cnblogs.com/sanmenyi/p/7219574.html" target="_blank" rel="external">R语言可视化–颜色</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/12/Literature/炎性小体/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/12/Literature/炎性小体/" itemprop="url">炎性小体</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-12T12:00:00+08:00">
-                2019-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/文献笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">文献笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,213
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  12
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概念">概念</h2>
-<p>胚系编码的一一些受体，例如NLR，ALR，TRIM在外界刺激（通常是病原体）下，会形成一个更大分子量的复合物，也就是炎性小体，炎性小体会通过ASC来招募促炎性的蛋白，即caspase-1。</p>
-<p>炎性小体的大致结构如下所示<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190712153128.png">
-
-</div>
-<p>炎性小体的核心结构进而会招募并寡聚化(oligomerize)半胱氨酸蛋白酶caspase-1，其中caspase-1是以丝状的形式存在的，如上图所示，这种丝状的结构会促进caspase-1自身的活化。</p>
-<p>ASC蛋白位于中间，它的N端是PYD，C末端是CARD，其中CARD参与caspase-1的相互作用。caspase-1会切除炎症细胞因子IL-1beta与IL-18的前体，将它们释放到细胞外。</p>
-<p>炎性小体的活化会诱导细胞的裂解死亡，这种形式称为<strong>焦亡(pyroptosis)</strong>，这是细胞对抗病原体的一种免疫机制。</p>
-<p>在天然免疫中，炎性小体是一个重要的组成成分，书中对炎性小体的定义如下所示<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>：</p>
-<blockquote>
-<p>By definition, inﬂammasomes are scaffolds for activation of the inﬂammatory cysteine-dependent aspartate-specific protease caspase-1.</p>
-</blockquote>
-<p>也就是说，炎性小体是一类脚手架蛋白(scaffold)，其功能是参与光胱氨酸依赖的天冬氨酸特异性蛋白酶caspase-1的活化，这种酶活化后参与炎性细胞因子，IL-1beta，IL-18的成熟与分泌， 以及参与焦亡，与焦亡相关的另外一个酶是caspase-11。</p>
-<p>pyroptosis是宿主细胞的一种防御机制，它能裂解那些被病原体感染的细胞，从而将病原体暴露出来，与免疫细胞接触。pyroptosis相关的细胞裂解还会释放DAMP，例如IL-1瞢a和HMGB1。</p>
-<h3 id="prrs作为炎性小体的脚手架蛋白">PRRs作为炎性小体的脚手架蛋白</h3>
-<p>常见的炎性小体结构如下所示<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190712171054.png">
-
-</div>
-<p>NLRP1， NLRP2，NLRP3，NLRP6，NLRC4以及NLRP12它们都含有一个NBD，NBD也被称为NACHT。还含有一个LRR，剩下的要么含有CARD，要么含有PYD。</p>
-<p>AIM2与IFI16是PYHIN家族成员，它们都含有PYD与HIN200结构域，这两个结构域参与配体结合<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>。</p>
-<p>其它文献关于它们的结构总结如下所示：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190715105613.png">
-
-</div>
-<p>其中的缩写如下所示：</p>
-<ol style="list-style-type: decimal">
-<li>PYD: Pyrin domain</li>
-<li>NLR: nucleotide-binding domain and leucine-rich repeat containing receptors</li>
-<li>NACHT：NAIP-CIITA-HET-E domain</li>
-<li>NAIP: neuronal apoptosis inhibitor protein</li>
-<li>LRR: leucine-rich repeat</li>
-<li>NOD: nucleotide-binding oligomerization domain</li>
-<li>FIND:‘Function to find’ domain</li>
-<li>CARD: Caspase recruitment domain</li>
-<li>BIR: Baculovirus inhibitor repeat(Baculovirus是杆状病毒)</li>
-<li>NLRP: NLR family, pyrin domain containing</li>
-<li>NLRC: containing a caspase recruitment domain</li>
-<li>NLRB: containing a Baculovirus inhibitor repeat (BIR) domain</li>
-<li>Hin200: Hematopoietic interferon-inducible nuclear protein family, 200 amino acid repeat</li>
-<li>CC: coiled-coil</li>
-</ol>
-<p>NLRs（这个s指的是P，C，B，也就是NLRP，NLRB，NLRC这3种炎性小体）这种结构的炎性小体的结构前文已经提及，它含有NACHT/NBD，LRR，这两个组件(NACHT与LRR）通常位于中央。多数的NLRs型炎性小体在氨基端还有BIR，PYD,CARD这些结构。</p>
-<p>NLR家族一共有22个人类炎性小体，有34个鼠源炎性小体。</p>
-<h2 id="炎性小体功能">炎性小体功能</h2>
-<p>哺乳动物的NLRs有几个阐明功能了，其余的功能还不清楚。其中研究比较透彻的是NOD1和NOD2(nucleotide-binding oligomerization domain containing proteins 1/2)，他们能促进RIPK2与CARD9依赖的NF-kappaB与AP1靶基因的活化。MHC II在抗原提呈中也需要NLR蛋白CIITA的参与。</p>
-<p>另一个NLRs亚家族，也就是NLRP1，NLRP3，NLRC4和NAIP通过炎性小体信号转导参与免疫应答。</p>
-<p>信号转导诱导PRR的聚集与招募，促进procaspase-1丝状物的成核，随后procaspase-1会经历邻近诱导的自我活化(proximity-induced autoactivation)。</p>
-<h2 id="相关细胞因子">相关细胞因子</h2>
-<p>IL-1beta与IL-18的分泌与其它的细胞因子不同，proIL-1beta和proIL-18最先是以非活性的形式（前体）分泌到细胞质中，然后再经caspase-1的切割，形成生物活性形式。</p>
-<h2 id="nlrp3">NLRP3</h2>
-<p>NLRP3能对大量的激活剂产生应答，它需要NF-kappaB信号的诱导才能活化。NF-kappaB信号是第一信号 （signal 1或priming）。例如NF-kappaB调控物A20/TNFAIP3缺陷的小鼠就无法出现 NLRP3的活化。</p>
-<p>signla 2：细菌，真菌的一些成分会诱导NLRP3的活化，除了经典的刺激（细菌成分）诱导 NLRP3炎性小体外，还有一些其它的蛋白能诱导NLRP3的活化，这些属于NLRP3的非经典活化内容，例如人类的caspase-11或它的鼠源直系同源蛋白 caspase-4和caspase-5参与细胞质LPS诱导的NLRP3炎性小体的活化。在这些非经典信号通路中，caspase-11诱导的pyroptosis并不依赖于NLRP3炎性小体 ，但是proIL-1beta与por-IL-18的切割却要通过NLRP3来实现 。在观其NLRP3活化过程中，K+是一种重要的诱导物。</p>
-<p>非经典NLRP3炎性小体信号转导通常在格兰氏阴性菌的识别过程中有着重要作用。</p>
-<p>pyroptosis的一个关键事件就是Gasdermin D的切割，它的切割与LPS诱导的caspase-11和caspase-1有关。</p>
-<p>线粒体膜的破坏，以及线粒体DNA的氧化是NLRP3活化的一个因素。</p>
-<p>线粒体异常有时候伴随着离子流的异常，这种行为也会控制NLRP3的活化。心磷脂(cardiolipin)的释放，氧化的线粒体DNA与线粒体膜的破坏都是NLRP3活化的第二信使。最近发现的Nek7是NLRP3活化的一个关键蛋白，它控制K+的流入来影响NLRP3的组装。</p>
-<h2 id="nlrp1">NLRP1</h2>
-<p>NLRP1是第1个发现的炎性小体，它通常FIIND结构域进行自我切割，FIIND位于CARD与LRR中间。人类有1个NLRP1基因，小鼠有3个，分别是Nlrp1a，Nlrp1b与Nlrp1c。Nlrp1b在Bacillus anthracis的LeTx(lethal toxin)诱导下进行组装。ASC对于Nlrp1b依赖的IL-1beta和IL-18分泌来说并非是必不可少的，只是ASC能够增强这两种细胞因子的分泌。这表明，proaspase-1招募到Nlrp1b平台上后，会诱导caspase-1构象的改变，诱导其活化，而ASC依赖的caspase-1自我切割则会锁定这种活化构象。</p>
-<p>炎性小体活化的经典与非经典通路：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713103622.png">
-
-</div>
-<h2 id="nlrc4">NLRC4</h2>
-<p>NLRC4与其它炎性小体的结构如下所示<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713104104.png">
-
-</div>
-<p>上图列出了NLRC4活化的上游机制，NLRC4在氨基末端有一个CARD，在没有ASC的前提下，NLRC4通过CARD与procaspase-1相互作用。一些微生物能活化NLRC4的活化，例如Salmonella enterica serovar Typhimurium， Legionella pneumophila，Pseudomonas auruginosa，Shigella ﬂ exneri， Listeria monocytogenes），这些细菌的毒力因子都是依赖于鞭毛蛋白(flagellin)介导的运行，会向宿主细胞传递T3SS和T4SS。NLRC4不直接检测这些毒力因子，而是NAIP检测到这些成分后，再作用于NLRC4。人类的全长NAIP与小鼠的Naip5，Naip6是鞭毛蛋白的受体。人类短的NAIP与小鼠的Nip1能识别T3SS的针状蛋白(needle protein)，但Naip2则能与T3SS杆状蛋白(rod protein)结合。S. Typhimurium能诱导NLRC4在Ser533位点的磷酸化，进而活化NLRC4。</p>
-<p>在Naip5缺陷的巨噬中，falgellin依赖的NLRC4磷酸化并不依赖地Naip5。这说明，Nlrc4的活化机制分两步，先是在Ser533位点磷酸化，随后，Naip5再诱导NLRC4的活化。NLRC4与天然免疫有关，也与自身免疫性疾病有关。</p>
-<h2 id="aim2">AIM2</h2>
-<p>AIM2全称是absent in melanoma2，这是一个HIN200家族/AIM2家族的一个成员(ALR)。当细菌或病毒来源的dsDNA与Hin200结构域结合时，就会诱发AIM2炎性小体的组装。AIM2会诱导髓系细胞(myeloid cells)产生IL-1beta和IL-18，诱导细胞的pyroptosis。AIM2在控制一些病原体感染方面有着重要作用，例如 Francisella tularensis,Listeria monocytogenes,mouse cytomegalovirus,vaccinia virus。</p>
-<h2 id="pyrin">Pyrin</h2>
-<p>人类MEFV基因编码Pyrin/TRIM20蛋白，这是一个TRIM家族的成员。Pyrin主要表达于髓系细胞(myeloid cell)，在单核细胞向巨噬分化过程中，Pyrin的表达会降低。RhoA-inactivating bacterial toxins会诱导Pyrin组装成炎性小体，激活caspase-1，参与IL-1beta的分泌。</p>
-<h2 id="炎性小体的组装与信号转导">炎性小体的组装与信号转导</h2>
-<p>ASC依赖的炎性小体的组装过程：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713152009.png">
-
-</div>
-<p>上游的NLR或ALR识别其配体后，会通过PYD或CARD聚集，聚集的NLR或ALR会形成一个平台，通过PYD-PYD或CARD-CARD的相互作用来招募ASC，形成一个丝状的核心。其中ASC(CARD)位于外层，它形成另外一个平台，通过CARD-CARD的相互作用来招募caspase-1，高度聚合化折caspase-1会诱导自身的切割，产生活性炎性小体。</p>
-<h2 id="listeria-monocytogenes与炎性小体">Listeria monocytogenes与炎性小体</h2>
-<p>Lm能激活不同的炎性小体。</p>
-<h3 id="nlrp3与lm">NLRP3与Lm</h3>
-<p>Lm是第一个发现的能激活NLRP3的病原体。Mariathasan发现，细胞质中的Lm能激活NLRP3炎性小体，但是被囊泡包裹的Lm无法激活炎性小体，这说明被囊泡包裹这一过程对于炎性小体的活化非常重要。Kannengati观察到，Lm的总RNA能刺激NLRP3的活化，这进一步说明，LM能通过各种机制来刺激NLRP3。</p>
-<p>胞外的LLO形成的孔洞会诱导K+外流，导入NLRP3炎性小体的活化。除此之外，Lm的RNA，iap基因编码的p60也能激活NLRP3。p60的N端LysM与SH3结构域刺激IL-1beta和IL-18的释放，这些活动独立于细胞的焦亡形式死亡。使用DPI抑制ROS能降低IL-1beta的分泌，但IL-18的分泌不受影响。这些实验是在小鼠细胞上做的。</p>
-<p>在人类PBMC实验方面，使用Lm感染PBMC，细胞会经历LLO诱导的NLRP3依赖的炎性小体活化，这种炎性小体一的活化依赖于吞噬泡的西化与cathepsin B的释放，这些现象与小鼠的细胞有所不同。</p>
-<p>Lm诱导的快速NRLP3的活化依赖于TLR信号转导，因为MyD88缺陷的细胞无法活化炎性小体。这些应答依赖于MyD88的下游信号分子IRAK1，因此IRAK1缺陷的细胞无法激活炎性小体，以及无法分泌IL-1beta和IL-18。但是，在致敏状态(priming)，IRAK1对于炎性小体的活化又不是必需的。另外，延长感染时间会出现Lm诱导的非NLRP3依赖的炎性小体活化。总之就是，LM在早期感染中激活NLRP3。</p>
-<h3 id="nlrc4与lm">NLRC4与Lm</h3>
-<p>NRLC4识别鞭毛蛋白(flagellin)与T3SS(Type III secretion system)。</p>
-<p>Lm是格兰阳性菌，不含T3SS成分，它的鞭毛蛋白是激活NLRC4的成分。但Lm鞭毛蛋白似乎并非只激活NRLC4，因为使用鞭毛蛋白缺陷菌ΔflaA来感染，也能产生caspase-1的活化以及形成IL-1beta。</p>
-<h3 id="aim2与lm">AIM2与Lm</h3>
-<p>AIM2通常HIN200结构域来识别dsDNA。前面提到，在NLRP3缺失的情况下，鞭毛蛋白缺陷菌ΔflaA也能诱导caspase-1的活化。但在AIM2缺陷的细胞中，caspase-1的活化则会消失。</p>
-<p>Lm的DNA激活AIM2。</p>
-<h3 id="其它炎性小体">其它炎性小体</h3>
-<p>NLRC5与NLRP3结合参与NLRP3的活化。NLRC5敲除的小鼠感染Lm后，载菌是不是更多，机制不明。NLRP6敲除的小鼠载菌量低，NLRPP6在LM感染方面的作用，不依赖于炎性小体的信号转导。Lm在刺激炎性小体方面的作用，体外数据很好，但是体内数据研究机制不明，其中AIM2有可能与体内相关炎性小体最密切的一个炎性小体。</p>
-<p>在体外实验中，虽然LM能激活很多炎性小体，但是在体内感染方面，Lm会避免过度激活炎性小体，从而避免自身被清除，它已经进化出了逃避炎性小体监测的机制。</p>
-<p>Lm会通过调控自身LLO，鞭毛蛋白(flagellin)来逃避宿主细胞的监测。</p>
-<p>Lm的感染会诱导caspase-11的表达，但是敲除caspase-11后，caspase-1的功能不受影响，这说明caspase-11对于Lm的感染来说是可有可无的。</p>
-<p>ASC敲除的异噬细胞无法激活caspase-1，不能分泌IL-1beta和IL-18.</p>
-<p>Lm激活与逃避炎性小体监测的机制：</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713165831.png">
-
-</div>
-<p>Fig1：WT LM能最小程度地激活caspase-1，维持Lm在细胞内的存活，最终形成感染。相比之下，那些能激活炎性小体的Lm会诱导强烈的caspase-1以及pyroptosis，释放IL-1beta和IL-18，最终导致Lm的清除，增强活化巨噬细胞的招募，中性粒细胞的流入。</p>
-<p>炎性小体的活化能清除Lm。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713170002.png">
-
-</div>
-<p>炎性小体相互关的炎症会损伤宿主针对Lm的细胞免疫。</p>
-<div class="figure">
-<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190713170251.png">
-
-</div>
-<h2 id="炎性小体研究思路">炎性小体研究思路</h2>
-<h2 id="参考资料">参考资料</h2>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>Janeway immunobiology. 9th<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Backert S . Inflammasome Signaling and Bacterial Infections[M]. Springer International Publishing, 2016.<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>Backert S . Inflammasome Signaling and Bacterial Infections[M]. Springer International Publishing, 2016.<a href="#fnref3">↩</a></p></li>
-<li id="fn4"><p>Inflammasomes in health and disease.Nature. 2012 Jan 18;481(7381):278-86. doi: 10.1038/nature10759.<a href="#fnref4">↩</a></p></li>
-<li id="fn5"><p>Lamkanfi, M. and Vishva M. Dixit (2014). “Mechanisms and Functions of Inflammasomes.” Cell 157(5): 1013-1022.<a href="#fnref5">↩</a></p></li>
-</ol>
-</div>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/07/11/Literature/支架蛋白与脚手架蛋白/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/11/Literature/支架蛋白与脚手架蛋白/" itemprop="url">支架蛋白与脚手架蛋白</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-11T12:00:00+08:00">
-                2019-07-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/文献笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">文献笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  812
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>信号转导通路（Signaling pathway）本身就是一种机制，或者说是一种过程，在这个过程中，一个信号到达细胞后（细胞表面，或者是细胞内部），这个信号就会触发一系列有序的事件（信号转导通路），最终导致细胞内出现一些变化。这些变化通常伴随着基因的表达或者是某些物质浓度的变化，这些事件能够使细胞对某种信号作出反应，并根据当前环境调整细胞自身的代谢活动。</p>
-<p>信号转导通路始于某个信号本身，这个信号分子与细胞表面的信号分子受体结合，受体通过大量的不同的蛋白来将信号传递到细胞内部。从本质上来说，衔接蛋白（adaptor protein）与脚手架蛋白（Scaffold protein）都位于前述的这些蛋白集合中，它们负责将信号从受体进一步传递到细胞内部。</p>
-<p>衔接蛋白与脚手架蛋白的区别就在于它们的功能和结构上的不同。脚手架蛋白的作用是通过“吸引”大量的，信号转导通路所需的不同蛋白来协调信号转导，这从一点我们可以知道，脚手架蛋白本身比较大。它们本质上是将信号通路中的执行者锭定到一个蛋白复合物中，并将它们定位到特定的位置，从而使信号转导更加有效，脚手架蛋白是发挥一个平台作用，将很多蛋白招募到一起，让它们之间发生相互作用。由于有这种作用，脚手架蛋白还能通过正反馈与负反馈信号来调控信号转导通路，脚手架蛋白还能将特定的蛋白（例如当前活跃的信号通路）从其它不需要的竞争性蛋白复合物中的分离出来。</p>
-<p>衔接蛋白（有的译为接头蛋白），即adaptor protein，这种蛋白的分子量相对比较小，它们有助于形成蛋白复合物，但是衔接蛋白通常只与两类蛋白质结合。衔接蛋白通过特定的结构域（通常是SH2和SH3）来与其它蛋白结合，这两个结构域能识别靶蛋白的特定氨基酸序列。衔接蛋白本身可能没有酶活性，但它们会招募那些有功能的蛋白来发挥作用，例如MyD88，Grb2，SHC1等。</p>
-<p>我们以脚手架蛋白MEKK1为例说明一下，此蛋白存在于MAPK通路中，此通路会将信号传递到细胞核，调控与细胞周期和细胞分化相关的特定转录因子的表达。而GRB2（生长因子受体结合蛋白2，Growthfactor receptor=bound protein 2）是一种衔接蛋白，它通过SH2结构域与EGF受体结合，并通过SH3结构域吸引此信号通路中下一个蛋白（Sos蛋白）。</p>
-<p>MAPK信号通路图片如下所示：</p>
-<p>[](https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190712163909.jpg</p>
-<p>参考资料</p>
-<ol style="list-style-type: decimal">
-<li>https://www.biotechnologyforums.com/thread-3331.html</li>
-<li>https://cshperspectives.cshlp.org/content/4/11/a011254.full%22</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3266,7 +3479,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">246</span>
+                  <span class="site-state-item-count">249</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3288,7 +3501,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-count">118</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3365,7 +3578,7 @@ F(a) \equiv \operatorname{Pr}(x \leq a)
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共980.9k字</span>
+  <span class="post-count">博客全站共988.9k字</span>
 </div>
 
         

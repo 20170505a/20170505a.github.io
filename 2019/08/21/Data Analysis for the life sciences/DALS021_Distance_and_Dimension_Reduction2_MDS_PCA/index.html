@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MDS,PCA," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 这一部分是《Data Analysis for the life sciences》的第8章统计模型的第2小节，这一部分的主要内容涉及MDS和PCA，相应的Rmarkdown文档可以参考作者的Github。 MDS MDS的全称为multi-dimensional scaling，即多维数据缩放。在这 一部分中，我们会使用基因表达的数据来作为案例讲解一下。为了简化说明，我们仅考虑3个组">
+<meta name="keywords" content="MDS,PCA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DALS021-MDS与PCA">
+<meta property="og:url" content="http://rvdsd.top/2019/08/21/Data Analysis for the life sciences/DALS021_Distance_and_Dimension_Reduction2_MDS_PCA/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言 这一部分是《Data Analysis for the life sciences》的第8章统计模型的第2小节，这一部分的主要内容涉及MDS和PCA，相应的Rmarkdown文档可以参考作者的Github。 MDS MDS的全称为multi-dimensional scaling，即多维数据缩放。在这 一部分中，我们会使用基因表达的数据来作为案例讲解一下。为了简化说明，我们仅考虑3个组">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911090640.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911090819.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911091057.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911091915.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911092010.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911094030.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911160126.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911161254.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911161447.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911165120.jpeg">
+<meta property="og:updated_time" content="2019-09-14T09:05:48.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DALS021-MDS与PCA">
+<meta name="twitter:description" content="前言 这一部分是《Data Analysis for the life sciences》的第8章统计模型的第2小节，这一部分的主要内容涉及MDS和PCA，相应的Rmarkdown文档可以参考作者的Github。 MDS MDS的全称为multi-dimensional scaling，即多维数据缩放。在这 一部分中，我们会使用基因表达的数据来作为案例讲解一下。为了简化说明，我们仅考虑3个组">
+<meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911090640.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/08/21/Data Analysis for the life sciences/DALS021_Distance_and_Dimension_Reduction2_MDS_PCA/"/>
+
+
+
+
+
+  <title>DALS021-MDS与PCA | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/21/Data Analysis for the life sciences/DALS021_Distance_and_Dimension_Reduction2_MDS_PCA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DALS021-MDS与PCA</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-21T12:00:00+08:00">
+                2019-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,847
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第8章统计模型的第2小节，这一部分的主要内容涉及MDS和PCA，相应的Rmarkdown文档可以参考作者的<a href="https://github.com/genomicsclass/labs/tree/master/highdim/mds.Rmd" target="_blank" rel="external">Github</a>。</p>
+<h2 id="mds">MDS</h2>
+<p>MDS的全称为multi-dimensional scaling，即多维数据缩放。在这 一部分中，我们会使用基因表达的数据来作为案例讲解一下。为了简化说明，我们仅考虑3个组织：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line"><span class="keyword">library</span>(tissuesGeneExpression)</div><div class="line">data(tissuesGeneExpression)</div><div class="line">colind &lt;- tissue%<span class="keyword">in</span>%c(<span class="string">"kidney"</span>,<span class="string">"colon"</span>,<span class="string">"liver"</span>)</div><div class="line">mat &lt;- e[,colind]</div><div class="line">group &lt;- factor(tissue[colind])</div><div class="line">dim(mat)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; dim(mat)</div><div class="line">[<span class="number">1</span>] <span class="number">22215</span>    <span class="number">99</span></div></pre></td></tr></table></figure>
+<p>现在我们要研究一下这个数据集，我们想知道，储存在<code>mat</code>列中的基因表达谱的数据在不同的组织间的相似性如何。由于数据很大，无法直接画出相应的多维点图。我们通常只能绘制出二维图形，如果我们要绘制出每两个样本之间的基因表达情况不现实。而MDS图形就是为了解决这个问题而提出来的。</p>
+<h3 id="mds背后的数学原理">MDS背后的数学原理</h3>
+<p>前面我们已经知道了SVD和矩阵代数，那么我们理解MDS就相对清楚了。为了说明MDS，我们先来看一下SVD分解，如下所示： <span class="math display">\[
+\mathbf{Y} = \mathbf{UDV}^\top
+\]</span> 我们假设 <span class="math inline">\(\mathbf{U^\top Y=DV^\top}\)</span> 的前两列的平方和剩余列的平方和。因此它们可以写为<span class="math inline">\(d_1+ d_2 \gg d_3 + \dots + d_n\)</span> 其中 <span class="math inline">\(d_i\)</span> 是<span class="math inline">\(\mathbf{D}\)</span> 是第i列（原文是i-th entry）。当出现这种情况时，我们就会得到如下公式：</p>
+<p><span class="math display">\[
+\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1}&amp;0\\
+    0&amp;d_{2}\\
+  \end{pmatrix}
+  [\mathbf{V}_1 \mathbf{V}_2]^\top
+\]</span></p>
+<p>这就表明，第<span class="math inline">\(i\)</span>列近似等于： <span class="math display">\[
+\mathbf{Y}_i \approx
+[\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1}&amp;0\\
+    0&amp;d_{2}\\
+  \end{pmatrix}
+  \begin{pmatrix}
+    v_{i,1}\\
+    v_{i,2}\\
+     \end{pmatrix}
+    =
+    [\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1} v_{i,1}\\
+    d_{2} v_{i,2}
+ \end{pmatrix}
+\]</span> 如果我们们定义下面的二维向量：</p>
+<p><span class="math display">\[
+\mathbf{Z}_i=\begin{pmatrix}
+    d_{1} v_{i,1}\\
+    d_{2} v_{i,2}
+ \end{pmatrix}
+\]</span></p>
+<p>那么： <span class="math display">\[
+\begin{align*}
+(\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) &amp;\approx \left\{ [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \right\}^\top \left\{[\mathbf{U}_1 \mathbf{U}_2]  (\mathbf{Z}_i-\mathbf{Z}_j)\right\}\\
+&amp;= (\mathbf{Z}_i-\mathbf{Z}_j)^\top [\mathbf{U}_1 \mathbf{U}_2]^\top [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \\
+&amp;=(\mathbf{Z}_i-\mathbf{Z}_j)^\top(\mathbf{Z}_i-\mathbf{Z}_j)\\
+&amp;=(Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+\end{align*}
+\]</span> 上面的这个推导告诉我们，在样本<span class="math inline">\(i\)</span>和样本<span class="math inline">\(j\)</span>之最的距离近拟等于下面二维数据点的距离：</p>
+<p><span class="math display">\[
+(\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx
+ (Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+\]</span></p>
+<p>因为<span class="math inline">\(Z\)</span>是一个二维向量，因此我们可以通过绘制<span class="math inline">\(\mathbf{Z_{1}}\)</span>和<span class="math inline">\(\mathbf{Z_{2}}\)</span>来发展示这两个样本的距离。现在我们绘制出它们的距离：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">s &lt;- svd(mat-rowMeans(mat))</div><div class="line">PC1 &lt;- s$d[<span class="number">1</span>]*s$v[,<span class="number">1</span>]</div><div class="line">PC2 &lt;- s$d[<span class="number">2</span>]*s$v[,<span class="number">2</span>]</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">plot(PC1,PC2,pch=<span class="number">21</span>,bg=as.numeric(group))</div><div class="line">legend(<span class="string">"bottomright"</span>,levels(group),col=seq(along=levels(group)),pch=<span class="number">15</span>,cex=<span class="number">1.5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911090640.jpeg">
+
+</div>
+<p>从图片上我们可以看出，数据点按照相应的组织区分开来了。上面的这种分开的精确近似取决于前两个主成分解释变异的程度。像上面那样所示，我们可以绘制出每个主成分可以解释的变异程度：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plot(s$d^<span class="number">2</span>/sum(s$d^<span class="number">2</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911090819.jpeg">
+
+</div>
+<p>虽然前两个主成分解释了超过50%的变异，不过前面的图形还是没有展示出大量的信息。但是这种图已经足够用于进行可视化大量的数据了。此外，我们还可以注意到，我们能够绘制其它的主成分来研究这些数据点，例如我们绘制第3个和第4个主成分：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">PC3 &lt;- s$d[<span class="number">3</span>]*s$v[,<span class="number">3</span>]</div><div class="line">PC4 &lt;- s$d[<span class="number">4</span>]*s$v[,<span class="number">4</span>]</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">plot(PC3,PC4,pch=<span class="number">21</span>,bg=as.numeric(group))</div><div class="line">legend(<span class="string">"bottomright"</span>,levels(group),col=seq(along=levels(group)),pch=<span class="number">15</span>,cex=<span class="number">1.5</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911091057.jpeg">
+
+</div>
+<p>从上面图形中我们可以看到，第4个主成分能够将肾脏组织的样本强烈分开。在后面的部分中，我们会讲到批次效应(batch effects)会解释这种情况。</p>
+<h3 id="cmdscale函数"><code>cmdscale()</code>函数</h3>
+<p>我们在上面使用了<code>svd()</code>函数来进行计算，不过R中有一个专门的函数用于计算MDS，生成MDS图。这个函数就是<code>cmdscale()</code>函数，这个函数将距离对象作为参数，然后使用主成分分析来对这些距离进行近似计算。这个函数比使用<code>svd()</code>函数更高效（因为不可能实现完全的<code>svd()</code>函数计算，那样比较花时间）。此函数默认返回二维的数据，不过我们通过设定参数<code>k</code>（默认情况下，<code>k=2</code>）可以改变结果中的维度：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">d &lt;- dist(t(mat))</div><div class="line">mds &lt;- cmdscale(d)</div><div class="line">mypar()</div><div class="line">plot(mds[,<span class="number">1</span>],mds[,<span class="number">2</span>],bg=as.numeric(group),pch=<span class="number">21</span>,</div><div class="line">xlab=<span class="string">"First dimension"</span>,ylab=<span class="string">"Second dimension"</span>)</div><div class="line">legend(<span class="string">"bottomleft"</span>,levels(group),col=seq(along=levels(group)),pch=<span class="number">15</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911091915.jpeg">
+
+</div>
+<p>再看另外一个：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">2</span>)&#123;</div><div class="line">plot(mds[,i],s$d[i]*s$v[,i],main=paste(<span class="string">"PC"</span>,i))</div><div class="line">b = ifelse( cor(mds[,i],s$v[,i]) &gt; <span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>)</div><div class="line">abline(<span class="number">0</span>,b) <span class="comment">##b is 1 or -1 depending on the arbitrary sign "flip"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911092010.jpeg">
+
+</div>
+<h3 id="任意符号">任意符号</h3>
+<p>SVD并非是唯一的，只要我们用<code>-1</code>乘以<span class="math inline">\(\mathbf{U}\)</span>的样本列，我们就能使用<code>-1</code>乘以<span class="math inline">\(\mathbf{V}\)</span>的任意列，通过下面的转换我们就能看出来（这一段不懂）： <span class="math display">\[
+\mathbf{-1UD(-1)V}^\top = \mathbf{UDV}^\top
+\]</span></p>
+<h3 id="扣除平均值">扣除平均值</h3>
+<p>在所有的计算中，当我们计算SVD时，都会扣除行(row)的均值。如果我们要试图计算两列之间的近似距离，那么在<span class="math inline">\(\mathbf{Y}_{i}\)</span>和<span class="math inline">\(\mathbf{Y}_{j}\)</span>之间的距离就与<span class="math inline">\(\mathbf{Y}_i - \mathbf{\mu}\)</span>和<span class="math inline">\(\mathbf{Y}_j - \mathbf{\mu}\)</span>之间的距离相同，因为当我们过计算时，中间的<span class="math inline">\(\mu\)</span>就会被消去： <span class="math display">\[
+\left\{ ( \mathbf{Y}_i- \mathbf{\mu} ) - ( \mathbf{Y}_j - \mathbf{\mu} ) \right\}^\top \left\{ (\mathbf{Y}_i- \mathbf{\mu}) - (\mathbf{Y}_j - \mathbf{\mu} ) \right\} = \left\{  \mathbf{Y}_i-  \mathbf{Y}_j  \right\}^\top \left\{ \mathbf{Y}_i - \mathbf{Y}_j  \right\}
+\]</span> 因为扣除行均值可以降低总的变异，它可以使得SVD的结果近更为逼近。</p>
+<h2 id="练习">练习</h2>
+<p>P357</p>
+<h2 id="pca">PCA</h2>
+<p>PCA的相关资料可以参考作者的<a href="https://github.com/genomicsclass/labs/blob/master/highdim/PCA.Rmd" target="_blank" rel="external">Github</a>。</p>
+<p>前面我们已经提到了PCA，这里继续深入一步，讲一下PCA背后的数学原理。</p>
+<h3 id="案例双胞胎身高">案例：双胞胎身高</h3>
+<p>我们先使用模拟数据的案例展示一个旋转，这个旋转与PCA有着很大的有关系：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line"><span class="keyword">library</span>(MASS)</div><div class="line">n &lt;- <span class="number">100</span></div><div class="line">set.seed(<span class="number">1</span>)</div><div class="line">Y=t(mvrnorm(n,c(<span class="number">0</span>,<span class="number">0</span>), matrix(c(<span class="number">1</span>,<span class="number">0.95</span>,<span class="number">0.95</span>,<span class="number">1</span>),<span class="number">2</span>,<span class="number">2</span>)))</div><div class="line">mypar()</div><div class="line">thelim &lt;- c(-<span class="number">3</span>,<span class="number">3</span>)</div><div class="line">plot(Y[<span class="number">1</span>,], Y[<span class="number">2</span>,], xlab=<span class="string">"Twin 1 (standardized height)"</span>, </div><div class="line">     ylab=<span class="string">"Twin 2 (standardized height)"</span>, xlim=thelim, ylim=thelim)</div><div class="line">points(Y[<span class="number">1</span>,<span class="number">1</span>:<span class="number">2</span>], Y[<span class="number">2</span>,<span class="number">1</span>:<span class="number">2</span>], col=<span class="number">2</span>, pch=<span class="number">16</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911094030.jpeg">
+
+</div>
+<p>这里我们专门来解释一下什么是什么成分（principla components）。</p>
+<p>我们使用 <span class="math inline">\(\mathbf{Y}\)</span> 这个 <span class="math inline">\(2 \times N\)</span> 矩阵来表示我们的数据。这个类似于我们检测了两组基因的信息，每列表示1个样本。现在我们的任何就是，找到一个 <span class="math inline">\(2 \times 1\)</span> 向量 <span class="math inline">\(\mathbf{u}_1\)</span> ，使其满足 <span class="math inline">\(\mathbf{u}_1^\top \mathbf{v}_1 = 1\)</span>，它能使 <span class="math inline">\((\mathbf{u}_1^\top\mathbf{Y})^\top (\mathbf{u}_1^\top\mathbf{Y})\)</span> 最大。这个过程可以被视为每个样本，或<span class="math inline">\(\mathbf{Y}\)</span>向子空间 <span class="math inline">\(\mathbf{u}_1\)</span> 的投影。因此，我们需要将坐标系进行置换，使新的坐标系能够显示出最大变异。</p>
+<p>我先试一下 <span class="math inline">\(\mathbf{u}=(1,0)^\top\)</span>。这个投影公仅能够给出双胞胎1的身高（橘黄色）。图片标题中显示的是平方和。</p>
+<figure class="highlight plain"><figcaption><span>projection_not_PC1, fig.align</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mypar(1,1)</div><div class="line">plot(t(Y), xlim=thelim, ylim=thelim,</div><div class="line">     main=paste(&quot;Sum of squares :&quot;,round(crossprod(Y[1,]),1)))</div><div class="line">abline(h=0)</div><div class="line">apply(Y,2,function(y) segments(y[1],0,y[1],y[2],lty=2))</div><div class="line">points(Y[1,],rep(0,ncol(Y)),col=2,pch=16,cex=0.75)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911160126.jpeg">
+
+</div>
+<p>我们能否找到一个方向，使得坐标系旋转后，能够表示更高的变异？例如</p>
+<p><span class="math inline">\(\mathbf{u} =\begin{pmatrix}1\\-1\end{pmatrix}\)</span> 这个怎么样？它不满足 <span class="math inline">\(\mathbf{u}^\top\mathbf{u}= 1\)</span> ，因此我们可以使用另外一个向量，即 <span class="math inline">\(\mathbf{u} =\begin{pmatrix}1/\sqrt{2}\\-1/\sqrt{2}\end{pmatrix}\)</span></p>
+<figure class="highlight plain"><figcaption><span>projection_not_PC1_either, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">u &lt;- matrix(c(1,-1)/sqrt(2),ncol=1)</div><div class="line">w=t(u)%*%Y</div><div class="line">mypar(1,1)</div><div class="line">plot(t(Y),</div><div class="line">     main=paste(&quot;Sum of squares:&quot;,round(tcrossprod(w),1)),xlim=thelim,ylim=thelim)</div><div class="line">abline(h=0,lty=2)</div><div class="line">abline(v=0,lty=2)</div><div class="line">abline(0,-1,col=2)</div><div class="line">Z = u%*%w</div><div class="line">for(i in seq(along=w))</div><div class="line">  segments(Z[1,i],Z[2,i],Y[1,i],Y[2,i],lty=2)</div><div class="line">points(t(Z), col=2, pch=16, cex=0.5)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911161254.jpeg">
+
+</div>
+<p>这个图形与双胞胎的差异有关，我们知道这个差异很少的。通常平方和我们可以确实这一点，最后我们试一下这个向量：</p>
+<p><span class="math display">\[
+\mathbf{u} =\begin{pmatrix}1/\sqrt{2}\\1/\sqrt{2}\end{pmatrix}
+\]</span></p>
+<figure class="highlight plain"><figcaption><span>PC1, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">u &lt;- matrix(c(1,1)/sqrt(2),ncol=1)</div><div class="line">w=t(u)%*%Y</div><div class="line">mypar()</div><div class="line">plot(t(Y), main=paste(&quot;Sum of squares:&quot;,round(tcrossprod(w),1)),</div><div class="line">     xlim=thelim, ylim=thelim)</div><div class="line">abline(h=0,lty=2)</div><div class="line">abline(v=0,lty=2)</div><div class="line">abline(0,1,col=2)</div><div class="line">points(u%*%w, col=2, pch=16, cex=1)</div><div class="line">Z = u%*%w</div><div class="line">for(i in seq(along=w))</div><div class="line">  segments(Z[1,i], Z[2,i], Y[1,i], Y[2,i], lty=2)</div><div class="line">points(t(Z),col=2,pch=16,cex=0.5)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911161447.jpeg">
+
+</div>
+<p>这个图形与重新缩放(re-scaled)后的平均高度有关，它有着最大的平方和。这是一个数学计算程序，它能够计算出一个 <span class="math inline">\(\mathbf{v}\)</span> ，能够使平方和最大，SVD就是这样的一个程序。</p>
+<h4 id="主成分">主成分</h4>
+<p>正交向量能够使平方和最大：</p>
+<p><span class="math display">\[
+(\mathbf{u}_1^\top\mathbf{Y})^\top(\mathbf{u}_1^\top\mathbf{Y})
+\]</span></p>
+<p><span class="math inline">\(\mathbf{u}_1^\top\mathbf{Y}\)</span> 指的就是第1PC。e用于获得PC的加权(weights) <span class="math inline">\(\mathbf{u}\)</span> 指的就是因子载荷(loadings)。使用旋转这种操作，它指的就是第1PC的旋转方向。</p>
+<p>为了获得第2PC，我们可以重复上述操作，但是残差如下：</p>
+<p><span class="math display">\[\mathbf{r} = \mathbf{Y} - \mathbf{u}_1^\top \mathbf{Yv}_1 \]</span></p>
+<p>第2PC的向量含有以下性质：</p>
+<p><span class="math display">\[ \mathbf{v}_2^\top \mathbf{v}_1=0\]</span></p>
+<p>它能使 <span class="math inline">\((\mathbf{rv}_2)^\top \mathbf{rv}_2\)</span>最大，</p>
+<p>当 <span class="math inline">\(Y\)</span> 是 <span class="math inline">\(N \times m\)</span> 时，我们可以重复地找到第3，第4，第5，等主成分。</p>
+<h4 id="prcomp"><code>prcomp</code></h4>
+<p>我们已经介绍了如何使用SVD来计算PC。介理，R中有一个专门的函数可以用于找到主成分，即<code>prcomp()</code>，在这个案例中，数据默认中心化的，这个函数的使用如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pc &lt;- prcomp( t(Y) )</div></pre></td></tr></table></figure>
+<p>计算出的结果与SVD相同，直到符号翻转（produces the same results as the SVD up to arbitrary sign flips，实在没理解这句话什么意思）</p>
+<figure class="highlight plain"><figcaption><span>pca_svd, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">s &lt;- svd( Y - rowMeans(Y) )</div><div class="line">mypar(1,2)</div><div class="line">for(i in 1:nrow(Y) )&#123;</div><div class="line">  plot(pc$x[,i], s$d[i]*s$v[,i])</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190911165120.jpeg">
+
+</div>
+<p>因子载荷可以通过下面方式计算：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pc$rotation</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; pc$rotation</div><div class="line">           PC1        PC2</div><div class="line">[<span class="number">1</span>,] <span class="number">0.7072304</span>  <span class="number">0.7069831</span></div><div class="line">[<span class="number">2</span>,] <span class="number">0.7069831</span> -<span class="number">0.7072304</span></div></pre></td></tr></table></figure>
+<p>它就相当于 (up to a sign flip？这个不懂) :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">s$u</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; s$u</div><div class="line">           [,<span class="number">1</span>]       [,<span class="number">2</span>]</div><div class="line">[<span class="number">1</span>,] -<span class="number">0.7072304</span> -<span class="number">0.7069831</span></div><div class="line">[<span class="number">2</span>,] -<span class="number">0.7069831</span>  <span class="number">0.7072304</span></div></pre></td></tr></table></figure>
+<p>解释的方差等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pc$sdev</div></pre></td></tr></table></figure>
+<p>计算结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; pc$sdev</div><div class="line">[<span class="number">1</span>] <span class="number">1.2542672</span> <span class="number">0.2141882</span></div></pre></td></tr></table></figure>
+<p>现在我们将<code>Y</code>转置一下，因为<code>prcomp()</code>函数与我们平时所用的高通量数据储存有点不太一样，平时我们的数据是列为样本，行为特征值，而<code>prcomp()</code>函数则是正好相反，它处理的数据列是特征值，行是样本名。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MDS/" <i class="fa fa-tag"></i> MDS</a>
+          
+            <a href="/tags/PCA/" <i class="fa fa-tag"></i> PCA</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/20/Data Analysis for the life sciences/DALS020_Distance_and_Dimension_Reduction1_SVD/" rel="next" title="DALS020-距离与降维">
+                <i class="fa fa-chevron-left"></i> DALS020-距离与降维
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/22/Data Analysis for the life sciences/DALS022_Basic_Machine_Learning01_ Cluster_heatmap/" rel="prev" title="DALS022-机器学习01-聚类与热图">
+                DALS022-机器学习01-聚类与热图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">249</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">118</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mds"><span class="nav-number">2.</span> <span class="nav-text">MDS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mds背后的数学原理"><span class="nav-number">2.1.</span> <span class="nav-text">MDS背后的数学原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cmdscale函数"><span class="nav-number">2.2.</span> <span class="nav-text">cmdscale()函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#任意符号"><span class="nav-number">2.3.</span> <span class="nav-text">任意符号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扣除平均值"><span class="nav-number">2.4.</span> <span class="nav-text">扣除平均值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习"><span class="nav-number">3.</span> <span class="nav-text">练习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pca"><span class="nav-number">4.</span> <span class="nav-text">PCA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#案例双胞胎身高"><span class="nav-number">4.1.</span> <span class="nav-text">案例：双胞胎身高</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#主成分"><span class="nav-number">4.1.1.</span> <span class="nav-text">主成分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prcomp"><span class="nav-number">4.1.2.</span> <span class="nav-text">prcomp</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共988.9k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

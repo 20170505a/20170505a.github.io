@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Class Prediction," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 这一部分是《Data Analysis for the life sciences》的第9章机器学习的第3小节，这一部分的主要内容涉及类预测(Class Prediction)，这一部分相关的Rmarkdown文档参见作者的Github。 在这一部分中我们主要介绍分类预测(class prediction)。实际上，许多人将分类预测称为机器学习，有的时候我们会交替使用这两个术语。我们会对">
+<meta name="keywords" content="Class Prediction">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DALS024-机器学习03-分类预测">
+<meta property="og:url" content="http://rvdsd.top/2019/08/24/Data Analysis for the life sciences/DALS024_Basic_Machine_Learning03_Class_Prediction/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="前言 这一部分是《Data Analysis for the life sciences》的第9章机器学习的第3小节，这一部分的主要内容涉及类预测(Class Prediction)，这一部分相关的Rmarkdown文档参见作者的Github。 在这一部分中我们主要介绍分类预测(class prediction)。实际上，许多人将分类预测称为机器学习，有的时候我们会交替使用这两个术语。我们会对">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912170040.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912170527.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912171217.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912173537.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912174226.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913013135.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913180841.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913184146.jpeg">
+<meta property="og:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913184233.jpeg">
+<meta property="og:updated_time" content="2019-09-14T09:05:56.295Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DALS024-机器学习03-分类预测">
+<meta name="twitter:description" content="前言 这一部分是《Data Analysis for the life sciences》的第9章机器学习的第3小节，这一部分的主要内容涉及类预测(Class Prediction)，这一部分相关的Rmarkdown文档参见作者的Github。 在这一部分中我们主要介绍分类预测(class prediction)。实际上，许多人将分类预测称为机器学习，有的时候我们会交替使用这两个术语。我们会对">
+<meta name="twitter:image" content="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912170040.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/08/24/Data Analysis for the life sciences/DALS024_Basic_Machine_Learning03_Class_Prediction/"/>
+
+
+
+
+
+  <title>DALS024-机器学习03-分类预测 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/08/24/Data Analysis for the life sciences/DALS024_Basic_Machine_Learning03_Class_Prediction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DALS024-机器学习03-分类预测</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-24T12:00:00+08:00">
+                2019-08-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Analysis-for-the-life-sciences/" itemprop="url" rel="index">
+                    <span itemprop="name">Data Analysis for the life sciences</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6,035
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  27
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>这一部分是《Data Analysis for the life sciences》的第9章机器学习的第3小节，这一部分的主要内容涉及类预测(Class Prediction)，这一部分相关的Rmarkdown文档参见作者的<a href="https://github.com/genomicsclass/labs/blob/master/ml/machine_learning.Rmd" target="_blank" rel="external">Github</a>。</p>
+<p>在这一部分中我们主要介绍分类预测(class prediction)。实际上，许多人将分类预测称为机器学习，有的时候我们会交替使用这两个术语。我们会对这个庞杂的主题做一个非常简单的介绍，重点关注一些具体的案例。</p>
+<p>我们这里使用的案例来源于统计学的经典书籍，即Trevor Hastie, Robert Tibshirani and Jerome Friedman的《<em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>》。与回归中的推断类似，机器学习(ML)也是研究结果 <span class="math inline">\(Y\)</span> 和协变量 <span class="math inline">\(X\)</span> 之间的关系。在ML中，我们将 <span class="math inline">\(X\)</span> 称为预测因子或特征值，ML和推断之间的主要区别在于，在ML中，我们主要研究使用 <span class="math inline">\(X\)</span> 来预测 <span class="math inline">\(Y\)</span> 。关于统计模型，我在常规的推断中，我们主要用来估计和解释模型参数，但在ML中，统计模型只是我们达到目的的手段，即预测 <span class="math inline">\(Y\)</span> 。</p>
+<p>这里我们介绍理解ML的主要概念，以及两个具体的算法：回归(regression)和k近似算法(kNN,k nearest neighbors)。我们需要知道，绐中学习有几十种流行的算法，我们这里不一一列举。</p>
+<p>在前面部分里，我们介绍了非常简单的单一预测因子案例。但是，大多数与这种案例相关的案例往往不止一个预测因子。为了说明这个问题，我们现在再介绍一个案例，其中 <span class="math inline">\(X\)</span> 是一个二维数据，<span class="math inline">\(Y\)</span> 是一个二分类结果。这个案例来源于Hastie, Tibshirani 和 Friedman的书中，在这个案例中， <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 并不线性关系。在下面的图形中，使用不 的颜色表示了实际的 <span class="math inline">\(f(x_1,x_2)=E(Y \mid X_1=x_1,X_2=x_2)\)</span> 值。下面的代码用于生成一个相对复杂的条件概率函数。我们随后会使用测试数据集与训练数据集。在下图中，我们使用红色来表示 <span class="math inline">\(f(x_1,x_2)\)</span>中接近于1的数据，使用蓝色表示接近于0的数据，中间过渡态使用黄色表示，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>conditional_prob, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">library(rafalib)</div><div class="line">library(RColorBrewer)</div><div class="line">hmcol &lt;- colorRampPalette(rev(brewer.pal(11, &quot;Spectral&quot;)))(100)</div><div class="line">mycols=c(hmcol[1],hmcol[100])</div><div class="line">set.seed(1)</div><div class="line">##create covariates and outcomes</div><div class="line">##outcomes are alwasy 50 0s and 50 1s</div><div class="line">s2=0.15</div><div class="line">##pick means to create a non linear conditional expectation</div><div class="line">library(MASS)</div><div class="line">M0 &lt;- mvrnorm(10,c(1,0),s2*diag(2)) ##generate 10 means</div><div class="line">M1 &lt;- rbind(mvrnorm(3,c(1,1),s2*diag(2)),</div><div class="line">            mvrnorm(3,c(0,1),s2*diag(2)),</div><div class="line">            mvrnorm(4,c(0,0),s2*diag(2)))</div><div class="line">###funciton to generate random pairs</div><div class="line">s&lt;- sqrt(1/5)</div><div class="line">N=200</div><div class="line">makeX &lt;- function(M,n=N,sigma=s*diag(2))&#123;</div><div class="line">  z &lt;- sample(1:10,n,replace=TRUE) ##pick n at random from above 10</div><div class="line">  m &lt;- M[z,] ##these are the n vectors (2 components)</div><div class="line">  return(t(apply(m,1,function(mu) mvrnorm(1,mu,sigma)))) ##the final values</div><div class="line">&#125;</div><div class="line">###create the training set and the test set</div><div class="line">x0 &lt;- makeX(M0)##the final values for y=0 (green)</div><div class="line">testx0 &lt;- makeX(M0)</div><div class="line">x1 &lt;- makeX(M1)</div><div class="line">testx1 &lt;-makeX(M1)</div><div class="line">x &lt;- rbind(x0,x1) ##one matrix with everything</div><div class="line">test &lt;- rbind(testx0,testx1)</div><div class="line">y &lt;- c(rep(0,N),rep(1,N)) #the outcomes</div><div class="line">ytest &lt;- c(rep(0,N),rep(1,N))</div><div class="line">cols &lt;- mycols[c(rep(1,N),rep(2,N))]</div><div class="line">colstest &lt;- cols</div><div class="line">##Create a grid so we can predict all of X,Y</div><div class="line">GS &lt;- 150 ##grid size is GS x GS</div><div class="line">XLIM &lt;- c(min(c(x[,1],test[,1])),max(c(x[,1],test[,1])))</div><div class="line">tmpx &lt;- seq(XLIM[1],XLIM[2],len=GS)</div><div class="line">YLIM &lt;- c(min(c(x[,2],test[,2])),max(c(x[,2],test[,2])))</div><div class="line">tmpy &lt;- seq(YLIM[1],YLIM[2],len=GS)</div><div class="line">newx &lt;- expand.grid(tmpx,tmpy) #grid used to show color contour of predictions</div><div class="line">###Bayes rule: best possible answer</div><div class="line">p &lt;- function(x)&#123; ##probability of Y given X</div><div class="line">  p0 &lt;- mean(dnorm(x[1],M0[,1],s)*dnorm(x[2],M0[,2],s))</div><div class="line">  p1 &lt;- mean(dnorm(x[1],M1[,1],s)*dnorm(x[2],M1[,2],s))</div><div class="line">  p1/(p0+p1)</div><div class="line">&#125;</div><div class="line">###Create the bayesrule prediction</div><div class="line">bayesrule &lt;- apply(newx,1,p)</div><div class="line">colshat &lt;- bayesrule</div><div class="line">colshat &lt;- hmcol[floor(bayesrule*100)+1]</div><div class="line">mypar()</div><div class="line">plot(x,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">points(newx,col=colshat,pch=16,cex=0.35)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912170040.jpeg">
+
+</div>
+<p>如果我们将那些 <span class="math inline">\(E(Y \mid X=x)&gt;0.5\)</span> 的点用红色表示，剩下的点用蓝色表示，我们就能看到一条明显的分界线，它将0与1的区域分开了，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>bayes_rule,fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mypar()</div><div class="line">colshat[bayesrule&gt;=0.5] &lt;- mycols[2]</div><div class="line">colshat[bayesrule&lt;0.5] &lt;- mycols[1]</div><div class="line">plot(x,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">points(newx,col=colshat,pch=16,cex=0.35)</div><div class="line">contour(tmpx,tmpy,matrix(round(bayesrule),GS,GS),levels=c(1,2),</div><div class="line">        add=TRUE,drawlabels=FALSE)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912170527.jpeg">
+
+</div>
+<p>通过上面的图形我们并没有看到“真相”(truth)。大多数的ML方法涉及估计的 <span class="math inline">\(f(x)\)</span> 。通常第一步就是将一个样本作为参数，也就是训练集(training set)，用它来估计 <span class="math inline">\(f(x)\)</span> 。我们将回顾一下两种具体的ML技术。首先，我们需要回顾一下我们用评估这些方法性能的主要概念。</p>
+<h3 id="训练集">训练集</h3>
+<p>在第一张图中，我们创建了一个训练集和一个测试集，现在我们画出来，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>test_train, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#x, test, cols, and coltest were created in code that was not shown</div><div class="line">#x is training x1 and x2, test is test x1 and x2</div><div class="line">#cols (0=blue, 1=red) are training observations</div><div class="line">#coltests are test observations</div><div class="line">mypar(1,2)</div><div class="line">plot(x,pch=21,bg=cols,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">plot(test,pch=21,bg=colstest,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912171217.jpeg">
+
+</div>
+<p>从上面我们可以看到，训练集（左侧）与测试集（右侧）有着相似的全局属性，因为它们是用相同的随机谈量生成的（蓝色点都趋向分布于右下角），但是它们的构建的过程还是不同的。原因在于，我们创建测试集和训练集的原因是通过测试与用于拟合模型或训练算法的数据不同的数据来检测过度训练。 我们将在下面看到它的重要性。</p>
+<h4 id="利用回归进行预测">利用回归进行预测</h4>
+<p>关于ML问题的第一个简单方法就是拟合一个双变量线性回归模型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">##x and y were created in the code (not shown) for the first plot</div><div class="line">#y is outcome for the training set</div><div class="line">X1 &lt;- x[,1] ##these are the covariates</div><div class="line">X2 &lt;- x[,2] </div><div class="line">fit1 &lt;- lm(y~X1+X2)</div></pre></td></tr></table></figure>
+<p>一旦我们有了这些拟合的数据，我们就能使用 <span class="math inline">\(\hat{f}(x_1,x_2)=\hat{\beta}_0 + \hat{\beta}_1x_1 +\hat{\beta}_2 x_2\)</span> 来估计 <span class="math inline">\(f(x_1,x_2)\)</span> 。为了提供一个实际的预测结果，我们仅仅预测当 <span class="math inline">\(\hat{f}(x_1,x_2)&gt;0.5\)</span> 时结果为1（这一段不懂）。我们现在检测一个在训练集与测试集中的错误率，并绘制出边界区域，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">##prediction on train</div><div class="line">yhat &lt;- predict(fit1)</div><div class="line">yhat &lt;- as.numeric(yhat&gt;0.5)</div><div class="line">cat(&quot;Linear regression prediction error in train:&quot;,1-mean(yhat==y),&quot;\n&quot;)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Linear regression prediction error <span class="keyword">in</span> train: <span class="number">0.295</span></div></pre></td></tr></table></figure>
+<p>我们使用<code>predict()</code>函数就能很快地从任意数据集中来获得预测值，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yhat &lt;- predict(fit1,newdata=data.frame(X1=newx[,1],X2=newx[,2]))</div></pre></td></tr></table></figure>
+<p>现在我们生成图片，用于展示我们预测的1和0在图片上的分布，以及边界。我们还可以使用<code>predict()</code>函数从我们的测试集中生成预测数据。需要注意的是，我们无法在测试集中拟合模型：</p>
+<figure class="highlight plain"><figcaption><span>regression_prediction, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">colshat &lt;- yhat</div><div class="line">colshat[yhat&gt;=0.5] &lt;- mycols[2]</div><div class="line">colshat[yhat&lt;0.5] &lt;- mycols[1]</div><div class="line">m &lt;- -fit1$coef[2]/fit1$coef[3] #boundary slope</div><div class="line">b &lt;- (0.5 - fit1$coef[1])/fit1$coef[3] #boundary intercept</div><div class="line">##prediction on test</div><div class="line">yhat &lt;- predict(fit1,newdata=data.frame(X1=test[,1],X2=test[,2]))</div><div class="line">yhat &lt;- as.numeric(yhat&gt;0.5)</div><div class="line">cat(&quot;Linear regression prediction error in test:&quot;,1-mean(yhat==ytest),&quot;\n&quot;)</div><div class="line">plot(test,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">abline(b,m)</div><div class="line">points(newx,col=colshat,pch=16,cex=0.35)</div><div class="line">##test was created in the code (not shown) for the first plot</div><div class="line">points(test,bg=cols,pch=21)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912173537.jpeg">
+
+</div>
+<p>在上图中，我们使用 <span class="math inline">\(X_{1}\)</span>和 <span class="math inline">\(X_{2}\)</span> 作为预测因子估计了1的概率，预测的结果将高于0.5的数据标注成了红色，低于0.5的标注为了蓝色。</p>
+<p>从计算结果来年地，训练集与测试集的错误率非常相似。因此我们可以相信似乎没有过度训练。这并不奇怪，因为我们使用了2参数模型来拟合400个数据点。不过需要注意的是，边界是一个直线。因为我们为这些数据拟合了一个平面，所以这里没有其它选择。线性回归方法过于僵化。这种僵化会让它稳定，并且避免过度训练。，但是线性回归也不能适合对 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(X\)</span> 之间的非线性关系进行拟合。我们之前在平滑部分中看到了这些东西。下一个ML技术将会达到我们之间平滑处理的那种效果。</p>
+<h4 id="knn">kNN</h4>
+<p>kNN的全称是K-nearest neighbors，即<code>k最近邻</code>，这种算法类似于微区间平滑处理，但是kNN更适合于多维数据。总的来说，只要给定我们想要估计的任意点 <span class="math inline">\(x\)</span> ，我们会寻找k个最近的点，然后取这些点的平均值。这就会估计 <span class="math inline">\(f(x_1,x_2)\)</span> , 跟微区间平滑处理生成一个条曲线类似。我们现在通过 <span class="math inline">\(k\)</span> 来控制灵活性。这时我们比较一下 <span class="math inline">\(k=1\)</span> 和 <span class="math inline">\(k=100\)</span> 时的计算结果：</p>
+<figure class="highlight plain"><figcaption><span>message</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">mypar(2,2)</div><div class="line">for(k in c(1,100))&#123;</div><div class="line">  ##predict on train</div><div class="line">  yhat &lt;- knn(x,x,y,k=k)</div><div class="line">  cat(&quot;KNN prediction error in train:&quot;,1-mean((as.numeric(yhat)-1)==y),&quot;\n&quot;)</div><div class="line">  ##make plot</div><div class="line">  yhat &lt;- knn(x,test,y,k=k)</div><div class="line">  cat(&quot;KNN prediction error in test:&quot;,1-mean((as.numeric(yhat)-1)==ytest),&quot;\n&quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; mypar(<span class="number">2</span>,<span class="number">2</span>)</div><div class="line">&gt; <span class="keyword">for</span>(k <span class="keyword">in</span> c(<span class="number">1</span>,<span class="number">100</span>))&#123;</div><div class="line">+   <span class="comment">##predict on train</span></div><div class="line">+   yhat &lt;- knn(x,x,y,k=k)</div><div class="line">+   cat(<span class="string">"KNN prediction error in train:"</span>,<span class="number">1</span>-mean((as.numeric(yhat)-<span class="number">1</span>)==y),<span class="string">"\n"</span>)</div><div class="line">+   <span class="comment">##make plot</span></div><div class="line">+   yhat &lt;- knn(x,test,y,k=k)</div><div class="line">+   cat(<span class="string">"KNN prediction error in test:"</span>,<span class="number">1</span>-mean((as.numeric(yhat)-<span class="number">1</span>)==ytest),<span class="string">"\n"</span>)</div><div class="line">+ &#125;</div><div class="line">KNN prediction error <span class="keyword">in</span> train: <span class="number">0</span> </div><div class="line">KNN prediction error <span class="keyword">in</span> test: <span class="number">0.375</span> </div><div class="line">KNN prediction error <span class="keyword">in</span> train: <span class="number">0.2425</span> </div><div class="line">KNN prediction error <span class="keyword">in</span> test: <span class="number">0.2825</span></div></pre></td></tr></table></figure>
+<p>为了说明，当我们设定 <span class="math inline">\(k=1\)</span>时，训练集中没有错误，以及 <span class="math inline">\(k=100\)</span> 时错误升高的原因，我们用图片直观地展示一下上面的结果，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>knn, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">mypar(2,2)</div><div class="line">for(k in c(1,100))&#123;</div><div class="line">  ##predict on train</div><div class="line">  yhat &lt;- knn(x,x,y,k=k)</div><div class="line">  ##make plot</div><div class="line">  yhat &lt;- knn(x,newx,y,k=k)</div><div class="line">  colshat &lt;- mycols[as.numeric(yhat)]</div><div class="line">  plot(x,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">  points(newx,col=colshat,cex=0.35,pch=16)</div><div class="line">  contour(tmpx,tmpy,matrix(as.numeric(yhat),GS,GS),levels=c(1,2),</div><div class="line">          add=TRUE,drawlabels=FALSE)</div><div class="line">  points(x,bg=cols,pch=21)</div><div class="line">  title(paste(&quot;Train: KNN (&quot;,k,&quot;)&quot;,sep=&quot;&quot;))</div><div class="line">  </div><div class="line">  plot(test,type=&quot;n&quot;,xlab=&quot;X1&quot;,ylab=&quot;X2&quot;,xlim=XLIM,ylim=YLIM)</div><div class="line">  points(newx,col=colshat,cex=0.35,pch=16)</div><div class="line">  contour(tmpx,tmpy,matrix(as.numeric(yhat),GS,GS),levels=c(1,2),</div><div class="line">          add=TRUE,drawlabels=FALSE)</div><div class="line">  points(test,bg=cols,pch=21)</div><div class="line">  title(paste(&quot;Test: KNN (&quot;,k,&quot;)&quot;,sep=&quot;&quot;))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190912174226.jpeg">
+
+</div>
+<p>从图上我们可以发现，当 <span class="math inline">\(k=1\)</span> 时，在训练集中并没有出现错误，因为每个点都是它最接近的点，这个就是它自身。但是，我们可以看到一些蓝色的岛（由几个点构成的区域）在红色区域中，一旦我们将数据集移向测试集，就会出现一些错误。当 <span class="math inline">\(k=100\)</span> 时，我们没有这个问题（也就是说红蓝区域分得很开），我们可以看到，错误率比线性回归有着明显的降低。我们还看到，我们估计的 <span class="math inline">\(f(x_1,x_2)\)</span> 比较接近于真实情况。</p>
+<h4 id="贝叶斯规则">贝叶斯规则</h4>
+<p>在这一部分里，我们会比较了不同 <span class="math inline">\(k\)</span> 值下的训练集与测试集。我们还会比较当我们知道 <span class="math inline">\(\mbox{E}(Y \mid X_1=x1,X_2=x_2)\)</span> 时的错误率，这也就是所谓的贝叶斯规则(Bayes Rule)。</p>
+<p>我们先来计算一下错误率，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">###Bayes Rule</div><div class="line">yhat &lt;- apply(test,1,p)</div><div class="line">cat(&quot;Bayes rule prediction error in train&quot;,1-mean(round(yhat)==y),&quot;\n&quot;)</div><div class="line">bayes.error=1-mean(round(yhat)==y)</div><div class="line">train.error &lt;- rep(0,16)</div><div class="line">test.error &lt;- rep(0,16)</div><div class="line">for(k in seq(along=train.error))&#123;</div><div class="line">  ##predict on train</div><div class="line">  yhat &lt;- knn(x,x,y,k=2^(k/2))</div><div class="line">  train.error[k] &lt;- 1-mean((as.numeric(yhat)-1)==y)</div><div class="line">  ##prediction on test    </div><div class="line">  yhat &lt;- knn(x,test,y,k=2^(k/2))</div><div class="line">  test.error[k] &lt;- 1-mean((as.numeric(yhat)-1)==y)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后绘制出不同 <span class="math inline">\(k\)</span> 值下的错误率。我们还以一条水平线来展示贝叶斯规则错误率，如下所示</p>
+<figure class="highlight plain"><figcaption><span>bayes_rule2, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">ks &lt;- 2^(seq(along=train.error)/2)</div><div class="line">mypar()</div><div class="line">plot(ks,train.error,type=&quot;n&quot;,xlab=&quot;K&quot;,ylab=&quot;Prediction Error&quot;,log=&quot;x&quot;,</div><div class="line">     ylim=range(c(test.error,train.error)))</div><div class="line">lines(ks,train.error,type=&quot;b&quot;,col=4,lty=2,lwd=2)</div><div class="line">lines(ks,test.error,type=&quot;b&quot;,col=5,lty=3,lwd=2)</div><div class="line">abline(h=bayes.error,col=6)</div><div class="line">legend(&quot;bottomright&quot;,c(&quot;Train&quot;,&quot;Test&quot;,&quot;Bayes&quot;),col=c(4,5,6),lty=c(2,3,1),box.lwd=0)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913013135.jpeg">
+
+</div>
+<p>在上图中，粉色是训练集的错误率，绿色的是测试集的错误率。黄色是贝叶斯规则的错误率。</p>
+<p>我们要知道，错误率是一个随机变量，它有着标准差。在下面的部分里，我们会提到交叉验证，这种方法有助于降低一些变异（这里我自己的理解就是错误率的变异）。然而即使将这些变异降低，从图中我们就可以看出来，当 <span class="math inline">\(k\)</span> 低于20时就会出现过拟合(over-fitting)，当 <span class="math inline">\(k\)</span> 超过100时就会出现低拟合(under-fitting)。</p>
+<h2 id="交叉验证">交叉验证</h2>
+<p>这里我们描述一下交叉验证(cross-validation)，交叉验证是机器学习中有关方法评估的一个基础工具，它能在一项预测或机器学习任务中进行参数选择。假设我们有一组许多特征值的观测值，并且每个观测值都与一个标签关联。我们将这个集合称为我们的训练集。我们的任务就是通过从训练数据中学习模式来预测任何新样本的标签。对于一个具体的例子来说，例如我们会将每个基因看作是一个特征值，然后我们再来计算一组没有标签的数据（测试数据集），看一下这组数据是新样本中的哪些组织类型。</p>
+<p>如果我们选择了一个可调参数的机器学习算法，那么我们必须要有一个策略来这个参数选择一个最佳值。我们可以尝试着先计算一批数据，例如可以把一些已知样本的数据当作训练集，然后算法会计算出这些值产生的错误数据，然后我们会选择在我们的训练集中表现最好的值。</p>
+<p>现在我们使用前面提到过的组织基要因表达数据集来看一下，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(tissuesGeneExpression)</div><div class="line">data(tissuesGeneExpression)</div></pre></td></tr></table></figure>
+<p>为了说明我们这么做的目的，我们把那些样本数目较少的组织剔除掉，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">table(tissue)</div><div class="line">ind &lt;- which(tissue != &quot;placenta&quot;)</div><div class="line">y &lt;- tissue[ind]</div><div class="line">X &lt;- t( e[,ind] )</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; table(tissue)</div><div class="line">tissue</div><div class="line"> cerebellum       colon endometrium hippocampus      kidney       liver    placenta </div><div class="line">         <span class="number">38</span>          <span class="number">34</span>          <span class="number">15</span>          <span class="number">31</span>          <span class="number">39</span>          <span class="number">26</span>           <span class="number">6</span></div></pre></td></tr></table></figure>
+<p>我们把<code>placenta(胎盘)</code>这个组织去掉了，现在我们使用kNN法来进行归类，先使用 <span class="math inline">\(k=5\)</span> 这个参数试一下。当我们把这个参数用于训练集和测试集时，我们在预测训练集中的组织时，平均误差是多少呢？</p>
+<p>计算过程如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">library(class)</div><div class="line">pred &lt;- knn(train =  X, test = X, cl=y, k=5)</div><div class="line">mean(y != pred)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(y != pred)</div><div class="line">[<span class="number">1</span>] <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>当我们使用 <span class="math inline">\(k=5\)</span> 这个参数时，没有发现错误，如果是 <span class="math inline">\(k=1\)</span> 呢？如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pred &lt;- knn(train=X, test=X, cl=y, k=1)</div><div class="line">mean(y != pred)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; mean(y != pred)</div><div class="line">[<span class="number">1</span>] <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>当我们试图通过对观测值进行分类用于训练(train)模型时，这一过程可能有误导性。事实时，对于kNN法来说，使用 <span class="math inline">\(k=1\)</span> 这个参数时，总是能在训练集中得到0个分类错误，因为我们使用的是数据本身。了解算法是否可靠的方法就让它对未见过的样本进行预测。类似地，如果我们想知道可调参数的最佳值是什么，我们查看不同的参数值在那些不在训练集中的样本上表现如何。</p>
+<p>交叉验证是机器学习中广泛使用的一种方法，它解决了训练集和测试集的问题，同时它仍然可以使用所有的数据用于检测预测的准确性。它通过将所有的数据分散成一定数据的折叠(fold)（注：这里有关交叉验证的问题，可以参考以前的文章<a href="http://rvdsd.top/2018/07/05/StatQuest/%E7%94%9F%E7%89%A9%E7%BB%9F%E8%AE%A1-StatQuest%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B022-%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81/">《StatQuest学习笔记22——交叉验证》</a>）。如果我们有 <span class="math inline">\(N\)</span> 个折叠，那么算法的第一步就是使用 <span class="math inline">\((N-1)\)</span> 个折叠来训练算法，并且剩下一个折叠用于测试算法的准确性。然后重复 <span class="math inline">\(N\)</span> 次，直到所有的折叠都在测试集中一样被使用。如果我们有M个参数需要进行尝试，那么我们需要在外部循环中完成这个过程，因为我们需要总共拟合 <span class="math inline">\(N \times M\)</span>次。</p>
+<p>在R中，我们使用<code>caret</code>包中的<code>createFolds()</code>函数来实现这个过程,在下面的案例中，我们使用5个折叠来计算我们的基因表达数据，这个数字与组织的数目比较接近。此外，<code>createFold()</code>函数中有个参数<code>k</code>，这里不要与kNN算法中的<code>k</code>混淆，它们只是相同的字符，具体意义不一样，它们完全不相关。<code>createFolds()</code>会寻问用户要创建多少个折叠，也就是上文提到的 <span class="math inline">\(N\)</span> 。而<code>knn()</code>中的参数<code>k</code>则是说明在一个新的样本中，使用多少个最接近的观测值。现在我们创建10个折叠，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">library(caret)</div><div class="line">set.seed(1)</div><div class="line">idx &lt;- createFolds(y, k=10)</div><div class="line">sapply(idx, length)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; sapply(idx, length)</div><div class="line">Fold01 Fold02 Fold03 Fold04 Fold05 Fold06 Fold07 Fold08 Fold09 Fold10 </div><div class="line">    <span class="number">18</span>     <span class="number">19</span>     <span class="number">17</span>     <span class="number">17</span>     <span class="number">18</span>     <span class="number">20</span>     <span class="number">19</span>     <span class="number">19</span>     <span class="number">20</span>     <span class="number">16</span></div></pre></td></tr></table></figure>
+<p>折叠会以数字索引列表的形式返回，因此数据的第一个折叠是：</p>
+<p>The folds are returned as a list of numeric indices. The first fold of data is therefore:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">y[idx[[1]]] ##the labels</div><div class="line">head( X[idx[[1]], 1:3] ) ##the genes (only showing the first 3 genes...)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt; y[idx[[<span class="number">1</span>]]] <span class="comment">##the labels</span></div><div class="line"> [<span class="number">1</span>] <span class="string">"kidney"</span>      <span class="string">"kidney"</span>      <span class="string">"hippocampus"</span> <span class="string">"hippocampus"</span> <span class="string">"hippocampus"</span> <span class="string">"cerebellum"</span> </div><div class="line"> [<span class="number">7</span>] <span class="string">"cerebellum"</span>  <span class="string">"cerebellum"</span>  <span class="string">"colon"</span>       <span class="string">"colon"</span>       <span class="string">"colon"</span>       <span class="string">"colon"</span>      </div><div class="line">[<span class="number">13</span>] <span class="string">"kidney"</span>      <span class="string">"kidney"</span>      <span class="string">"endometrium"</span> <span class="string">"endometrium"</span> <span class="string">"liver"</span>       <span class="string">"liver"</span>      </div><div class="line">&gt; head( X[idx[[<span class="number">1</span>]], <span class="number">1</span>:<span class="number">3</span>] ) <span class="comment">##the genes (only showing the first 3 genes...)</span></div><div class="line">                1007_s_at  1053_at   117_at</div><div class="line">GSM12075.CEL.gz  <span class="number">9.966782</span> <span class="number">6.060069</span> <span class="number">7.644452</span></div><div class="line">GSM12098.CEL.gz  <span class="number">9.945652</span> <span class="number">5.927861</span> <span class="number">7.847192</span></div><div class="line">GSM21214.cel.gz <span class="number">10.955428</span> <span class="number">5.776781</span> <span class="number">7.493743</span></div><div class="line">GSM21218.cel.gz <span class="number">10.757734</span> <span class="number">5.984170</span> <span class="number">8.525524</span></div><div class="line">GSM21230.cel.gz <span class="number">11.496114</span> <span class="number">5.760156</span> <span class="number">7.787561</span></div><div class="line">GSM87086.cel.gz  <span class="number">9.798633</span> <span class="number">5.862426</span> <span class="number">7.279199</span></div></pre></td></tr></table></figure>
+<p>我们可以看到，事实上组织在10个折叠中表现非常平均：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sapply(idx, function(i) table(y[i]))</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt; sapply(idx, <span class="keyword">function</span>(i) table(y[i]))</div><div class="line">            Fold01 Fold02 Fold03 Fold04 Fold05 Fold06 Fold07 Fold08 Fold09 Fold10</div><div class="line">cerebellum       <span class="number">3</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">3</span></div><div class="line">colon            <span class="number">4</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">3</span></div><div class="line">endometrium      <span class="number">2</span>      <span class="number">2</span>      <span class="number">1</span>      <span class="number">1</span>      <span class="number">1</span>      <span class="number">2</span>      <span class="number">1</span>      <span class="number">2</span>      <span class="number">2</span>      <span class="number">1</span></div><div class="line">hippocampus      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span></div><div class="line">kidney           <span class="number">4</span>      <span class="number">4</span>      <span class="number">3</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span>      <span class="number">4</span></div><div class="line">liver            <span class="number">2</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">2</span>      <span class="number">2</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">3</span>      <span class="number">2</span></div></pre></td></tr></table></figure>
+<p>因为不同组织的表达谱不一样，因此使用所有的基因来预测组织非常容易。为了说明这种算法的原理，我们这里只使用二维数据来进行预测，现在我们使用<code>cmdscale()</code>函数进行降低处理：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">Xsmall &lt;- cmdscale(dist(X))</div><div class="line">plot(Xsmall,col=as.fumeric(y))</div><div class="line">legend(<span class="string">"topleft"</span>,levels(factor(y)),fill=seq_along(levels(factor(y))))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913180841.jpeg">
+
+</div>
+<p>现在我们在单个折叠上试一下kNN法。我们使用<code>Xsmall</code>中的样本（不用第1个样本），用<code>knn()</code>函数计算一下。我们使用<code>-idx[[1]]</code>移除第1个样本，这样将剩下来的样本当作测试集。参数<code>cl</code>用于指定真分类（true classificaiton）或者是训练集的标签（这里指的是组织）。现在我们使用5个观测值来为我们的kNN算法指定分类，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pred &lt;- knn(train=Xsmall[ -idx[[1]] , ], test=Xsmall[ idx[[1]], ], cl=y[ -idx[[1]] ], k=5)</div><div class="line">table(true=y[ idx[[1]] ], pred)</div><div class="line">mean(y[ idx[[1]] ] != pred)</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt; table(true=y[ idx[[<span class="number">1</span>]] ], pred)</div><div class="line">             pred</div><div class="line">true          cerebellum colon endometrium hippocampus kidney liver</div><div class="line">  cerebellum           <span class="number">2</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">1</span>      <span class="number">0</span>     <span class="number">0</span></div><div class="line">  colon                <span class="number">0</span>     <span class="number">4</span>           <span class="number">0</span>           <span class="number">0</span>      <span class="number">0</span>     <span class="number">0</span></div><div class="line">  endometrium          <span class="number">0</span>     <span class="number">0</span>           <span class="number">1</span>           <span class="number">0</span>      <span class="number">1</span>     <span class="number">0</span></div><div class="line">  hippocampus          <span class="number">1</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">2</span>      <span class="number">0</span>     <span class="number">0</span></div><div class="line">  kidney               <span class="number">0</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>      <span class="number">4</span>     <span class="number">0</span></div><div class="line">  liver                <span class="number">0</span>     <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span>      <span class="number">0</span>     <span class="number">2</span></div><div class="line">&gt; mean(y[ idx[[<span class="number">1</span>]] ] != pred)</div><div class="line">[<span class="number">1</span>] <span class="number">0.1666667</span></div></pre></td></tr></table></figure>
+<p>现在我们出现了一些分类错误，我们计算一下剩余折叠，看一下情况怎么样？</p>
+<p>Now we have some misclassifications. How well do we do for the rest of the folds?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">for (i in 1:10) &#123;</div><div class="line">  pred &lt;- knn(train=Xsmall[ -idx[[i]] , ], test=Xsmall[ idx[[i]], ], cl=y[ -idx[[i]] ], k=5)</div><div class="line">  print(paste0(i,&quot;) error rate: &quot;, round(mean(y[ idx[[i]] ] != pred),3)))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) &#123;</div><div class="line">+   pred &lt;- knn(train=Xsmall[ -idx[[i]] , ], test=Xsmall[ idx[[i]], ], cl=y[ -idx[[i]] ], k=<span class="number">5</span>)</div><div class="line">+   print(paste0(i,<span class="string">") error rate: "</span>, round(mean(y[ idx[[i]] ] != pred),<span class="number">3</span>)))</div><div class="line">+ &#125;</div><div class="line">[<span class="number">1</span>] <span class="string">"1) error rate: 0.111"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"2) error rate: 0.105"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"3) error rate: 0.118"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"4) error rate: 0.118"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"5) error rate: 0.278"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"6) error rate: 0.1"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"7) error rate: 0.105"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"8) error rate: 0.158"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"9) error rate: 0.15"</span></div><div class="line">[<span class="number">1</span>] <span class="string">"10) error rate: 0.312"</span></div></pre></td></tr></table></figure>
+<p>所以，我们会看到每个折叠都会发生一些变化，其错误率徘徊在0.1-0.3之间。但是，<span class="math inline">\(k=5\)</span> 是最佳的参数吗？为了研究 <span class="math inline">\(k\)</span> 的最佳数值，我们需要创建一个外部循环，我们会在其中尝试不同的 <span class="math inline">\(k\)</span> 值，然后计算出所有折叠的平均测试集误差。我们将会尝试从1到12的每个 <span class="math inline">\(k\)</span> 值。不过这里我们不使用<code>for</code>循环，我们将使用<code>sapply</code>，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">set.seed(1)</div><div class="line">ks &lt;- 1:12</div><div class="line">res &lt;- sapply(ks, function(k) &#123;</div><div class="line">  ##try out each version of k from 1 to 12</div><div class="line">  res.k &lt;- sapply(seq_along(idx), function(i) &#123;</div><div class="line">    ##loop over each of the 10 cross-validation folds</div><div class="line">    ##predict the held-out samples using k nearest neighbors</div><div class="line">    pred &lt;- knn(train=Xsmall[ -idx[[i]], ],</div><div class="line">                test=Xsmall[ idx[[i]], ],</div><div class="line">                cl=y[ -idx[[i]] ], k = k)</div><div class="line">    ##the ratio of misclassified samples</div><div class="line">    mean(y[ idx[[i]] ] != pred)</div><div class="line">  &#125;)</div><div class="line">  ##average over the 10 folds</div><div class="line">  mean(res.k)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>对于每个 <span class="math inline">\(k\)</span> 值，我们都有一个来自于交叉验证的关联测试集错误率，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">res</div></pre></td></tr></table></figure>
+<p>结果如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; res</div><div class="line"> [<span class="number">1</span>] <span class="number">0.1978212</span> <span class="number">0.1703423</span> <span class="number">0.1882933</span> <span class="number">0.1750989</span> <span class="number">0.1613291</span> <span class="number">0.1500791</span> <span class="number">0.1552670</span> <span class="number">0.1884813</span></div><div class="line"> [<span class="number">9</span>] <span class="number">0.1822020</span> <span class="number">0.1763197</span> <span class="number">0.1761318</span> <span class="number">0.1813197</span></div></pre></td></tr></table></figure>
+<p>我们可以绘制出每个 <span class="math inline">\(k\)</span> 值下的错误率图，它可以帮助我们查看哪个区域中的错误率最小，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>misclassification_error, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plot(ks, res, type=&quot;o&quot;,ylab=&quot;misclassification error&quot;)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913184146.jpeg">
+
+</div>
+<p>我们要记住一点就是，训练集是一个随机变量，因为我们生成折叠的程序涉随机数的生成，因此，在产生“最好”的 <span class="math inline">\(k\)</span> 值时，这个 <span class="math inline">\(k\)</span> 值的产生过程也是一个随机变量。如果我们有新的训练集，并且如果我们再创建折叠，那么我们有可能会得到一个新的优化的 <span class="math inline">\(k\)</span> 值。</p>
+<p>最后，为了说明基因表达数据能够很好的预测组织类型，我们使用5维数据，而非是2维数据来展示这个过程，毕竟5维数据的信息量更丰富，如下所示：</p>
+<figure class="highlight plain"><figcaption><span>misclassification_error2, fig.cap</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">Xsmall &lt;- cmdscale(dist(X),k=5)</div><div class="line">set.seed(1)</div><div class="line">ks &lt;- 1:12</div><div class="line">res &lt;- sapply(ks, function(k) &#123;</div><div class="line">  res.k &lt;- sapply(seq_along(idx), function(i) &#123;</div><div class="line">    pred &lt;- knn(train=Xsmall[ -idx[[i]], ],</div><div class="line">                test=Xsmall[ idx[[i]], ],</div><div class="line">                cl=y[ -idx[[i]] ], k = k)</div><div class="line">    mean(y[ idx[[i]] ] != pred)</div><div class="line">  &#125;)</div><div class="line">  mean(res.k)</div><div class="line">&#125;)</div><div class="line">plot(ks, res, type=&quot;o&quot;,ylim=c(0,0.20),ylab=&quot;misclassification error&quot;)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="https://pic-1256416512.cos.ap-chengdu.myqcloud.com/img/20190913184233.jpeg">
+
+</div>
+<p>上图显示的是，使用5维数据后，错误分配与 <span class="math inline">\(k\)</span> 值变化的关系。</p>
+<p>重要提示：我们使用<code>cmdscale()</code>函数来计算整个数据集，用于创建一个较小的数据集来说明kNN的计算过程。然而在真正的机器学习应用中，这样的处理会低估小样本测试数据集的错误，但是，使用未标记的完全数据集进行降维会改善这种情况。一个种更安全的做法就是为每个折叠分别转换数据（这句不懂， 我个人的猜测就是，对每个折叠进行计算，把几个折叠中的每一个都当作测试集，而不是将几个折叠放一块当作测试集），方法就是仅用训练集来计算旋转和降维，并将其应用于测试集。</p>
+<p>最后一段实在没读懂，这里放原文：</p>
+<blockquote>
+<p>However, in a real machine learning application, this may result in an underestimation of test set error for small sample sizes, where dimension reduction using the unlabeled full dataset gives a boost in performance. A safer choice would have been to transform the data separately for each fold, by calculating a rotation and dimension reduction using the training set only and applying this to the test set.</p>
+</blockquote>
+<h2 id="练习">练习</h2>
+<p>P407</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Class-Prediction/" <i class="fa fa-tag"></i> Class Prediction</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/23/Data Analysis for the life sciences/DALS023_Basic_Machine_Learning02_Loess/" rel="next" title="DALS023-机器学习02-条件概率与Loess拟合">
+                <i class="fa fa-chevron-left"></i> DALS023-机器学习02-条件概率与Loess拟合
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/25/Data Analysis for the life sciences/DALS025_Batch_Effect01_Introduction/" rel="prev" title="DALS025-批次效应01-什么是批次效应">
+                DALS025-批次效应01-什么是批次效应 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">249</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">118</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#训练集"><span class="nav-number">1.1.</span> <span class="nav-text">训练集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用回归进行预测"><span class="nav-number">1.1.1.</span> <span class="nav-text">利用回归进行预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#knn"><span class="nav-number">1.1.2.</span> <span class="nav-text">kNN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#贝叶斯规则"><span class="nav-number">1.1.3.</span> <span class="nav-text">贝叶斯规则</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉验证"><span class="nav-number">2.</span> <span class="nav-text">交叉验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习"><span class="nav-number">3.</span> <span class="nav-text">练习</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共988.9k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -259,6 +259,716 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/17/Genomics Data Analysis Series/GDAS018-The parallel package lapply and mclapply/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/17/Genomics Data Analysis Series/GDAS018-The parallel package lapply and mclapply/" itemprop="url">GDAS017-使用Bioconductor进行高性能计算</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-17T12:00:00+08:00">
+                2019-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,519
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="性能增强概览">性能增强概览</h2>
+<p>软件系统和数据分析的可扩展性(scalability)的概念是复杂的，精确的度量(precise metrics)和标准现在还不好处理。可以参考一下来自计算机界的 <a href="http://repository.cmu.edu/sei/399/" target="_blank" rel="external">Weinstock and Goodenough</a> 的一个概述。基于Bioconductor的分析工作流的可扩展性(scalability)可以沿着不同的路径进行，Bioconductor的两个核<a href="http://arxiv.org/abs/1409.2864" target="_blank" rel="external">Mike Lawrence和Martin Morgan</a>在工作就提到了许多有意的想法。</p>
+<p>本文档仅解决Bioconductor直接支持的并行计算，主要通过两种方法实现：</p>
+<ul>
+<li>共享内存并行性。使用内存映像的完整副本对R进程进行任意次数的分叉，并且对每个映像独立地进行计算。选定的结果将返回到主进程。可以有效地在多环境中实现。</li>
+<li>分布式并行性。可以运行不同操作系统的独立处理器可以运行R的兼容实例。R或集群调度程序可以执行作业控制(job control)。</li>
+</ul>
+<h3 id="简要说明">简要说明</h3>
+<p>现在我们来说明一下共享内存方法：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">system.time( lapply(<span class="number">1</span>:<span class="number">8</span>, <span class="keyword">function</span>(x)Sys.sleep(<span class="number">1</span>) ) )</div><div class="line"><span class="comment">##    user  system elapsed </span></div><div class="line"><span class="comment">##   0.004   0.001   8.020</span></div><div class="line"><span class="keyword">library</span>(parallel)</div><div class="line">detectCores()</div><div class="line"><span class="comment">## [1] 4</span></div><div class="line">options(mc.cores=<span class="number">4</span>)</div><div class="line">system.time( mclapply(<span class="number">1</span>:<span class="number">8</span>, <span class="keyword">function</span>(x)Sys.sleep(<span class="number">1</span>) ) )</div><div class="line"><span class="comment">##    user  system elapsed </span></div><div class="line"><span class="comment">##   0.007   0.022   2.031</span></div></pre></td></tr></table></figure>
+<p>上面只是一个无意义的计算，我们就是为了说明并行计算的原理，通过并行计算，我们加快了计算速度，计算过程的时间缩短为原来的四分之一。</p>
+<h3 id="rna-seq实验中的bam文件">RNA-seq实验中的BAM文件</h3>
+<p>我们将使用 <a href="http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3629564&amp;tool=pmcentrez&amp;rendertype=abstract" target="_blank" rel="external">Zarnack et al. 2013</a> 等的人研究中的一些BAM文件。2013年的这项假设是，有一类蛋白质，即异质核糖蛋白C1和C2，也就是指的hnRNP C(heterogeneous nuclear ribonucleoproteins C1 and C2)，这个蛋白会阻止Alu因子整合到成熟到转录本上。这样的整合会导致蛋白功能障碍，进而导致疾病；如果想了解更深入的信息，可以去查看文献原文。</p>
+<p>我们下面所使用的包含有8个BAM文件，它们已经与chr14染色体进行了比对。其中4个文件是正常的HeLa细胞的读长文件(reads)（阴性对照），另外4个文件是敲低了hnRNP C后的HeLa的读长文件，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(RNAseqData.HNRNPC.bam.chr14)</div><div class="line">dir(system.file(<span class="string">"extdata"</span>, package=<span class="string">"RNAseqData.HNRNPC.bam.chr14"</span>))</div><div class="line"><span class="comment">##  [1] "ERR127302_chr14.bam"     "ERR127302_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [3] "ERR127303_chr14.bam"     "ERR127303_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [5] "ERR127304_chr14.bam"     "ERR127304_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [7] "ERR127305_chr14.bam"     "ERR127305_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [9] "ERR127306_chr14.bam"     "ERR127306_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [11] "ERR127307_chr14.bam"     "ERR127307_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [13] "ERR127308_chr14.bam"     "ERR127308_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [15] "ERR127309_chr14.bam"     "ERR127309_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [17] "tophat2_out"</span></div></pre></td></tr></table></figure>
+<p>这些都是由Tabix建立索引的BAM文件。其中<code>*.bam</code> 是原始的BAM文件，而<code>*.bam.bai</code>则是添加了索引后的BAM文件，从上面我们可以看到有8个bam.bai文件，前面四个是敲低组，后面四个是对照组。</p>
+<h3 id="使用biocparallel实现隐式并行">使用BiocParallel实现隐式并行</h3>
+<p>为了促进可靠的执行程序的和谐发展，Bioconductor开发了<code>BiocParallel</code>包。在下面的案例中，我们将读取HNRNP C案例数据集中的reads读取到由外显子地址定义的bins中（这里我不清楚bin是什么，列出了原文）：</p>
+<blockquote>
+<p>Consider the following example: we will count reads into bins defined by exon addresses in the HNRNPC example dataset.</p>
+</blockquote>
+<p><code>RNAseqData.HNRNPC.bam.chr14</code> 这个包含有BAM文件的绝对路径的一个向量，我将其分配给fns，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(RNAseqData.HNRNPC.bam.chr14)</div><div class="line">fns = RNAseqData.HNRNPC.bam.chr14_BAMFILES</div><div class="line">length(fns)</div><div class="line"><span class="comment">## [1] 8</span></div></pre></td></tr></table></figure>
+<p>Here we establish the exon bins into which we will count reads.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">library(TxDb.Hsapiens.UCSC.hg19.knownGene)</div><div class="line">txdb = TxDb.Hsapiens.UCSC.hg19.knownGene</div><div class="line">seqlevels(txdb) = &quot;chr14&quot;</div><div class="line">ebg = exonsBy(txdb, by=&quot;gene&quot;)</div></pre></td></tr></table></figure>
+<p>Now we use the <code>summarizeOverlaps</code> function from the GenomicAlignments package to count reads into the exon bins. We’ll time the counting from a single file, and then time the counting from all files at once.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">library(GenomicAlignments)</div><div class="line"># summarizeOverlaps uses bplapply to iterate over files</div><div class="line">s1 = system.time(i1 &lt;- summarizeOverlaps( ebg, fns[3] ))</div><div class="line">s1</div><div class="line">##    user  system elapsed </div><div class="line">##   2.975   0.178   3.178</div><div class="line"># show implicit config</div><div class="line">BiocParallel::bpparam()</div><div class="line">## class: MulticoreParam</div><div class="line">##   bpisup: FALSE; bpnworkers: 4; bptasks: 0; bpjobname: BPJOB</div><div class="line">##   bplog: FALSE; bpthreshold: INFO; bpstopOnError: TRUE</div><div class="line">##   bptimeout: 2592000; bpprogressbar: FALSE</div><div class="line">##   bpRNGseed: </div><div class="line">##   bplogdir: NA</div><div class="line">##   bpresultdir: NA</div><div class="line">##   cluster type: FORK</div><div class="line">s2 = system.time(i2 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">s2</div><div class="line">##    user  system elapsed </div><div class="line">##   0.271   0.162  10.480</div></pre></td></tr></table></figure>
+<p>This is not a thorough way of measuring speedup but it shows reasonable enhancement. In the second computation, we did approximately 8 times as much computation, but the clock time elapsed increased only by a factor of (3.3). The default behavior of BiocParallel on the MacBook Air used to produce this document is to pick up the value of the option <code>mc.cores</code> and use this as the number of workers in a <code>MulticoreParam</code> configuration; if <code>options()$mc.cores</code> is NULL, 2 workers are specified.</p>
+<p>When BiocParallel is attached, the <code>summarizeOverlaps</code> function will iterate over the files using <code>bplapply</code> from the BiocParallel package. That function will check the R session for specific parallelization configuration information. If it finds none, it will check for multiple cores and make arrangements to use them if present. The “check” occurs via the function <code>bpparam</code>.</p>
+<p>The default situation on a MacBook Air running MacOSX 10.9.5 with an Intel core i7 processor, (two physical cores with two logical cores each, allowing for four concurrent threads) as follows.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">options(mc.cores=NULL)</div><div class="line">library(BiocParallel)</div><div class="line">register(MulticoreParam())</div><div class="line">bpparam()</div><div class="line">## class: MulticoreParam</div><div class="line">##   bpisup: FALSE; bpnworkers: 2; bptasks: 0; bpjobname: BPJOB</div><div class="line">##   bplog: FALSE; bpthreshold: INFO; bpstopOnError: TRUE</div><div class="line">##   bptimeout: 2592000; bpprogressbar: FALSE</div><div class="line">##   bpRNGseed: </div><div class="line">##   bplogdir: NA</div><div class="line">##   bpresultdir: NA</div><div class="line">##   cluster type: FORK</div></pre></td></tr></table></figure>
+<p>This identifies an object called <code>MulticoreParam</code> which is used to configure the behavior of <code>bplapply</code> and other utilities of the BiocParallel package. There are various configuration object classes that can be used.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">‘SnowParam’: distributed memory computing</div><div class="line"></div><div class="line">‘MulticoreParam’: shared memory computing</div><div class="line"></div><div class="line">‘BatchJobsParam’: scheduled cluster computing</div><div class="line"></div><div class="line">‘DoparParam’: foreach computing</div><div class="line"></div><div class="line">‘SerialParam’: non-parallel execution</div></pre></td></tr></table></figure>
+<p>We need to use <code>register</code> to determine the type of concurrent computation that will be performed.</p>
+<p>If process size is large, we may want to leave some cores idle. We can accomplish that by using <code>register</code>. Here we’ll check for any advantage of using all logical cores.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">library(BiocParallel)</div><div class="line">register(MulticoreParam(workers=1))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##  15.653   1.286  17.070</div><div class="line">register(MulticoreParam(workers=2))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##   0.103   0.029   8.818</div><div class="line">register(MulticoreParam(workers=3))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##   0.051   0.023   9.543</div><div class="line">register(MulticoreParam(workers=4))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##   0.056   0.026   8.774</div><div class="line">all.equal(i3,i2)  # check that the results do not change</div><div class="line">## [1] TRUE</div></pre></td></tr></table></figure>
+<p>Note that in this environment, despite increasing the number of CPUs linearly do not appreciably reduce run time after moving to two cores. This due mainly to communication costs that typically increase with the number of CPUs, and this phenomenon will be environment-specific.</p>
+<p>In summary, it is very easy to perform embarrassingly parallel tasks with R, and this carries over to genomic data analysis thanks to BiocParallel. There are some strategic considerations concerning control of memory consumption and communication costs, and full mastery of the topic involves attention to profiling and benchmarking methods that can be addressed in an advanced software development course.</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc2_parallel.html" target="_blank" rel="external">Architecture: considerations on high performance computing with Bioconductor</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/15/Genomics Data Analysis Series/GDAS015-NGS的可视化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/15/Genomics Data Analysis Series/GDAS015-NGS的可视化/" itemprop="url">GDAS015-NGS的可视化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-15T12:00:00+08:00">
+                2019-09-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,728
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ngs的可视化">NGS的可视化</h2>
+<p>我们将用以下的包来说明一下如何对NGS数据进行可视化。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#biocLite("pasillaBamSubset")</span></div><div class="line"><span class="comment">#biocLite("TxDb.Dmelanogaster.UCSC.dm3.ensGene")</span></div><div class="line"><span class="keyword">library</span>(pasillaBamSubset)</div><div class="line"><span class="keyword">library</span>(TxDb.Dmelanogaster.UCSC.dm3.ensGene)</div><div class="line">fl1 &lt;- untreated1_chr4()</div><div class="line">fl2 &lt;- untreated3_chr4()</div></pre></td></tr></table></figure>
+<p>我们将会采用四种方式来查看NGS的数据，分别是IGV，<code>plot</code>,<code>Gviz</code>和<code>ggbio</code>。</p>
+<h2 id="igv">IGV</h2>
+<p>将这些文献从R library的目录中复制到当前的工作目标。首先将工作目录设置为源文件位置。我们需要使用<code>Rsamtools</code>包来对BAM文件加上索引，然后使用IGV来查看，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">file.copy(from=fl1,to=basename(fl1))</div><div class="line"><span class="comment">## [1] FALSE</span></div><div class="line">file.copy(from=fl2,to=basename(fl2))</div><div class="line"><span class="comment">## [1] FALSE</span></div><div class="line"><span class="keyword">library</span>(Rsamtools)</div><div class="line"><span class="comment">## Loading required package: Biostrings</span></div><div class="line"><span class="comment">## Loading required package: XVector</span></div><div class="line">indexBam(basename(fl1))</div><div class="line"><span class="comment">##       untreated1_chr4.bam </span></div><div class="line"><span class="comment">## "untreated1_chr4.bam.bai"</span></div><div class="line">indexBam(basename(fl2))</div><div class="line"><span class="comment">##       untreated3_chr4.bam </span></div><div class="line"><span class="comment">## "untreated3_chr4.bam.bai"</span></div></pre></td></tr></table></figure>
+<p>IGV可以在这个网站下载: https://www.broadinstitute.org/igv/home</p>
+<p>下载的时候需要提供你的电子邮箱，现在我们使用IGV来查看一个基因，例如<code>igs</code>。</p>
+<p>如果无法下载IGV，那么可以使用UCSC的 Genome Browser：http://genome.ucsc.edu/cgi-bin/hgTracks</p>
+<p>UCSC Genome Browser是一个很好的资源，有许多涉及基因注释，多个物种的保护，以及ENCODE表观遗传信号。但是，UCSC Genome Browser要求你将基因组文件上传到他们的服务器，或将数据放在公共可用服务器上。如果你处理的数据涉及保密，那就另当别论了。</p>
+<h2 id="simple-plot">Simple plot</h2>
+<p>现在我们来看一使用<code>plot()</code>函数来绘制基因。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GenomicRanges)</div></pre></td></tr></table></figure>
+<p>注意：如果你使用的是Bioconductor 14，它与R 3.1配合使用，需要加载这个包。如想是Bioconductor 13（它与R 3.0.x配合使用），则不需要加载这个包。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GenomicAlignments)</div><div class="line"><span class="comment">## Loading required package: SummarizedExperiment</span></div></pre></td></tr></table></figure>
+<p>我们从文件<code>fl1</code>中读取比对结果(alignments)。然后我们使用<code>coverage</code>函数来计算碱基对的覆盖。然后我们提取与我们感兴趣的基因重叠的覆盖区子集，并将此覆盖率从<code>RleList</code>转换为<code>numeric</code>向量。我们前面提到，<code>Rle</code>对象是一种压缩对象，例如重复数字会被压缩为2个数字，其中一个是重复的数字，另外一个是表示这个数字重复的次数。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">x &lt;- readGAlignments(fl1)</div><div class="line">xcov &lt;- coverage(x)</div><div class="line">z &lt;- GRanges(<span class="string">"chr4"</span>,IRanges(<span class="number">456500</span>,<span class="number">466000</span>))</div><div class="line"><span class="comment"># Bioconductor 2.14</span></div><div class="line">xcov[z]</div><div class="line"><span class="comment">## RleList of length 1</span></div><div class="line"><span class="comment">## $$chr4</span></div><div class="line"><span class="comment">## integer-Rle of length 9501 with 1775 runs</span></div><div class="line"><span class="comment">##   Lengths: 1252   10   52    4    7    2 ...   10    7   12  392   75 1041</span></div><div class="line"><span class="comment">##   Values :    0    2    3    4    5    6 ...    3    2    1    0    1    0</span></div><div class="line"><span class="comment"># Bioconductor 2.13</span></div><div class="line">xcov$chr4[ranges(z)]</div><div class="line"><span class="comment">## integer-Rle of length 9501 with 1775 runs</span></div><div class="line"><span class="comment">##   Lengths: 1252   10   52    4    7    2 ...   10    7   12  392   75 1041</span></div><div class="line"><span class="comment">##   Values :    0    2    3    4    5    6 ...    3    2    1    0    1    0</span></div><div class="line">xnum &lt;- as.numeric(xcov$chr4[ranges(z)])</div><div class="line">plot(xnum)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5">
+<p class="caption">plot of chunk unnamed-chunk-5</p>
+</div>
+<p>现在我们读取另外一个文件<code>fl2</code>，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">y &lt;- readGAlignmentPairs(fl2)</div><div class="line"><span class="comment">## Warning in .make_GAlignmentPairs_from_GAlignments(gal, strandMode = strandMode, : 63 pairs (0 proper, 63 not proper) were dropped because the seqname</span></div><div class="line"><span class="comment">##   or strand of the alignments in the pair were not concordant.</span></div><div class="line"><span class="comment">##   Note that a GAlignmentPairs object can only hold concordant pairs at the</span></div><div class="line"><span class="comment">##   moment, that is, pairs where the 2 alignments are on the opposite strands</span></div><div class="line"><span class="comment">##   of the same reference sequence.</span></div><div class="line">ycov &lt;- coverage(y)</div><div class="line">ynum &lt;- as.numeric(ycov$chr4[ranges(z)])</div><div class="line">plot(xnum, type=<span class="string">"l"</span>, col=<span class="string">"blue"</span>, lwd=<span class="number">2</span>)</div><div class="line">lines(ynum, col=<span class="string">"red"</span>, lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6">
+<p class="caption">plot of chunk unnamed-chunk-6</p>
+</div>
+<p>我们可以单独放大一个外显子，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">plot(xnum, type=<span class="string">"l"</span>, col=<span class="string">"blue"</span>, lwd=<span class="number">2</span>, xlim=c(<span class="number">6200</span>,<span class="number">6600</span>))</div><div class="line">lines(ynum, col=<span class="string">"red"</span>, lwd=<span class="number">2</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7">
+<p class="caption">plot of chunk unnamed-chunk-7</p>
+</div>
+<h2 id="使用转录本数据库提取感兴趣的基因">使用转录本数据库提取感兴趣的基因</h2>
+<p>假设我们想可视化基因igs。我们可以从转录本数据库<code>TxDb.Dmelanogaster.UCSC.dm3.ensGene</code> 中提取它，但我们首先要知道这个基因的Ensembl基因名，现在我们使用前面学到的函数来实现这一功能，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># biocLite("biomaRt")</span></div><div class="line"><span class="keyword">library</span>(biomaRt)</div><div class="line">m &lt;- useMart(<span class="string">"ensembl"</span>, dataset = <span class="string">"dmelanogaster_gene_ensembl"</span>)</div><div class="line">lf &lt;- listFilters(m)</div><div class="line">lf[grep(<span class="string">"name"</span>, lf$description, ignore.case=<span class="literal">TRUE</span>),]</div><div class="line"><span class="comment">##                             name</span></div><div class="line"><span class="comment">## 1                chromosome_name</span></div><div class="line"><span class="comment">## 17         with_flybasename_gene</span></div><div class="line"><span class="comment">## 19   with_flybasename_transcript</span></div><div class="line"><span class="comment">## 23  with_flybasename_translation</span></div><div class="line"><span class="comment">## 52            external_gene_name</span></div><div class="line"><span class="comment">## 66              flybasename_gene</span></div><div class="line"><span class="comment">## 67        flybasename_transcript</span></div><div class="line"><span class="comment">## 68       flybasename_translation</span></div><div class="line"><span class="comment">## 93                 wikigene_name</span></div><div class="line"><span class="comment">## 107               go_parent_name</span></div><div class="line"><span class="comment">## 208               so_parent_name</span></div><div class="line"><span class="comment">##                                      description</span></div><div class="line"><span class="comment">## 1                                Chromosome name</span></div><div class="line"><span class="comment">## 17                   with FlyBaseName gene ID(s)</span></div><div class="line"><span class="comment">## 19             with FlyBaseName transcript ID(s)</span></div><div class="line"><span class="comment">## 23                with FlyBaseName protein ID(s)</span></div><div class="line"><span class="comment">## 52          Associated Gene Name(s) [e.g. BRCA2]</span></div><div class="line"><span class="comment">## 66           FlyBaseName Gene ID(s) [e.g. cul-2]</span></div><div class="line"><span class="comment">## 67  FlyBaseName Transcript ID(s) [e.g. cul-2-RB]</span></div><div class="line"><span class="comment">## 68     FlyBaseName Protein ID(s) [e.g. cul-2-PB]</span></div><div class="line"><span class="comment">## 93                 WikiGene Name(s) [e.g. Ir21a]</span></div><div class="line"><span class="comment">## 107                             Parent term name</span></div><div class="line"><span class="comment">## 208                             Parent term name</span></div><div class="line">map &lt;- getBM(mart = m,</div><div class="line">  attributes = c(<span class="string">"ensembl_gene_id"</span>, <span class="string">"flybasename_gene"</span>),</div><div class="line">  filters = <span class="string">"flybasename_gene"</span>, </div><div class="line">  values = <span class="string">"lgs"</span>)</div><div class="line">map</div><div class="line"><span class="comment">##   ensembl_gene_id flybasename_gene</span></div><div class="line"><span class="comment">## 1     FBgn0039907              lgs</span></div></pre></td></tr></table></figure>
+<p>现在我们提取每个基因的外显子，然后提取igs基因的外显子，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(GenomicFeatures)</div><div class="line">grl &lt;- exonsBy(TxDb.Dmelanogaster.UCSC.dm3.ensGene, by=<span class="string">"gene"</span>)</div><div class="line">gene &lt;- grl[[map$ensembl_gene_id[<span class="number">1</span>]]]</div><div class="line">gene</div><div class="line"><span class="comment">## GRanges object with 6 ranges and 2 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames           ranges strand |   exon_id   exon_name</span></div><div class="line"><span class="comment">##          &lt;Rle&gt;        &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt; &lt;character&gt;</span></div><div class="line"><span class="comment">##   [1]     chr4 [457583, 459544]      - |     63350        &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [2]     chr4 [459601, 459791]      - |     63351        &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [3]     chr4 [460074, 462077]      - |     63352        &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [4]     chr4 [462806, 463015]      - |     63353        &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [5]     chr4 [463490, 463780]      - |     63354        &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [6]     chr4 [463839, 464533]      - |     63355        &lt;NA&gt;</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 15 sequences (1 circular) from dm3 genome</span></div></pre></td></tr></table></figure>
+<p>最后，我们绘制出这些外显子的范围，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">rg &lt;- range(gene)</div><div class="line">plot(c(start(rg), end(rg)), c(0,0), type=&quot;n&quot;, xlab=seqnames(gene)[1], ylab=&quot;&quot;)</div><div class="line">arrows(start(gene),rep(0,length(gene)),</div><div class="line">       end(gene),rep(0,length(gene)),</div><div class="line">       lwd=3, length=.1)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10">
+<p class="caption">plot of chunk unnamed-chunk-10</p>
+</div>
+<p>不过实际上这个基因位于负链，因此我们需要改一下箭头的方向，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">plot(c(start(rg), end(rg)), c(<span class="number">0</span>,<span class="number">0</span>), type=<span class="string">"n"</span>, xlab=seqnames(gene)[<span class="number">1</span>], ylab=<span class="string">""</span>)</div><div class="line">arrows(start(gene),rep(<span class="number">0</span>,length(gene)),</div><div class="line">       end(gene),rep(<span class="number">0</span>,length(gene)),</div><div class="line">       lwd=<span class="number">3</span>, length=<span class="number">.1</span>, </div><div class="line">       code=ifelse(as.character(strand(gene)[<span class="number">1</span>]) == <span class="string">"+"</span>, <span class="number">2</span>, <span class="number">1</span>))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11">
+<p class="caption">plot of chunk unnamed-chunk-11</p>
+</div>
+<h2 id="gviz">Gviz</h2>
+<p>我们将简要展示两个在Bioconductor中可视化基因组数据的软件包。请注意，这两个包中的任何一个都可以用于绘制多种数据的图形。我们将在这里展示如何像以前一样制作覆盖图(converage plot)：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#biocLite("Gviz")</span></div><div class="line"><span class="keyword">library</span>(Gviz)</div><div class="line"><span class="comment">## Loading required package: grid</span></div><div class="line">gtrack &lt;- GenomeAxisTrack()</div><div class="line">atrack &lt;- AnnotationTrack(gene, name = <span class="string">"Gene Model"</span>)</div><div class="line">plotTracks(list(gtrack, atrack))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12">
+<p class="caption">plot of chunk unnamed-chunk-12</p>
+</div>
+<p>提取覆盖。<code>Gviz</code>中的数据最好是是<code>GRanges</code>对象，因此我们需要将<code>RleList</code>转换为<code>GRanges</code>对象，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">xgr &lt;- as(xcov, <span class="string">"GRanges"</span>)</div><div class="line">ygr &lt;- as(ycov, <span class="string">"GRanges"</span>)</div><div class="line">dtrack1 &lt;- DataTrack(xgr[xgr %over% z], name = <span class="string">"sample 1"</span>)</div><div class="line">dtrack2 &lt;- DataTrack(ygr[ygr %over% z], name = <span class="string">"sample 2"</span>)</div><div class="line">plotTracks(list(gtrack, atrack, dtrack1, dtrack2))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13">
+<p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plotTracks(list(gtrack, atrack, dtrack1, dtrack2), type=<span class="string">"polygon"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-13-2.png" alt="plot of chunk unnamed-chunk-13">
+<p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
+<h2 id="ggbio">ggbio</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#biocLite("ggbio")</span></div><div class="line"><span class="keyword">library</span>(ggbio)</div><div class="line"><span class="comment">## Loading required package: ggplot2</span></div><div class="line"><span class="comment">## Warning: replacing previous import by 'BiocGenerics::Position' when loading</span></div><div class="line"><span class="comment">## 'ggbio'</span></div><div class="line"><span class="comment">## Need specific help about ggbio? try mailing </span></div><div class="line"><span class="comment">##  the maintainer or visit http://tengfei.github.com/ggbio/</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## Attaching package: 'ggbio'</span></div><div class="line"><span class="comment">## The following objects are masked from 'package:ggplot2':</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##     geom_bar, geom_rect, geom_segment, ggsave, stat_bin,</span></div><div class="line"><span class="comment">##     stat_identity, xlim</span></div><div class="line">autoplot(gene)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">autoplot(fl1, which=z)</div><div class="line"><span class="comment">## reading in as Bamfile</span></div><div class="line"><span class="comment">## Parsing raw coverage...</span></div><div class="line"><span class="comment">## Read GAlignments from BamFile...</span></div><div class="line"><span class="comment">## extracting information...</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-2.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">autoplot(fl2, which=z)</div><div class="line"><span class="comment">## reading in as Bamfile</span></div><div class="line"><span class="comment">## Parsing raw coverage...</span></div><div class="line"><span class="comment">## Read GAlignments from BamFile...</span></div><div class="line"><span class="comment">## extracting information...</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_vizNGS-unnamed-chunk-14-3.png" alt="plot of chunk unnamed-chunk-14">
+<p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc2_vizNGS.html" target="_blank" rel="external">Visualizing NGS data</a></li>
+<li>IGV: https://www.broadinstitute.org/igv/home</li>
+<li>Gviz: http://www.bioconductor.org/packages/release/bioc/html/Gviz.html</li>
+<li>ggbio:http://www.bioconductor.org/packages/release/bioc/html/ggbio.html</li>
+<li>UCSC Genome Browser: zooms and scrolls over chromosomes, showing the work of annotators worldwide: http://genome.ucsc.edu/</li>
+<li>Ensembl genome browser: genome databases for vertebrates and other eukaryotic species:http://ensembl.org</li>
+<li>Roadmap Epigenome browser: public resource of human epigenomic data: http://www.epigenomebrowser.org http://genomebrowser.wustl.edu/ http://epigenomegateway.wustl.edu/</li>
+<li>“Sashimi plots” for RNA-Seq: http://genes.mit.edu/burgelab/miso/docs/sashimi.html</li>
+<li>Circos: designed for visualizing genomic data in a cirlce: http://circos.ca/</li>
+<li>SeqMonk: a tool to visualise and analyse high throughput mapped sequence data: http://www.bioinformatics.babraham.ac.uk/projects/seqmonk/</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/14/Genomics Data Analysis Series/GDAS014-使用autoplot和Gviz绘图/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/14/Genomics Data Analysis Series/GDAS014-使用autoplot和Gviz绘图/" itemprop="url">GDAS014-使用autoplot和Gviz绘图</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-14T12:00:00+08:00">
+                2019-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  902
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="使用ggbio包绘制染色体图">使用<code>ggbio</code>包绘制染色体图</h2>
+<p>我们可以通过各种方法来绘制基因组级规模的数据。Bioiconductor中有两个这样的包，即<code>Gviz</code> 和 <code>ggbio</code>。这两个包旨在绘制基因组级数据结构的图形示意图。</p>
+<p><code>ggbio</code> 包中的 <code>autoplot</code> 方法用途广泛。对于GRanges实例来说，存在于每个范围中的数据都可以绘制成染色体上条带。核布图(karyogram)布局提供了全基因组的视图，不过这种图在处理染色体外序列水平方面有着重要作用。</p>
+<p>原文如下：</p>
+<blockquote>
+<p>The karyogram layout gives a genome-wide view, but it can be important to control the handling of extra-chromosomal sequence levels.</p>
+</blockquote>
+<p>以下是肝细胞系的布局：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ERBS)</div><div class="line">data(HepG2)</div><div class="line"><span class="keyword">library</span>(GenomeInfoDb)  <span class="comment"># trim all but autosomal chroms</span></div><div class="line">HepG2 = keepStandardChromosomes(HepG2)</div><div class="line">data(GM12878)</div><div class="line">GM12878 = keepStandardChromosomes(GM12878)</div><div class="line"><span class="keyword">library</span>(ggbio)</div><div class="line">autoplot(HepG2, layout=<span class="string">"karyogram"</span>, main=<span class="string">"ESRRA binding on HepG2"</span>)</div><div class="line"><span class="comment">## Scale for 'x' is already present. Adding another scale for 'x', which</span></div><div class="line"><span class="comment">## will replace the existing scale.</span></div><div class="line"><span class="comment">## Scale for 'x' is already present. Adding another scale for 'x', which</span></div><div class="line"><span class="comment">## will replace the existing scale.</span></div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_ggbio-lkd-1.png" alt="plot of chunk lkd">
+<p class="caption">plot of chunk lkd</p>
+</div>
+<p>以下是B细胞系的布局：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">autoplot(GM12878, layout=&quot;karyogram&quot;, main=&quot;ESRRA binding on GM12878&quot;)</div><div class="line">## Scale for &apos;x&apos; is already present. Adding another scale for &apos;x&apos;, which</div><div class="line">## will replace the existing scale.</div><div class="line">## Scale for &apos;x&apos; is already present. Adding another scale for &apos;x&apos;, which</div><div class="line">## will replace the existing scale.</div></pre></td></tr></table></figure>
+<h2 id="使用gviz包绘制esrra结合位点与基因注释">使用<code>Gviz</code>包绘制ESRRA结合位点与基因注释</h2>
+<p>我们通常会将观察到的数据放在基因组的参考信息中来绘制这些数据的图形。现在我们演示一下如何ESRRA结合的图形。</p>
+<p>第一步我们先加载相关的数据、注释包与<code>Gviz</code>包，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ERBS)</div><div class="line"><span class="keyword">library</span>(Gviz)</div><div class="line"><span class="keyword">library</span>(Homo.sapiens)</div><div class="line"><span class="keyword">library</span>(TxDb.Hsapiens.UCSC.hg19.knownGene)</div><div class="line">txdb = TxDb.Hsapiens.UCSC.hg19.knownGene</div></pre></td></tr></table></figure>
+<h3 id="esrra附近的基因">ESRRA附近的基因</h3>
+<p>我们如何确定含有ESRRA以该基因附近的人类基因组片段呢？有几种方法，我们先从ENTREZ ID开始，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Homo.sapiens)</div><div class="line">eid = select(Homo.sapiens, keys=<span class="string">"ESRRA"</span>, keytype=<span class="string">"SYMBOL"</span>, columns=<span class="string">"ENTREZID"</span>)</div><div class="line"><span class="comment">## 'select()' returned 1:1 mapping between keys and columns</span></div><div class="line">eid</div><div class="line"><span class="comment">##   SYMBOL ENTREZID</span></div><div class="line"><span class="comment">## 1  ESRRA     2101</span></div></pre></td></tr></table></figure>
+<p>现在我们获取ESRRA基因的地址，并收拾它相邻基因的地址，并绑定这些基因的符号，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">allg = genes(txdb)</div><div class="line">esrraAddr = genes(txdb, filter=list(gene_id=<span class="number">2101</span>)) <span class="comment"># redundant...</span></div><div class="line">esrraNeigh = subsetByOverlaps(allg, esrraAddr+<span class="number">500000</span>)</div><div class="line">esrraNeigh$symbol = mapIds(Homo.sapiens, keys=esrraNeigh$gene_id, keytype=<span class="string">"ENTREZID"</span>,</div><div class="line">  column=<span class="string">"SYMBOL"</span>)</div><div class="line"><span class="comment">## 'select()' returned 1:1 mapping between keys and columns</span></div></pre></td></tr></table></figure>
+<p>使用<code>Gviz</code> 包快速绘制图形，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">plotTracks(GeneRegionTrack(esrraNeigh, showId=TRUE))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_gvfeat-lknei-1.png" alt="plot of chunk lknei">
+<p class="caption">plot of chunk lknei</p>
+</div>
+<h3 id="此区域内的esrra结合峰">此区域内的ESRRA结合峰</h3>
+<p>我们从某个样本（GM12878 EBV-transformed B-cell）获取ESRRA结合数据，以及我们目标基因附近的子集，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">data(GM12878)</div><div class="line">sc = subsetByOverlaps(GM12878, range(esrraNeigh))</div><div class="line">sc</div><div class="line"><span class="comment">## GRanges object with 6 ranges and 7 metadata columns:</span></div><div class="line"><span class="comment">##       seqnames               ranges strand |      name     score       col</span></div><div class="line"><span class="comment">##          &lt;Rle&gt;            &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;integer&gt; &lt;logical&gt;</span></div><div class="line"><span class="comment">##   [1]    chr11 [64071338, 64073242]      * |         3         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [2]    chr11 [63913452, 63914077]      * |        61         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [3]    chr11 [63741506, 63742754]      * |       210         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [4]    chr11 [63992515, 63994725]      * |       408         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [5]    chr11 [64098744, 64100083]      * |      1778         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##   [6]    chr11 [63639263, 63640021]      * |      2248         0      &lt;NA&gt;</span></div><div class="line"><span class="comment">##       signalValue    pValue    qValue      peak</span></div><div class="line"><span class="comment">##         &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;integer&gt;</span></div><div class="line"><span class="comment">##   [1]       69.87       310        32      1040</span></div><div class="line"><span class="comment">##   [2]       52.48    123.72  1.785156       259</span></div><div class="line"><span class="comment">##   [3]       18.24    59.652  2.022276       622</span></div><div class="line"><span class="comment">##   [4]        9.04    41.001  1.910095       990</span></div><div class="line"><span class="comment">##   [5]        9.03    19.758  2.075721       653</span></div><div class="line"><span class="comment">##   [6]        8.65    17.481  2.031517       436</span></div><div class="line"><span class="comment">##   -------</span></div><div class="line"><span class="comment">##   seqinfo: 93 sequences (1 circular) from hg19 genome</span></div></pre></td></tr></table></figure>
+<h3 id="计算表义文字ideogram从而给出染色体体的信息">计算表义文字(ideogram)从而给出染色体体的信息</h3>
+<p>计算过程有点慢。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">idxTrack = IdeogramTrack(genome=<span class="string">"hg19"</span>, chr=<span class="string">"chr11"</span>)</div></pre></td></tr></table></figure>
+<h3 id="数据合并">数据合并</h3>
+<p>我们从顶部开始，用表意文字来确定染色体和染色体上的区域，并且通过观察到的数据和结构信息放大这个区域，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">plotTracks(list(idxTrack, GenomeAxisTrack(), </div><div class="line">   DataTrack(sc[,<span class="number">7</span>], name=<span class="string">"ESRRA peak values"</span>), </div><div class="line">   GeneRegionTrack(esrraNeigh, showId=<span class="literal">TRUE</span>,</div><div class="line">         name=<span class="string">"genes near ESRRA"</span>), GenomeAxisTrack()))</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc2_gvfeat-dofull-1.png" alt="plot of chunk dofull">
+<p class="caption">plot of chunk dofull</p>
+</div>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc2_ggbio.html" target="_blank" rel="external">Sketching the binding landscape over chromosomes with ggbio’s karyogram layout</a></li>
+<li><a href="http://genomicsclass.github.io/book/pages/bioc2_gvfeat.html" target="_blank" rel="external">Gviz for plotting data with genomic features</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/13/Genomics Data Analysis Series/GDAS013- 基因集分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1001,241 +1711,6 @@ t_N)&#39; ) \\
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/10/Genomics Data Analysis Series/GDAS010- 生物学变异与技术变异/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/10/Genomics Data Analysis Series/GDAS010- 生物学变异与技术变异/" itemprop="url">GDAS010-生物学变异与技术变异</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-10T12:00:00+08:00">
-                2019-09-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
-                    <span itemprop="name">Genomics Data Analysis Series</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,677
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  11
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言">前言</h1>
-<p>在后面的章节中，我们将介绍基因组学实验中的统计推断。我们会使用前面几节中介绍的一些概念，其中包括t检验和多重比较。在这一节中，我们先介绍一个在基因组学数据分析中一个极为重要的概念：生物学变异与技术变异(biological and technical variability)以及它们之间的区别。</p>
-<p>通常而言，我们在一个种群里所观察到的生物学单位，例如某个个体的变异称为生物学变异(biological variability)。我们将那些对同一个生物学单位进行测量时所观察到的变异称为技术性变异(technical variability，例如同一个样本测3次，这3次就是技术重复，3次数据的变异称为技术变异)。由于在基因组学研究中经常会用到新技术，因此技术重复(technical replicates)在很多时候都会用于评估实验数据。理想情况下，同一样本的检测结果应该是相同的，但在实际检测中同一样本的多次检测会出现一定的偏差，因此使用技术重复我们就能我们就能够评估新技术的技术变异。我还经常使用生物学重复(biological replicates)与技术重复(technical replicates)来分别代指生物学变异和技术变异。</p>
-<p>我们在进行统计推断来解释有差异时，需要注意不要混淆生物学变异和技术变异，因为它们所代表的意义是不同的。例如，当我们分析技术重复时，样本仅仅只有一个，而不是代表某个总体，例如人类或小鼠。这一节中，我们通过设计一个实验来说明一下技术重复和生物重复。</p>
-<h1 id="合并实验数据">合并实验数据</h1>
-<p>我们将要研究的数据集来源于基因表达微阵列。在这个实验中，我们从两个品系的小鼠中分别随机选择了12只小鼠，并提取了它们的RNA。我们将得到的24个样本使用微阵列的手段进行检测，引外，我们还构成了两个库，这两个库中的样本则是分别来源于这两个品系的12只小鼠的混合样本。</p>
-<p>现在我们安装以下包，这个包中含有这些数据，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(devtools)</div><div class="line">install_github(&quot;genomicsclass/maPooling&quot;)</div></pre></td></tr></table></figure>
-<p>使用<code>pData</code>函数我们就能查看实验设计。每行表示一个样本，每列表示1只小鼠。例如<code>i,j</code>单元格，中如果是1，则表示RNA数据来源于<code>j</code>只小鼠的样本<code>i</code>。通过行名我们可以知道品系信息（不推荐这种方法来进行分组，你可以向phenoData中添加一个变量，用于指定小鼠品系信息），数据如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Biobase)</div><div class="line"><span class="keyword">library</span>(maPooling)</div><div class="line">data(maPooling)</div><div class="line">head(pData(maPooling))</div><div class="line"><span class="comment">##          a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a14 b2 b3 b5 b6 b8 b9 b10 b11</span></div><div class="line"><span class="comment">## a10       0  0  0  0  0  0  0  0   1   0   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a10a11    0  0  0  0  0  0  0  0   1   1   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a10a11a4  0  0  1  0  0  0  0  0   1   1   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a11       0  0  0  0  0  0  0  0   0   1   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a12       0  0  0  0  0  0  0  0   0   0   1   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a12a14    0  0  0  0  0  0  0  0   0   0   1   1  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">##          b12 b13 b14 b15</span></div><div class="line"><span class="comment">## a10        0   0   0   0</span></div><div class="line"><span class="comment">## a10a11     0   0   0   0</span></div><div class="line"><span class="comment">## a10a11a4   0   0   0   0</span></div><div class="line"><span class="comment">## a11        0   0   0   0</span></div><div class="line"><span class="comment">## a12        0   0   0   0</span></div><div class="line"><span class="comment">## a12a14     0   0   0   0</span></div></pre></td></tr></table></figure>
-<p>现在我们创建一个函数，用于说明小鼠的样本信息，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">flipt &lt;- <span class="keyword">function</span>(m) t(m[nrow(m):<span class="number">1</span>,])</div><div class="line">myimage &lt;- <span class="keyword">function</span>(m,<span class="keyword">...</span>) &#123;</div><div class="line">  image(flipt(m),xaxt=<span class="string">"n"</span>,yaxt=<span class="string">"n"</span>,<span class="keyword">...</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">myimage(as.matrix(pData(maPooling)),col=c(<span class="string">"white"</span>,<span class="string">"black"</span>),</div><div class="line">        xlab=<span class="string">"experiments"</span>,</div><div class="line">        ylab=<span class="string">"individuals"</span>,</div><div class="line">        main=<span class="string">"phenoData"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3">
-<p class="caption">plot of chunk unnamed-chunk-3</p>
-</div>
-<p>需要注意的是，最终我们只对两个品系小鼠的差异基因感兴趣，也就是数据中标为0的品系和1的品系。我们可以对合并样本的技术重复进行检验或来源于12只小鼠的数据进行检验。我们可以提取出这些合并的样本，因为来自于每个品系的所有小鼠都都可以用0或1来表示，因此那些来源于某品系（例如用1表示的这个品系）代表了这些样本，因此我们提取出矩阵行之和为12的基因，这段话不太理解，原文如下：</p>
-<blockquote>
-<p>Note that ultimately we are interested in detecting genes that are differentially expressed between the two strains of mice which we will refer to as strain 0 and 1. We can apply tests to the technical replicates of pooled samples or the data from 12 individual mice. We can identify these pooled samples because all mice from each strain were represented in these samples and thus the sum of the rows of experimental design matrix add up to 12:</p>
-</blockquote>
-<p>如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">data(maPooling)</div><div class="line">pd=pData(maPooling)</div><div class="line">pooled=which(rowSums(pd)==12)</div></pre></td></tr></table></figure>
-<p>我们可以从列名确定品系，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">factor(as.numeric(grepl(<span class="string">"b"</span>,names(pooled))))</div><div class="line"><span class="comment">## [1] 0 0 0 0 1 1 1 1</span></div><div class="line"><span class="comment">## Levels: 0 1</span></div></pre></td></tr></table></figure>
-<p>如果我们要比较每个基因在不同品系之间的差异，我们就会发现有几个基因出现了比较一致的差异，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">###look at 2 pre-selected genes for illustration</span></div><div class="line">i=<span class="number">11425</span>;j=<span class="number">11878</span></div><div class="line">pooled_y=exprs(maPooling[,pooled])</div><div class="line">pooled_g=factor(as.numeric(grepl(<span class="string">"b"</span>,names(pooled))))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">stripchart(split(pooled_y[i,],pooled_g),vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,col=c(<span class="number">1</span>,<span class="number">2</span>),</div><div class="line">           main=<span class="string">"Gene 1"</span>,xlab=<span class="string">"Group"</span>,pch=<span class="number">15</span>)</div><div class="line">stripchart(split(pooled_y[j,],pooled_g),vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,col=c(<span class="number">1</span>,<span class="number">2</span>),</div><div class="line">           main=<span class="string">"Gene 2"</span>,xlab=<span class="string">"Group"</span>,pch=<span class="number">15</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6">
-<p class="caption">plot of chunk unnamed-chunk-6</p>
-</div>
-<p>这里要注意一下，如果我们根据这些值来进行t检验，那么我们就会得到非常显著的结果，也就是说p值极低，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(genefilter)</div><div class="line">pooled_tt=rowttests(pooled_y,pooled_g)</div><div class="line">pooled_tt$p.value[i]</div><div class="line"><span class="comment">## [1] 2.075617e-07</span></div><div class="line">pooled_tt$p.value[j]</div><div class="line"><span class="comment">## [1] 3.400476e-07</span></div></pre></td></tr></table></figure>
-<p>但是，如果我们再次从两个品系的小鼠中各选择12个小鼠的话，这样的结论会成立吗？请注意，t检验的定义包括要比较的总体的标准差。我们这里做的计算结果是否能够反映出总体差异？（注：这里要回顾一下t检验的定义，样本与方差的差异等概念）。</p>
-<p>需要注意的是，我们现在重复计算的过程就是在重复原来的实验流程。我们为每个合并的样本创建了4个技术重复。或许Gene 1在小鼠品系内存在着很高的变异，而Gene 2的变异则比较低，但是我们不能看到这一点，因为小鼠之间的变异被合并后的数据所掩盖了（注：这里作者只是假设了Gene 1可能存在着比较高的组内变异）。</p>
-<p>我们还有每只小鼠的微阵列数据。对于每个品系的小鼠来说，我们有12个生物学重复。我们可以通过查询1来找到这个品系，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">individuals=which(rowSums(pd)==1)</div></pre></td></tr></table></figure>
-<p>事实证明，某些单独的小鼠本身就含有技术重复，因此现在我们将这种情况剔除掉，从而用于说明仅用生物学重复的分析结果，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">##remove replicates</span></div><div class="line">individuals=individuals[-grep(<span class="string">"tr"</span>,names(individuals))]</div><div class="line">y=exprs(maPooling)[,individuals]</div><div class="line">g=factor(as.numeric(grepl(<span class="string">"b"</span>,names(individuals))))</div></pre></td></tr></table></figure>
-<p>我们可以计算每个基因的在某个品系中的方差，并与通过技术重复获得的标准差进行比较，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">technicalsd &lt;- rowSds(pooled_y[,pooled_g==<span class="number">0</span>])</div><div class="line">biologicalsd &lt;- rowSds(y[,g==<span class="number">0</span>])</div><div class="line">LIM=range(c(technicalsd,biologicalsd))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">boxplot(technicalsd,biologicalsd,names=c(<span class="string">"technical"</span>,<span class="string">"biological"</span>),ylab=<span class="string">"standard deviation"</span>)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10">
-<p class="caption">plot of chunk unnamed-chunk-10</p>
-</div>
-<p>从上图上我们可以看到，生物学方差(variance)远大于技术方差。并且对于方差的变异而言，生物学方差更大。这只是我们前面提到的2个基因的情况，现在我们展示每只小鼠上测得的这2个基因的表达值，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mypar(1,2)</div><div class="line">stripchart(split(y[i,],g),vertical=TRUE,method=&quot;jitter&quot;,col=c(1,2),xlab=&quot;Gene 1&quot;,pch=15)</div><div class="line">points(c(1,2),tapply(y[i,],g,mean),pch=4,cex=1.5)</div><div class="line">stripchart(split(y[j,],g),vertical=TRUE,method=&quot;jitter&quot;,col=c(1,2),xlab=&quot;Gene 2&quot;,pch=15)</div><div class="line">points(c(1,2),tapply(y[j,],g,mean),pch=4,cex=1.5)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11">
-<p class="caption">plot of chunk unnamed-chunk-11</p>
-</div>
-<p>现在p值就发生了一点变化，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">library(genefilter)</div><div class="line">tt=rowttests(y,g)</div><div class="line">tt$p.value[i]</div><div class="line">## [1] 0.0898726</div><div class="line">tt$p.value[j]</div><div class="line">## [1] 1.979172e-07</div></pre></td></tr></table></figure>
-<p>当我们在不同品系的小鼠之间比较这2个基因的差异时，我们对哪个基因的差异更有信心呢（Gene 1还是Gene 2）？如果另一位研究人员另外一批随机样本来做实验，你认识他会发现哪个基因有差异（Gene 1还是Gene 2）？如果我们希望我们的结论是关于小鼠品系的通用结论（通用结论这里我的理解就是，无论放哪个实验室做，都能做出这个结果，得到这个结论），而不仅仅是我们这次实验的结论（也就是说，有可能就是只有自己实验室能做出这个结果，那么这个结果就不太可信，有可能是假阳性），那么检测生物学的变异则非常重要。</p>
-<p>在这一节中，我们使用了两种分析方法。第一种分析方法是将这两个品系的生物学重复做为总体总体来进行分析析（也就是说把某个品系的12只小鼠数据汇总起来分析）。第二种则是将合并后的数据来作为总体进行分析（我的理解就是把12只小鼠的RNA混合在一起，作为一个样本，然后使用4个技术重复来进行分析，这种分析方法其实检测的就是技术变异）。在科学研究中，我们通常关注的是总体（也就是第一种分析方法）。作为一个非常实际的例子，这里需要注意的是，如果另外一个实验室重复该实验，他们会有另外一组12个小鼠的样本，因此关于我们实验中对总体的推断也会在另外的实验室中得到重复。</p>
-<blockquote>
-<p>An analysis with biological replicates has as a population these two strains of mice. An analysis with technical replicates has as a population the twelve mice we selected and the variability is related to the measurement technology. In science we typically are concerned with populations. As a very practical example, note that if another lab performs this experiment they will have another set of twelve mice and thus inferences about <em>populations</em> are more likely to be reproducible.</p>
-</blockquote>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="http://genomicsclass.github.io/book/pages/bioc1_btvari.html" target="_blank" rel="external">Biological versus technical variability</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/10/BioTools/fgsea/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1433,6 +1908,241 @@ t_N)&#39; ) \\
 <li><a href="https://bioconductor.org/packages/release/bioc/vignettes/fgsea/inst/doc/fgsea-tutorial.html" target="_blank" rel="external">Using fgsea package</a></li>
 <li><a href="https://www.r-bloggers.com/comparison-of-clusterprofiler-and-gsea-p/" target="_blank" rel="external">Comparison of clusterProfiler and GSEA-P</a></li>
 <li><a href="https://davetang.org/muse/2018/01/10/using-fast-preranked-gene-set-enrichment-analysis-fgsea-package/" target="_blank" rel="external">Using the fast preranked gene set enrichment analysis (fgsea) package</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/10/Genomics Data Analysis Series/GDAS010- 生物学变异与技术变异/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/10/Genomics Data Analysis Series/GDAS010- 生物学变异与技术变异/" itemprop="url">GDAS010-生物学变异与技术变异</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-10T12:00:00+08:00">
+                2019-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,677
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言">前言</h1>
+<p>在后面的章节中，我们将介绍基因组学实验中的统计推断。我们会使用前面几节中介绍的一些概念，其中包括t检验和多重比较。在这一节中，我们先介绍一个在基因组学数据分析中一个极为重要的概念：生物学变异与技术变异(biological and technical variability)以及它们之间的区别。</p>
+<p>通常而言，我们在一个种群里所观察到的生物学单位，例如某个个体的变异称为生物学变异(biological variability)。我们将那些对同一个生物学单位进行测量时所观察到的变异称为技术性变异(technical variability，例如同一个样本测3次，这3次就是技术重复，3次数据的变异称为技术变异)。由于在基因组学研究中经常会用到新技术，因此技术重复(technical replicates)在很多时候都会用于评估实验数据。理想情况下，同一样本的检测结果应该是相同的，但在实际检测中同一样本的多次检测会出现一定的偏差，因此使用技术重复我们就能我们就能够评估新技术的技术变异。我还经常使用生物学重复(biological replicates)与技术重复(technical replicates)来分别代指生物学变异和技术变异。</p>
+<p>我们在进行统计推断来解释有差异时，需要注意不要混淆生物学变异和技术变异，因为它们所代表的意义是不同的。例如，当我们分析技术重复时，样本仅仅只有一个，而不是代表某个总体，例如人类或小鼠。这一节中，我们通过设计一个实验来说明一下技术重复和生物重复。</p>
+<h1 id="合并实验数据">合并实验数据</h1>
+<p>我们将要研究的数据集来源于基因表达微阵列。在这个实验中，我们从两个品系的小鼠中分别随机选择了12只小鼠，并提取了它们的RNA。我们将得到的24个样本使用微阵列的手段进行检测，引外，我们还构成了两个库，这两个库中的样本则是分别来源于这两个品系的12只小鼠的混合样本。</p>
+<p>现在我们安装以下包，这个包中含有这些数据，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(devtools)</div><div class="line">install_github(&quot;genomicsclass/maPooling&quot;)</div></pre></td></tr></table></figure>
+<p>使用<code>pData</code>函数我们就能查看实验设计。每行表示一个样本，每列表示1只小鼠。例如<code>i,j</code>单元格，中如果是1，则表示RNA数据来源于<code>j</code>只小鼠的样本<code>i</code>。通过行名我们可以知道品系信息（不推荐这种方法来进行分组，你可以向phenoData中添加一个变量，用于指定小鼠品系信息），数据如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(Biobase)</div><div class="line"><span class="keyword">library</span>(maPooling)</div><div class="line">data(maPooling)</div><div class="line">head(pData(maPooling))</div><div class="line"><span class="comment">##          a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a14 b2 b3 b5 b6 b8 b9 b10 b11</span></div><div class="line"><span class="comment">## a10       0  0  0  0  0  0  0  0   1   0   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a10a11    0  0  0  0  0  0  0  0   1   1   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a10a11a4  0  0  1  0  0  0  0  0   1   1   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a11       0  0  0  0  0  0  0  0   0   1   0   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a12       0  0  0  0  0  0  0  0   0   0   1   0  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">## a12a14    0  0  0  0  0  0  0  0   0   0   1   1  0  0  0  0  0  0   0   0</span></div><div class="line"><span class="comment">##          b12 b13 b14 b15</span></div><div class="line"><span class="comment">## a10        0   0   0   0</span></div><div class="line"><span class="comment">## a10a11     0   0   0   0</span></div><div class="line"><span class="comment">## a10a11a4   0   0   0   0</span></div><div class="line"><span class="comment">## a11        0   0   0   0</span></div><div class="line"><span class="comment">## a12        0   0   0   0</span></div><div class="line"><span class="comment">## a12a14     0   0   0   0</span></div></pre></td></tr></table></figure>
+<p>现在我们创建一个函数，用于说明小鼠的样本信息，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(rafalib)</div><div class="line">mypar()</div><div class="line">flipt &lt;- <span class="keyword">function</span>(m) t(m[nrow(m):<span class="number">1</span>,])</div><div class="line">myimage &lt;- <span class="keyword">function</span>(m,<span class="keyword">...</span>) &#123;</div><div class="line">  image(flipt(m),xaxt=<span class="string">"n"</span>,yaxt=<span class="string">"n"</span>,<span class="keyword">...</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">myimage(as.matrix(pData(maPooling)),col=c(<span class="string">"white"</span>,<span class="string">"black"</span>),</div><div class="line">        xlab=<span class="string">"experiments"</span>,</div><div class="line">        ylab=<span class="string">"individuals"</span>,</div><div class="line">        main=<span class="string">"phenoData"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3">
+<p class="caption">plot of chunk unnamed-chunk-3</p>
+</div>
+<p>需要注意的是，最终我们只对两个品系小鼠的差异基因感兴趣，也就是数据中标为0的品系和1的品系。我们可以对合并样本的技术重复进行检验或来源于12只小鼠的数据进行检验。我们可以提取出这些合并的样本，因为来自于每个品系的所有小鼠都都可以用0或1来表示，因此那些来源于某品系（例如用1表示的这个品系）代表了这些样本，因此我们提取出矩阵行之和为12的基因，这段话不太理解，原文如下：</p>
+<blockquote>
+<p>Note that ultimately we are interested in detecting genes that are differentially expressed between the two strains of mice which we will refer to as strain 0 and 1. We can apply tests to the technical replicates of pooled samples or the data from 12 individual mice. We can identify these pooled samples because all mice from each strain were represented in these samples and thus the sum of the rows of experimental design matrix add up to 12:</p>
+</blockquote>
+<p>如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">data(maPooling)</div><div class="line">pd=pData(maPooling)</div><div class="line">pooled=which(rowSums(pd)==12)</div></pre></td></tr></table></figure>
+<p>我们可以从列名确定品系，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">factor(as.numeric(grepl(<span class="string">"b"</span>,names(pooled))))</div><div class="line"><span class="comment">## [1] 0 0 0 0 1 1 1 1</span></div><div class="line"><span class="comment">## Levels: 0 1</span></div></pre></td></tr></table></figure>
+<p>如果我们要比较每个基因在不同品系之间的差异，我们就会发现有几个基因出现了比较一致的差异，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">###look at 2 pre-selected genes for illustration</span></div><div class="line">i=<span class="number">11425</span>;j=<span class="number">11878</span></div><div class="line">pooled_y=exprs(maPooling[,pooled])</div><div class="line">pooled_g=factor(as.numeric(grepl(<span class="string">"b"</span>,names(pooled))))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line">stripchart(split(pooled_y[i,],pooled_g),vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,col=c(<span class="number">1</span>,<span class="number">2</span>),</div><div class="line">           main=<span class="string">"Gene 1"</span>,xlab=<span class="string">"Group"</span>,pch=<span class="number">15</span>)</div><div class="line">stripchart(split(pooled_y[j,],pooled_g),vertical=<span class="literal">TRUE</span>,method=<span class="string">"jitter"</span>,col=c(<span class="number">1</span>,<span class="number">2</span>),</div><div class="line">           main=<span class="string">"Gene 2"</span>,xlab=<span class="string">"Group"</span>,pch=<span class="number">15</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6">
+<p class="caption">plot of chunk unnamed-chunk-6</p>
+</div>
+<p>这里要注意一下，如果我们根据这些值来进行t检验，那么我们就会得到非常显著的结果，也就是说p值极低，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(genefilter)</div><div class="line">pooled_tt=rowttests(pooled_y,pooled_g)</div><div class="line">pooled_tt$p.value[i]</div><div class="line"><span class="comment">## [1] 2.075617e-07</span></div><div class="line">pooled_tt$p.value[j]</div><div class="line"><span class="comment">## [1] 3.400476e-07</span></div></pre></td></tr></table></figure>
+<p>但是，如果我们再次从两个品系的小鼠中各选择12个小鼠的话，这样的结论会成立吗？请注意，t检验的定义包括要比较的总体的标准差。我们这里做的计算结果是否能够反映出总体差异？（注：这里要回顾一下t检验的定义，样本与方差的差异等概念）。</p>
+<p>需要注意的是，我们现在重复计算的过程就是在重复原来的实验流程。我们为每个合并的样本创建了4个技术重复。或许Gene 1在小鼠品系内存在着很高的变异，而Gene 2的变异则比较低，但是我们不能看到这一点，因为小鼠之间的变异被合并后的数据所掩盖了（注：这里作者只是假设了Gene 1可能存在着比较高的组内变异）。</p>
+<p>我们还有每只小鼠的微阵列数据。对于每个品系的小鼠来说，我们有12个生物学重复。我们可以通过查询1来找到这个品系，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">individuals=which(rowSums(pd)==1)</div></pre></td></tr></table></figure>
+<p>事实证明，某些单独的小鼠本身就含有技术重复，因此现在我们将这种情况剔除掉，从而用于说明仅用生物学重复的分析结果，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">##remove replicates</span></div><div class="line">individuals=individuals[-grep(<span class="string">"tr"</span>,names(individuals))]</div><div class="line">y=exprs(maPooling)[,individuals]</div><div class="line">g=factor(as.numeric(grepl(<span class="string">"b"</span>,names(individuals))))</div></pre></td></tr></table></figure>
+<p>我们可以计算每个基因的在某个品系中的方差，并与通过技术重复获得的标准差进行比较，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">technicalsd &lt;- rowSds(pooled_y[,pooled_g==<span class="number">0</span>])</div><div class="line">biologicalsd &lt;- rowSds(y[,g==<span class="number">0</span>])</div><div class="line">LIM=range(c(technicalsd,biologicalsd))</div><div class="line">mypar(<span class="number">1</span>,<span class="number">1</span>)</div><div class="line">boxplot(technicalsd,biologicalsd,names=c(<span class="string">"technical"</span>,<span class="string">"biological"</span>),ylab=<span class="string">"standard deviation"</span>)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10">
+<p class="caption">plot of chunk unnamed-chunk-10</p>
+</div>
+<p>从上图上我们可以看到，生物学方差(variance)远大于技术方差。并且对于方差的变异而言，生物学方差更大。这只是我们前面提到的2个基因的情况，现在我们展示每只小鼠上测得的这2个基因的表达值，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mypar(1,2)</div><div class="line">stripchart(split(y[i,],g),vertical=TRUE,method=&quot;jitter&quot;,col=c(1,2),xlab=&quot;Gene 1&quot;,pch=15)</div><div class="line">points(c(1,2),tapply(y[i,],g,mean),pch=4,cex=1.5)</div><div class="line">stripchart(split(y[j,],g),vertical=TRUE,method=&quot;jitter&quot;,col=c(1,2),xlab=&quot;Gene 2&quot;,pch=15)</div><div class="line">points(c(1,2),tapply(y[j,],g,mean),pch=4,cex=1.5)</div></pre></td></tr></table></figure>
+<div class="figure">
+<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_btvari-unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11">
+<p class="caption">plot of chunk unnamed-chunk-11</p>
+</div>
+<p>现在p值就发生了一点变化，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">library(genefilter)</div><div class="line">tt=rowttests(y,g)</div><div class="line">tt$p.value[i]</div><div class="line">## [1] 0.0898726</div><div class="line">tt$p.value[j]</div><div class="line">## [1] 1.979172e-07</div></pre></td></tr></table></figure>
+<p>当我们在不同品系的小鼠之间比较这2个基因的差异时，我们对哪个基因的差异更有信心呢（Gene 1还是Gene 2）？如果另一位研究人员另外一批随机样本来做实验，你认识他会发现哪个基因有差异（Gene 1还是Gene 2）？如果我们希望我们的结论是关于小鼠品系的通用结论（通用结论这里我的理解就是，无论放哪个实验室做，都能做出这个结果，得到这个结论），而不仅仅是我们这次实验的结论（也就是说，有可能就是只有自己实验室能做出这个结果，那么这个结果就不太可信，有可能是假阳性），那么检测生物学的变异则非常重要。</p>
+<p>在这一节中，我们使用了两种分析方法。第一种分析方法是将这两个品系的生物学重复做为总体总体来进行分析析（也就是说把某个品系的12只小鼠数据汇总起来分析）。第二种则是将合并后的数据来作为总体进行分析（我的理解就是把12只小鼠的RNA混合在一起，作为一个样本，然后使用4个技术重复来进行分析，这种分析方法其实检测的就是技术变异）。在科学研究中，我们通常关注的是总体（也就是第一种分析方法）。作为一个非常实际的例子，这里需要注意的是，如果另外一个实验室重复该实验，他们会有另外一组12个小鼠的样本，因此关于我们实验中对总体的推断也会在另外的实验室中得到重复。</p>
+<blockquote>
+<p>An analysis with biological replicates has as a population these two strains of mice. An analysis with technical replicates has as a population the twelve mice we selected and the variability is related to the measurement technology. In science we typically are concerned with populations. As a very practical example, note that if another lab performs this experiment they will have another set of twelve mice and thus inferences about <em>populations</em> are more likely to be reproducible.</p>
+</blockquote>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc1_btvari.html" target="_blank" rel="external">Biological versus technical variability</a></li>
 </ol>
 
           
@@ -2102,702 +2812,6 @@ t_N)&#39; ) \\
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/07/Experiment/HIPC介绍/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/07/Experiment/HIPC介绍/" itemprop="url">HIPC介绍</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-07T12:00:00+08:00">
-                2019-09-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/生物实验笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">生物实验笔记</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  803
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言">前言</h2>
-<p>最近在看GSEA有关的内容，GSEA官网里涉及到一个基因集，即<code>C7 collection: Immunologic signatures</code>，这是一个与免疫相关的基因集，根据官网的介绍，这个基因集是由BROAD实验室与丹娜法伯癌症研究院（Dana-Farber Cancer Institute）的Haining Lab和人类免疫学项目联合合会(HIPC)合作的一部分，当时还发了一篇Immunity，文献信息如下：</p>
-<p>Godec J, Tan Y, Liberzon A, Tamayo P, Bhattacharya S, Butte A, Mesirov JP, Haining WN, Compendium of Immune Signatures Identifies Conserved and Species-Specific Biology in Response to Inflammation, 2016, Immunity 44(1), 194-206.</p>
-<p>以下内容是HIPC官网的一些资料。</p>
-<h2 id="hipc简介">HIPC简介</h2>
-<p>HIPC英文全称是Human Immunology Project Consortium，即人类免疫学项目研究联合会，成立于2010年，后又于2015年重组，即由原来的NIAID的过敏所（注：NIAID的全称为National Institute of Allergy and Infectious Diseases，即<strong>国家过敏与感染性疾病研究院</strong>），免疫所和移植所进行合并，统一作为NIAID的构成部分，集中研究人类免疫学。</p>
-<p>注：上面一段话是我按原文翻译后理解的，不一定准确，为了避免歧义我，这里贴出原文：</p>
-<blockquote>
-<p>The Human Immunology Project Consortium (HIPC) program was established in 2010, and renewed in 2015, by the NIAID Division of Allergy, Immunology, and Transplantation as part of the overall NIAID focus on human immunology.</p>
-</blockquote>
-<p>通过HIPC计划，研究者们使用各种现代分析工具分析人类多个免疫学方面的数据，其中包括多重转录(multiplex transcriptional)，细胞因子，蛋白质谱；白细胞亚型的多参数表型(multiparameter phenotyping of leukocyte subsets)；评估白细胞功能状态以及开发多种算法。</p>
-<p>HIPC项目旨在建立一个集中的研究中心，以及一个广泛的，中心化的数据库，从而让更多的研究者们使用。HIPC项目产生的信息将会有助于研究者们广泛地理解人类免疫系统方方面面，包括免疫系统的调控，发现免疫系统组分与其它生物系统的新型关系，从而确定新的免疫介质与通路，以及构建不同种群疫苗案安全性的预测因子，从而确保对不同疫苗配方的快速评估，确立接种方案等。该知识库还将会构建起免疫系统介导的人类疾病的研究基础，这些人类免疫性疾病包括过敏，哮喘，移植排斥和自身免疫性疾病以及各种炎症性疾病。</p>
-<h2 id="hipc的任务">HIPC的任务</h2>
-<h3 id="目标">目标</h3>
-<ol style="list-style-type: decimal">
-<li>定义稳定和活化的人类免疫系统的表达谱/标签/足迹(Define profiles/signatures/fingerprints of steady-state and activated human immune system)</li>
-<li>创建一个中心化的知识库或资源：</li>
-</ol>
-<ul>
-<li>有利于研究人类免疫系统；</li>
-<li>针对人类疾病开发新的疗法。</li>
-</ul>
-<h3 id="研究">研究</h3>
-<ol style="list-style-type: decimal">
-<li>感染导致的稳态异常(Perturbations of the steady-state by infection)；</li>
-<li>疫苗；</li>
-<li>佐剂研究(Adjuvant administration )</li>
-</ol>
-<h3 id="方法">方法</h3>
-<ol style="list-style-type: decimal">
-<li>定义人类转录组/蛋白质谱；</li>
-<li>多重分析(multiplex assays)；</li>
-<li>多参数表型，系统生物学；</li>
-<li>质谱。</li>
-</ol>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li>https://www.immuneprofiling.org/hipc/page/showPage?pg=sci-about</li>
-<li>http://software.broadinstitute.org/gsea/msigdb/collection_details.jsp#C7</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/07/Genomics Data Analysis Series/GDAS007-管理与处理大量BED文件/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/07/Genomics Data Analysis Series/GDAS007-管理与处理大量BED文件/" itemprop="url">GDAS007-管理与处理大量BED文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-07T12:00:00+08:00">
-                2019-09-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
-                    <span itemprop="name">Genomics Data Analysis Series</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,782
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  8
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言">前言</h1>
-<p>我们已经通过<code>ExpressionSet</code>类和<code>BamFileList</code>文件（含有BAM比对后的文件）来了解了一些关于数据管理的基本知识。</p>
-<ul>
-<li>S4类有助于控制某个数据结构中不同组件之间的复杂程度和一致性。</li>
-<li>R包能够进一步用于协调和发布数据、软件程度和文档。在这个课程的后面部分里我们会学习如何构建R包。</li>
-</ul>
-<p>在这个一部分的结尾处，我们来解决一个明显没有最佳解决方案的问题。我们考虑打包GRanges的序列化后的实例以及已经建立了索引的压缩文本文件，这些文件都可以使用GenomicFiles进行并行计算处理。</p>
-<p>为什么这是一个比较难解决的问题呢？因为在某些情况下，含有大量功能的GRanges实例将会非常大，加载它们可能会花费大量的时间，并且会占用大量的内存。这可能导致在RAM有限时，在群集节点上使用这些表示方法出现困难。如果数据以允许随机访问的索引格式保存在磁盘上，则根据需要将文件内容的目标提取，并转换为GRanges，就可能为某些应用程度带来更好的性能。创建<code>erma</code>包的一个原因就是获取关于这些不同方法之间平衡后的数据。</p>
-<h1 id="erma表观遗传路线图简介">erma：表观遗传路线图简介</h1>
-<p>为了促进对DNA突变体的理解，我们对细胞类型之间的表观基因组变异有所兴趣。NIH表观基因组路线图收集了很多关于ChIP-seq实验分析的数据，在这个公众数据库里记录了数百个不同细胞类型和标志特异性文件供其他研究者使用。</p>
-<p>管理这类数据的有效方法是什么呢？其中<a href="http://www.bioconductor.org/packages/erma" target="_blank" rel="external">erma</a> 包就提供了这样一种方法。</p>
-<h2 id="bed文件集合">BED文件集合</h2>
-<p>如同Ernst和Kellis使用大量细胞系的数据所报道的那样，他们已经进行了染色质状态的统计“估算”，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(erma)</div><div class="line">ef = dir(system.file(<span class="string">"bed_tabix"</span>, package=<span class="string">"erma"</span>), patt=<span class="string">"bed.gz$"</span>)</div><div class="line">length(ef)</div><div class="line"><span class="comment">## [1] 31</span></div><div class="line">head(ef)</div><div class="line"><span class="comment">## [1] "E002_25_imputed12marks_mnemonics.bed.gz"</span></div><div class="line"><span class="comment">## [2] "E003_25_imputed12marks_mnemonics.bed.gz"</span></div><div class="line"><span class="comment">## [3] "E021_25_imputed12marks_mnemonics.bed.gz"</span></div><div class="line"><span class="comment">## [4] "E032_25_imputed12marks_mnemonics.bed.gz"</span></div><div class="line"><span class="comment">## [5] "E033_25_imputed12marks_mnemonics.bed.gz"</span></div><div class="line"><span class="comment">## [6] "E034_25_imputed12marks_mnemonics.bed.gz"</span></div></pre></td></tr></table></figure>
-<h2 id="使用genomicfiles进行管理">使用GenomicFiles进行管理</h2>
-<p>我们认为文件名是不变的，但是储存BED文件路径的向量则可以被命名得更详细。通过<code>makeErmaSet</code>函数可以获取元数据，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">mm = makeErmaSet()</div><div class="line"><span class="comment">## <span class="doctag">NOTE:</span> input data had non-ASCII characters replaced by ' '.</span></div><div class="line">mm</div><div class="line"><span class="comment">## ErmaSet object with 0 ranges and 31 files: </span></div><div class="line"><span class="comment">## files: E002_25_imputed12marks_mnemonics.bed.gz, E003_25_imputed12marks_mnemonics.bed.gz, ..., E088_25_imputed12marks_mnemonics.bed.gz, E096_25_imputed12marks_mnemonics.bed.gz </span></div><div class="line"><span class="comment">## detail: use files(), rowRanges(), colData(), ...</span></div><div class="line">head(colData(mm))</div><div class="line"><span class="comment">## (showing narrow slice of  6 x 95  DataFrame)   narrDF with 6 rows and 6 columns</span></div><div class="line"><span class="comment">##      Epigenome.ID..EID.          GROUP Epigenome.Mnemonic     ANATOMY</span></div><div class="line"><span class="comment">##             &lt;character&gt;    &lt;character&gt;        &lt;character&gt; &lt;character&gt;</span></div><div class="line"><span class="comment">## E002               E002            ESC            ESC.WA7         ESC</span></div><div class="line"><span class="comment">## E003               E003            ESC             ESC.H1         ESC</span></div><div class="line"><span class="comment">## E021               E021           iPSC        IPSC.DF.6.9        IPSC</span></div><div class="line"><span class="comment">## E032               E032   HSC &amp; B-cell       BLD.CD19.PPC       BLOOD</span></div><div class="line"><span class="comment">## E033               E033 Blood &amp; T-cell        BLD.CD3.CPC       BLOOD</span></div><div class="line"><span class="comment">## E034               E034 Blood &amp; T-cell        BLD.CD3.PPC       BLOOD</span></div><div class="line"><span class="comment">##                TYPE         SEX</span></div><div class="line"><span class="comment">##         &lt;character&gt; &lt;character&gt;</span></div><div class="line"><span class="comment">## E002 PrimaryCulture      Female</span></div><div class="line"><span class="comment">## E003 PrimaryCulture        Male</span></div><div class="line"><span class="comment">## E021 PrimaryCulture        Male</span></div><div class="line"><span class="comment">## E032    PrimaryCell        Male</span></div><div class="line"><span class="comment">## E033    PrimaryCell     Unknown</span></div><div class="line"><span class="comment">## E034    PrimaryCell        Male</span></div><div class="line"><span class="comment">## use colnames() for full set of metadata attributes.</span></div><div class="line">names(files(mm)) = colData(mm)$Epigenome.Mnemonic</div><div class="line">head(files(mm))</div><div class="line"><span class="comment">##                                                                                                                 ESC.WA7 </span></div><div class="line"><span class="comment">## "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/erma/bed_tabix/E002_25_imputed12marks_mnemonics.bed.gz" </span></div><div class="line"><span class="comment">##                                                                                                                  ESC.H1 </span></div><div class="line"><span class="comment">## "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/erma/bed_tabix/E003_25_imputed12marks_mnemonics.bed.gz" </span></div><div class="line"><span class="comment">##                                                                                                             IPSC.DF.6.9 </span></div><div class="line"><span class="comment">## "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/erma/bed_tabix/E021_25_imputed12marks_mnemonics.bed.gz" </span></div><div class="line"><span class="comment">##                                                                                                            BLD.CD19.PPC </span></div><div class="line"><span class="comment">## "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/erma/bed_tabix/E032_25_imputed12marks_mnemonics.bed.gz" </span></div><div class="line"><span class="comment">##                                                                                                             BLD.CD3.CPC </span></div><div class="line"><span class="comment">## "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/erma/bed_tabix/E033_25_imputed12marks_mnemonics.bed.gz" </span></div><div class="line"><span class="comment">##                                                                                                             BLD.CD3.PPC </span></div><div class="line"><span class="comment">## "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/erma/bed_tabix/E034_25_imputed12marks_mnemonics.bed.gz"</span></div></pre></td></tr></table></figure>
-<h1 id="使用表格描述染色质状态信息">使用表格描述染色质状态信息</h1>
-<h2 id="定义染色体状态与标记概述">定义染色体状态与标记概述</h2>
-<p>下表显示了不同类型的染色质标记是如何组合并用于判断染色体质片段的状态的。那些缩写的意义为：活跃TSS(TssA)，两种类型的上下流启动子(PromU, PromD1, PromD2)，转录为5’或3‘优先或略强或弱(Tx5’, Tx3’, Tx, TxWk)，联合转录或调控(TxReg)，优先转录，增强子活性和可能弱(TxEnh5‘，TxEnh3‘，TxEnhW)，两种类型的活跃增强子，可能是侧翼或弱的(EnhA1，EnhA2，EnhAF，EnhW1，EnhW2)或由H3K27ac(EnhAc)，初级DNase(DNase)，ZNF基因和重复序列(ZNF/rpts)，异染色质(Het)，二价或平衡型启动子(Propp，PromBiv)，抑制多梳(ReprPC)或静默(Quies)。</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(png)</div><div class="line">im = readPNG(system.file(<span class="string">"pngs/emparms.png"</span>, package=<span class="string">"erma"</span>))</div><div class="line">grid.raster(im)</div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_multibed-lkxy-1.png" alt="plot of chunk lkxy">
-<p class="caption">plot of chunk lkxy</p>
-</div>
-<p><code>erma</code>包中含有的文件包括31个不同细胞系和基因组的信息（原文里面是tilings，这个我的理解就是表示了一些信息），并根据上面显示了状态图将这些信息分配给染色体状态。</p>
-<p>下面展示了两个基因BRCA2和Eome启动子区域的状态标记，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">stateProfile(mm, <span class="string">"BRCA2"</span>)</div><div class="line"><span class="comment">## 'select()' returned 1:many mapping between keys and columns</span></div><div class="line"><span class="comment">## Warning: executing %dopar% sequentially: no parallel backend registered</span></div><div class="line"><span class="comment">## Scale for 'y' is already present. Adding another scale for 'y', which</span></div><div class="line"><span class="comment">## will replace the existing scale.</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_multibed-lkbr-1.png" alt="plot of chunk lkbr">
-<p class="caption">plot of chunk lkbr</p>
-</div>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">stateProfile(mm, <span class="string">"EOMES"</span>)</div><div class="line"><span class="comment">## 'select()' returned 1:many mapping between keys and columns</span></div><div class="line"><span class="comment">## Scale for 'y' is already present. Adding another scale for 'y', which</span></div><div class="line"><span class="comment">## will replace the existing scale.</span></div></pre></td></tr></table></figure>
-<div class="figure">
-<img src="http://genomicsclass.github.io/book/pages/figure/bioc1_multibed-lkbr2-1.png" alt="plot of chunk lkbr2">
-<p class="caption">plot of chunk lkbr2</p>
-</div>
-<p>有两个基因在启动子区域的状态与常规的状态不同，以及与细胞类型的一致性方面也不同。</p>
-<h2 id="并行目标查询">并行目标查询</h2>
-<p>虽然可视化很直观，但是我们也希望能够进行文本编辑，从而提取一些信息供下游使用。在这里我们简单地将每个细胞类型的状态制成表格。使用<code>readuceByFile</code>函数就能将文件分配给可用的内核或主机进行并行处理，如下所示：</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">gm = promoters(range(genemodel(<span class="string">"BRCA2"</span>))) <span class="comment"># 2000 upstream, 200 down by default</span></div><div class="line"><span class="keyword">library</span>(BiocParallel)</div><div class="line">register(MulticoreParam(workers=<span class="number">2</span>))</div><div class="line"><span class="keyword">library</span>(GenomicFiles)</div><div class="line">ans = reduceByFile( gm, files(mm), MAP=<span class="keyword">function</span>(range,file) &#123;</div><div class="line">   table( import(file, genome=<span class="string">"hg19"</span>, which=range)$name ) &#125; )</div><div class="line">ans= unlist(ans, recursive=<span class="literal">FALSE</span>)</div><div class="line">names(ans) = colData(mm)$Epigenome.Mnemonic</div><div class="line">ans[<span class="number">1</span>:<span class="number">4</span>]</div><div class="line"><span class="comment">## $$ESC.WA7</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##   1_TssA 16_EnhW1  2_PromU 25_Quies </span></div><div class="line"><span class="comment">##        1        1        1        1 </span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## $$ESC.H1</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##   1_TssA 16_EnhW1 19_DNase  2_PromU 25_Quies 3_PromD1 </span></div><div class="line"><span class="comment">##        1        1        1        1        1        1 </span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## $$IPSC.DF.6.9</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##   1_TssA 16_EnhW1 19_DNase  2_PromU 25_Quies </span></div><div class="line"><span class="comment">##        1        1        1        1        1 </span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">## $$BLD.CD19.PPC</span></div><div class="line"><span class="comment">## </span></div><div class="line"><span class="comment">##   1_TssA 16_EnhW1 19_DNase  2_PromU 25_Quies 3_PromD1 </span></div><div class="line"><span class="comment">##        1        1        1        1        1        1</span></div></pre></td></tr></table></figure>
-<p>因此，我们看到，在某个特定的基因的启动子区域的基因序列方面，不同的细胞类型存在着数量和状态类型的变化。在后面的练习中，我们将会考虑如何以这种方式开发其它潜在感兴趣的信息。</p>
-<h1 id="总结">总结</h1>
-<p>在这一部分中我们看到：</p>
-<ul>
-<li>在磁盘中，使用了大量添加了索引的文本来表示基因组注释或实验结果（原文是：“leave on disk” large numbers of indexed textual representations of genomic annotation or experimental result）；</li>
-<li>使用R包的方式来简化标记这些数据；</li>
-<li>使用<code>GenomicFiles</code>来管理有关文件的元数据；</li>
-<li>使用<code>reduceByFile</code>来并行处理文件内容。</li>
-</ul>
-<p>这些技术避免了创建，加载大量的R对象，从而提供了某种程度的便捷性。在内存资源有限的情况下，对于那些需要大量集群(clusters)的应用来说，这种策略就显得性价比较高。</p>
-<h2 id="参考资料">参考资料</h2>
-<ol style="list-style-type: decimal">
-<li><a href="http://genomicsclass.github.io/book/pages/bioc1_multibed.html" target="_blank" rel="external">Managing and processing large numbers of BED files</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/06/Genomics Data Analysis Series/GDAS016-shiny的交互式操作/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RVDSD">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RVDSD的个人笔记本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/06/Genomics Data Analysis Series/GDAS016-shiny的交互式操作/" itemprop="url">GDAS010-Bioconductor中的基因组注释</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-06T12:00:00+08:00">
-                2019-09-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
-                    <span itemprop="name">Genomics Data Analysis Series</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                  <span class="post-meta-divider">|</span>
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,294
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  8
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="interaction-beyond-the-read-eval-print-loop">Interaction beyond the “read-eval-print” loop</h2>
-<p>Working do with R through the command line imposes a certain laborious sequentiality to everything we do. The advantage to this mode of data-analytic computing is that every step is defined by code and every result can be viewed (and traced) as a sequence of explicit function evaluations on a well-defined environment.</p>
-<p>An alternative mode of data-analytic computing uses graphical user interfaces (GUIs) in which mouse movements and button clicks are the primary means of specifying computations. This mode of interaction is sequential and traceable as well, but the path from mouse click to data-analytic function is technically complex and we will not pursue the matter any further.</p>
-<p>The Rstudio group has produced a package called <code>shiny</code> <a href="http://genomicsclass.github.io/book/pages/shiny.rstudio.com" target="_blank" rel="external">URL</a> that simplifies the creation of browser-driven GUIs for specific data-analytic activities. In this lab we’ll explore some of the potential of this package. We’ve added a “shiny app” to the ph525x package that we’ll now investigate.</p>
-<h2 id="running-the-dfhclust-function">Running the dfHclust function</h2>
-<h3 id="the-main-display-layout">The main display layout</h3>
-<p>The ph525x package includes the <code>dfHclust</code> function. This takes a <code>data.frame</code> instance as sole argument and starts a browser session. You can try it directly with</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">library(ph525x)</div><div class="line">dfHclust(mtcars)</div></pre></td></tr></table></figure>
-<p>There is a sidebar panel on the left that accepts selections for</p>
-<ul>
-<li><code>distance</code> for object proximity</li>
-<li><code>clustering method</code> to form the hierarchy through object agglomeration</li>
-<li><code>height</code> for cutting the cluster dendrogram into groups of objects</li>
-<li>features to use for computation of object distance</li>
-</ul>
-<p>In this application, the objects are cars with different manufacturer and model types; the features are structural or operating characteristics of cars. Note that the application starts with certain defaults:</p>
-<ul>
-<li>euclidean distance</li>
-<li>ward.D as the agglomeration procedure</li>
-<li>40 as the cut height</li>
-<li>the first two variables as features</li>
-</ul>
-<p>The main panel to the right includes tabs for three types of display:</p>
-<ul>
-<li>tree for the clustering dendrogram</li>
-<li>pairs plot for direct pairwise scatterplot visualization</li>
-<li>silhouette plot for assessing cluster quality at the selected cutting height</li>
-</ul>
-<p>To fully understand the quantities displayed in the “tree” and “silh” tabs, you should review the definitions of distance, clustering method, and silhouette until you feel comfortable explaining these to a non-statistician.</p>
-<ul>
-<li>Distance measures are very important in multivariate analysis</li>
-<li>Hierarchical clustering procedures are complex; see the <a href="https://en.wikipedia.org/wiki/Ward&#39;s_method" target="_blank" rel="external">definition of Ward’s method</a> in Wikipedia for a clear exposition of one important approach</li>
-<li>Silhouette is defined clearly in the man page for <code>silhouette</code> in the <code>cluster</code> package</li>
-</ul>
-<h3 id="interacting-with-the-display">Interacting with the display</h3>
-<p>Notice that the defaults lead to a tree with three main lobes in the panel displayed when the “tree” tab is selected. The panel for the “silh” tab shows a measure of cluster membership for each observation in the dataset, using the height-to-cut setting to partition the data using the tree.</p>
-<ul>
-<li>note that the average silhouette width at the defaults for mtcars is 0.56</li>
-<li>if, leaving all other selections alone, you change the “Select height for cut” value to 70, the silhouette plot changes to show an average silhouette of 0.59 – an improvement, but now we have only two clusters, and one observation with a negative silhouette value</li>
-<li>for an amusing observation, return to the tree tab, set the distance to “euclidean” and the clustering method to <code>single</code> – now the closest neighbor to the Mercedes 450 SLC is the AMC Javelin. I guess the Javelin wasn’t such a bad car after all….</li>
-</ul>
-<h2 id="a-view-of-the-code">A view of the code</h2>
-<p>In this subsection we will break up the main <code>dfHclust</code> function and explain its elements. The code was written in a very naive manner but even so has three virtues:</p>
-<ul>
-<li>it is relatively short and self-contained</li>
-<li>it works and does something useful in interactive data exploration</li>
-<li>it is easy to extend by replicating and modifying short subparts</li>
-</ul>
-<p>Some aspects that are likely to need improvement</p>
-<ul>
-<li>handling of global variables for use in the <code>ui</code> component</li>
-<li>excessive repetition of data.frame subsetting in the <code>server</code> component</li>
-</ul>
-<h3 id="starting-out">Starting out</h3>
-<p>We have a simple fixed interface and fail if we don’t get a data.frame with at least two columns. We fail if the necessary software is not in place.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">dfHclust = function(df) &#123;</div><div class="line"># validate input</div><div class="line">   stopifnot(inherits(df, &quot;data.frame&quot;))</div><div class="line">   stopifnot(ncol(df)&gt;1)</div><div class="line"># obtain software</div><div class="line">   require(shiny)</div><div class="line">   require(cluster)</div></pre></td></tr></table></figure>
-<h3 id="some-vectors-to-populate-interface-option-sets">Some vectors to populate interface option sets</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># global variables ... </div><div class="line">   nms = names(df)</div><div class="line">   cmeths = c(&quot;ward.D&quot;, &quot;ward.D2&quot;,</div><div class="line">             &quot;single&quot;, &quot;complete&quot;, &quot;average&quot;, &quot;mcquitty&quot;,</div><div class="line">             &quot;median&quot;, &quot;centroid&quot;)</div><div class="line">   dmeths = c(&quot;euclidean&quot;, &quot;maximum&quot;, &quot;manhattan&quot;, &quot;canberra&quot;,</div><div class="line">             &quot;binary&quot;)</div></pre></td></tr></table></figure>
-<h3 id="the-layout-of-the-user-interface">The layout of the user interface</h3>
-<p>There are several high-level options that can control the browser interface. We’ll use a flexible approach called <code>fluidPage</code>; see also the shinydashboard package.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line"># main shiny components: ui and server</div><div class="line">#   ui: defines page layout and components</div><div class="line">#   server: defines operations</div><div class="line">#</div><div class="line">   ui &lt;- fluidPage(</div><div class="line">#</div><div class="line"># we will have four components on sidebar: selectors for </div><div class="line"># distance, agglomeration method, height for tree cut, and variables to use</div></pre></td></tr></table></figure>
-<h4 id="title-and-sidebar">Title and sidebar</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line">     titlePanel(paste(substitute(df), &quot;hclust&quot;)),</div><div class="line">     sidebarPanel(</div><div class="line">          helpText(paste(&quot;Select distance:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             selectInput(&quot;dmeth&quot;, NULL, choices=dmeths,</div><div class="line">               selected=dmeths[1])),</div><div class="line">          helpText(paste(&quot;Select clustering method:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             selectInput(&quot;meth&quot;, NULL, choices=cmeths,</div><div class="line">               selected=cmeths[1])),</div><div class="line">          helpText(paste(&quot;Select height for cut:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             numericInput(&quot;cutval&quot;, NULL, value=40, min=0, max=Inf, step=1)),</div><div class="line">          helpText(paste(&quot;Select variables for clustering from&quot;, substitute(df), &quot;:&quot; )),</div><div class="line">          fluidRow(</div><div class="line">             checkboxGroupInput(&quot;vars&quot;, NULL, choices=nms,</div><div class="line">               selected=nms[1:2]))</div><div class="line">            ),</div></pre></td></tr></table></figure>
-<h4 id="tabs-for-the-primary-displays">Tabs for the primary displays</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line"># main panel is a simple plot</div><div class="line">#</div><div class="line">     mainPanel(</div><div class="line">       tabsetPanel(</div><div class="line">        tabPanel(&quot;tree&quot;, </div><div class="line">         plotOutput(&quot;plot1&quot;)),</div><div class="line">        tabPanel(&quot;pairs&quot;, </div><div class="line">         plotOutput(&quot;pairsplot&quot;)),</div><div class="line">        tabPanel(&quot;silh&quot;, </div><div class="line">         plotOutput(&quot;silplot&quot;))</div><div class="line">         )</div><div class="line">       )</div><div class="line">  )  # end fluidPage</div></pre></td></tr></table></figure>
-<h3 id="defining-the-server">Defining the server</h3>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">#</div><div class="line"># a function with up to three arguments (input, output, session)</div><div class="line"># can be used to define the server component of the app</div><div class="line"># renderPlot makes it reactive, so when input components are altered,</div><div class="line"># data frame in use and plot are updated</div><div class="line">#</div><div class="line">   server &lt;- function(input, output) &#123;</div><div class="line">     output$plot1 &lt;- renderPlot(&#123;</div><div class="line">       xv = df[,input$vars]</div><div class="line">       plot(hclust(dist(data.matrix(xv),method=input$dmeth), method=input$meth),</div><div class="line">         xlab=paste(input$dmeth, &quot;distance;&quot;, input$meth, &quot;clustering&quot;))</div><div class="line">       abline(h=input$cutval, lty=2, col=&quot;gray&quot;)</div><div class="line">     &#125;)</div><div class="line">     output$pairsplot &lt;- renderPlot(&#123;</div><div class="line">       xv = df[,input$vars]</div><div class="line">       pairs(data.matrix(xv))</div><div class="line">     &#125;)</div><div class="line">     output$silplot &lt;- renderPlot(&#123;</div><div class="line">       xv = df[,input$vars]</div><div class="line">       dm = dist(data.matrix(xv),method=input$dmeth)</div><div class="line">       hc = hclust(dist(data.matrix(xv),method=input$dmeth), method=input$meth)</div><div class="line">       ct = cutree(hc, h=input$cutval)</div><div class="line">       plot(silhouette(ct, dm))</div><div class="line">     &#125;)</div><div class="line">   &#125;</div><div class="line">   </div><div class="line">   shinyApp(ui, server)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="some-gory-details">Some gory details</h2>
-<p>A “shiny app” consists of two main components, a user interface and a server function. To use the infrastructure the <code>shiny</code> library must be attached to an R session. The application can be started in various ways; we use <code>shinyApp</code> and supply two arguments, <code>ui</code> and <code>server</code>.</p>
-<ul>
-<li><code>ui</code> is an instance of <code>shiny.tag.list</code>. You can get a feel for this by inspecting the result of <code>fluidPage()</code>.</li>
-<li><code>server</code> is a function of three arguments <code>input</code>, <code>output</code> and <code>session</code>; the latter is optional. <code>input</code> is a list with bindings given values in the <code>ui</code> component, and <code>output</code> will be populated with elements in the server for rendering in the UI.</li>
-</ul>
-<h3 id="an-example-with-fluidpage">An example with fluidPage</h3>
-<p>To appreciate what shiny is doing for you, try the following:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">library(shiny)</div><div class="line">fluidPage(</div><div class="line">  titlePanel(&quot;a title&quot;),</div><div class="line">  sidebarPanel(</div><div class="line">    selectInput(&quot;seli1&quot;, &quot;some letters&quot;, letters[1:4])</div><div class="line">    )</div><div class="line">  )</div></pre></td></tr></table></figure>
-<p>Set <code>sink(file=&quot;dem.html&quot;)</code> and run the above code again. Then issue <code>sink(NULL); browseURL(&quot;dem.html&quot;)</code>. R will fire up the browser and show a fairly anemic page. There will be a select control with options a, …, d. This particular example would be easy to code by hand, but the <code>selectInput</code> function allows you to develop controls with choices defined by any R vector. Furthermore, high-level R functions are defined to allow different kinds of input, which may be driven by mouse events.</p>
-<hr>
-<p>​ <a href="http://genomicsclass.github.io/book/" target="_blank" rel="external">PH525x</a>, Rafael Irizarry and Michael Love, <a href="https://github.com/genomicsclass/labs/blob/master/LICENSE" target="_blank" rel="external">MIT License</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2848,7 +2862,7 @@ t_N)&#39; ) \\
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">246</span>
+                  <span class="site-state-item-count">249</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2870,7 +2884,7 @@ t_N)&#39; ) \\
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-count">118</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2947,7 +2961,7 @@ t_N)&#39; ) \\
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共980.9k字</span>
+  <span class="post-count">博客全站共988.9k字</span>
 </div>
 
         

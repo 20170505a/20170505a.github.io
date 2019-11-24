@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Bioconductor,RNA-seq," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="性能增强概览 软件系统和数据分析的可扩展性(scalability)的概念是复杂的，精确的度量(precise metrics)和标准现在还不好处理。可以参考一下来自计算机界的 Weinstock and Goodenough 的一个概述。基于Bioconductor的分析工作流的可扩展性(scalability)可以沿着不同的路径进行，Bioconductor的两个核Mike Lawrence">
+<meta name="keywords" content="Bioconductor,RNA-seq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDAS017-使用Bioconductor进行高性能计算">
+<meta property="og:url" content="http://rvdsd.top/2019/09/17/Genomics Data Analysis Series/GDAS018-The parallel package lapply and mclapply/index.html">
+<meta property="og:site_name" content="RVDSD的个人笔记本">
+<meta property="og:description" content="性能增强概览 软件系统和数据分析的可扩展性(scalability)的概念是复杂的，精确的度量(precise metrics)和标准现在还不好处理。可以参考一下来自计算机界的 Weinstock and Goodenough 的一个概述。基于Bioconductor的分析工作流的可扩展性(scalability)可以沿着不同的路径进行，Bioconductor的两个核Mike Lawrence">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-22T12:52:54.634Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GDAS017-使用Bioconductor进行高性能计算">
+<meta name="twitter:description" content="性能增强概览 软件系统和数据分析的可扩展性(scalability)的概念是复杂的，精确的度量(precise metrics)和标准现在还不好处理。可以参考一下来自计算机界的 Weinstock and Goodenough 的一个概述。基于Bioconductor的分析工作流的可扩展性(scalability)可以沿着不同的路径进行，Bioconductor的两个核Mike Lawrence">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://rvdsd.top/2019/09/17/Genomics Data Analysis Series/GDAS018-The parallel package lapply and mclapply/"/>
+
+
+
+
+
+  <title>GDAS017-使用Bioconductor进行高性能计算 | RVDSD的个人笔记本</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">RVDSD的个人笔记本</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://rvdsd.top/2019/09/17/Genomics Data Analysis Series/GDAS018-The parallel package lapply and mclapply/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RVDSD">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RVDSD的个人笔记本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GDAS017-使用Bioconductor进行高性能计算</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-17T12:00:00+08:00">
+                2019-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Genomics-Data-Analysis-Series/" itemprop="url" rel="index">
+                    <span itemprop="name">Genomics Data Analysis Series</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                  <span class="post-meta-divider">|</span>
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,519
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="性能增强概览">性能增强概览</h2>
+<p>软件系统和数据分析的可扩展性(scalability)的概念是复杂的，精确的度量(precise metrics)和标准现在还不好处理。可以参考一下来自计算机界的 <a href="http://repository.cmu.edu/sei/399/" target="_blank" rel="external">Weinstock and Goodenough</a> 的一个概述。基于Bioconductor的分析工作流的可扩展性(scalability)可以沿着不同的路径进行，Bioconductor的两个核<a href="http://arxiv.org/abs/1409.2864" target="_blank" rel="external">Mike Lawrence和Martin Morgan</a>在工作就提到了许多有意的想法。</p>
+<p>本文档仅解决Bioconductor直接支持的并行计算，主要通过两种方法实现：</p>
+<ul>
+<li>共享内存并行性。使用内存映像的完整副本对R进程进行任意次数的分叉，并且对每个映像独立地进行计算。选定的结果将返回到主进程。可以有效地在多环境中实现。</li>
+<li>分布式并行性。可以运行不同操作系统的独立处理器可以运行R的兼容实例。R或集群调度程序可以执行作业控制(job control)。</li>
+</ul>
+<h3 id="简要说明">简要说明</h3>
+<p>现在我们来说明一下共享内存方法：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">system.time( lapply(<span class="number">1</span>:<span class="number">8</span>, <span class="keyword">function</span>(x)Sys.sleep(<span class="number">1</span>) ) )</div><div class="line"><span class="comment">##    user  system elapsed </span></div><div class="line"><span class="comment">##   0.004   0.001   8.020</span></div><div class="line"><span class="keyword">library</span>(parallel)</div><div class="line">detectCores()</div><div class="line"><span class="comment">## [1] 4</span></div><div class="line">options(mc.cores=<span class="number">4</span>)</div><div class="line">system.time( mclapply(<span class="number">1</span>:<span class="number">8</span>, <span class="keyword">function</span>(x)Sys.sleep(<span class="number">1</span>) ) )</div><div class="line"><span class="comment">##    user  system elapsed </span></div><div class="line"><span class="comment">##   0.007   0.022   2.031</span></div></pre></td></tr></table></figure>
+<p>上面只是一个无意义的计算，我们就是为了说明并行计算的原理，通过并行计算，我们加快了计算速度，计算过程的时间缩短为原来的四分之一。</p>
+<h3 id="rna-seq实验中的bam文件">RNA-seq实验中的BAM文件</h3>
+<p>我们将使用 <a href="http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3629564&amp;tool=pmcentrez&amp;rendertype=abstract" target="_blank" rel="external">Zarnack et al. 2013</a> 等的人研究中的一些BAM文件。2013年的这项假设是，有一类蛋白质，即异质核糖蛋白C1和C2，也就是指的hnRNP C(heterogeneous nuclear ribonucleoproteins C1 and C2)，这个蛋白会阻止Alu因子整合到成熟到转录本上。这样的整合会导致蛋白功能障碍，进而导致疾病；如果想了解更深入的信息，可以去查看文献原文。</p>
+<p>我们下面所使用的包含有8个BAM文件，它们已经与chr14染色体进行了比对。其中4个文件是正常的HeLa细胞的读长文件(reads)（阴性对照），另外4个文件是敲低了hnRNP C后的HeLa的读长文件，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(RNAseqData.HNRNPC.bam.chr14)</div><div class="line">dir(system.file(<span class="string">"extdata"</span>, package=<span class="string">"RNAseqData.HNRNPC.bam.chr14"</span>))</div><div class="line"><span class="comment">##  [1] "ERR127302_chr14.bam"     "ERR127302_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [3] "ERR127303_chr14.bam"     "ERR127303_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [5] "ERR127304_chr14.bam"     "ERR127304_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [7] "ERR127305_chr14.bam"     "ERR127305_chr14.bam.bai"</span></div><div class="line"><span class="comment">##  [9] "ERR127306_chr14.bam"     "ERR127306_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [11] "ERR127307_chr14.bam"     "ERR127307_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [13] "ERR127308_chr14.bam"     "ERR127308_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [15] "ERR127309_chr14.bam"     "ERR127309_chr14.bam.bai"</span></div><div class="line"><span class="comment">## [17] "tophat2_out"</span></div></pre></td></tr></table></figure>
+<p>这些都是由Tabix建立索引的BAM文件。其中<code>*.bam</code> 是原始的BAM文件，而<code>*.bam.bai</code>则是添加了索引后的BAM文件，从上面我们可以看到有8个bam.bai文件，前面四个是敲低组，后面四个是对照组。</p>
+<h3 id="使用biocparallel实现隐式并行">使用BiocParallel实现隐式并行</h3>
+<p>为了促进可靠的执行程序的和谐发展，Bioconductor开发了<code>BiocParallel</code>包。在下面的案例中，我们将读取HNRNP C案例数据集中的reads读取到由外显子地址定义的bins中（这里我不清楚bin是什么，列出了原文）：</p>
+<blockquote>
+<p>Consider the following example: we will count reads into bins defined by exon addresses in the HNRNPC example dataset.</p>
+</blockquote>
+<p><code>RNAseqData.HNRNPC.bam.chr14</code> 这个包含有BAM文件的绝对路径的一个向量，我将其分配给fns，如下所示：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(RNAseqData.HNRNPC.bam.chr14)</div><div class="line">fns = RNAseqData.HNRNPC.bam.chr14_BAMFILES</div><div class="line">length(fns)</div><div class="line"><span class="comment">## [1] 8</span></div></pre></td></tr></table></figure>
+<p>Here we establish the exon bins into which we will count reads.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">library(TxDb.Hsapiens.UCSC.hg19.knownGene)</div><div class="line">txdb = TxDb.Hsapiens.UCSC.hg19.knownGene</div><div class="line">seqlevels(txdb) = &quot;chr14&quot;</div><div class="line">ebg = exonsBy(txdb, by=&quot;gene&quot;)</div></pre></td></tr></table></figure>
+<p>Now we use the <code>summarizeOverlaps</code> function from the GenomicAlignments package to count reads into the exon bins. We’ll time the counting from a single file, and then time the counting from all files at once.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">library(GenomicAlignments)</div><div class="line"># summarizeOverlaps uses bplapply to iterate over files</div><div class="line">s1 = system.time(i1 &lt;- summarizeOverlaps( ebg, fns[3] ))</div><div class="line">s1</div><div class="line">##    user  system elapsed </div><div class="line">##   2.975   0.178   3.178</div><div class="line"># show implicit config</div><div class="line">BiocParallel::bpparam()</div><div class="line">## class: MulticoreParam</div><div class="line">##   bpisup: FALSE; bpnworkers: 4; bptasks: 0; bpjobname: BPJOB</div><div class="line">##   bplog: FALSE; bpthreshold: INFO; bpstopOnError: TRUE</div><div class="line">##   bptimeout: 2592000; bpprogressbar: FALSE</div><div class="line">##   bpRNGseed: </div><div class="line">##   bplogdir: NA</div><div class="line">##   bpresultdir: NA</div><div class="line">##   cluster type: FORK</div><div class="line">s2 = system.time(i2 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">s2</div><div class="line">##    user  system elapsed </div><div class="line">##   0.271   0.162  10.480</div></pre></td></tr></table></figure>
+<p>This is not a thorough way of measuring speedup but it shows reasonable enhancement. In the second computation, we did approximately 8 times as much computation, but the clock time elapsed increased only by a factor of (3.3). The default behavior of BiocParallel on the MacBook Air used to produce this document is to pick up the value of the option <code>mc.cores</code> and use this as the number of workers in a <code>MulticoreParam</code> configuration; if <code>options()$mc.cores</code> is NULL, 2 workers are specified.</p>
+<p>When BiocParallel is attached, the <code>summarizeOverlaps</code> function will iterate over the files using <code>bplapply</code> from the BiocParallel package. That function will check the R session for specific parallelization configuration information. If it finds none, it will check for multiple cores and make arrangements to use them if present. The “check” occurs via the function <code>bpparam</code>.</p>
+<p>The default situation on a MacBook Air running MacOSX 10.9.5 with an Intel core i7 processor, (two physical cores with two logical cores each, allowing for four concurrent threads) as follows.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">options(mc.cores=NULL)</div><div class="line">library(BiocParallel)</div><div class="line">register(MulticoreParam())</div><div class="line">bpparam()</div><div class="line">## class: MulticoreParam</div><div class="line">##   bpisup: FALSE; bpnworkers: 2; bptasks: 0; bpjobname: BPJOB</div><div class="line">##   bplog: FALSE; bpthreshold: INFO; bpstopOnError: TRUE</div><div class="line">##   bptimeout: 2592000; bpprogressbar: FALSE</div><div class="line">##   bpRNGseed: </div><div class="line">##   bplogdir: NA</div><div class="line">##   bpresultdir: NA</div><div class="line">##   cluster type: FORK</div></pre></td></tr></table></figure>
+<p>This identifies an object called <code>MulticoreParam</code> which is used to configure the behavior of <code>bplapply</code> and other utilities of the BiocParallel package. There are various configuration object classes that can be used.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">‘SnowParam’: distributed memory computing</div><div class="line"></div><div class="line">‘MulticoreParam’: shared memory computing</div><div class="line"></div><div class="line">‘BatchJobsParam’: scheduled cluster computing</div><div class="line"></div><div class="line">‘DoparParam’: foreach computing</div><div class="line"></div><div class="line">‘SerialParam’: non-parallel execution</div></pre></td></tr></table></figure>
+<p>We need to use <code>register</code> to determine the type of concurrent computation that will be performed.</p>
+<p>If process size is large, we may want to leave some cores idle. We can accomplish that by using <code>register</code>. Here we’ll check for any advantage of using all logical cores.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">library(BiocParallel)</div><div class="line">register(MulticoreParam(workers=1))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##  15.653   1.286  17.070</div><div class="line">register(MulticoreParam(workers=2))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##   0.103   0.029   8.818</div><div class="line">register(MulticoreParam(workers=3))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##   0.051   0.023   9.543</div><div class="line">register(MulticoreParam(workers=4))</div><div class="line">system.time(i3 &lt;- summarizeOverlaps( ebg, fns ))</div><div class="line">##    user  system elapsed </div><div class="line">##   0.056   0.026   8.774</div><div class="line">all.equal(i3,i2)  # check that the results do not change</div><div class="line">## [1] TRUE</div></pre></td></tr></table></figure>
+<p>Note that in this environment, despite increasing the number of CPUs linearly do not appreciably reduce run time after moving to two cores. This due mainly to communication costs that typically increase with the number of CPUs, and this phenomenon will be environment-specific.</p>
+<p>In summary, it is very easy to perform embarrassingly parallel tasks with R, and this carries over to genomic data analysis thanks to BiocParallel. There are some strategic considerations concerning control of memory consumption and communication costs, and full mastery of the topic involves attention to profiling and benchmarking methods that can be addressed in an advanced software development course.</p>
+<h2 id="参考资料">参考资料</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://genomicsclass.github.io/book/pages/bioc2_parallel.html" target="_blank" rel="external">Architecture: considerations on high performance computing with Bioconductor</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Bioconductor/" <i class="fa fa-tag"></i> Bioconductor</a>
+          
+            <a href="/tags/RNA-seq/" <i class="fa fa-tag"></i> RNA-seq</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/15/Genomics Data Analysis Series/GDAS015-NGS的可视化/" rel="next" title="GDAS015-NGS的可视化">
+                <i class="fa fa-chevron-left"></i> GDAS015-NGS的可视化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/17/Genomics Data Analysis Series/GDAS017-使用shiny app来对基因表达数据进行聚类/" rel="prev" title="GDAS017-使用shiny app来对基因表达数据进行聚类">
+                GDAS017-使用shiny app来对基因表达数据进行聚类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="vcomments"></div>
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">RVDSD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">249</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">118</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#性能增强概览"><span class="nav-number">1.</span> <span class="nav-text">性能增强概览</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简要说明"><span class="nav-number">1.1.</span> <span class="nav-text">简要说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rna-seq实验中的bam文件"><span class="nav-number">1.2.</span> <span class="nav-text">RNA-seq实验中的BAM文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用biocparallel实现隐式并行"><span class="nav-number">1.3.</span> <span class="nav-text">使用BiocParallel实现隐式并行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">2.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RVDSD</span>
+
+  
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+<div class="BbeiAn-info">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41018102000118" style="color:#909090;text-decoration:none;padding-left:0px;no-repeat left center" rel="nofollow">豫公网安备 41018102000118</a>	  <!--这里将图标作为了背景，以使得能和后面的文字在同一行-->
+</div>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共988.9k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
